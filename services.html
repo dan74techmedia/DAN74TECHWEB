@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services | DAN74TECH MEDIA</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0044ff;
+            --accent-orange: #ff9900;
+            --bg-light: #ffffff;
+            --text-dark: #222222;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+           .logo {
+            width: 110px;
+            height: auto;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;            
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            background: var(--accent-orange);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 15px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        nav a:hover { color: var(--primary-blue); }
+
+        .details-section { 
+            padding: 60px 20px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            border-bottom: 1px solid #eee; 
+            transition: 0.3s;
+        }
+
+        .details-section:hover { background: #fafafa; }
+
+        .details-section h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--primary-blue); 
+            text-transform: uppercase; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .price-tag { 
+            color: var(--accent-orange); 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            background: #fdfdfd;
+            padding: 8px 15px;
+            border-left: 4px solid var(--primary-blue);
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .btn-order {
+            display: inline-block;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-order:hover {
+            background: var(--accent-orange);
+            transform: translateX(10px);
+        }
+
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+   
+
+<header>
+      <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
+    <h1>OUR SERVICES</h1>
+</header>
+  
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<section class="details-section" id="graphics">
+    <h2>🎨 Graphic Design</h2>
+    <p>Professional visual identities. From concept sketches to high-resolution branding, we build designs that command attention.</p>
+    <p class="price-tag">KSH 250 - KSH 2,500</p>
+    <br>
+    <a href="graphics.html" class="btn-order">Order Graphics & Upload Files →</a>
+</section>
+
+<section class="details-section" id="video">
+    <h2>🎬 Video Production</h2>
+    <p>Cinematic editing, color grading, and motion graphics for TikTok, YouTube, and corporate projects.</p>
+    <p class="price-tag">KSH 500 - KSH 1,500</p>
+    <br>
+    <a href="video.html" class="btn-order">Send Video Project →</a>
+</section>
+
+<section class="details-section" id="web">
+    <h2>🌐 Web Development</h2>
+    <p>Secure, fast, and modern responsive websites. We handle everything from landing pages to E-Commerce stores.</p>
+    <p class="price-tag">Starting from KSH 5,000</p>
+    <br>
+    <a href="web.html" class="btn-order">Get a Web Quote →</a>
+</section>
+
+<section class="details-section" id="app">
+    <h2>📱 App Development</h2>
+    <p>Custom Android (Java) and Web App solutions. Expert in system automation and registry databases.</p>
+    <p class="price-tag">Starting from KSH 25,000</p>
+    <br>
+    <a href="app.html" class="btn-order">Build Your App →</a>
+</section>
+
+<section class="details-section" id="repairs">
+    <h2>🔧 Tech Repairs</h2>
+    <p>Level 6 ICT hardware diagnostics, OS installations, and performance optimization for PCs and Mobile.</p>
+    <p class="price-tag">Diagnostic Fee: KSH 500</p>
+    <br>
+    <a href="repairs.html" class="btn-order">Book Repair Slot →</a>
+</section>
+
+<section class="details-section" id="advice">
+    <h2>💡 ICT Consultancy</h2>
+    <p>Strategic IT solutions, network security audits, and professional troubleshooting advice.</p>
+    <p class="price-tag">Sessions from KSH 800</p>
+    <br>
+    <a href="advice.html" class="btn-order">Book Consultation →</a>
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
+            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+        </div>
+        <div style="text-align: center;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
+            <p style="margin: 15px 0;">
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
+                   🚀 View Technical GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
+    </div>
+</footer>
+
+</body>
+</html>

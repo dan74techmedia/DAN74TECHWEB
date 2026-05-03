@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | DAN74TECH MEDIA</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0044ff;
+            --accent-orange: #ff9900;
+            --bg-light: #ffffff;
+            --text-dark: #222222;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo { width: 100px; height: auto; margin-bottom: 5px; }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;            
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            background: var(--accent-orange);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 15px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        nav a:hover { color: var(--primary-blue); }
+
+        .details-section { 
+            padding: 60px 20px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            text-align: center;
+        }
+        
+        .details-section h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--primary-blue); 
+            text-transform: uppercase; 
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .details-section h3 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .details-section p {
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* --- Updated Highlight Box with Faint Background --- */
+        .highlight-box {
+            position: relative; /* Necessary to contain the background */
+            background: #f0f4f8;
+            padding: 40px 30px;
+            border-radius: 15px;
+            border-left: 10px solid var(--primary-blue);
+            text-align: left;
+            margin-top: 30px;
+            overflow: hidden; /* Keeps the background image inside the corners */
+        }
+
+        .highlight-box::before {
+            content: "";
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background-image: url('images/dantyz.png'); /* Your image path */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; /* Very faint so text remains readable */
+            z-index: 0;
+        }
+
+        /* Ensures text stays above the background image */
+        .highlight-box > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-orange);
+            font-weight: bold;
+        }
+
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
+    <h1>ABOUT US</h1>
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<section class="details-section">
+    <h2> We are DAN74TECH MEDIA 👋</h2>
+    <h3>ICT Technicians | Android Developers | Creative Media Strategists</h3>
+    <p><strong>Location:</strong> Meru, Kenya 🇰🇪</p>
+    <p><strong>Focus:</strong> Engineering digital systems and professional brand identities.</p>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
+
+    <div class="highlight-box">
+        <h2>🚀 <a href="https://whatsapp.com/channel/0029VbCBaqjLo4hpbjPPNm2r" class="about-link" target="_blank">About Us</a></h2>
+        <p>We are specialized ICT Technicians who thrive at the intersection of technical logic and creative design. Our expertise ranges from deep-level hardware maintenance and network security to building full-stack mobile applications and websites.</p>
+        <p>Under our brand <strong>Dan74tech Media</strong> (or <strong>dantyz Media</strong>), We coordinate digital communications, design professional branding, edit high-quality video content for musical and corporate projects and build professional user friendly applications and websites.</p>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div style="text-align: left;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
+            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+        </div>
+        <div style="text-align: center;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
+            <p style="margin: 15px 0;">
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
+                   🚀 View Technical GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphic Design | DAN74TECH MEDIA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary-blue: #0044ff; 
+            --accent-orange: #ff9900; 
+            --bg-light: #ffffff; 
+            --text-dark: #222222;
+        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7f6; color: var(--text-dark); line-height: 1.6; }
+        
+        header { background: var(--primary-blue); color: white; padding: 30px; text-align: center; }
+        .logo { width: 80px; height: auto; }
+        
+        nav { background: var(--accent-orange); padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; }
+
+        .container { max-width: 900px; margin: 30px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        
+        h2 { font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; text-align: center; }
+        
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+        .detail-item { background: #f9f9f9; padding: 20px; border-radius: 12px; border-left: 5px solid var(--primary-blue); }
+
+        .order-form { background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 15px; margin-top: 40px; }
+        label { font-weight: 600; display: block; margin-top: 15px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        
+        .mpesa-box { background: #e8f5e9; border: 2px dashed #2e7d32; padding: 25px; border-radius: 15px; text-align: center; margin-top: 25px; }
+        .mpesa-logo { width: 120px; margin-bottom: 10px; }
+        #displayPrice { font-size: 2rem; color: #2e7d32; font-weight: 800; }
+        
+        .btn-pay { 
+            background: #2e7d32; 
+            color: white; 
+            padding: 18px 30px; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 1.1rem; 
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-pay:hover { background: #1b5e20; transform: scale(1.02); }
+        
+        footer { background: #111; color: white; text-align: center; padding: 30px; margin-top: 50px; }
+        
+        .mpesa-logo {
+    width: 120px; /* Adjust size as needed */
+    height: auto;
+    display: block;
+    margin: 20px auto; /* Centers the logo */
+    background: white; /* Makes the logo visible on blue background */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 5; /* Ensures it stays above the red sparks */
+}
+
+        
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="images/logo.png" alt="Logo" class="logo">
+    <h1>Graphic Design Studio</h1>
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<div class="container">
+    <h2>Elevate Your Brand Identity</h2>
+    
+    <div class="details-grid">
+        <div class="detail-item">
+            <h3>🎨 Branding</h3>
+            <p>Logos,Icons,Themes and identities.</p>
+            <p><strong>Price: KSH 500</strong></p>
+        </div>
+        <div class="detail-item">
+            <h3>📢 Marketing</h3>
+            <p>Posters,Cards and Flyers.</p>
+            <p><strong>Price: KSH 300</strong></p>
+        </div>
+    </div>
+
+    <div class="order-form">
+        <h3>Place Order</h3>
+        <form id="orderForm">
+            <label for="userName">Full Name:</label>
+            <input type="text" id="userName" placeholder="Enter your name" required>
+
+            <label for="serviceType">Select Package:</label>
+            <select id="serviceType" onchange="updatePrice()">
+                <option value="Branding Package" data-price="500">Branding Package - KSH 500</option>
+                <option value="Flyer/Poster" data-price="300">Flyer/Poster/Cards - KSH 300</option>
+                <option value="Logo Only" data-price="250">Logo Only - KSH 250</option>
+            </select>
+            
+            <label>Upload Reference (Prepare to send on WhatsApp):</label>
+            <input type="file" id="userFile" accept="image/*,.pdf,.doc">
+            
+            <label for="userDesc">Design Instructions:</label>
+            <textarea id="userDesc" rows="4" placeholder="Mention colors and style..."></textarea>
+
+            <div class="mpesa-box">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png" 
+     alt="M-Pesa Official" 
+     class="mpesa-logo">
+                <p><strong>LIPA NA M-PESA</strong></p>
+                <p>Send to: <strong>0790 435 584</strong> (Daniel Ngumi)</p>
+                <p>Total: <span id="displayPrice"></span></p>
+                
+                <button type="button" onclick="sendToWhatsApp()" class="btn-pay">Confirm & Open WhatsApp</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updatePrice() {
+        const select = document.getElementById('serviceType');
+        const price = select.options[select.selectedIndex].getAttribute('data-price');
+        document.getElementById('displayPrice').innerText = "KSH " + price;
+    }
+
+    function sendToWhatsApp() {
+        const name = document.getElementById('userName').value;
+        const service = document.getElementById('serviceType').value;
+        const price = document.getElementById('displayPrice').innerText;
+        const desc = document.getElementById('userDesc').value;
+        const fileInput = document.getElementById('userFile');
+
+        if (name === "") {
+            alert("Please enter your name.");
+            return;
+        }
+
+        let fileStatus = fileInput.files.length > 0 ? "✅ File Ready to Upload" : "❌ No file selected";
+
+        const message = `*NEW DESIGN ORDER*%0A` +
+                        `*Customer:* ${name}%0A` +
+                        `*Package:* ${service}%0A` +
+                        `*Price Paid:* ${price}%0A` +
+                        `*Instructions:* ${desc}%0A` +
+                        `*Attachment:* ${fileStatus}%0A%0A` +
+                        `_I am sending the payment confirmation and file now..._`;
+
+        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
+    }
+</script>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
+            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+        </div>
+        <div style="text-align: center;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
+            <p style="margin: 15px 0;">
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
+                   🚀 View Technical GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
+    </div>
+</footer>
+
+</body>
+</html>
