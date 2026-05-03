@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | OFFICIAL</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0044ff;
+            --accent-orange: #ff9900;
+            --accent-red: #ff2a2a;
+            --bg-light: #ffffff;
+            --text-dark: #222222;
+            --card-bg: #f9f9f9;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* --- Header Section with Red Sparks --- */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #002288 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Red Sparks Animation */
+        .spark {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-red), 0 0 20px var(--accent-red), 0 0 30px #ff8888;
+            animation: floatUp 4s infinite ease-in;
+            bottom: -10px;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150px) scale(0); opacity: 0; }
+        }
+
+        .spark:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 3.5s; }
+        .spark:nth-child(2) { left: 30%; animation-delay: 1.2s; animation-duration: 4s; }
+        .spark:nth-child(3) { left: 50%; animation-delay: 0.5s; animation-duration: 3s; }
+        .spark:nth-child(4) { left: 70%; animation-delay: 2.5s; animation-duration: 4.5s; }
+        .spark:nth-child(5) { left: 85%; animation-delay: 0.8s; animation-duration: 3.2s; }
+        .spark:nth-child(6) { left: 10%; animation-delay: 1.8s; animation-duration: 5s; }
+        .spark:nth-child(7) { left: 90%; animation-delay: 0.3s; animation-duration: 3.8s; }
+
+        .logo {
+            width: 110px;
+            height: auto;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;            
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        header p.tagline {
+            margin: 10px 0 0;
+            font-weight: 300;
+            text-transform: capitalize;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .pro-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 15px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            background: var(--accent-orange);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 15px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--text-dark);
+        }
+
+        /* --- Services Grid --- */
+        .services-section {
+            padding: 60px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .services-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .section-desc {
+            text-align: center;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            font-size: 1rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 42, 42, 0.4); /* Smart semi-transparent red border */
+            border-bottom: 4px solid var(--accent-red); /* Solid red bottom for anchor */
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* Subtle hover effect for cards */
+        .service-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            transition: all 0.7s ease;
+        }
+
+        .service-card:hover::after {
+            left: 200%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 42, 42, 0.15); /* Soft red shadow to match the border */
+            border: 1px solid var(--accent-red); /* Solid red border on hover */
+            border-bottom: 4px solid var(--accent-red);
+        }
+
+        .service-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 15px;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1);
+        }
+
+        .service-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .cta-btn {
+            background: var(--primary-blue);
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
+        }
+
+        .cta-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 42, 42, 0.4);
+        }
+
+        /* Utility link styling */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 50px;
+            border-top: 4px solid var(--accent-red);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            text-align: left;
+        }
+        .badge-icon {
+    width: 28px;
+    height: 28px;
+    fill: #0095f6; /* Meta Verified Blue */
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+@media (max-width: 600px) {
+    .badge-icon {
+        width: 20px;
+        height: 20px;
+    }
+    header h1 {
+        font-size: 1.8rem !important;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">    
+   
+   <h1 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    DAN74TECH MEDIA 
+    <span class="verified-badge" title="Verified Professional">
+        <svg viewBox="0 0 24 24" aria-label="Verified" class="badge-icon">
+            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.13-.44.18-.9.18-1.35 0-2.48-2.02-4.5-4.5-4.5-.45 0-.9.05-1.35.18-.7-1.3-2.07-2.18-3.65-2.18s-2.95.88-3.65 2.18c-.44-.13-.9-.18-1.35-.18-2.48 0-4.5 2.02-4.5 4.5 0 .45.05.9.18 1.35-1.3.7-2.18 2.07-2.18 3.65 0 1.58.88 2.95 2.18 3.65-.13.44-.18.9-.18 1.35 0 2.48 2.02 4.5 4.5 4.5.45 0 .9-.05 1.35-.18.7 1.3 2.07 2.18 3.65 2.18s2.95-.88 3.65-2.18c.44.13.9.18 1.35.18 2.48 0 4.5-2.02 4.5-4.5 0-.45-.05-.9-.18-1.35 1.3-.7 2.18-2.07 2.18-3.65zm-12.65 5.08l-3.42-3.41 1.41-1.41 2.01 2.01 5.13-5.12 1.41 1.41-6.54 6.52z"></path>
+        </svg>
+    </span>
+</h1>
+   
+    <p class="tagline">Innovation • Creativity • Solutions</p>
+    <p class="tagline" style="font-size: 1.1rem; font-weight: 400;">Your Ultimate Partner in Tech & Media Excellence</p>
+    
+    <div class="pro-badge">
+     💻 ICT Technician 🖱️
+    </div>
+</header>
+
+<nav>
+    <a href="home.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<section class="services-section" id="services">
+    <h2>Our Expertise</h2>
+    <p class="section-desc">We combine technical precision with creative vision to deliver scalable solutions for modern businesses.</p>
+    
+    <div class="services-grid">
+        
+        <a href="graphics.html#graphics" class="card-link">
+            <div class="service-card">
+                <img src="images/graphics.png" alt="Graphics" class="service-icon">
+                <h3>Graphic Design</h3>
+                <p>Logos, branding, and high-impact social media flyers designed to convert.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+        <a href="video.html#video" class="card-link">
+            <div class="service-card">
+                <img src="images/video.png" alt="Video" class="service-icon">
+                <h3>Video Editing</h3>
+                <p>Professional editing, cinematic color grading, and dynamic motion graphics.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+        <a href="web.html#web" class="card-link">
+            <div class="service-card">
+                <img src="images/web.png" alt="Web" class="service-icon">
+                <h3>Web Development</h3>
+                <p>Modern, fast, and SEO-optimized responsive websites tailored to your brand.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+        <a href="app.html#app" class="card-link">
+            <div class="service-card">
+                <img src="images/app.png" alt="App" class="service-icon">
+                <h3>App Development</h3>
+                <p>Custom native Android applications and automated database systems.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+        <a href="repairs.html#repairs" class="card-link">
+            <div class="service-card">
+                <img src="images/repairs.png" alt="Repairs" class="service-icon">
+                <h3>Tech Repairs</h3>
+                <p>Expert hardware diagnostics and secure software fixes for all smart devices.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+        <a href="advice.html#advice" class="card-link">
+            <div class="service-card">
+                <img src="images/advice.png" alt="Advice" class="service-icon">
+                <h3>Advice & Solutions</h3>
+                <p>Strategic IT consultancy, network security audits, and systems troubleshooting.</p>
+                <p style="color: var(--accent-orange); font-size: 0.8rem; font-weight: bold; margin-top: 15px;">CLICK FOR PRICING</p>
+            </div>
+        </a>
+
+    </div>
+</section>
+
+<section id="portfolio" style="background: #f0f4f8; padding: 80px 0;">
+    <div class="services-section">
+        <h2 style="text-align: center; font-family: 'Montserrat'; color: #0044ff; margin-bottom: 10px;">Featured Work</h2>
+        <p class="section-desc" style="margin-bottom: 40px;">A glimpse into our recent successful digital deployments.</p>
+        
+        <div class="services-grid">
+            
+            <a href="images/kawishnah.png" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="service-card" style="transition: 0.3s; cursor: pointer; padding: 20px;">
+                    <img src="images/kawishnah.png" alt="Work 1" class="service-icon" style="width: 100%; height: auto; border-radius: 10px; object-fit: cover;">
+                    <h3 style="margin-top: 20px;">Latest Design</h3>
+                    <p>High-conversion advert design for a commercial local client.<br><span style="color: var(--accent-red); font-weight: 600; display: inline-block; margin-top: 10px;">View Full Image →</span></p>
+                </div>
+            </a>
+
+            <a href="https://www.youtube.com/watch?v=Nj63qNbJXMA" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="service-card" style="padding: 20px; transition: 0.3s; cursor: pointer;">
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; pointer-events: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <iframe src="https://www.youtube.com/embed/Nj63qNbJXMA?si=c_HaLOdST6-Gg-LZ" style="position: absolute; top:0; left:0; width:100%; height:100%;" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3 style="margin-top: 20px;">NAFURAHIA Project</h3>
+                    <p>Cinematic Video Production. Ready to transform your moves to cinema? We are here for you.<br><span style="color: var(--accent-red); font-weight: 600; display: inline-block; margin-top: 10px;">Watch on YouTube →</span></p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<section id="contact" style="text-align: center; padding: 80px 20px;">
+    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; font-size: 2rem;">Get In Touch</h2>
+    <p style="font-size: 1.1rem; color: #555; max-width: 500px; margin: 10px auto 40px auto;">Ready to start your next technical or creative project? Let's talk tech.</p>
+    
+    <div>
+        <a href="https://wa.me/254790435584" class="cta-btn" style="background: #25D366; font-size: 1.1rem;">
+            Message on WhatsApp
+        </a>
+    </div>
+
+    <div style="margin-top: 40px;">
+        <p style="color: #666;">Or reach me directly via email:</p>
+        <a href="mailto:dan74techmedia@gmail.com" style="color: var(--primary-blue); font-weight: bold; text-decoration: none; font-size: 1.2rem;">dan74techmedia@gmail.com</a>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
+            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+        </div>
+        <div style="text-align: center;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
+            <p style="margin: 15px 0;">
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
+                   🚀 View Technical GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
+    </div>
+</footer>
+
+</body>
+</html>
