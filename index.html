@@ -12,7 +12,6 @@
             --warning-yellow: #ffcc00;
             --bg-dark: #0a0a0a;
             --card-bg: rgba(255, 255, 255, 0.07);
-            --transition: 0.4s ease;
         }
 
         body {
@@ -27,6 +26,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         @keyframes gradientBG {
@@ -56,7 +56,7 @@
         .subtitle { color: var(--warning-yellow); font-size: 0.8rem; font-weight: 600; margin-bottom: 30px; text-transform: uppercase; }
 
         .tabs { display: flex; margin-bottom: 25px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 5px; }
-        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 600; color: #888; transition: var(--transition); border-radius: 10px; }
+        .tab { flex: 1; padding: 12px; cursor: pointer; font-weight: 600; color: #888; transition: 0.4s; border-radius: 10px; }
         .tab.active { color: white; background: var(--primary-blue); box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3); }
 
         form { display: none; text-align: left; animation: fadeIn 0.5s ease; }
@@ -66,26 +66,43 @@
         .input-group { margin-bottom: 18px; position: relative; }
         label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; }
         
-        input {
+        input[type="text"], input[type="password"], input[type="email"], input[type="tel"] {
             width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid #333;
             border-radius: 10px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--warning-yellow); background: rgba(255,255,255,0.1); }
+        input:focus { border-color: var(--warning-yellow); background: rgba(255,255,255,0.1); box-shadow: 0 0 12px rgba(255, 204, 0, 0.2); }
 
+        /* Password Toggle */
         .toggle-password {
-            position: absolute; right: 15px; top: 38px; cursor: pointer;
-            color: var(--warning-yellow); font-size: 0.7rem; font-weight: bold;
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: var(--warning-yellow);
+            font-size: 0.7rem;
+            font-weight: bold;
+            user-select: none;
         }
 
-        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.8rem; }
+        /* Remember Me & Forgot Password Layout */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+        }
+        .remember-me { display: flex; align-items: center; cursor: pointer; color: #aaa; }
+        .remember-me input { margin-right: 8px; cursor: pointer; }
         .forgot-link { color: var(--warning-yellow); text-decoration: none; font-weight: 600; }
+        .forgot-link:hover { text-decoration: underline; }
 
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: 800;
             text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 10px;
         }
-        .btn-blue { background: var(--primary-blue); color: white; }
-        .btn-yellow { background: var(--warning-yellow); color: black; font-weight: 900; }
+        .btn-blue { background: var(--primary-blue); color: white; box-shadow: 0 5px 15px rgba(0, 68, 255, 0.4); }
+        .btn-blue:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 68, 255, 0.5); }
 
         .alert-box {
             background: rgba(255, 204, 0, 0.1); border: 1px solid var(--warning-yellow); color: var(--warning-yellow);
@@ -93,12 +110,13 @@
         }
     </style>
 </head>
+
 <body>
 
 <div class="auth-container">
     <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
     <h1>DAN74TECH SITE</h1>
-    <p class="subtitle">System Authenticator</p>
+    <p class="subtitle">Your One Stop ICT Solutions</p>
 
     <div class="tabs" id="authTabs">
         <div class="tab active" id="loginTab" onclick="showForm('login')">LOGIN</div>
@@ -108,7 +126,7 @@
     <form id="loginForm" class="active">
         <div class="input-group">
             <label>Username or Email</label>
-            <input type="text" id="loginUser" placeholder="Click to enter" required onclick="handleUsernameClick()">
+            <input type="text" id="loginUser" placeholder="Username or Email" required onclick="handleUsernameClick()">
         </div>
         <div class="input-group">
             <label>Password</label>
@@ -116,43 +134,62 @@
             <span class="toggle-password" onclick="togglePass('loginPass', this)">SHOW</span>
         </div>
         <div class="form-options">
-            <label><input type="checkbox" id="rememberMe"> Remember Me</label>
+            <label class="remember-me">
+                <input type="checkbox" id="rememberMe"> Remember Me
+            </label>
             <a href="#" class="forgot-link" onclick="showForm('forgot')">Forgot Password?</a>
         </div>
         <button type="submit" class="btn btn-blue">Enter Dashboard</button>
     </form>
 
     <form id="signupForm">
-        <div id="signupAlert" class="alert-box">⚠️ Account Registry is currently active.</div>
-        <div class="input-group"><label>Full Name</label><input type="text" id="regFullName" required></div>
-        <div class="input-group"><label>Username</label><input type="text" id="regUsername" required></div>
-        <div class="input-group"><label>Email Address</label><input type="email" id="regEmail" required></div>
-        <div class="input-group"><label>Phone Number</label><input type="tel" id="regPhone" placeholder="07..." required></div>
+        <div id="signupAlert" class="alert-box">⚠️ <strong>Important:</strong> Your username is required for login.</div>
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="regFullName" placeholder="Full Name" required>
+        </div>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="e.g. DantyzTech" required>
+        </div>
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="example@gmail.com" required>
+        </div>
+        <div class="input-group">
+            <label>Phone Number (+254)</label>
+            <input type="tel" id="regPhone" placeholder="07XXXXXXXX" required>
+        </div>
         <div class="input-group">
             <label>Password</label>
-            <input type="password" id="regPass" required>
+            <input type="password" id="regPass" placeholder="••••••••" required>
             <span class="toggle-password" onclick="togglePass('regPass', this)">SHOW</span>
         </div>
-        <button type="submit" class="btn btn-blue" style="background: var(--accent-red);">Create Account</button>
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-blue" style="background: var(--accent-red); box-shadow: 0 5px 15px rgba(255, 42, 42, 0.4);">Create Account</button>
     </form>
 
     <form id="forgotForm">
-        <div id="forgotAlert" class="alert-box" style="display: block;">🔐 <strong>Recovery:</strong> Authenticate your phone to reset.</div>
+        <div id="forgotAlert" class="alert-box" style="display: block;">🔐 <strong>Recovery:</strong> Enter your registered phone number to authenticate.</div>
         
         <div id="stepVerify">
             <div class="input-group">
-                <label>Registered Phone Number</label>
+                <label>Phone Number</label>
                 <input type="tel" id="recoveryPhone" placeholder="07XXXXXXXX" required>
             </div>
-            <button type="button" class="btn btn-yellow" onclick="verifyPhone()">Verify Number</button>
+            <button type="button" class="btn btn-blue" style="background: var(--warning-yellow); color: black; box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);" onclick="verifyPhone()">Authenticate Number</button>
         </div>
 
         <div id="stepReset" style="display: none;">
             <div class="input-group">
                 <label>New Password</label>
-                <input type="password" id="newPassword" placeholder="••••••••">
+                <input type="password" id="newPassword" placeholder="••••••••" required>
+                <span class="toggle-password" onclick="togglePass('newPassword', this)">SHOW</span>
             </div>
-            <button type="submit" class="btn btn-blue">Update & Login</button>
+            <button type="submit" class="btn btn-blue" style="background: var(--accent-red);">Update & Login Now</button>
         </div>
 
         <p style="text-align: center; font-size: 0.8rem; margin-top: 15px;">
@@ -162,8 +199,46 @@
 </div>
 
 <script>
-    let verifiedPhone = "";
+    // Toggle Password Visibility
+    function togglePass(inputId, element) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            element.textContent = "HIDE";
+        } else {
+            input.type = "password";
+            element.textContent = "SHOW";
+        }
+    }
 
+    // Switch between Forms
+    function showForm(type) {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const forgotForm = document.getElementById('forgotForm');
+        const tabs = document.getElementById('authTabs');
+        
+        loginForm.classList.toggle('active', type === 'login');
+        signupForm.classList.toggle('active', type === 'signup');
+        forgotForm.classList.toggle('active', type === 'forgot');
+        
+        document.getElementById('loginTab').classList.toggle('active', type === 'login');
+        document.getElementById('signupTab').classList.toggle('active', type === 'signup');
+        
+        tabs.style.display = (type === 'forgot') ? 'none' : 'flex';
+        document.getElementById('signupAlert').style.display = (type === 'signup') ? 'block' : 'none';
+    }
+
+    // Load Remembered User
+    window.onload = () => {
+        const savedUser = localStorage.getItem('rememberedUser');
+        if (savedUser) {
+            document.getElementById('loginUser').value = savedUser;
+            document.getElementById('rememberMe').checked = true;
+        }
+    };
+
+    // --- NEW: USERNAME CLICK ALERT ---
     function handleUsernameClick() {
         const val = document.getElementById('loginUser').value;
         if(!val) {
@@ -172,77 +247,134 @@
         }
     }
 
-    function togglePass(id, el) {
-        const x = document.getElementById(id);
-        x.type = x.type === "password" ? "text" : "password";
-        el.textContent = x.type === "password" ? "SHOW" : "HIDE";
-    }
+    // --- ORIGINAL LOGIN ACTION ---
+    document.getElementById('loginForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const identifier = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
+        const remember = document.getElementById('rememberMe').checked;
 
-    function showForm(type) {
-        document.getElementById('loginForm').classList.toggle('active', type === 'login');
-        document.getElementById('signupForm').classList.toggle('active', type === 'signup');
-        document.getElementById('forgotForm').classList.toggle('active', type === 'forgot');
-        document.getElementById('authTabs').style.display = (type === 'forgot') ? 'none' : 'flex';
-    }
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: identifier, password: password })
+            });
 
-    // AUTHENTICATE PHONE
+            if (response.status === 200) {
+                if (remember) {
+                    localStorage.setItem('rememberedUser', identifier);
+                } else {
+                    localStorage.removeItem('rememberedUser');
+                }
+                localStorage.setItem('activeSession', identifier);
+                window.location.href = "home.html";
+            } else if (response.status === 404) {
+                alert("❌ Account not found. Please check your username/email.");
+            } else {
+                alert("❌ Incorrect password. Try again.");
+            }
+        } catch (err) {
+            alert("⚠️ Connection Error: Is your database online?");
+        }
+    };
+
+    // --- ORIGINAL SIGNUP ACTION ---
+    document.getElementById('signupForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('regPass').value;
+        const confirm = document.getElementById('confirmPass').value;
+        
+        if (pass !== confirm) {
+            alert("❌ Passwords do not match!");
+            return;
+        }
+
+        const userData = {
+            full_name: document.getElementById('regFullName').value,
+            username: document.getElementById('regUsername').value,
+            email: document.getElementById('regEmail').value,
+            phone: document.getElementById('regPhone').value,
+            password: pass
+        };
+
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+
+            if (response.ok) {
+                alert("✅ Account created! You can now log in.");
+                showForm('login');
+            } else {
+                alert("❌ Registration failed. Username or Email might be taken.");
+            }
+        } catch (err) {
+            alert("⚠️ Signup failed. Check your server.");
+        }
+    };
+
+    // --- NEW: REFACTORED FORGOT PASSWORD ACTION ---
+    let verifiedPhone = ""; // Store phone globally for step 2
+
+    // Step 1: Verify Phone
     async function verifyPhone() {
         const phone = document.getElementById('recoveryPhone').value;
+        if (!phone) {
+            alert("Please enter a phone number.");
+            return;
+        }
+
         try {
-            const res = await fetch('/api/forgot-password', {
+            const response = await fetch('/api/forgot-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: phone })
             });
 
-            if (res.ok) {
+            if (response.ok) {
                 verifiedPhone = phone;
+                // Swap UI
                 document.getElementById('stepVerify').style.display = 'none';
                 document.getElementById('stepReset').style.display = 'block';
-                document.getElementById('forgotAlert').innerHTML = "✅ <strong>Identity Confirmed.</strong> Enter new password.";
+                
+                const alertBox = document.getElementById('forgotAlert');
+                alertBox.innerHTML = "✅ <strong>Authenticated!</strong> Set your new password below.";
+                alertBox.style.borderColor = "var(--primary-blue)";
+                alertBox.style.color = "white";
             } else {
-                alert("❌ Phone number not found. The database was just updated; please ensure you are using the number registered during signup.");
+                // Database update message added here
+                alert("❌ Phone number not found. The database was just updated; please ensure you are using the exact number registered.");
             }
-        } catch (e) { alert("⚠️ Server connection failed."); }
+        } catch (err) {
+            alert("⚠️ Error: Backend unreachable.");
+        }
     }
 
-    // UPDATE PASSWORD & LOGIN
+    // Step 2: Submit New Password & Login
     document.getElementById('forgotForm').onsubmit = async function(e) {
         e.preventDefault();
         const newPass = document.getElementById('newPassword').value;
+
         try {
-            const res = await fetch('/api/update-password', {
+            const response = await fetch('/api/update-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: verifiedPhone, password: newPass })
             });
 
-            if (res.ok) {
-                alert("🚀 Password Reset Successful! Logging in...");
+            if (response.ok) {
+                alert("🚀 Password Updated! Logging you in...");
                 localStorage.setItem('activeSession', verifiedPhone);
                 window.location.href = "home.html";
-            }
-        } catch (e) { alert("⚠️ Update failed."); }
-    };
-
-    // LOGIN ACTION
-    document.getElementById('loginForm').onsubmit = async function(e) {
-        e.preventDefault();
-        const user = document.getElementById('loginUser').value;
-        const pass = document.getElementById('loginPass').value;
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
-            });
-            if (res.ok) {
-                localStorage.setItem('activeSession', user);
-                window.location.href = "home.html";
             } else {
-                alert("❌ Login Failed. If you forgot your details, use the recovery option.");
+                alert("❌ Failed to update password. Please try again.");
             }
-        } catch (e) { alert("⚠️ Connection Error."); }
+        } catch (err) {
+            alert("⚠️ Connection Error during update.");
+        }
     };
 </script>
 </body>
