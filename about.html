@@ -94,6 +94,194 @@
 
         /* --- Updated Highlight Box with Faint Background --- */
         .highlight-box {
+            position: relative; 
+            background: #f0f4f8;
+            padding: 40px 30px;
+            border-radius: 15px;
+            border-left: 10px solid var(--primary-blue);
+            text-align: left;
+            margin-top: 30px;
+            overflow: hidden; 
+        }
+
+        .highlight-box::before {
+            content: "";
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background-image: url('images/Dantyz.png'); 
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; 
+            z-index: 0;
+        }
+
+        .highlight-box > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-orange);
+            font-weight: bold;
+        }
+
+        /* NEW STYLE: Information Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            transition: 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-orange);
+        }
+
+        .info-card h4 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
+    <h1>ABOUT US</h1>
+</header>
+
+<nav>
+    <a href="home.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<section class="details-section">
+    <h2> We are DAN74TECH MEDIA 👋</h2>
+    <h3>ICT Technicians | Android Developers | Creative Media Strategists</h3>
+    <p><strong>Location:</strong> Meru, Kenya 🇰🇪</p>
+    <p><strong>Focus:</strong> Engineering digital systems and professional brand identities.</p>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 40px 0;">
+
+    <div class="highlight-box">
+        <h2>🚀 <a href="https://whatsapp.com/channel/0029VbCBaqjLo4hpbjPPNm2r" class="about-link" target="_blank">About Us</a></h2>
+        <p>We are specialized ICT Technicians who thrive at the intersection of technical logic and creative design. Our expertise ranges from deep-level hardware maintenance and network security to building full-stack mobile applications and websites.</p>
+        <p>Under our brand <strong>Dan74tech Media</strong> (or <strong>dantyz Media</strong>), We coordinate digital communications, design professional branding, edit high-quality video content for musical and corporate projects and build professional user friendly applications and websites.</p>
+    </div>
+
+    <!-- NEW SECTION: MISSION & VISION -->
+    <div class="info-grid">
+        <div class="info-card">
+            <h4>Our Mission</h4>
+            <p>To bridge the gap between complex technology and user-friendly digital experiences through innovative software development and creative media solutions.</p>
+        </div>
+        <div class="info-card">
+            <h4>Our Vision</h4>
+            <p>To become a leading tech hub in Kenya, empowering businesses with robust IT infrastructure and a modern digital presence that speaks excellence.</p>
+        </div>
+    </div>
+
+    <!-- NEW SECTION: CORE VALUES -->
+    <div style="margin-top: 60px;">
+        <h2>🛠️ Why Work With Us?</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>Technical Precision</h4>
+                <p>We don't just fix problems; we engineer long-term solutions. From database architecture to network persistence, we ensure every detail is optimized.</p>
+            </div>
+            <div class="info-card">
+                <h4>Creative Strategy</h4>
+                <p>Technology needs to look good. We blend ICT expertise with high-end media production to give your brand a professional, "live-ready" look.</p>
+            </div>
+            <div class="info-card">
+                <h4>Local Commitment</h4>
+                <p>Based in Meru, we are dedicated to supporting the local community and student organizations through digital literacy and professional branding.</p>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<footer>
+    <div class="footer-grid">
+        <div style="text-align: left;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
+            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+        </div>
+        <div style="text-align: center;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
+            <p style="margin: 15px 0;">
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
+                   🚀 View Technical GitHub
+                </a>
+            </p>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
+    </div>
+</footer>
+
+</body>
+</html>
+        .details-section h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--primary-blue); 
+            text-transform: uppercase; 
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .details-section h3 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .details-section p {
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* --- Updated Highlight Box with Faint Background --- */
+        .highlight-box {
             position: relative; /* Necessary to contain the background */
             background: #f0f4f8;
             padding: 40px 30px;
