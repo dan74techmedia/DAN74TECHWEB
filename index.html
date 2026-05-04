@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | AUTHENTICATION</title>
+    <title>DAN74TECH MEDIA | Login/Sign Up</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -71,6 +71,240 @@
             border-radius: 10px; color: white; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: 0.3s;
         }
         input:focus { border-color: var(--warning-yellow); background: rgba(255,255,255,0.1); box-shadow: 0 0 12px rgba(255, 204, 0, 0.2); }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: #888;
+            font-size: 0.8rem;
+            font-weight: bold;
+            user-select: none;
+        }
+        .toggle-password:hover { color: var(--warning-yellow); }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--warning-yellow);
+            text-decoration: none;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .btn {
+            width: 100%; padding: 16px; border: none; border-radius: 10px; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; transition: 0.4s; margin-top: 10px;
+        }
+        .btn-blue { background: var(--primary-blue); color: white; box-shadow: 0 5px 15px rgba(0, 68, 255, 0.4); }
+        .btn-blue:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 68, 255, 0.5); }
+
+        .alert-box {
+            background: rgba(255, 204, 0, 0.1); border: 1px solid var(--warning-yellow); color: var(--warning-yellow);
+            padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px; display: none;
+        }
+    </style>
+</head>
+
+<meta name="description" content="DAN74TECH MEDIA - Expert Graphic Design, Web Development, and IT Consultancy in Meru, Kenya.">
+<meta name="keywords" content="ICT Meru, Web Design Kenya, Dan74Tech, Graphic Design Meru">
+<meta property="og:title" content="DAN74TECH MEDIA | AUTHENTICATION">
+<meta property="og:description" content="Your One Stop ICT Solutions.">
+<meta property="og:image" content="https://dan74techweb.onrender.com/images/logo.png">
+
+<body>
+
+<div class="auth-container">
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
+    <h1>DAN74TECH SITE</h1>
+    <p class="subtitle">Your One Stop ICT Solutions</p>
+
+    <div class="tabs" id="authTabs">
+        <div class="tab active" id="loginTab" onclick="showForm('login')">LOGIN</div>
+        <div class="tab" id="signupTab" onclick="showForm('signup')">SIGN UP</div>
+    </div>
+
+    <form id="loginForm" class="active">
+        <div class="input-group">
+            <label>Username or Email</label>
+            <input type="text" id="loginUser" placeholder="DantyzTech or email@gmail.com" required>
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="••••••••" required>
+            <span class="toggle-password" onclick="togglePass('loginPass')">SHOW</span>
+        </div>
+        <a href="#" class="forgot-link" onclick="showForm('forgot')">Forgot Password?</a>
+        <button type="submit" class="btn btn-blue">Enter Dashboard</button>
+    </form>
+
+    <form id="signupForm">
+        <div id="signupAlert" class="alert-box">⚠️ <strong>Important:</strong> Your username is required for login.</div>
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="regFullName" placeholder="Full Name 🙏" required>
+        </div>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="e.g. DantyzTech" required>
+        </div>
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="example@gmail.com" required>
+        </div>
+        <div class="input-group">
+            <label>Phone Number (+254)</label>
+            <input type="tel" id="regPhone" placeholder="07XXXXXXXX" required>
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="regPass" placeholder="••••••••" required>
+            <span class="toggle-password" onclick="togglePass('regPass')">SHOW</span>
+        </div>
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-blue" style="background: var(--accent-red); box-shadow: 0 5px 15px rgba(255, 42, 42, 0.4);">Create Account</button>
+    </form>
+
+    <form id="forgotForm">
+        <div class="alert-box" style="display: block;">🔐 <strong>Recovery:</strong> Enter your registered phone number to authenticate.</div>
+        <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" id="recoveryPhone" placeholder="07XXXXXXXX" required>
+        </div>
+        <button type="submit" class="btn btn-blue" style="background: var(--warning-yellow); color: black; box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);">Send Reset Code</button>
+        <p style="text-align: center; font-size: 0.8rem; margin-top: 15px;">
+            <a href="#" style="color: white; text-decoration: none;" onclick="showForm('login')">← Back to Login</a>
+        </p>
+    </form>
+</div>
+
+<script>
+    function togglePass(id) {
+        const input = document.getElementById(id);
+        const trigger = input.nextElementSibling;
+        if (input.type === "password") {
+            input.type = "text";
+            trigger.textContent = "HIDE";
+        } else {
+            input.type = "password";
+            trigger.textContent = "SHOW";
+        }
+    }
+
+    function showForm(type) {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const forgotForm = document.getElementById('forgotForm');
+        const tabs = document.getElementById('authTabs');
+        
+        loginForm.classList.toggle('active', type === 'login');
+        signupForm.classList.toggle('active', type === 'signup');
+        forgotForm.classList.toggle('active', type === 'forgot');
+        
+        document.getElementById('loginTab').classList.toggle('active', type === 'login');
+        document.getElementById('signupTab').classList.toggle('active', type === 'signup');
+        
+        tabs.style.display = (type === 'forgot') ? 'none' : 'flex';
+        document.getElementById('signupAlert').style.display = (type === 'signup') ? 'block' : 'none';
+    }
+
+    // LOGIN ACTION (Fixed to ensure key matches DB expectations)
+    document.getElementById('loginForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const userVal = document.getElementById('loginUser').value; 
+        const passVal = document.getElementById('loginPass').value;
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // We send it as 'username' so your DB fetch doesn't break
+                body: JSON.stringify({ username: userVal, password: passVal })
+            });
+
+            if (response.status === 200) {
+                const data = await response.json();
+                // Save info locally so home.html can fetch it
+                localStorage.setItem('currentUser', userVal);
+                window.location.href = "home.html";
+            } else if (response.status === 404) {
+                alert("❌ Account not found! Please check your details or sign up.");
+            } else {
+                alert("❌ Incorrect password. Try again.");
+            }
+        } catch (err) {
+            alert("⚠️ Connection Error: Check if your server is running.");
+        }
+    };
+
+    // SIGNUP ACTION
+    document.getElementById('signupForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('regPass').value;
+        const confirm = document.getElementById('confirmPass').value;
+        
+        if (pass !== confirm) {
+            alert("❌ Passwords do not match!");
+            return;
+        }
+
+        const userData = {
+            full_name: document.getElementById('regFullName').value,
+            username: document.getElementById('regUsername').value,
+            email: document.getElementById('regEmail').value,
+            phone: document.getElementById('regPhone').value,
+            password: pass
+        };
+
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+
+            if (response.ok) {
+                alert("✅ Success! You can now log in.");
+                showForm('login');
+            } else {
+                alert("❌ Registration failed. Try a different username/email.");
+            }
+        } catch (err) {
+            alert("⚠️ Signup failed. Check your database connection.");
+        }
+    };
+
+    // FORGOT PASSWORD ACTION
+    document.getElementById('forgotForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const phone = document.getElementById('recoveryPhone').value;
+
+        try {
+            const response = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+
+            if (response.ok) {
+                alert("✅ Authenticated! A reset code has been sent to " + phone);
+            } else {
+                alert("❌ Phone number not found in our records.");
+            }
+        } catch (err) {
+            alert("⚠️ Error: Backend not reachable.");
+        }
+    };
+</script>
+</body>
+</html>
 
         /* NEW: Password Toggle Styling */
         .toggle-password {
