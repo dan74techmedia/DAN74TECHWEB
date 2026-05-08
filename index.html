@@ -238,14 +238,6 @@
         }
     };
 
-    // --- NEW: USERNAME CLICK ALERT ---
-    function handleUsernameClick() {
-        const val = document.getElementById('loginUser').value;
-        if(!val) {
-            const move = confirm("Don't have an account? Click OK to create a new one now.");
-            if(move) showForm('signup');
-        }
-    }
 
     // --- ORIGINAL LOGIN ACTION ---
     document.getElementById('loginForm').onsubmit = async function(e) {
