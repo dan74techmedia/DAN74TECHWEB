@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAN74TECH MEDIA | PRO ADMIN</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-blue: #0044ff;
@@ -67,158 +65,61 @@
             width: 100%; padding: 14px; border: none; border-radius: 8px;
             font-weight: bold; cursor: pointer; text-transform: uppercase;
             transition: 0.3s; color: white;
-            display: inline-block;
-            text-align: center;
-            box-sizing: border-box;
+            display: inline-block; text-align: center; box-sizing: border-box;
         }
         
         .btn-blue { background: var(--primary-blue); }
         .btn-blue:hover { background: #0033cc; transform: translateY(-2px); }
-
         .btn-save { background: var(--success-green); margin-top: 10px; }
         .btn-save:hover { background: #1da851; }
-
         .btn-add { background: var(--accent-orange); color: black; margin-bottom: 20px; }
         .btn-add:hover { background: #e08800; }
-        
         .btn-danger { background: var(--accent-red); margin-top: 5px; }
         .btn-danger:hover { background: #cc1f1f; }
 
         /* --- DASHBOARD LAYOUT --- */
         #adminDashboard { display: none; }
-
         .dashboard-header {
-            background: #111;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #111; padding: 20px; display: flex;
+            justify-content: space-between; align-items: center;
             border-bottom: 2px solid var(--primary-blue);
         }
+        .dashboard-header h1 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: white; }
+        .logout-btn { background: var(--accent-red); padding: 8px 15px; border-radius: 5px; color: white; font-size: 0.9rem; font-weight: bold; cursor: pointer; border: none; }
 
-        .dashboard-header h1 {
-            font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: white;
-        }
+        .dashboard-container { display: flex; min-height: calc(100vh - 75px); }
+        .sidebar { width: 280px; background: #111; padding: 20px 0; border-right: 1px solid #222; }
+        .nav-item { padding: 15px 20px; color: #aaa; cursor: pointer; font-weight: 600; transition: 0.3s; border-left: 3px solid transparent; font-size: 0.9rem; }
+        .nav-item:hover, .nav-item.active { background: rgba(0, 68, 255, 0.1); color: white; border-left: 3px solid var(--primary-blue); }
 
-        .logout-btn {
-            background: var(--accent-red); padding: 8px 15px; border-radius: 5px;
-            color: white; text-decoration: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; border: none;
-        }
-
-        .dashboard-container {
-            display: flex;
-            min-height: calc(100vh - 75px);
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 280px;
-            background: #111;
-            padding: 20px 0;
-            border-right: 1px solid #222;
-        }
-
-        .nav-item {
-            padding: 15px 20px;
-            color: #aaa;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: rgba(0, 68, 255, 0.1);
-            color: white;
-            border-left: 3px solid var(--primary-blue);
-        }
-
-        /* MAIN CONTENT */
-        .content {
-            flex: 1;
-            padding: 30px;
-            background: #050505;
-            overflow-y: auto;
-        }
-
+        .content { flex: 1; padding: 30px; background: #050505; overflow-y: auto; }
         .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* EDIT CARDS */
-        .edit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            align-items: start;
-        }
-
-        .edit-card {
-            background: var(--card-bg);
-            border: 1px solid #222;
-            padding: 20px;
-            border-radius: 12px;
-            border-top: 3px solid var(--accent-orange);
-            position: relative;
-        }
-
+        .edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; align-items: start; }
+        .edit-card { background: var(--card-bg); border: 1px solid #222; padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-orange); position: relative; }
         .edit-card h3 { margin-top: 0; color: var(--accent-orange); font-family: 'Montserrat'; }
-
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; text-transform: uppercase; }
-        
         textarea { resize: vertical; min-height: 80px; }
 
-        /* TABLE STYLES */
-        .data-table {
-            width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden;
-        }
-        .data-table th, .data-table td {
-            padding: 15px; text-align: left; border-bottom: 1px solid #222;
-        }
+        .data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
         .data-table th { background: #111; color: var(--primary-blue); font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.8rem; }
         .data-table tr:hover { background: rgba(255,255,255,0.02); }
 
-        /* IMAGE PREVIEW */
-        .image-preview {
-            width: 100%; height: 150px; background: #111; border: 1px solid #333; border-radius: 8px;
-            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
+        .image-preview { width: 100%; height: 150px; background: #111; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .image-preview img { max-width: 100%; max-height: 100%; object-fit: cover; }
 
-        /* TOAST */
-        #toast {
-            position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white;
-            padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transform: translateX(150%); transition: transform 0.4s ease; z-index: 9999;
-        }
+        #toast { position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateX(150%); transition: transform 0.4s ease; z-index: 9999; }
         #toast.show { transform: translateX(0); }
         #toast.error-toast { background: var(--accent-red); }
 
-        .upload-row {
-            display: flex;
-            gap: 10px;
-        }
-        .upload-row input[type="file"] {
-            display: none;
-        }
-        .upload-label {
-            background: #222;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-align: center;
-            cursor: pointer;
-            border: 1px dashed var(--primary-blue);
-            width: 100%;
-            box-sizing: border-box;
-            display: inline-block;
-            color: #ccc;
-        }
+        .upload-row { display: flex; gap: 10px; }
+        .upload-row input[type="file"] { display: none; }
+        .upload-label { background: #222; padding: 12px; border-radius: 8px; font-size: 0.8rem; text-align: center; cursor: pointer; border: 1px dashed var(--primary-blue); width: 100%; box-sizing: border-box; display: inline-block; color: #ccc; }
         .upload-label:hover { background: #333; color: white; }
-
     </style>
 </head>
 <body>
@@ -229,7 +130,7 @@
             <input type="text" id="adminUser" placeholder="Admin Username">
             <input type="password" id="adminPass" placeholder="••••••••">
             <button class="btn btn-blue" onclick="attemptLogin()">Access Dashboard</button>
-            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 10px;">Access Denied, Dantyz!</p>
+            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 10px;">Access Denied, System Connection Aborted!</p>
         </div>
     </div>
 
@@ -245,82 +146,56 @@
                 <div class="nav-item" id="nav-works" onclick="switchTab('works')">🎬 Featured Works</div>
                 <div class="nav-item" id="nav-contacts" onclick="switchTab('contacts')">✉️ User Inquiries</div>
                 <div class="nav-item" id="nav-users" onclick="switchTab('users')">👥 Login Database</div>
-                <div class="nav-item" id="nav-site" onclick="switchTab('site')">⚙️ Site Settings</div>
             </div>
 
             <div class="content">
-                
                 <div id="tab-services" class="tab-content active">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin: 0;">Service Offerings</h2>
-                    </div>
-                    
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom:20px;">Service Offerings</h2>
                     <div class="edit-grid">
                         <div class="edit-card" style="border-top-color: var(--primary-blue);">
                             <h3 style="color: var(--primary-blue);">Inject New Service Entry</h3>
-                            <div class="form-group">
-                                <label>Service Title</label>
-                                <input type="text" id="svcTitle" placeholder="e.g., UI/UX Auditing">
-                            </div>
-                            <div class="form-group">
-                                <label>Price Range Text</label>
-                                <input type="text" id="svcPrice" placeholder="e.g., KSH 1,000 - KSH 3,000">
-                            </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="svcDesc" placeholder="Enter service highlights..."></textarea>
-                            </div>
+                            <div class="form-group"><label>Service Title</label><input type="text" id="svcTitle" placeholder="e.g., Android System Architecture"></div>
+                            <div class="form-group"><label>Price Range Text</label><input type="text" id="svcPrice" placeholder="e.g., KSH 5,000"></div>
+                            <div class="form-group"><label>Description</label><textarea id="svcDesc" placeholder="Enter specifications..."></textarea></div>
                             <div class="form-group">
                                 <label>Picture Asset Source</label>
                                 <div class="upload-row">
-                                    <label class="upload-label" for="svcFile">📁 Upload Image Directly</label>
+                                    <label class="upload-label" onclick="document.getElementById('svcFile').click()">📁 Cloudinary Storage Engine Upload</label>
                                     <input type="file" id="svcFile" accept="image/*" onchange="handleDirectUpload(this, 'svcImg')">
                                 </div>
-                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Target URL">
+                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Live URL">
                             </div>
-                            <div class="form-group">
-                                <label>Internal Navigation Link Target</label>
-                                <input type="text" id="svcLink" value="contact.html">
-                            </div>
-                            <button class="btn btn-blue" onclick="submitService()">Load into Local Database</button>
+                            <div class="form-group"><label>Navigation Target</label><input type="text" id="svcLink" value="contact.html"></div>
+                            <button class="btn btn-blue" onclick="submitService()">Load Live System Entry</button>
                         </div>
-
                         <div style="display: contents;" id="servicesGrid"></div>
                     </div>
                 </div>
 
                 <div id="tab-works" class="tab-content">
                     <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">Featured Tasks Portfolio</h2>
-                    
                     <div class="edit-grid">
                         <div class="edit-card" style="border-top-color: var(--primary-blue);">
                             <h3 style="color: var(--primary-blue);">Inject Production Item</h3>
-                            <div class="form-group">
-                                <label>Project Name</label>
-                                <input type="text" id="portTitle" placeholder="e.g., Commercial Promo Video">
-                            </div>
-                            <div class="form-group">
-                                <label>Description Details</label>
-                                <textarea id="portDesc" placeholder="Describe the deployment..."></textarea>
-                            </div>
+                            <div class="form-group"><label>Project Name</label><input type="text" id="portTitle" placeholder="e.g., Commercial Promo Design"></div>
+                            <div class="form-group"><label>Description Scope</label><textarea id="portDesc" placeholder="Enter implementation metrics..."></textarea></div>
                             <div class="form-group">
                                 <label>Media Source Type</label>
                                 <select id="portType">
-                                    <option value="image">Image Asset</option>
+                                    <option value="image">Cloudinary Image Asset</option>
                                     <option value="video">YouTube Link Target</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Asset Target URL</label>
+                                <label>Asset Resource Pointer URL</label>
                                 <div class="upload-row">
-                                    <label class="upload-label" for="portFile">📁 Upload Image Directly</label>
+                                    <label class="upload-label" onclick="document.getElementById('portFile').click()">📁 Stream File to Cloudinary</label>
                                     <input type="file" id="portFile" accept="image/*" onchange="handleDirectUpload(this, 'portUrl')">
                                 </div>
-                                <input type="text" id="portUrl" style="margin-top: 8px;" placeholder="https://youtube.com/watch?v=... or Image URL">
+                                <input type="text" id="portUrl" style="margin-top: 8px;" placeholder="Asset Target Production Link">
                             </div>
                             <button class="btn btn-blue" onclick="submitPortfolio()">Queue Live Dataset</button>
                         </div>
-
                         <div style="display: contents;" id="portfolioGrid"></div>
                     </div>
                 </div>
@@ -331,7 +206,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Date Sent</th>
                                     <th>Client Identity</th>
                                     <th>Contact Detail</th>
                                     <th>Project Description</th>
@@ -344,7 +219,16 @@
                 </div>
 
                 <div id="tab-users" class="tab-content">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">Saved Login Database</h2>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">Saved Login Users Database</h2>
+                    <div class="edit-grid" style="margin-bottom: 30px;">
+                        <div class="edit-card" style="border-top-color: var(--primary-blue);">
+                            <h3 style="color: var(--primary-blue);">Create New System Admin</h3>
+                            <div class="form-group"><label>Username</label><input type="text" id="newUsername" placeholder="Enter username"></div>
+                            <div class="form-group"><label>Email Address</label><input type="email" id="newEmail" placeholder="name@tech.com"></div>
+                            <div class="form-group"><label>System Password</label><input type="password" id="newPassword" placeholder="••••••••"></div>
+                            <button class="btn btn-blue" onclick="createUser()">Add System Operator</button>
+                        </div>
+                    </div>
                     <div class="edit-card" style="width: 100%; border-top: none; max-width: 100%;">
                         <table class="data-table">
                             <thead>
@@ -352,25 +236,11 @@
                                     <th>User ID</th>
                                     <th>Username / Profile</th>
                                     <th>Email Destination Address</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="userTableBody"></tbody>
                         </table>
-                    </div>
-                </div>
-
-                <div id="tab-site" class="tab-content">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">System Settings</h2>
-                    <div class="edit-grid">
-                        <div class="edit-card">
-                            <h3>Database Connection (Local Persistence)</h3>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <div style="color: var(--success-green); font-weight: bold;">Connected to 'localStorage_db'</div>
-                            </div>
-                            <button class="btn btn-save" onclick="syncSystemData()">Sync All Data</button>
-                            <button class="btn btn-danger" onclick="clearData()" style="margin-top: 10px;">Clear All System Data</button>
-                        </div>
                     </div>
                 </div>
 
@@ -381,26 +251,31 @@
     <div id="toast">✅ Action Successful!</div>
 
     <script>
-        // --- DATA PERSISTENCE LAYER ---
-        const DB = {
-            save: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
-            get: (key) => JSON.parse(localStorage.getItem(key)) || []
-        };
-
-        // --- AUTH ---
+        // --- SECURE ROUTING SESSION VERIFICATION ---
         async function attemptLogin() {
             const username = document.getElementById('adminUser').value;
             const password = document.getElementById('adminPass').value;
             const errorElement = document.getElementById('loginError');
 
-            if(username === "Dantyz" || username === "admin") {
-                errorElement.style.display = 'none';
-                document.getElementById('adminLogin').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'block';
-                loadAll();
-                showToast("🚀 Authenticated Successfully. Welcome, Dantyz!");
-            } else {
-                errorElement.style.display = 'block';
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    errorElement.style.display = 'none';
+                    document.getElementById('adminLogin').style.display = 'none';
+                    document.getElementById('adminDashboard').style.display = 'block';
+                    showToast("🚀 System Control Online. Welcome back, Dantyz!");
+                    loadAll();
+                } else {
+                    errorElement.style.display = 'block';
+                }
+            } catch (err) {
+                showToast("System connectivity fault encountered.", true);
             }
         }
 
@@ -413,162 +288,287 @@
             document.getElementById('nav-' + tabId).classList.add('active');
         }
 
-        // --- DIRECT IMAGE UPLOAD PREVIEW SYSTEM ---
-        function handleDirectUpload(fileInput, textInputId) {
+        // --- PRODUCTION DIRECT STREAM CLOUDINARY ENGINE UPLOAD ---
+        async function handleDirectUpload(fileInput, textInputId) {
             if (!fileInput.files || !fileInput.files[0]) return;
             const file = fileInput.files[0];
-            const reader = new FileReader();
+            const formData = new FormData();
+            formData.append('file', file);
 
-            showToast("⏳ Processing image...");
+            showToast("⏳ Transmitting asset data matrix to Cloudinary...");
 
-            reader.onload = function(e) {
-                document.getElementById(textInputId).value = e.target.result;
-                showToast("📸 Image converted and assigned!");
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById(textInputId).value = data.url;
+                    showToast("📸 Asset uploaded successfully to Cloudinary secure cloud storage!");
+                } else {
+                    showToast("Asset processing execution fault.", true);
+                }
+            } catch (err) {
+                showToast("Server storage interface failure.", true);
             }
-            reader.readAsDataURL(file);
         }
 
-        // --- SERVICES CRUDS ---
-        function loadServices() {
+        // --- SERVICES DATA MANAGEMENT LAYER ---
+        async function loadServices() {
             const grid = document.getElementById('servicesGrid');
-            const services = DB.get('services');
-            grid.innerHTML = '';
-            
-            services.forEach(svc => {
-                const card = document.createElement('div');
-                card.className = 'edit-card';
-                card.innerHTML = `
-                    <h3>${svc.title}</h3>
-                    <div class="form-group">
-                        <label>Pricing Flag</label>
-                        <input type="text" value="${svc.price_range}" id="edit-price-${svc.id}">
-                    </div>
-                    <div class="form-group">
-                        <label>Icon/Image Destination</label>
-                        <input type="text" value="${svc.image_url}" id="edit-img-${svc.id}">
-                    </div>
-                    <div class="form-group">
-                        <label>Service Description</label>
-                        <textarea rows="3" id="edit-desc-${svc.id}">${svc.description}</textarea>
-                    </div>
-                    <button class="btn btn-save" onclick="updateService(${svc.id})">Save Changes</button>
-                    <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Entry</button>
-                `;
-                grid.appendChild(card);
-            });
+            try {
+                const response = await fetch('/api/services');
+                const services = await response.json();
+                grid.innerHTML = '';
+                
+                services.forEach(svc => {
+                    const card = document.createElement('div');
+                    card.className = 'edit-card';
+                    card.innerHTML = `
+                        <h3>${svc.title}</h3>
+                        <div class="image-preview">
+                            <img src="${svc.image_url || 'https://via.placeholder.com/150'}" alt="Asset view">
+                        </div>
+                        <div class="form-group">
+                            <label>Pricing Matrix Flags</label>
+                            <input type="text" value="${svc.price_range}" id="edit-svc-price-${svc.id}">
+                        </div>
+                        <div class="form-group">
+                            <label>Asset Cloud Link Target</label>
+                            <input type="text" value="${svc.image_url}" id="edit-svc-img-${svc.id}">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Description Specifications</label>
+                            <textarea rows="3" id="edit-svc-desc-${svc.id}">${svc.description}</textarea>
+                        </div>
+                        <button class="btn btn-save" onclick="updateService(${svc.id})">Commit Changes</button>
+                        <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Live System Entry</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch(e) { showToast("Error connecting to live Services data engine.", true); }
         }
 
-        function submitService() {
-            const services = DB.get('services');
-            const newSvc = {
-                id: Date.now(),
+        async function submitService() {
+            const payload = {
                 title: document.getElementById('svcTitle').value,
                 price_range: document.getElementById('svcPrice').value,
                 description: document.getElementById('svcDesc').value,
                 image_url: document.getElementById('svcImg').value,
                 pricing_link: document.getElementById('svcLink').value
             };
-            if(!newSvc.title) return alert("Title required.");
-            services.push(newSvc);
-            DB.save('services', services);
-            showToast('✅ Service Added!');
-            loadServices();
+            if(!payload.title) return alert("System Configuration Error: Title Required.");
+
+            const response = await fetch('/api/services', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if(response.ok) {
+                showToast('✅ Live Service Configured into Neon Engine!');
+                // Clean input fields
+                document.getElementById('svcTitle').value = '';
+                document.getElementById('svcPrice').value = '';
+                document.getElementById('svcDesc').value = '';
+                document.getElementById('svcImg').value = '';
+                loadServices();
+            }
         }
 
-        function updateService(id) {
-            const services = DB.get('services');
-            const idx = services.findIndex(s => s.id === id);
-            services[idx].price_range = document.getElementById(`edit-price-${id}`).value;
-            services[idx].image_url = document.getElementById(`edit-img-${id}`).value;
-            services[idx].description = document.getElementById(`edit-desc-${id}`).value;
-            DB.save('services', services);
-            showToast('🔄 Updated.');
-            loadServices();
+        async function updateService(id) {
+            const payload = {
+                price_range: document.getElementById(`edit-svc-price-${id}`).value,
+                image_url: document.getElementById(`edit-svc-img-${id}`).value,
+                description: document.getElementById(`edit-svc-desc-${id}`).value
+            };
+            const response = await fetch(`/api/services/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if(response.ok) { showToast('🔄 Neon Service Record Matrix Updated.'); loadServices(); }
         }
 
-        function deleteService(id) {
-            let services = DB.get('services');
-            services = services.filter(s => s.id !== id);
-            DB.save('services', services);
-            loadServices();
-            showToast('🗑️ Purged.');
+        async function deleteService(id) {
+            if(!confirm("Purge selected service offering completely from Neon PostgreSQL live metrics?")) return;
+            const response = await fetch(`/api/services/${id}`, { method: 'DELETE' });
+            if(response.ok) { showToast('🗑️ Service Entry Purged.'); loadServices(); }
         }
 
-        // --- PORTFOLIO CRUDS ---
-        function loadPortfolio() {
+        // --- PORTFOLIO DATA MANAGEMENT LAYER ---
+        async function loadPortfolio() {
             const grid = document.getElementById('portfolioGrid');
-            const items = DB.get('portfolio');
-            grid.innerHTML = '';
-            
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'edit-card';
-                card.innerHTML = `
-                    <h3>${item.title}</h3>
-                    <div class="image-preview"><img src="${item.media_url}" alt="Asset"></div>
-                    <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Asset</button>
-                `;
-                grid.appendChild(card);
-            });
+            try {
+                const response = await fetch('/api/portfolio');
+                const items = await response.json();
+                grid.innerHTML = '';
+                
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'edit-card';
+                    card.innerHTML = `
+                        <div class="form-group">
+                            <label>Project Title</label>
+                            <input type="text" value="${item.title}" id="edit-port-title-${item.id}">
+                        </div>
+                        <div class="image-preview">
+                            ${item.media_type === 'video' ? `<p style="font-size:11px; color:var(--accent-orange);">YOUTUBE BROADCAST LINK TARGET</p>` : `<img src="${item.media_url}" alt="Asset">`}
+                        </div>
+                        <div class="form-group">
+                            <label>Asset URL / Destination Resource Location</label>
+                            <input type="text" value="${item.media_url}" id="edit-port-url-${item.id}">
+                        </div>
+                        <div class="form-group">
+                            <label>Scope Description Summary</label>
+                            <textarea rows="2" id="edit-port-desc-${item.id}">${item.description || ''}</textarea>
+                        </div>
+                        <button class="btn btn-save" onclick="updatePortfolio(${item.id})">Commit Changes</button>
+                        <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Live Asset Matrix</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch(e) { showToast("Error connecting to live Portfolio data engine.", true); }
         }
 
-        function submitPortfolio() {
-            const items = DB.get('portfolio');
-            items.push({
-                id: Date.now(),
+        async function submitPortfolio() {
+            const payload = {
                 title: document.getElementById('portTitle').value,
+                description: document.getElementById('portDesc').value,
+                media_type: document.getElementById('portType').value,
                 media_url: document.getElementById('portUrl').value
+            };
+            if(!payload.title || !payload.media_url) return alert("System Configuration Error: Title and Media Target Source Required.");
+
+            const response = await fetch('/api/portfolio', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
             });
-            DB.save('portfolio', items);
-            showToast('🚀 Task queued!');
-            loadPortfolio();
+            if(response.ok) {
+                showToast('🚀 Asset queued and written to cloud storage cluster!');
+                document.getElementById('portTitle').value = '';
+                document.getElementById('portDesc').value = '';
+                document.getElementById('portUrl').value = '';
+                loadPortfolio();
+            }
         }
 
-        function deletePortfolio(id) {
-            let items = DB.get('portfolio');
-            items = items.filter(s => s.id !== id);
-            DB.save('portfolio', items);
-            loadPortfolio();
-            showToast('🗑️ Asset dropped.');
+        async function updatePortfolio(id) {
+            const payload = {
+                title: document.getElementById(`edit-port-title-${id}`).value,
+                media_url: document.getElementById(`edit-port-url-${id}`).value,
+                description: document.getElementById(`edit-port-desc-${id}`).value
+            };
+            const response = await fetch(`/api/portfolio/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if(response.ok) { showToast('🔄 Portfolio Core Dataset Synchronized.'); loadPortfolio(); }
         }
 
-        // --- MOCK READERS ---
-        function loadUsers() {
-            const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = `<tr><td>#001</td><td>Dantyz</td><td>dantyz@tech.com</td></tr>`;
+        async function deletePortfolio(id) {
+            if(!confirm("Drop production file asset sequence from live server cluster storage arrays?")) return;
+            const response = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
+            if(response.ok) { showToast('🗑️ Production Asset Dropped.'); loadPortfolio(); }
         }
 
-        function loadContacts() {
+        // --- CLIENT INQUIRIES MANAGEMENT LAYER ---
+        async function loadContacts() {
             const tbody = document.getElementById('contactTableBody');
-            tbody.innerHTML = `<tr><td>Today</td><td>Test Client</td><td>0700000000</td><td>Demo Project</td><td><button class="logout-btn">Dismiss</button></td></tr>`;
+            try {
+                const response = await fetch('/api/contacts');
+                const contacts = await response.json();
+                tbody.innerHTML = '';
+                
+                contacts.forEach(c => {
+                    const row = document.createElement('tr');
+                    const dateFormatted = new Date(c.created_at).toLocaleDateString();
+                    row.innerHTML = `
+                        <td>${dateFormatted}</td>
+                        <td style="font-weight:600; color:var(--accent-orange);">${c.name}</td>
+                        <td>${c.phone}</td>
+                        <td style="font-size:0.85rem; max-width:300px; color:#ccc;">${c.description}</td>
+                        <td><button class="logout-btn" onclick="dismissContact(${c.id})">Dismiss Log</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch(e) { showToast("Error connecting to live Inquiries data interface.", true); }
         }
 
-        // --- UTILS ---
-        function syncSystemData() {
-            loadAll();
-            showToast("🔄 Data Synced!");
+        async function dismissContact(id) {
+            if(!confirm("Delete this inquiry entry log record from the database storage layer permanently?")) return;
+            const response = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+            if(response.ok) { showToast('✉️ Inbound message dismissed cleanly.'); loadContacts(); }
         }
 
+        // --- SYSTEM ADMIN USERS PROFILE MANAGEMENT LAYER ---
+        async function loadUsers() {
+            const tbody = document.getElementById('userTableBody');
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                tbody.innerHTML = '';
+                
+                users.forEach(u => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>#00${u.id}</td>
+                        <td style="font-weight:600; color:var(--primary-blue);">${u.username}</td>
+                        <td>${u.email}</td>
+                        <td><button class="logout-btn" onclick="deleteUser(${u.id})" ${u.username === 'Dantyz' ? 'disabled style="background:#333; cursor:not-allowed;"' : ''}>Revoke Token</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch(e) { showToast("Error querying active Admin user permissions registry.", true); }
+        }
+
+        async function createUser() {
+            const username = document.getElementById('newUsername').value;
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPassword').value;
+
+            if(!username || !email || !password) return alert("System Configuration Error: Missing Input Parameters.");
+
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+
+            if(response.ok) {
+                showToast("👥 New System Admin Operator Authorized Successfully!");
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newEmail').value = '';
+                document.getElementById('newPassword').value = '';
+                loadUsers();
+            } else {
+                const errData = await response.json();
+                alert(errData.error);
+            }
+        }
+
+        async function deleteUser(id) {
+            if(!confirm("Revoke credentials and access clearance completely for this administrative profile configuration sequence?")) return;
+            const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+            if(response.ok) { showToast('🔒 Security token signature revoked.'); loadUsers(); }
+        }
+
+        // --- CMS CORE SYSTEM GLOBAL INITIALIZER ---
         function loadAll() {
             loadServices();
             loadPortfolio();
-            loadUsers();
             loadContacts();
-        }
-
-        function clearData() {
-            if(confirm("Wipe all locally stored data?")) {
-                localStorage.clear();
-                loadAll();
-                showToast("🗑️ Wiped clean.");
-            }
+            loadUsers();
         }
 
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
+            if(isError) { toast.classList.add('error-toast'); } else { toast.classList.remove('error-toast'); }
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
     </script>
 </body>
