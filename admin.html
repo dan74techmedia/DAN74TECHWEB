@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | PRO ADMIN</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #0044ff;
+            --accent-orange: #ff9900;
+            --accent-red: #ff2a2a;
+            --success-green: #25D366;
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #050505;
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* --- LOGIN OVERLAY --- */
+        #adminLogin {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(-45deg, #001133, #000000, #0a0a0a);
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 68, 255, 0.3);
+            border-top: 4px solid var(--primary-blue);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+        }
+
+        .login-box h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            border-radius: 8px; color: white; font-family: inherit;
+            box-sizing: border-box; outline: none;
+        }
+
+        input:focus { border-color: var(--primary-blue); }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s; color: white;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-blue { background: var(--primary-blue); }
+        .btn-blue:hover { background: #0033cc; transform: translateY(-2px); }
+
+        .btn-save { background: var(--success-green); margin-top: 10px; }
+        .btn-save:hover { background: #1da851; }
+
+        .btn-add { background: var(--accent-orange); color: black; margin-bottom: 20px; }
+
+        /* --- DASHBOARD LAYOUT --- */
+        #adminDashboard { display: none; }
+
+        .dashboard-header {
+            background: #111;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-blue);
+        }
+
+        .dashboard-header h1 {
+            font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: white;
+        }
+
+        .logout-btn {
+            background: var(--accent-red); padding: 8px 15px; border-radius: 5px;
+            color: white; text-decoration: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; border: none;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 75px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: #111;
+            padding: 20px 0;
+            border-right: 1px solid #222;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            color: #aaa;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 68, 255, 0.1);
+            color: white;
+            border-left: 3px solid var(--primary-blue);
+        }
+
+        /* MAIN CONTENT */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background: #050505;
+            overflow-y: auto;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* EDIT CARDS */
+        .edit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .edit-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            padding: 20px;
+            border-radius: 12px;
+            border-top: 3px solid var(--accent-orange);
+            position: relative;
+        }
+
+        .edit-card h3 { margin-top: 0; color: var(--accent-orange); font-family: 'Montserrat'; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        
+        textarea {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333;
+            border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; resize: vertical; outline: none;
+        }
+
+        /* TABLE STYLES */
+        .data-table {
+            width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden;
+        }
+        .data-table th, .data-table td {
+            padding: 15px; text-align: left; border-bottom: 1px solid #222;
+        }
+        .data-table th { background: #111; color: var(--primary-blue); font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.8rem; }
+        .data-table tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* UPLOADER */
+        .image-preview {
+            width: 100%; height: 150px; background: #111; border: 2px dashed #333; border-radius: 8px;
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .image-preview img { max-width: 100%; max-height: 100%; object-fit: cover; }
+
+        /* TOAST */
+        #toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white;
+            padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: translateX(150%); transition: transform 0.4s ease; z-index: 9999;
+        }
+        #toast.show { transform: translateX(0); }
+
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN GATE -->
+    <div id="adminLogin">
+        <div class="login-box">
+            <h2>PRO ADMIN</h2>
+            <input type="text" id="adminUser" placeholder="Admin Username">
+            <input type="password" id="adminPass" placeholder="••••••••">
+            <button class="btn btn-blue" onclick="attemptLogin()">Access Dashboard</button>
+            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 10px;">Access Denied, Dantyz!</p>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="adminDashboard">
+        <header class="dashboard-header">
+            <h1>DAN74TECH | CMS PANEL</h1>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="sidebar">
+                <div class="nav-item active" onclick="switchTab('services')">📋 Manage Services</div>
+                <div class="nav-item" onclick="switchTab('works')">🎬 Featured Works</div>
+                <div class="nav-item" onclick="switchTab('users')">👥 Login Database</div>
+                <div class="nav-item" onclick="switchTab('site')">⚙️ Site Settings</div>
+            </div>
+
+            <div class="content">
+                
+                <!-- SERVICES TAB -->
+                <div id="tab-services" class="tab-content active">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">Service Offerings</h2>
+                        <button class="btn btn-add" style="width: auto; padding: 10px 20px;" onclick="addNewService()">+ Add Service</button>
+                    </div>
+                    
+                    <div class="edit-grid" id="servicesGrid">
+                        <!-- Initial Services -->
+                        <div class="edit-card">
+                            <h3>Graphic Design</h3>
+                            <div class="form-group"><label>Icon/Image</label><input type="text" value="images/graphics.png"></div>
+                            <div class="form-group"><label>Description</label><textarea rows="3">High-impact flyers and branding.</textarea></div>
+                            <button class="btn btn-save" onclick="saveChanges('Graphic Design')">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FEATURED WORKS TAB -->
+                <div id="tab-works" class="tab-content">
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">Featured Tasks Portfolio</h2>
+                    
+                    <div class="edit-grid">
+                        <!-- Uploader Card -->
+                        <div class="edit-card" style="border-top-color: var(--primary-blue);">
+                            <h3>Upload New Task</h3>
+                            <div class="image-preview" id="previewContainer">
+                                <span style="color: #444;">No Image Selected</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Image</label>
+                                <input type="file" id="taskImage" accept="image/*" onchange="previewImage(this)">
+                            </div>
+                            <div class="form-group">
+                                <label>Task Title</label>
+                                <input type="text" id="taskTitle" placeholder="e.g., Corporate Branding">
+                            </div>
+                            <button class="btn btn-blue" onclick="uploadTask()">Publish to Portfolio</button>
+                        </div>
+
+                        <!-- Existing Work -->
+                        <div class="edit-card" style="border-top-color: var(--accent-red);">
+                            <h3>Latest Design</h3>
+                            <div class="image-preview"><img src="images/portfolio1.png" alt="Work"></div>
+                            <button class="btn btn-save" style="background: var(--accent-red);">Delete Work</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USERS TAB -->
+                <div id="tab-users" class="tab-content">
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">Saved Login Database</h2>
+                    <div class="edit-card" style="width: 100%; border-top: none;">
+                        <table class="data-table">
+                            <thead>
+                                tr>
+                                    <th>User ID</th>
+                                    <th>Username / Email</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <tr>
+                                    <td>#001</td>
+                                    <td>dantyz_admin</td>
+                                    <td>Today, 10:45 AM</td>
+                                    <td style="color: var(--success-green);">Active</td>
+                                    <td><button style="background:none; border:none; color:var(--accent-red); cursor:pointer;">Revoke</button></td>
+                                </tr>
+                                <tr>
+                                    <td>#002</td>
+                                    <td>visitor_adams</td>
+                                    <td>May 08, 2026</td>
+                                    <td style="color: #888;">Offline</td>
+                                    <td><button style="background:none; border:none; color:var(--accent-red); cursor:pointer;">Revoke</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SITE SETTINGS -->
+                <div id="tab-site" class="tab-content">
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">System Settings</h2>
+                    <div class="edit-grid">
+                        <div class="edit-card">
+                            <h3>Database Connection (Neon)</h3>
+                            <div class="form-group"><label>Status</label><div style="color: var(--success-green);">Connected to 'dan74tech_db'</div></div>
+                            <div class="form-group"><label>Host</label><input type="text" value="ep-cool-water-123.aws.neon.tech" disabled></div>
+                            <button class="btn btn-save">Re-Sync Data</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">✅ Action Successful!</div>
+
+    <script>
+        // --- LOGIN ---
+        function attemptLogin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            // In production, fetch this from your Render/Neon backend
+            if(user === "admin" && pass === "admin123") {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        // --- TABS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- IMAGE PREVIEW ---
+        function previewImage(input) {
+            const container = document.getElementById('previewContainer');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `<img src="${e.target.result}">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- ADD SERVICE DYNAMICALLY ---
+        function addNewService() {
+            const grid = document.getElementById('servicesGrid');
+            const newCard = document.createElement('div');
+            newCard.className = 'edit-card';
+            newCard.innerHTML = `
+                <h3>New Service</h3>
+                <div class="form-group"><label>Icon/Image Path</label><input type="text" placeholder="images/new.png"></div>
+                <div class="form-group"><label>Description</label><textarea rows="3" placeholder="Describe the service..."></textarea></div>
+                <button class="btn btn-save" onclick="saveChanges('New Service')">Save New</button>
+            `;
+            grid.prepend(newCard);
+        }
+
+        // --- MOCK ACTIONS ---
+        function uploadTask() {
+            const title = document.getElementById('taskTitle').value;
+            if(!title) return alert("Please enter a title, Dantyz!");
+            showToast(`🚀 Task "${title}" Published!`);
+        }
+
+        function saveChanges(item) {
+            showToast(`✅ ${item} Updated!`);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+  
+        }
+      // Replace the mock function with this:
+async function loadUsers() {
+    const response = await fetch('/api/users');
+    const users = await response.json();
+    const tableBody = document.getElementById('userTableBody');
+    tableBody.innerHTML = users.map(user => `
+        <tr>
+            <td>${user.id}</td>
+            <td>${user.email}</td>
+            <td>${user.last_login}</td>
+            <td>Active</td>
+        </tr>
+    `).join('');
+}
+    </script>
+</body>
+</html>
