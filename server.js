@@ -5,7 +5,7 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 
-const publicPath = path.join(__dirname, 'public');
+const publicPath = path.join(__dirname, 'dan74techmedia');
 
 // Check if public folder exists
 if (!fs.existsSync(publicPath)) {
