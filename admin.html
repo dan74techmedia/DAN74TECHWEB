@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | PRO ADMIN</title>
+    <title>DAN74TECH MEDIA | SYSTEM CONTROL CMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,7 +12,7 @@
             --accent-red: #ff2a2a;
             --success-green: #25D366;
             --bg-dark: #0a0a0a;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.04);
             --text-light: #ffffff;
         }
 
@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
 
-        /* --- LOGIN OVERLAY --- */
+        /* --- AUTH MATRIX WRAPPER --- */
         #adminLogin {
             display: flex;
             justify-content: center;
@@ -35,211 +35,283 @@
 
         .login-box {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 68, 255, 0.3);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 68, 255, 0.25);
             border-top: 4px solid var(--primary-blue);
             padding: 40px;
             border-radius: 15px;
             text-align: center;
             width: 100%;
-            max-width: 350px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            max-width: 360px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.85);
         }
 
         .login-box h2 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-blue);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
         }
 
         input, select, textarea {
             width: 100%; padding: 12px; margin-bottom: 15px;
-            background: rgba(255,255,255,0.05); border: 1px solid #333;
+            background: rgba(255,255,255,0.04); border: 1px solid #252525;
             border-radius: 8px; color: white; font-family: inherit;
-            box-sizing: border-box; outline: none;
+            box-sizing: border-box; outline: none; transition: 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-blue); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-blue); background: rgba(255,255,255,0.08); }
 
         .btn {
             width: 100%; padding: 14px; border: none; border-radius: 8px;
             font-weight: bold; cursor: pointer; text-transform: uppercase;
-            transition: 0.3s; color: white;
-            display: inline-block; text-align: center; box-sizing: border-box;
+            transition: 0.3s; color: white; display: inline-block;
+            text-align: center; box-sizing: border-box; font-size: 0.85rem; letter-spacing: 0.5px;
         }
         
         .btn-blue { background: var(--primary-blue); }
         .btn-blue:hover { background: #0033cc; transform: translateY(-2px); }
         .btn-save { background: var(--success-green); margin-top: 10px; }
         .btn-save:hover { background: #1da851; }
-        .btn-add { background: var(--accent-orange); color: black; margin-bottom: 20px; }
-        .btn-add:hover { background: #e08800; }
         .btn-danger { background: var(--accent-red); margin-top: 5px; }
         .btn-danger:hover { background: #cc1f1f; }
 
-        /* --- DASHBOARD LAYOUT --- */
+        /* --- PRODUCTION INTERFACE LAYOUT --- */
         #adminDashboard { display: none; }
+
         .dashboard-header {
-            background: #111; padding: 20px; display: flex;
-            justify-content: space-between; align-items: center;
+            background: #0d0d0d;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid var(--primary-blue);
         }
-        .dashboard-header h1 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: white; }
-        .logout-btn { background: var(--accent-red); padding: 8px 15px; border-radius: 5px; color: white; font-size: 0.9rem; font-weight: bold; cursor: pointer; border: none; }
+
+        .dashboard-header h1 {
+            font-family: 'Montserrat'; font-size: 1.4rem; margin: 0; color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .logout-btn {
+            background: var(--accent-red); padding: 8px 16px; border-radius: 6px;
+            color: white; font-size: 0.85rem; font-weight: bold; cursor: pointer; border: none; transition: 0.2s;
+        }
+        .logout-btn:hover { background: #b31515; }
 
         .dashboard-container { display: flex; min-height: calc(100vh - 75px); }
-        .sidebar { width: 280px; background: #111; padding: 20px 0; border-right: 1px solid #222; }
-        .nav-item { padding: 15px 20px; color: #aaa; cursor: pointer; font-weight: 600; transition: 0.3s; border-left: 3px solid transparent; font-size: 0.9rem; }
-        .nav-item:hover, .nav-item.active { background: rgba(0, 68, 255, 0.1); color: white; border-left: 3px solid var(--primary-blue); }
 
-        .content { flex: 1; padding: 30px; background: #050505; overflow-y: auto; }
-        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .sidebar { width: 280px; background: #0c0c0c; padding: 20px 0; border-right: 1px solid #151515; }
+
+        .nav-item {
+            padding: 15px 25px; color: #8a8a8a; cursor: pointer;
+            font-weight: 600; transition: 0.3s; border-left: 4px solid transparent; font-size: 0.9rem;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 68, 255, 0.08); color: white; border-left-color: var(--primary-blue);
+        }
+
+        .content { flex: 1; padding: 40px; background: #050505; overflow-y: auto; }
+        .tab-content { display: none; animation: uiFade 0.35s cubic-bezier(0.1, 1, 0.1, 1); }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; align-items: start; }
-        .edit-card { background: var(--card-bg); border: 1px solid #222; padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-orange); position: relative; }
-        .edit-card h3 { margin-top: 0; color: var(--accent-orange); font-family: 'Montserrat'; }
+        @keyframes uiFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .edit-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; align-items: start;
+        }
+
+        .edit-card {
+            background: var(--card-bg); border: 1px solid #1a1a1a; padding: 25px;
+            border-radius: 12px; border-top: 3px solid var(--accent-orange); position: relative;
+        }
+        .edit-card h3 { margin-top: 0; margin-bottom: 20px; color: var(--accent-orange); font-family: 'Montserrat'; font-size: 1.1rem; }
+
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; text-transform: uppercase; }
-        textarea { resize: vertical; min-height: 80px; }
+        .form-group label { display: block; font-size: 0.75rem; color: #777; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
+        
+        textarea { resize: vertical; min-height: 90px; }
 
-        .data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
-        .data-table th { background: #111; color: var(--primary-blue); font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.8rem; }
-        .data-table tr:hover { background: rgba(255,255,255,0.02); }
+        /* --- CONTROL INFRASTRUCTURE TABLES --- */
+        .data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; }
+        .data-table th { background: #0e0e0e; color: var(--primary-blue); font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+        .data-table tr:hover { background: rgba(255,255,255,0.01); }
 
-        .image-preview { width: 100%; height: 150px; background: #111; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .image-preview {
+            width: 100%; height: 140px; background: #0d0d0d; border: 1px dashed #333; border-radius: 8px;
+            margin-bottom: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
         .image-preview img { max-width: 100%; max-height: 100%; object-fit: cover; }
 
-        #toast { position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateX(150%); transition: transform 0.4s ease; z-index: 9999; }
+        /* --- LIVE TOAST SYSTEM --- */
+        #toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white;
+            padding: 16px 28px; border-radius: 8px; font-weight: bold; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            transform: translateX(180%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000; font-size: 0.9rem;
+        }
         #toast.show { transform: translateX(0); }
         #toast.error-toast { background: var(--accent-red); }
 
-        .upload-row { display: flex; gap: 10px; }
+        .upload-row { display: flex; gap: 10px; margin-bottom: 8px; }
         .upload-row input[type="file"] { display: none; }
-        .upload-label { background: #222; padding: 12px; border-radius: 8px; font-size: 0.8rem; text-align: center; cursor: pointer; border: 1px dashed var(--primary-blue); width: 100%; box-sizing: border-box; display: inline-block; color: #ccc; }
-        .upload-label:hover { background: #333; color: white; }
+        .upload-label {
+            background: #111; padding: 12px; border-radius: 8px; font-size: 0.8rem;
+            text-align: center; cursor: pointer; border: 1px dashed var(--primary-blue);
+            width: 100%; box-sizing: border-box; display: inline-block; color: #aaa; font-weight: 600;
+        }
+        .upload-label:hover { background: #161616; color: white; }
     </style>
 </head>
 <body>
 
     <div id="adminLogin">
         <div class="login-box">
-            <h2>PRO ADMIN</h2>
-            <input type="text" id="adminUser" placeholder="Admin Username">
-            <input type="password" id="adminPass" placeholder="••••••••">
-            <button class="btn btn-blue" onclick="attemptLogin()">Access Dashboard</button>
-            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 10px;">Access Denied, System Connection Aborted!</p>
+            <h2>DAN74TECH MEDIA</h2>
+            <input type="text" id="adminUser" placeholder="Administrative Username">
+            <input type="password" id="adminPass" placeholder="Security Token Access Key">
+            <button class="btn btn-blue" onclick="executeLoginAuthentication()">Verify Identity</button>
+            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 15px; font-weight: 600;">Access Denied. Identity Mismatch.</p>
         </div>
     </div>
 
     <div id="adminDashboard">
         <header class="dashboard-header">
-            <h1>DAN74TECH | CMS PANEL</h1>
-            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+            <h1>DAN74TECH | ENTERPRISE CONTROL PANEL</h1>
+            <button class="logout-btn" onclick="terminateSession()">LOGOUT</button>
         </header>
 
         <div class="dashboard-container">
             <div class="sidebar">
-                <div class="nav-item active" id="nav-services" onclick="switchTab('services')">📋 Manage Services</div>
-                <div class="nav-item" id="nav-works" onclick="switchTab('works')">🎬 Featured Works</div>
-                <div class="nav-item" id="nav-contacts" onclick="switchTab('contacts')">✉️ User Inquiries</div>
-                <div class="nav-item" id="nav-users" onclick="switchTab('users')">👥 Login Database</div>
+                <div class="nav-item active" id="nav-services" onclick="switchTab('services')">📋 Dynamic Page Services</div>
+                <div class="nav-item" id="nav-works" onclick="switchTab('works')">🎬 Master Portfolio Vault</div>
+                <div class="nav-item" id="nav-contacts" onclick="switchTab('contacts')">✉️ Live Client Inquiries</div>
+                <div class="nav-item" id="nav-users" onclick="switchTab('users')">👥 Operator Accounts</div>
             </div>
 
             <div class="content">
+                
                 <div id="tab-services" class="tab-content active">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom:20px;">Service Offerings</h2>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 25px;">Platform Service Core Layers</h2>
                     <div class="edit-grid">
                         <div class="edit-card" style="border-top-color: var(--primary-blue);">
-                            <h3 style="color: var(--primary-blue);">Inject New Service Entry</h3>
-                            <div class="form-group"><label>Service Title</label><input type="text" id="svcTitle" placeholder="e.g., Android System Architecture"></div>
-                            <div class="form-group"><label>Price Range Text</label><input type="text" id="svcPrice" placeholder="e.g., KSH 5,000"></div>
-                            <div class="form-group"><label>Description</label><textarea id="svcDesc" placeholder="Enter specifications..."></textarea></div>
+                            <h3 style="color: var(--primary-blue);">Deploy Global Service Entity</h3>
                             <div class="form-group">
-                                <label>Picture Asset Source</label>
-                                <div class="upload-row">
-                                    <label class="upload-label" onclick="document.getElementById('svcFile').click()">📁 Cloudinary Storage Engine Upload</label>
-                                    <input type="file" id="svcFile" accept="image/*" onchange="handleDirectUpload(this, 'svcImg')">
-                                </div>
-                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Live URL">
+                                <label>Target Page Assignment Architecture</label>
+                                <select id="svcCategory">
+                                    <option value="web">Web Development (web.html)</option>
+                                    <option value="video">Video Production (video.html)</option>
+                                    <option value="graphics">Graphic Design (graphics.html)</option>
+                                    <option value="app">App Engineering (app.html)</option>
+                                    <option value="repairs">Tech Maintenance (repairs.html)</option>
+                                    <option value="advice">ICT Consultancy (advice.html)</option>
+                                </select>
                             </div>
-                            <div class="form-group"><label>Navigation Target</label><input type="text" id="svcLink" value="contact.html"></div>
-                            <button class="btn btn-blue" onclick="submitService()">Load Live System Entry</button>
+                            <div class="form-group">
+                                <label>Service Execution Title</label>
+                                <input type="text" id="svcTitle" placeholder="e.g., Enterprise API Infrastructure">
+                            </div>
+                            <div class="form-group">
+                                <label>Financial Scope / Pricing Metrics Tag</label>
+                                <input type="text" id="svcPrice" placeholder="e.g., KSH 15,000 / Flat Rate">
+                            </div>
+                            <div class="form-group">
+                                <label>Detailed Blueprint Context</label>
+                                <textarea id="svcDesc" placeholder="State implementation metrics or package allocations..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Cloudinary Asset Management Gateway</label>
+                                <div class="upload-row">
+                                    <label class="upload-label" id="svcLabel" style="width:100%">📡 Stream Image Binary to Cloudinary</label>
+                                    <input type="file" id="svcFile" accept="image/*" onchange="pipeFileToCloudinaryStream(this, 'svcImg', 'svcLabel')">
+                                </div>
+                                <input type="text" id="svcImg" placeholder="Cloud Storage URL Target String">
+                            </div>
+                            <div class="form-group">
+                                <label>Form Action Redirect Link target</label>
+                                <input type="text" id="svcLink" value="contact.html">
+                            </div>
+                            <button class="btn btn-blue" onclick="pushNewServiceToNeon()">Commit Base Entity to Neon DB</button>
                         </div>
-                        <div style="display: contents;" id="servicesGrid"></div>
+                        <div style="display: contents;" id="liveServicesContainerGrid"></div>
                     </div>
                 </div>
 
                 <div id="tab-works" class="tab-content">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">Featured Tasks Portfolio</h2>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 25px;">Client Work Portfolios Gallery</h2>
                     <div class="edit-grid">
                         <div class="edit-card" style="border-top-color: var(--primary-blue);">
-                            <h3 style="color: var(--primary-blue);">Inject Production Item</h3>
-                            <div class="form-group"><label>Project Name</label><input type="text" id="portTitle" placeholder="e.g., Commercial Promo Design"></div>
-                            <div class="form-group"><label>Description Scope</label><textarea id="portDesc" placeholder="Enter implementation metrics..."></textarea></div>
+                            <h3 style="color: var(--primary-blue);">Append Case Study / Production Proof</h3>
                             <div class="form-group">
-                                <label>Media Source Type</label>
-                                <select id="portType">
-                                    <option value="image">Cloudinary Image Asset</option>
-                                    <option value="video">YouTube Link Target</option>
+                                <label>Parent Filter Category Context</label>
+                                <select id="portCategory">
+                                    <option value="web">Web Architectures</option>
+                                    <option value="video">Cinematography / Reels</option>
+                                    <option value="graphics">Identity & Brand Visuals</option>
+                                    <option value="app">Mobile Systems</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Asset Resource Pointer URL</label>
-                                <div class="upload-row">
-                                    <label class="upload-label" onclick="document.getElementById('portFile').click()">📁 Stream File to Cloudinary</label>
-                                    <input type="file" id="portFile" accept="image/*" onchange="handleDirectUpload(this, 'portUrl')">
-                                </div>
-                                <input type="text" id="portUrl" style="margin-top: 8px;" placeholder="Asset Target Production Link">
+                                <label>Project Showcase Title</label>
+                                <input type="text" id="portTitle" placeholder="e.g., Safaricom Corporate Shoot">
                             </div>
-                            <button class="btn btn-blue" onclick="submitPortfolio()">Queue Live Dataset</button>
+                            <div class="form-group">
+                                <label>Media Platform Target Type</label>
+                                <select id="portType" onchange="togglePortfolioMediaInputMode(this.value)">
+                                    <option value="image">Static High-Res Cloudinary Image</option>
+                                    <option value="video">Streaming Third-Party Resource Link (YouTube)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Asset Resource Source</label>
+                                <div class="upload-row" id="portUploadWrapper">
+                                    <label class="upload-label" id="portLabel" style="width:100%">📡 Dispatch Project Image to Cloudinary</label>
+                                    <input type="file" id="portFile" accept="image/*" onchange="pipeFileToCloudinaryStream(this, 'portUrl', 'portLabel')">
+                                </div>
+                                <input type="text" id="portUrl" placeholder="Cloud Destination Asset URI Link">
+                            </div>
+                            <div class="form-group">
+                                <label>Brief Execution Strategy / Log Summary</label>
+                                <textarea id="portDesc" placeholder="State system stack or engineering milestones achieved..."></textarea>
+                            </div>
+                            <button class="btn btn-blue" onclick="pushPortfolioAssetToNeon()">Synchronize Live Asset Portfolio</button>
                         </div>
-                        <div style="display: contents;" id="portfolioGrid"></div>
+                        <div style="display: contents;" id="livePortfolioContainerGrid"></div>
                     </div>
                 </div>
 
                 <div id="tab-contacts" class="tab-content">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">User Contacts & Project Requests</h2>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 25px;">Real-time Customer Conversions Terminal</h2>
                     <div class="edit-card" style="width: 100%; border-top: none; max-width: 100%;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Date Sent</th>
-                                    <th>Client Identity</th>
-                                    <th>Contact Detail</th>
-                                    <th>Project Description</th>
-                                    <th>Operation</th>
+                                    <th>Submission Timestamp</th>
+                                    <th>Lead Identity</th>
+                                    <th>Channel Communications Detail</th>
+                                    <th>Requested Platform Category</th>
+                                    <th>Project Requirements Scope Context</th>
+                                    <th>Operation Execution</th>
                                 </tr>
                             </thead>
-                            <tbody id="contactTableBody"></tbody>
+                            <tbody id="liveContactTicketsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
                 <div id="tab-users" class="tab-content">
-                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">Saved Login Users Database</h2>
-                    <div class="edit-grid" style="margin-bottom: 30px;">
-                        <div class="edit-card" style="border-top-color: var(--primary-blue);">
-                            <h3 style="color: var(--primary-blue);">Create New System Admin</h3>
-                            <div class="form-group"><label>Username</label><input type="text" id="newUsername" placeholder="Enter username"></div>
-                            <div class="form-group"><label>Email Address</label><input type="email" id="newEmail" placeholder="name@tech.com"></div>
-                            <div class="form-group"><label>System Password</label><input type="password" id="newPassword" placeholder="••••••••"></div>
-                            <button class="btn btn-blue" onclick="createUser()">Add System Operator</button>
-                        </div>
-                    </div>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 25px;">Authorized Identity Database Operators</h2>
                     <div class="edit-card" style="width: 100%; border-top: none; max-width: 100%;">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>User ID</th>
-                                    <th>Username / Profile</th>
-                                    <th>Email Destination Address</th>
-                                    <th>Action</th>
+                                    <th>System Key (ID)</th>
+                                    <th>Operator Profile Handle</th>
+                                    <th>Core Communication Email Routing Address</th>
+                                    <th>Creation Timestamp Sequence</th>
                                 </tr>
                             </thead>
-                            <tbody id="userTableBody"></tbody>
+                            <tbody id="systemOperatorTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -248,327 +320,328 @@
         </div>
     </div>
 
-    <div id="toast">✅ Action Successful!</div>
+    <div id="toast">Operation successfully committed to Neon PostgreSQL.</div>
 
     <script>
-        // --- SECURE ROUTING SESSION VERIFICATION ---
-        async function attemptLogin() {
+        // Global administrative variables definition mapping
+        const API_BASE = '/api';
+        
+        function systemMessagePopup(text, flagError = false) {
+            const el = document.getElementById('toast');
+            el.innerText = text;
+            if(flagError) el.classList.add('error-toast');
+            else el.classList.remove('error-toast');
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3800);
+        }
+
+        // --- SESSION AND SECURITY VALIDATION SYSTEM ---
+        async function executeLoginAuthentication() {
             const username = document.getElementById('adminUser').value;
             const password = document.getElementById('adminPass').value;
-            const errorElement = document.getElementById('loginError');
+            const err = document.getElementById('loginError');
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-                const data = await response.json();
-
-                if (data.success) {
-                    errorElement.style.display = 'none';
+                const resData = await response.json();
+                
+                if(resData.success) {
+                    err.style.display = 'none';
                     document.getElementById('adminLogin').style.display = 'none';
                     document.getElementById('adminDashboard').style.display = 'block';
-                    showToast("🚀 System Control Online. Welcome back, Dantyz!");
-                    loadAll();
+                    loadAllSystemDatabaseTables();
+                    systemMessagePopup(`Welcome, ${resData.user.username}. Security handshake complete.`);
                 } else {
-                    errorElement.style.display = 'block';
+                    err.style.display = 'block';
                 }
-            } catch (err) {
-                showToast("System connectivity fault encountered.", true);
+            } catch(e) {
+                systemMessagePopup("Network layer transmission loss.", true);
             }
         }
 
-        function logout() { location.reload(); }
+        function terminateSession() { location.reload(); }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.getElementById('nav-' + tabId).classList.add('active');
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + targetTabId).classList.add('active');
+            document.getElementById('nav-' + targetTabId).classList.add('active');
         }
 
-        // --- PRODUCTION DIRECT STREAM CLOUDINARY ENGINE UPLOAD ---
-        async function handleDirectUpload(fileInput, textInputId) {
-            if (!fileInput.files || !fileInput.files[0]) return;
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
+        function togglePortfolioMediaInputMode(val) {
+            const uploadWrapper = document.getElementById('portUploadWrapper');
+            if(val === 'video') uploadWrapper.style.display = 'none';
+            else uploadWrapper.style.display = 'flex';
+        }
 
-            showToast("⏳ Transmitting asset data matrix to Cloudinary...");
+        // --- CLOUDINARY FILE INTERCEPT WRAPPER STRATEGY ---
+        async function pipeFileToCloudinaryStream(inputHandle, textInputBindingId, textLabelId) {
+            if (!inputHandle.files || !inputHandle.files[0]) return;
+            const fileObj = inputHandle.files[0];
+            const originalLabel = document.getElementById(textLabelId).innerText;
+            document.getElementById(textLabelId).innerText = "⏳ Direct Pipeline Streaming Active...";
+
+            const payload = new FormData();
+            payload.append('file', fileObj);
 
             try {
-                const response = await fetch('/api/upload', {
+                const response = await fetch(`${API_BASE}/upload`, {
                     method: 'POST',
-                    body: formData
+                    body: payload
                 });
                 const data = await response.json();
-                if (data.success) {
-                    document.getElementById(textInputId).value = data.url;
-                    showToast("📸 Asset uploaded successfully to Cloudinary secure cloud storage!");
+                if(data.url) {
+                    document.getElementById(textInputBindingId).value = data.url;
+                    document.getElementById(textLabelId).innerText = "✅ Cloudinary Asset Verified!";
+                    systemMessagePopup("Binary asset bound to Cloudinary storage bucket.");
                 } else {
-                    showToast("Asset processing execution fault.", true);
+                    throw new Error();
                 }
-            } catch (err) {
-                showToast("Server storage interface failure.", true);
+            } catch(e) {
+                document.getElementById(textLabelId).innerText = originalLabel;
+                systemMessagePopup("Binary synchronization failed.", true);
             }
         }
 
-        // --- SERVICES DATA MANAGEMENT LAYER ---
-        async function loadServices() {
-            const grid = document.getElementById('servicesGrid');
-            try {
-                const response = await fetch('/api/services');
-                const services = await response.json();
-                grid.innerHTML = '';
-                
-                services.forEach(svc => {
-                    const card = document.createElement('div');
-                    card.className = 'edit-card';
-                    card.innerHTML = `
-                        <h3>${svc.title}</h3>
-                        <div class="image-preview">
-                            <img src="${svc.image_url || 'https://via.placeholder.com/150'}" alt="Asset view">
-                        </div>
-                        <div class="form-group">
-                            <label>Pricing Matrix Flags</label>
-                            <input type="text" value="${svc.price_range}" id="edit-svc-price-${svc.id}">
-                        </div>
-                        <div class="form-group">
-                            <label>Asset Cloud Link Target</label>
-                            <input type="text" value="${svc.image_url}" id="edit-svc-img-${svc.id}">
-                        </div>
-                        <div class="form-group">
-                            <label>Service Description Specifications</label>
-                            <textarea rows="3" id="edit-svc-desc-${svc.id}">${svc.description}</textarea>
-                        </div>
-                        <button class="btn btn-save" onclick="updateService(${svc.id})">Commit Changes</button>
-                        <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Live System Entry</button>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch(e) { showToast("Error connecting to live Services data engine.", true); }
+        // --- NEON CORE STORAGE SYNCHRONIZATION SYSTEMS ---
+        async function loadAllSystemDatabaseTables() {
+            fetchAndRenderServices();
+            fetchAndRenderPortfolio();
+            fetchAndRenderInquiryTickets();
+            fetchAndRenderOperatorProfiles();
         }
 
-        async function submitService() {
+        async function fetchAndRenderServices() {
+            const grid = document.getElementById('liveServicesContainerGrid');
+            try {
+                const res = await fetch(`${API_BASE}/services`);
+                const collection = await res.json();
+                grid.innerHTML = '';
+                collection.forEach(s => {
+                    const el = document.createElement('div');
+                    el.className = "edit-card";
+                    el.innerHTML = `
+                        <h3>${s.title} [${s.category.toUpperCase()}]</h3>
+                        <div class="image-preview"><img src="${s.image_url}" alt="Asset Preview"></div>
+                        <div class="form-group">
+                            <label>Service Title</label>
+                            <input type="text" id="edit-svc-title-${s.id}" value="${s.title}">
+                        </div>
+                        <div class="form-group">
+                            <label>Pricing Meta</label>
+                            <input type="text" id="edit-svc-price-${s.id}" value="${s.price_range}">
+                        </div>
+                        <div class="form-group">
+                            <label>Cloud Storage URI</label>
+                            <input type="text" id="edit-svc-url-${s.id}" value="${s.image_url}">
+                        </div>
+                        <div class="form-group">
+                            <label>Description Package Context</label>
+                            <textarea id="edit-svc-desc-${s.id}">${s.description}</textarea>
+                        </div>
+                        <input type="hidden" id="edit-svc-cat-${s.id}" value="${s.category}">
+                        <input type="hidden" id="edit-svc-link-${s.id}" value="${s.pricing_link}">
+                        <button class="btn btn-save" onclick="commitServiceUpdateToNeon(${s.id})">Update Record</button>
+                        <button class="btn btn-danger" onclick="purgeServiceRecord(${s.id})">Drop Service</button>
+                    `;
+                    grid.appendChild(el);
+                });
+            } catch(e) { systemMessagePopup("Services query loop exception.", true); }
+        }
+
+        async function pushNewServiceToNeon() {
             const payload = {
+                category: document.getElementById('svcCategory').value,
                 title: document.getElementById('svcTitle').value,
                 price_range: document.getElementById('svcPrice').value,
                 description: document.getElementById('svcDesc').value,
                 image_url: document.getElementById('svcImg').value,
                 pricing_link: document.getElementById('svcLink').value
             };
-            if(!payload.title) return alert("System Configuration Error: Title Required.");
+            if(!payload.title || !payload.image_url) return alert("Validation tracking parameters missing.");
 
-            const response = await fetch('/api/services', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if(response.ok) {
-                showToast('✅ Live Service Configured into Neon Engine!');
-                // Clean input fields
-                document.getElementById('svcTitle').value = '';
-                document.getElementById('svcPrice').value = '';
-                document.getElementById('svcDesc').value = '';
-                document.getElementById('svcImg').value = '';
-                loadServices();
-            }
-        }
-
-        async function updateService(id) {
-            const payload = {
-                price_range: document.getElementById(`edit-svc-price-${id}`).value,
-                image_url: document.getElementById(`edit-svc-img-${id}`).value,
-                description: document.getElementById(`edit-svc-desc-${id}`).value
-            };
-            const response = await fetch(`/api/services/${id}`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if(response.ok) { showToast('🔄 Neon Service Record Matrix Updated.'); loadServices(); }
-        }
-
-        async function deleteService(id) {
-            if(!confirm("Purge selected service offering completely from Neon PostgreSQL live metrics?")) return;
-            const response = await fetch(`/api/services/${id}`, { method: 'DELETE' });
-            if(response.ok) { showToast('🗑️ Service Entry Purged.'); loadServices(); }
-        }
-
-        // --- PORTFOLIO DATA MANAGEMENT LAYER ---
-        async function loadPortfolio() {
-            const grid = document.getElementById('portfolioGrid');
             try {
-                const response = await fetch('/api/portfolio');
-                const items = await response.json();
-                grid.innerHTML = '';
-                
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'edit-card';
-                    card.innerHTML = `
-                        <div class="form-group">
-                            <label>Project Title</label>
-                            <input type="text" value="${item.title}" id="edit-port-title-${item.id}">
-                        </div>
-                        <div class="image-preview">
-                            ${item.media_type === 'video' ? `<p style="font-size:11px; color:var(--accent-orange);">YOUTUBE BROADCAST LINK TARGET</p>` : `<img src="${item.media_url}" alt="Asset">`}
-                        </div>
-                        <div class="form-group">
-                            <label>Asset URL / Destination Resource Location</label>
-                            <input type="text" value="${item.media_url}" id="edit-port-url-${item.id}">
-                        </div>
-                        <div class="form-group">
-                            <label>Scope Description Summary</label>
-                            <textarea rows="2" id="edit-port-desc-${item.id}">${item.description || ''}</textarea>
-                        </div>
-                        <button class="btn btn-save" onclick="updatePortfolio(${item.id})">Commit Changes</button>
-                        <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Live Asset Matrix</button>
-                    `;
-                    grid.appendChild(card);
+                const response = await fetch(`${API_BASE}/services`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            } catch(e) { showToast("Error connecting to live Portfolio data engine.", true); }
+                if(response.ok) {
+                    systemMessagePopup("Service record written to cloud cluster.");
+                    fetchAndRenderServices();
+                }
+            } catch(e) { systemMessagePopup("Write phase collapsed.", true); }
         }
 
-        async function submitPortfolio() {
+        async function commitServiceUpdateToNeon(id) {
             const payload = {
-                title: document.getElementById('portTitle').value,
-                description: document.getElementById('portDesc').value,
-                media_type: document.getElementById('portType').value,
-                media_url: document.getElementById('portUrl').value
+                title: document.getElementById(`edit-svc-title-${id}`).value,
+                category: document.getElementById(`edit-svc-cat-${id}`).value,
+                price_range: document.getElementById(`edit-svc-price-${id}`).value,
+                description: document.getElementById(`edit-svc-desc-${id}`).value,
+                image_url: document.getElementById(`edit-svc-url-${id}`).value,
+                pricing_link: document.getElementById(`edit-svc-link-${id}`).value
             };
-            if(!payload.title || !payload.media_url) return alert("System Configuration Error: Title and Media Target Source Required.");
-
-            const response = await fetch('/api/portfolio', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if(response.ok) {
-                showToast('🚀 Asset queued and written to cloud storage cluster!');
-                document.getElementById('portTitle').value = '';
-                document.getElementById('portDesc').value = '';
-                document.getElementById('portUrl').value = '';
-                loadPortfolio();
-            }
+            try {
+                await fetch(`${API_BASE}/services/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                systemMessagePopup("Changes applied to core table structural arrays.");
+                fetchAndRenderServices();
+            } catch(e) { systemMessagePopup("Mutation error encountered.", true); }
         }
 
-        async function updatePortfolio(id) {
+        async function purgeServiceRecord(id) {
+            if(!confirm("Purge selected service profile from production?")) return;
+            try {
+                await fetch(`${API_BASE}/services/${id}`, { method: 'DELETE' });
+                systemMessagePopup("Target mapping record destroyed.");
+                fetchAndRenderServices();
+            } catch(e) { systemMessagePopup("Deletion failed.", true); }
+        }
+
+        // --- PORTFOLIO ENGINE MANAGEMENT ACTIONS ---
+        async function fetchAndRenderPortfolio() {
+            const grid = document.getElementById('livePortfolioContainerGrid');
+            try {
+                const res = await fetch(`${API_BASE}/portfolio`);
+                const collection = await res.json();
+                grid.innerHTML = '';
+                collection.forEach(p => {
+                    const el = document.createElement('div');
+                    el.className = "edit-card";
+                    el.innerHTML = `
+                        <h3>${p.title} [${p.category.toUpperCase()}]</h3>
+                        <div class="image-preview">
+                            ${p.media_type === 'video' ? `<p style="color:var(--primary-blue)">🎥 Streaming Media Asset Detected</p>` : `<img src="${p.media_url}">`}
+                        </div>
+                        <div class="form-group">
+                            <label>Showcase Name</label>
+                            <input type="text" id="edit-port-title-${p.id}" value="${p.title}">
+                        </div>
+                        <div class="form-group">
+                            <label>Media Source Link</label>
+                            <input type="text" id="edit-port-url-${p.id}" value="${p.media_url}">
+                        </div>
+                        <div class="form-group">
+                            <label>Case Log Summary</label>
+                            <textarea id="edit-port-desc-${p.id}">${p.description || ''}</textarea>
+                        </div>
+                        <input type="hidden" id="edit-port-cat-${p.id}" value="${p.category}">
+                        <input type="hidden" id="edit-port-type-${p.id}" value="${p.media_type}">
+                        <button class="btn btn-save" onclick="commitPortfolioUpdateToNeon(${p.id})">Synchronize Modifications</button>
+                        <button class="btn btn-danger" onclick="purgePortfolioRecord(${p.id})">Purge Portfolio Entry</button>
+                    `;
+                    grid.appendChild(el);
+                });
+            } catch(e) { systemMessagePopup("Portfolio transaction tracing collapsed.", true); }
+        }
+
+        async function pushPortfolioAssetToNeon() {
+            const payload = {
+                category: document.getElementById('portCategory').value,
+                title: document.getElementById('portTitle').value,
+                media_type: document.getElementById('portType').value,
+                media_url: document.getElementById('portUrl').value,
+                description: document.getElementById('portDesc').value
+            };
+            if(!payload.title || !payload.media_url) return alert("Required verification targets unassigned.");
+
+            try {
+                await fetch(`${API_BASE}/portfolio`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                systemMessagePopup("Project portfolio item tracked successfully.");
+                fetchAndRenderPortfolio();
+            } catch(e) { systemMessagePopup("Failed to commit project asset.", true); }
+        }
+
+        async function commitPortfolioUpdateToNeon(id) {
             const payload = {
                 title: document.getElementById(`edit-port-title-${id}`).value,
+                category: document.getElementById(`edit-port-cat-${id}`).value,
+                media_type: document.getElementById(`edit-port-type-${id}`).value,
                 media_url: document.getElementById(`edit-port-url-${id}`).value,
                 description: document.getElementById(`edit-port-desc-${id}`).value
             };
-            const response = await fetch(`/api/portfolio/${id}`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            if(response.ok) { showToast('🔄 Portfolio Core Dataset Synchronized.'); loadPortfolio(); }
-        }
-
-        async function deletePortfolio(id) {
-            if(!confirm("Drop production file asset sequence from live server cluster storage arrays?")) return;
-            const response = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-            if(response.ok) { showToast('🗑️ Production Asset Dropped.'); loadPortfolio(); }
-        }
-
-        // --- CLIENT INQUIRIES MANAGEMENT LAYER ---
-        async function loadContacts() {
-            const tbody = document.getElementById('contactTableBody');
             try {
-                const response = await fetch('/api/contacts');
-                const contacts = await response.json();
+                await fetch(`${API_BASE}/portfolio/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                systemMessagePopup("Portfolio changes pushed to live cluster maps.");
+                fetchAndRenderPortfolio();
+            } catch(e) { systemMessagePopup("Modification pipeline failed.", true); }
+        }
+
+        async function purgePortfolioRecord(id) {
+            if(!confirm("Remove from database array permanently?")) return;
+            try {
+                await fetch(`${API_BASE}/portfolio/${id}`, { method: 'DELETE' });
+                systemMessagePopup("Asset purged successfully.");
+                fetchAndRenderPortfolio();
+            } catch(e) { systemMessagePopup("Purge routine failure.", true); }
+        }
+
+        // --- INCOMING TICKET / LEAD TRACKER DATA LAYER ---
+        async function fetchAndRenderInquiryTickets() {
+            const tbody = document.getElementById('liveContactTicketsTableBody');
+            try {
+                const res = await fetch(`${API_BASE}/contacts`);
+                const collection = await res.json();
                 tbody.innerHTML = '';
-                
-                contacts.forEach(c => {
+                collection.forEach(c => {
                     const row = document.createElement('tr');
-                    const dateFormatted = new Date(c.created_at).toLocaleDateString();
+                    const timestamp = new Date(c.created_at).toLocaleString();
                     row.innerHTML = `
-                        <td>${dateFormatted}</td>
-                        <td style="font-weight:600; color:var(--accent-orange);">${c.name}</td>
-                        <td>${c.phone}</td>
-                        <td style="font-size:0.85rem; max-width:300px; color:#ccc;">${c.description}</td>
-                        <td><button class="logout-btn" onclick="dismissContact(${c.id})">Dismiss Log</button></td>
+                        <td>${timestamp}</td>
+                        <td style="color:var(--accent-orange); font-weight:600">${c.client_name}</td>
+                        <td>${c.contact_info}</td>
+                        <td><span style="background:#111; padding:4px 8px; border-radius:4px; font-size:0.8rem">${c.service_type.toUpperCase()}</span></td>
+                        <td>${c.project_scope}</td>
+                        <td><button class="logout-btn" style="padding:4px 10px; font-size:0.75rem" onclick="dismissClientTicket(${c.id})">Dismiss Ticket</button></td>
                     `;
                     tbody.appendChild(row);
                 });
-            } catch(e) { showToast("Error connecting to live Inquiries data interface.", true); }
+            } catch(e) { systemMessagePopup("Failed to pull system inbox logs.", true); }
         }
 
-        async function dismissContact(id) {
-            if(!confirm("Delete this inquiry entry log record from the database storage layer permanently?")) return;
-            const response = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
-            if(response.ok) { showToast('✉️ Inbound message dismissed cleanly.'); loadContacts(); }
-        }
-
-        // --- SYSTEM ADMIN USERS PROFILE MANAGEMENT LAYER ---
-        async function loadUsers() {
-            const tbody = document.getElementById('userTableBody');
+        async function dismissClientTicket(id) {
+            if(!confirm("Clear user entry pipeline trace?")) return;
             try {
-                const response = await fetch('/api/users');
-                const users = await response.json();
+                await fetch(`${API_BASE}/contacts/${id}`, { method: 'DELETE' });
+                systemMessagePopup("Ticket marked as resolved and deleted.");
+                fetchAndRenderInquiryTickets();
+            } catch(e) { systemMessagePopup("Failed to drop ticket.", true); }
+        }
+
+        // --- ACCOUNT ACCESS SECURITY MONITOR ---
+        async function fetchAndRenderOperatorProfiles() {
+            const tbody = document.getElementById('systemOperatorTableBody');
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const users = await res.json();
                 tbody.innerHTML = '';
-                
                 users.forEach(u => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>#00${u.id}</td>
-                        <td style="font-weight:600; color:var(--primary-blue);">${u.username}</td>
+                        <td style="color:var(--primary-blue); font-weight:600">${u.username}</td>
                         <td>${u.email}</td>
-                        <td><button class="logout-btn" onclick="deleteUser(${u.id})" ${u.username === 'Dantyz' ? 'disabled style="background:#333; cursor:not-allowed;"' : ''}>Revoke Token</button></td>
+                        <td>${new Date(u.created_at).toDateString()}</td>
                     `;
                     tbody.appendChild(row);
                 });
-            } catch(e) { showToast("Error querying active Admin user permissions registry.", true); }
-        }
-
-        async function createUser() {
-            const username = document.getElementById('newUsername').value;
-            const email = document.getElementById('newEmail').value;
-            const password = document.getElementById('newPassword').value;
-
-            if(!username || !email || !password) return alert("System Configuration Error: Missing Input Parameters.");
-
-            const response = await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-
-            if(response.ok) {
-                showToast("👥 New System Admin Operator Authorized Successfully!");
-                document.getElementById('newUsername').value = '';
-                document.getElementById('newEmail').value = '';
-                document.getElementById('newPassword').value = '';
-                loadUsers();
-            } else {
-                const errData = await response.json();
-                alert(errData.error);
-            }
-        }
-
-        async function deleteUser(id) {
-            if(!confirm("Revoke credentials and access clearance completely for this administrative profile configuration sequence?")) return;
-            const response = await fetch(`/api/users/${id}`, { method: 'DELETE' });
-            if(response.ok) { showToast('🔒 Security token signature revoked.'); loadUsers(); }
-        }
-
-        // --- CMS CORE SYSTEM GLOBAL INITIALIZER ---
-        function loadAll() {
-            loadServices();
-            loadPortfolio();
-            loadContacts();
-            loadUsers();
-        }
-
-        function showToast(msg, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            if(isError) { toast.classList.add('error-toast'); } else { toast.classList.remove('error-toast'); }
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 4000);
+            } catch(e) { systemMessagePopup("Could not query user security tables.", true); }
         }
     </script>
 </body>
