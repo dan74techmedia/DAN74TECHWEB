@@ -7,31 +7,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0044ff; --accent-orange: #ff9900; --accent-red: #ff2a2a;
-            --success-green: #25D366; --bg-dark: #050505; --card-bg: rgba(255, 255, 255, 0.05);
+            --primary-blue: #0044ff;
+            --accent-orange: #ff9900;
+            --accent-red: #ff2a2a;
+            --success-green: #25D366;
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #ffffff;
         }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: white; }
-        
-        /* Layouts */
-        #adminLogin { display: flex; justify-content: center; align-items: center; height: 100vh; background: #000; }
-        .login-box { background: var(--card-bg); padding: 40px; border-radius: 15px; text-align: center; width: 300px; border-top: 4px solid var(--primary-blue); }
-        
-        #adminDashboard { display: none; min-height: 100vh; }
-        .dashboard-container { display: flex; }
-        .sidebar { width: 250px; background: #111; height: 100vh; padding: 20px; }
-        .content { flex: 1; padding: 40px; }
-        
-        .tab-content { display: none; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #050505; color: var(--text-light); min-height: 100vh; }
+        #adminLogin { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(-45deg, #001133, #000000, #0a0a0a); }
+        .login-box { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(0, 68, 255, 0.3); border-top: 4px solid var(--primary-blue); padding: 40px; border-radius: 15px; text-align: center; width: 100%; max-width: 350px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+        .login-box h2 { font-family: 'Montserrat', sans-serif; color: var(--primary-blue); margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; color: white; font-family: inherit; box-sizing: border-box; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-blue); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; color: white; display: inline-block; text-align: center; }
+        .btn-blue { background: var(--primary-blue); }
+        .btn-blue:hover { background: #0033cc; transform: translateY(-2px); }
+        .btn-save { background: var(--success-green); margin-top: 10px; }
+        .btn-save:hover { background: #1da851; }
+        .btn-add { background: var(--accent-orange); color: black; margin-bottom: 20px; }
+        #adminDashboard { display: none; }
+        .dashboard-header { background: #111; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-blue); }
+        .dashboard-header h1 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: white; }
+        .logout-btn { background: var(--accent-red); padding: 8px 15px; border-radius: 5px; color: white; text-decoration: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; border: none; }
+        .dashboard-container { display: flex; min-height: calc(100vh - 75px); }
+        .sidebar { width: 280px; background: #111; padding: 20px 0; border-right: 1px solid #222; }
+        .nav-item { padding: 15px 20px; color: #aaa; cursor: pointer; font-weight: 600; transition: 0.3s; border-left: 3px solid transparent; font-size: 0.9rem; }
+        .nav-item:hover, .nav-item.active { background: rgba(0, 68, 255, 0.1); color: white; border-left: 3px solid var(--primary-blue); }
+        .content { flex: 1; padding: 30px; background: #050505; overflow-y: auto; }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
-        
-        .nav-item { padding: 15px; cursor: pointer; color: #aaa; }
-        .nav-item.active { color: white; border-left: 3px solid var(--primary-blue); background: rgba(0,68,255,0.1); }
-        
-        .data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); }
-        .data-table th, .data-table td { padding: 15px; border-bottom: 1px solid #333; text-align: left; }
-        
-        input { width: 100%; padding: 10px; margin-bottom: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 5px; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .edit-card { background: var(--card-bg); border: 1px solid #222; padding: 20px; border-radius: 12px; border-top: 3px solid var(--accent-orange); position: relative; }
+        .edit-card h3 { margin-top: 0; color: var(--accent-orange); font-family: 'Montserrat'; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        .data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
+        .data-table th { background: #111; color: var(--primary-blue); font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.8rem; }
+        #toast { position: fixed; bottom: 30px; right: 30px; background: var(--success-green); color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: translateX(150%); transition: transform 0.4s ease; z-index: 9999; }
+        #toast.show { transform: translateX(0); }
     </style>
 </head>
 <body>
@@ -40,74 +57,216 @@
         <div class="login-box">
             <h2>PRO ADMIN</h2>
             <input type="text" id="adminUser" placeholder="Admin Username">
-            <input type="password" id="adminPass" placeholder="Password">
-            <button onclick="attemptLogin()">Access Dashboard</button>
-            <p id="loginError" style="color:red; display:none;">Invalid Credentials</p>
+            <input type="password" id="adminPass" placeholder="••••••••">
+            <button class="btn btn-blue" onclick="attemptLogin()">Access Dashboard</button>
+            <p id="loginError" style="color: var(--accent-red); font-size: 0.8rem; display: none; margin-top: 10px;">Access Denied, Dantyz!</p>
         </div>
     </div>
 
     <div id="adminDashboard">
+        <header class="dashboard-header">
+            <h1>DAN74TECH | CMS PANEL</h1>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </header>
+
         <div class="dashboard-container">
             <div class="sidebar">
                 <div class="nav-item active" onclick="switchTab('services')">📋 Manage Services</div>
-                <div class="nav-item" onclick="switchTab('users')">👥 Login Database</div>
+                <div class="nav-item" onclick="switchTab('works')">🎬 Featured Works</div>
+                <div class="nav-item" onclick="switchTab('users')">👥 User Registry</div>
             </div>
+
             <div class="content">
+                
                 <div id="tab-services" class="tab-content active">
-                    <h1>Manage Services</h1>
-                    <p>Use this area to update your service offerings.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:20px;">
+                        <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin:0;">Service Offerings</h2>
+                    </div>
+                    <div class="edit-card" style="margin-bottom: 30px; border-top-color: var(--primary-blue);">
+                        <h3>Create New Service Node</h3>
+                        <div class="form-group"><label>Service Title</label><input type="text" id="newSvcTitle" placeholder="e.g., Cloud Networking"></div>
+                        <div class="form-group"><label>Cloudinary Asset URL</label><input type="text" id="newSvcImg" placeholder="https://res.cloudinary.com/..."></div>
+                        <div class="form-group"><label>Description Text</label><textarea id="newSvcDesc" rows="3" placeholder="Service description parameters..."></textarea></div>
+                        <div class="form-group"><label>Target Link Page</label><input type="text" id="newSvcLink" value="contact.html"></div>
+                        <button class="btn btn-blue" onclick="submitService()">Deploy Service to Database</button>
+                    </div>
+                    <div class="edit-grid" id="servicesGrid"></div>
                 </div>
+
+                <div id="tab-works" class="tab-content">
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">Featured Tasks Portfolio</h2>
+                    <div class="edit-grid">
+                        <div class="edit-card" style="border-top-color: var(--primary-blue);">
+                            <h3>Upload New Task Record</h3>
+                            <div class="form-group"><label>Task Label / Title</label><input type="text" id="taskTitle" placeholder="e.g., Enterprise Flyer"></div>
+                            <div class="form-group">
+                                <label>Media Platform Category</label>
+                                <select id="mediaType" onchange="toggleMediaPlaceholder()">
+                                    <option value="image">Cloudinary Image Asset</option>
+                                    <option value="youtube">YouTube Video Streaming Resource</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label id="urlLabel">Resource Link URL</label><input type="text" id="taskUrl" placeholder="Paste structural path here..."></div>
+                            <div class="form-group"><label>Short Operational Note</label><textarea id="taskDesc" rows="2" placeholder="Optional notes..."></textarea></div>
+                            <button class="btn btn-blue" onclick="uploadTask()">Publish to Live App</button>
+                        </div>
+                    </div>
+                    <h3 style="font-family:'Montserrat'; margin-top:40px;">Active Live Items</h3>
+                    <div class="edit-grid" id="portfolioGrid" style="margin-top:20px;"></div>
+                </div>
+
                 <div id="tab-users" class="tab-content">
-                    <h1>Login Database</h1>
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>ID</th><th>Username</th><th>Email</th></tr>
-                        </thead>
-                        <tbody id="userTableBody">
-                            <tr><td colspan="3">Loading...</td></tr>
-                        </tbody>
-                    </table>
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue);">Registered System Logins</h2>
+                    <div class="edit-card" style="width: 100%; border-top: none; padding:0; background:none;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>DB ID</th>
+                                    <th>Username Identity</th>
+                                    <th>Email Destination</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+    <div id="toast"></div>
 
     <script>
         function attemptLogin() {
             const user = document.getElementById('adminUser').value;
             const pass = document.getElementById('adminPass').value;
-            // Simple validation; replace with API call for production
             if(user === "admin" && pass === "admin123") {
                 document.getElementById('adminLogin').style.display = 'none';
                 document.getElementById('adminDashboard').style.display = 'block';
+                loadAllData();
             } else {
                 document.getElementById('loginError').style.display = 'block';
             }
         }
 
-        async function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
+        function logout() { location.reload(); }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
             event.currentTarget.classList.add('active');
-            
-            if(tabId === 'users') {
-                try {
-                    const res = await fetch('/api/users');
-                    const users = await res.json();
-                    const tbody = document.getElementById('userTableBody');
-                    tbody.innerHTML = users.map(u => `
-                        <tr>
-                            <td>${u.id}</td>
-                            <td>${u.username}</td>
-                            <td>${u.email}</td>
-                        </tr>
-                    `).join('');
-                } catch(err) {
-                    document.getElementById('userTableBody').innerHTML = "<tr><td colspan='3'>Error loading data</td></tr>";
-                }
-            }
+        }
+
+        function toggleMediaPlaceholder() {
+            const type = document.getElementById('mediaType').value;
+            document.getElementById('taskUrl').placeholder = type === 'image' ? 'https://res.cloudinary.com/...' : 'https://youtu.be/...';
+        }
+
+        function loadAllData() {
+            fetchServices();
+            fetchPortfolio();
+            fetchUsers();
+        }
+
+        async function fetchServices() {
+            const res = await fetch('/api/services');
+            const data = await res.json();
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+            data.forEach(svc => {
+                grid.innerHTML += `
+                    <div class="edit-card">
+                        <h3>${svc.title}</h3>
+                        <div class="form-group"><label>Asset Image Path</label><input type="text" value="${svc.image_url}" disabled></div>
+                        <div class="form-group"><label>Description</label><textarea rows="3" disabled>${svc.description}</textarea></div>
+                        <button class="btn" style="background:var(--accent-red);" onclick="deleteService(${svc.id})">Purge Unit</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function submitService() {
+            const title = document.getElementById('newSvcTitle').value;
+            const image_url = document.getElementById('newSvcImg').value;
+            const description = document.getElementById('newSvcDesc').value;
+            const pricing_link = document.getElementById('newSvcLink').value;
+
+            if(!title || !image_url) return alert("Fill required node metadata values, Dantyz!");
+
+            await fetch('/api/services', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ title, image_url, description, pricing_link })
+            });
+            showToast("✨ Service Node Stack Complete!");
+            loadAllData();
+        }
+
+        async function deleteService(id) {
+            await fetch(`/api/services/${id}`, { method: 'DELETE' });
+            showToast("🗑️ Service purged successfully.");
+            fetchServices();
+        }
+
+        async function fetchPortfolio() {
+            const res = await fetch('/api/portfolio');
+            const data = await res.json();
+            const grid = document.getElementById('portfolioGrid');
+            grid.innerHTML = '';
+            data.forEach(item => {
+                const previewElement = item.media_type === 'image' 
+                    ? `<img src="${item.media_url}" style="width:100%; height:120px; object-fit:cover; border-radius:6px;">`
+                    : `<div style="background:#222; padding:20px 10px; font-size:0.8rem; text-align:center; color:#ff9900;">📺 YouTube Linked Asset</div>`;
+                grid.innerHTML += `
+                    <div class="edit-card" style="border-top-color: ${item.media_type === 'image' ? 'var(--primary-blue)' : 'var(--accent-red)'}">
+                        <h3>${item.title}</h3>
+                        ${previewElement}
+                        <button class="btn" style="background:var(--accent-red); margin-top:10px;" onclick="deletePortfolio(${item.id})">Delete Item</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function uploadTask() {
+            const title = document.getElementById('taskTitle').value;
+            const media_type = document.getElementById('mediaType').value;
+            const media_url = document.getElementById('taskUrl').value;
+            const description = document.getElementById('taskDesc').value;
+
+            if(!title || !media_url) return alert("Title and URL target strings are required!");
+
+            await fetch('/api/portfolio', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ title, media_type, media_url, description })
+            });
+            showToast("🚀 Portfolio asset updated dynamically!");
+            loadAllData();
+        }
+
+        async function deletePortfolio(id) {
+            await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
+            showToast("🗑️ Item removed.");
+            fetchPortfolio();
+        }
+
+        async function fetchUsers() {
+            const res = await fetch('/api/users');
+            const data = await res.json();
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+            data.forEach(user => {
+                tbody.innerHTML += `<tr><td>#${user.id}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
     </script>
 </body>
