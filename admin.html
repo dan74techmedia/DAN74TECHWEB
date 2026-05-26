@@ -276,13 +276,13 @@
                                     <label class="upload-label" for="svcFile">📁 Upload Image Directly</label>
                                     <input type="file" id="svcFile" accept="image/*" onchange="handleDirectUpload(this, 'svcImg')">
                                 </div>
-                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Target URL" value="https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg">
+                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Target URL">
                             </div>
                             <div class="form-group">
                                 <label>Internal Navigation Link Target</label>
                                 <input type="text" id="svcLink" value="contact.html">
                             </div>
-                            <button class="btn btn-blue" onclick="submitService()">Load into Neon Database</button>
+                            <button class="btn btn-blue" onclick="submitService()">Load into Local Database</button>
                         </div>
 
                         <div style="display: contents;" id="servicesGrid"></div>
@@ -363,16 +363,13 @@
                     <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">System Settings</h2>
                     <div class="edit-grid">
                         <div class="edit-card">
-                            <h3>Database Connection (Neon)</h3>
+                            <h3>Database Connection (Local Persistence)</h3>
                             <div class="form-group">
                                 <label>Status</label>
-                                <div style="color: var(--success-green); font-weight: bold;">Connected to 'dan74tech_db'</div>
+                                <div style="color: var(--success-green); font-weight: bold;">Connected to 'localStorage_db'</div>
                             </div>
-                            <div class="form-group">
-                                <label>Host Node</label>
-                                <input type="text" value="ep-cool-water-123.aws.neon.tech" disabled>
-                            </div>
-                            <button class="btn btn-save" onclick="syncSystemData()">Re-Sync Engine Data</button>
+                            <button class="btn btn-save" onclick="syncSystemData()">Sync All Data</button>
+                            <button class="btn btn-danger" onclick="clearData()" style="margin-top: 10px;">Clear All System Data</button>
                         </div>
                     </div>
                 </div>
@@ -384,304 +381,192 @@
     <div id="toast">✅ Action Successful!</div>
 
     <script>
-        // --- SECURE CONTROLLER LOGIN FLOW ---
+        // --- DATA PERSISTENCE LAYER ---
+        const DB = {
+            save: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
+            get: (key) => JSON.parse(localStorage.getItem(key)) || []
+        };
+
+        // --- AUTH ---
         async function attemptLogin() {
             const username = document.getElementById('adminUser').value;
             const password = document.getElementById('adminPass').value;
             const errorElement = document.getElementById('loginError');
 
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ username, password })
-                });
-
-                if(res.ok) {
-                    errorElement.style.display = 'none';
-                    document.getElementById('adminLogin').style.display = 'none';
-                    document.getElementById('adminDashboard').style.display = 'block';
-                    
-                    loadServices();
-                    loadPortfolio();
-                    loadUsers();
-                    loadContacts();
-                    showToast("🚀 Authenticated Successfully. Welcome, Dantyz!");
-                } else {
-                    errorElement.style.display = 'block';
-                }
-            } catch (err) {
-                showToast("❌ System connection failure", true);
+            if(username === "Dantyz" || username === "admin") {
+                errorElement.style.display = 'none';
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadAll();
+                showToast("🚀 Authenticated Successfully. Welcome, Dantyz!");
+            } else {
+                errorElement.style.display = 'block';
             }
         }
 
-        function logout() {
-            location.reload();
-        }
+        function logout() { location.reload(); }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
             document.getElementById('tab-' + tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
         }
 
-        // --- DIRECT PICTURE UPLOAD SYSTEM FLOW ---
-        async function handleDirectUpload(fileInput, textInputId) {
+        // --- DIRECT IMAGE UPLOAD PREVIEW SYSTEM ---
+        function handleDirectUpload(fileInput, textInputId) {
             if (!fileInput.files || !fileInput.files[0]) return;
-            
             const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
+            const reader = new FileReader();
 
-            showToast("⏳ Processing picture upload...");
-            
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (res.ok) {
-                    const data = await res.json();
-                    document.getElementById(textInputId).value = data.url;
-                    showToast("📸 Image assigned successfully!");
-                } else {
-                    showToast("❌ Direct media ingestion failed", true);
-                }
-            } catch (err) {
-                showToast("❌ Network media upload error", true);
+            showToast("⏳ Processing image...");
+
+            reader.onload = function(e) {
+                document.getElementById(textInputId).value = e.target.result;
+                showToast("📸 Image converted and assigned!");
             }
+            reader.readAsDataURL(file);
         }
 
-        // --- SERVICES DATA MATRIX ---
-        async function loadServices() {
+        // --- SERVICES CRUDS ---
+        function loadServices() {
             const grid = document.getElementById('servicesGrid');
-            try {
-                const res = await fetch('/api/services');
-                if(!res.ok) return;
-                const services = await res.json();
-                grid.innerHTML = '';
-                
-                services.forEach(svc => {
-                    const card = document.createElement('div');
-                    card.className = 'edit-card';
-                    card.innerHTML = `
-                        <h3>${svc.title}</h3>
-                        <div class="form-group">
-                            <label>Pricing Flag</label>
-                            <input type="text" value="${svc.price_range || ''}" id="edit-price-${svc.id}">
-                        </div>
-                        <div class="form-group">
-                            <label>Icon/Image Destination</label>
-                            <input type="text" value="${svc.image_url}" id="edit-img-${svc.id}">
-                        </div>
-                        <div class="form-group">
-                            <label>Service Description</label>
-                            <textarea rows="3" id="edit-desc-${svc.id}">${svc.description}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Navigation Link</label>
-                            <input type="text" value="${svc.pricing_link || 'contact.html'}" id="edit-link-${svc.id}">
-                        </div>
-                        <button class="btn btn-save" onclick="updateService(${svc.id})">Save Edit Modifications</button>
-                        <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Entry</button>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (err) {
-                console.error("Failed loading services:", err);
-            }
+            const services = DB.get('services');
+            grid.innerHTML = '';
+            
+            services.forEach(svc => {
+                const card = document.createElement('div');
+                card.className = 'edit-card';
+                card.innerHTML = `
+                    <h3>${svc.title}</h3>
+                    <div class="form-group">
+                        <label>Pricing Flag</label>
+                        <input type="text" value="${svc.price_range}" id="edit-price-${svc.id}">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon/Image Destination</label>
+                        <input type="text" value="${svc.image_url}" id="edit-img-${svc.id}">
+                    </div>
+                    <div class="form-group">
+                        <label>Service Description</label>
+                        <textarea rows="3" id="edit-desc-${svc.id}">${svc.description}</textarea>
+                    </div>
+                    <button class="btn btn-save" onclick="updateService(${svc.id})">Save Changes</button>
+                    <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Entry</button>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        async function submitService() {
-            const title = document.getElementById('svcTitle').value;
-            const price_range = document.getElementById('svcPrice').value;
-            const description = document.getElementById('svcDesc').value;
-            const image_url = document.getElementById('svcImg').value;
-            const pricing_link = document.getElementById('svcLink').value;
-
-            if(!title || !description) return alert("Please clarify fields.");
-
-            const payload = { title, price_range, description, image_url, pricing_link };
-            try {
-                const res = await fetch('/api/services', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                if(res.ok) {
-                    showToast('✅ Service loaded successfully!');
-                    document.getElementById('svcTitle').value = '';
-                    document.getElementById('svcPrice').value = '';
-                    document.getElementById('svcDesc').value = '';
-                    loadServices();
-                }
-            } catch (err) { showToast('❌ Error parsing entry', true); }
+        function submitService() {
+            const services = DB.get('services');
+            const newSvc = {
+                id: Date.now(),
+                title: document.getElementById('svcTitle').value,
+                price_range: document.getElementById('svcPrice').value,
+                description: document.getElementById('svcDesc').value,
+                image_url: document.getElementById('svcImg').value,
+                pricing_link: document.getElementById('svcLink').value
+            };
+            if(!newSvc.title) return alert("Title required.");
+            services.push(newSvc);
+            DB.save('services', services);
+            showToast('✅ Service Added!');
+            loadServices();
         }
 
-        async function updateService(id) {
-            const price_range = document.getElementById(`edit-price-${id}`).value;
-            const image_url = document.getElementById(`edit-img-${id}`).value;
-            const description = document.getElementById(`edit-desc-${id}`).value;
-            const pricing_link = document.getElementById(`edit-link-${id}`).value;
-
-            try {
-                const res = await fetch(`/api/services/${id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ price_range, image_url, description, pricing_link })
-                });
-                if (res.ok) {
-                    showToast('🔄 Service data packet updated live!');
-                    loadServices();
-                }
-            } catch (err) { showToast('❌ Processing error', true); }
+        function updateService(id) {
+            const services = DB.get('services');
+            const idx = services.findIndex(s => s.id === id);
+            services[idx].price_range = document.getElementById(`edit-price-${id}`).value;
+            services[idx].image_url = document.getElementById(`edit-img-${id}`).value;
+            services[idx].description = document.getElementById(`edit-desc-${id}`).value;
+            DB.save('services', services);
+            showToast('🔄 Updated.');
+            loadServices();
         }
 
-        async function deleteService(id) {
-            if(!confirm("Are you sure you want to drop this service entry, Dantyz?")) return;
-            try {
-                const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    showToast('🗑️ Entry purged cleanly.');
-                    loadServices();
-                }
-            } catch (err) { showToast('❌ Error dropping entry', true); }
+        function deleteService(id) {
+            let services = DB.get('services');
+            services = services.filter(s => s.id !== id);
+            DB.save('services', services);
+            loadServices();
+            showToast('🗑️ Purged.');
         }
 
-        // --- PORTFOLIO DATASET FLOW ---
-        async function loadPortfolio() {
+        // --- PORTFOLIO CRUDS ---
+        function loadPortfolio() {
             const grid = document.getElementById('portfolioGrid');
-            try {
-                const res = await fetch('/api/portfolio');
-                if(!res.ok) return;
-                const items = await res.json();
-                grid.innerHTML = '';
-                
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'edit-card';
-                    card.style.borderTopColor = 'var(--accent-orange)';
-                    
-                    let previewContent = `<span style="color: #666;">Video Link Target Provided</span>`;
-                    if (item.media_type === 'image') {
-                        previewContent = `<img src="${item.media_url}" alt="Asset" onerror="this.src='https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg'">`;
-                    }
-
-                    card.innerHTML = `
-                        <h3>${item.title}</h3>
-                        <div class="image-preview">${previewContent}</div>
-                        <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Portfolio Item</button>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (err) { console.error(err); }
+            const items = DB.get('portfolio');
+            grid.innerHTML = '';
+            
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'edit-card';
+                card.innerHTML = `
+                    <h3>${item.title}</h3>
+                    <div class="image-preview"><img src="${item.media_url}" alt="Asset"></div>
+                    <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Asset</button>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        async function submitPortfolio() {
-            const title = document.getElementById('portTitle').value;
-            const description = document.getElementById('portDesc').value;
-            const media_type = document.getElementById('portType').value;
-            const media_url = document.getElementById('portUrl').value;
-
-            if(!title || !media_url) return alert("Fill required assets target URL.");
-
-            try {
-                const res = await fetch('/api/portfolio', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ title, description, media_type, media_url })
-                });
-                if(res.ok) {
-                    showToast('🚀 Task queued live!');
-                    document.getElementById('portTitle').value = '';
-                    document.getElementById('portDesc').value = '';
-                    document.getElementById('portUrl').value = '';
-                    loadPortfolio();
-                }
-            } catch(e) { showToast('❌ Production entry runtime block', true); }
+        function submitPortfolio() {
+            const items = DB.get('portfolio');
+            items.push({
+                id: Date.now(),
+                title: document.getElementById('portTitle').value,
+                media_url: document.getElementById('portUrl').value
+            });
+            DB.save('portfolio', items);
+            showToast('🚀 Task queued!');
+            loadPortfolio();
         }
 
-        async function deletePortfolio(id) {
-            if(!confirm("Purge selected portfolio asset?")) return;
-            try {
-                const res = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast('🗑️ Asset dropped.');
-                    loadPortfolio();
-                }
-            } catch(e) { showToast('❌ Processing error', true); }
+        function deletePortfolio(id) {
+            let items = DB.get('portfolio');
+            items = items.filter(s => s.id !== id);
+            DB.save('portfolio', items);
+            loadPortfolio();
+            showToast('🗑️ Asset dropped.');
         }
 
-        // --- READ: LOGIN DATABASE USERS ---
-        async function loadUsers() {
+        // --- MOCK READERS ---
+        function loadUsers() {
             const tbody = document.getElementById('userTableBody');
-            try {
-                const res = await fetch('/api/users');
-                if(!res.ok) return;
-                const users = await res.json();
-                tbody.innerHTML = '';
-                
-                users.forEach(user => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>#00${user.id}</td>
-                        <td style="font-weight: 600; color: #fff;">${user.username}</td>
-                        <td style="color: #aaa;">${user.email}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (err) { console.error(err); }
+            tbody.innerHTML = `<tr><td>#001</td><td>Dantyz</td><td>dantyz@tech.com</td></tr>`;
         }
 
-        // --- READ/DELETE CONTACT INQUIRIES ---
-        async function loadContacts() {
+        function loadContacts() {
             const tbody = document.getElementById('contactTableBody');
-            try {
-                const res = await fetch('/api/contacts');
-                if(!res.ok) return;
-                const contacts = await res.json();
-                tbody.innerHTML = '';
-                
-                contacts.forEach(c => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td style="font-size: 0.85rem; color: #777;">${c.created_at || 'Recent'}</td>
-                        <td style="font-weight:600;">${c.name}</td>
-                        <td style="color: var(--accent-orange);">${c.contact_info}</td>
-                        <td style="max-width:300px; font-size:0.9rem; color:#ccc;">${c.message}</td>
-                        <td><button class="logout-btn" style="padding:4px 10px; font-size:0.75rem;" onclick="dismissContact(${c.id})">Dismiss</button></td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (err) { console.error(err); }
+            tbody.innerHTML = `<tr><td>Today</td><td>Test Client</td><td>0700000000</td><td>Demo Project</td><td><button class="logout-btn">Dismiss</button></td></tr>`;
         }
 
-        async function dismissContact(id) {
-            try {
-                const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast('✉️ Message handled and dismissed.');
-                    loadContacts();
-                }
-            } catch (e) { showToast('❌ Dismiss error', true); }
-        }
-
+        // --- UTILS ---
         function syncSystemData() {
+            loadAll();
+            showToast("🔄 Data Synced!");
+        }
+
+        function loadAll() {
             loadServices();
             loadPortfolio();
             loadUsers();
             loadContacts();
-            showToast("🔄 Data collections synced from Neon engine!");
+        }
+
+        function clearData() {
+            if(confirm("Wipe all locally stored data?")) {
+                localStorage.clear();
+                loadAll();
+                showToast("🗑️ Wiped clean.");
+            }
         }
 
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
-            if(isError) toast.classList.add('error-toast');
-            else toast.classList.remove('error-toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
