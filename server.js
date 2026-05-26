@@ -10,10 +10,16 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+// Use absolute path to ensure 'public' folder is found correctly
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(express.static('public')); // Ensure all your HTML/CSS/JS are in a folder named 'public'
 
-// --- LOGIN ROUTE ---
+// --- ROUTES ---
+// Serve index.html explicitly
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -29,7 +35,6 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- SIGNUP ROUTE ---
 app.post('/api/signup', async (req, res) => {
     const { full_name, username, email, phone, password } = req.body;
     try {
@@ -43,7 +48,6 @@ app.post('/api/signup', async (req, res) => {
     }
 });
 
-// --- ADMIN API: FETCH USERS ---
 app.get('/api/users', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, username, email FROM users');
@@ -53,10 +57,9 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// Keep-Alive Logic
+// Keep-Alive
 setInterval(() => {
-    axios.get('https://dan74techweb.onrender.com/')
-        .catch((err) => console.error('Ping failed:', err.message));
+    axios.get('https://dan74techweb.onrender.com/').catch(() => {});
 }, 600000);
 
 const PORT = process.env.PORT || 3000;
