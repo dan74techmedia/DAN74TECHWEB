@@ -80,6 +80,9 @@
 
         .btn-add { background: var(--accent-orange); color: black; margin-bottom: 20px; }
         .btn-add:hover { background: #e08800; }
+        
+        .btn-danger { background: var(--accent-red); margin-top: 5px; }
+        .btn-danger:hover { background: #cc1f1f; }
 
         /* --- DASHBOARD LAYOUT --- */
         #adminDashboard { display: none; }
@@ -194,6 +197,28 @@
         #toast.show { transform: translateX(0); }
         #toast.error-toast { background: var(--accent-red); }
 
+        .upload-row {
+            display: flex;
+            gap: 10px;
+        }
+        .upload-row input[type="file"] {
+            display: none;
+        }
+        .upload-label {
+            background: #222;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            border: 1px dashed var(--primary-blue);
+            width: 100%;
+            box-sizing: border-box;
+            display: inline-block;
+            color: #ccc;
+        }
+        .upload-label:hover { background: #333; color: white; }
+
     </style>
 </head>
 <body>
@@ -218,6 +243,7 @@
             <div class="sidebar">
                 <div class="nav-item active" id="nav-services" onclick="switchTab('services')">📋 Manage Services</div>
                 <div class="nav-item" id="nav-works" onclick="switchTab('works')">🎬 Featured Works</div>
+                <div class="nav-item" id="nav-contacts" onclick="switchTab('contacts')">✉️ User Inquiries</div>
                 <div class="nav-item" id="nav-users" onclick="switchTab('users')">👥 Login Database</div>
                 <div class="nav-item" id="nav-site" onclick="switchTab('site')">⚙️ Site Settings</div>
             </div>
@@ -237,12 +263,20 @@
                                 <input type="text" id="svcTitle" placeholder="e.g., UI/UX Auditing">
                             </div>
                             <div class="form-group">
+                                <label>Price Range Text</label>
+                                <input type="text" id="svcPrice" placeholder="e.g., KSH 1,000 - KSH 3,000">
+                            </div>
+                            <div class="form-group">
                                 <label>Description</label>
                                 <textarea id="svcDesc" placeholder="Enter service highlights..."></textarea>
                             </div>
                             <div class="form-group">
-                                <label>Cloudinary Image URL</label>
-                                <input type="text" id="svcImg" value="https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg">
+                                <label>Picture Asset Source</label>
+                                <div class="upload-row">
+                                    <label class="upload-label" for="svcFile">📁 Upload Image Directly</label>
+                                    <input type="file" id="svcFile" accept="image/*" onchange="handleDirectUpload(this, 'svcImg')">
+                                </div>
+                                <input type="text" id="svcImg" style="margin-top: 8px;" placeholder="Asset Target URL" value="https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg">
                             </div>
                             <div class="form-group">
                                 <label>Internal Navigation Link Target</label>
@@ -251,8 +285,7 @@
                             <button class="btn btn-blue" onclick="submitService()">Load into Neon Database</button>
                         </div>
 
-                        <div style="display: contents;" id="servicesGrid">
-                            </div>
+                        <div style="display: contents;" id="servicesGrid"></div>
                     </div>
                 </div>
 
@@ -278,14 +311,35 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Asset Target URL (Cloudinary or YouTube)</label>
-                                <input type="text" id="portUrl" placeholder="https://youtube.com/watch?v=...">
+                                <label>Asset Target URL</label>
+                                <div class="upload-row">
+                                    <label class="upload-label" for="portFile">📁 Upload Image Directly</label>
+                                    <input type="file" id="portFile" accept="image/*" onchange="handleDirectUpload(this, 'portUrl')">
+                                </div>
+                                <input type="text" id="portUrl" style="margin-top: 8px;" placeholder="https://youtube.com/watch?v=... or Image URL">
                             </div>
                             <button class="btn btn-blue" onclick="submitPortfolio()">Queue Live Dataset</button>
                         </div>
 
-                        <div style="display: contents;" id="portfolioGrid">
-                            </div>
+                        <div style="display: contents;" id="portfolioGrid"></div>
+                    </div>
+                </div>
+
+                <div id="tab-contacts" class="tab-content">
+                    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); margin-bottom: 20px;">User Contacts & Project Requests</h2>
+                    <div class="edit-card" style="width: 100%; border-top: none; max-width: 100%;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Client Identity</th>
+                                    <th>Contact Detail</th>
+                                    <th>Project Description</th>
+                                    <th>Operation</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactTableBody"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -300,8 +354,7 @@
                                     <th>Email Destination Address</th>
                                 </tr>
                             </thead>
-                            <tbody id="userTableBody">
-                                </tbody>
+                            <tbody id="userTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -349,10 +402,10 @@
                     document.getElementById('adminLogin').style.display = 'none';
                     document.getElementById('adminDashboard').style.display = 'block';
                     
-                    // Trigger initialization loops for backend collections
                     loadServices();
                     loadPortfolio();
                     loadUsers();
+                    loadContacts();
                     showToast("🚀 Authenticated Successfully. Welcome, Dantyz!");
                 } else {
                     errorElement.style.display = 'block';
@@ -366,7 +419,6 @@
             location.reload();
         }
 
-        // --- NAVIGATION TABS ENGINE ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -375,7 +427,35 @@
             document.getElementById('nav-' + tabId).classList.add('active');
         }
 
-        // --- FETCH READ: SERVICES MATRIX ---
+        // --- DIRECT PICTURE UPLOAD SYSTEM FLOW ---
+        async function handleDirectUpload(fileInput, textInputId) {
+            if (!fileInput.files || !fileInput.files[0]) return;
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            showToast("⏳ Processing picture upload...");
+            
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById(textInputId).value = data.url;
+                    showToast("📸 Image assigned successfully!");
+                } else {
+                    showToast("❌ Direct media ingestion failed", true);
+                }
+            } catch (err) {
+                showToast("❌ Network media upload error", true);
+            }
+        }
+
+        // --- SERVICES DATA MATRIX ---
         async function loadServices() {
             const grid = document.getElementById('servicesGrid');
             try {
@@ -390,17 +470,23 @@
                     card.innerHTML = `
                         <h3>${svc.title}</h3>
                         <div class="form-group">
+                            <label>Pricing Flag</label>
+                            <input type="text" value="${svc.price_range || ''}" id="edit-price-${svc.id}">
+                        </div>
+                        <div class="form-group">
                             <label>Icon/Image Destination</label>
-                            <input type="text" value="${svc.image_url}" disabled>
+                            <input type="text" value="${svc.image_url}" id="edit-img-${svc.id}">
                         </div>
                         <div class="form-group">
                             <label>Service Description</label>
-                            <textarea rows="3" disabled>${svc.description}</textarea>
+                            <textarea rows="3" id="edit-desc-${svc.id}">${svc.description}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Navigation Link</label>
-                            <input type="text" value="${svc.pricing_link || 'contact.html'}" disabled>
+                            <input type="text" value="${svc.pricing_link || 'contact.html'}" id="edit-link-${svc.id}">
                         </div>
+                        <button class="btn btn-save" onclick="updateService(${svc.id})">Save Edit Modifications</button>
+                        <button class="btn btn-danger" onclick="deleteService(${svc.id})">Purge Entry</button>
                     `;
                     grid.appendChild(card);
                 });
@@ -409,7 +495,63 @@
             }
         }
 
-        // --- FETCH READ: PORTFOLIO DATASET ---
+        async function submitService() {
+            const title = document.getElementById('svcTitle').value;
+            const price_range = document.getElementById('svcPrice').value;
+            const description = document.getElementById('svcDesc').value;
+            const image_url = document.getElementById('svcImg').value;
+            const pricing_link = document.getElementById('svcLink').value;
+
+            if(!title || !description) return alert("Please clarify fields.");
+
+            const payload = { title, price_range, description, image_url, pricing_link };
+            try {
+                const res = await fetch('/api/services', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    showToast('✅ Service loaded successfully!');
+                    document.getElementById('svcTitle').value = '';
+                    document.getElementById('svcPrice').value = '';
+                    document.getElementById('svcDesc').value = '';
+                    loadServices();
+                }
+            } catch (err) { showToast('❌ Error parsing entry', true); }
+        }
+
+        async function updateService(id) {
+            const price_range = document.getElementById(`edit-price-${id}`).value;
+            const image_url = document.getElementById(`edit-img-${id}`).value;
+            const description = document.getElementById(`edit-desc-${id}`).value;
+            const pricing_link = document.getElementById(`edit-link-${id}`).value;
+
+            try {
+                const res = await fetch(`/api/services/${id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ price_range, image_url, description, pricing_link })
+                });
+                if (res.ok) {
+                    showToast('🔄 Service data packet updated live!');
+                    loadServices();
+                }
+            } catch (err) { showToast('❌ Processing error', true); }
+        }
+
+        async function deleteService(id) {
+            if(!confirm("Are you sure you want to drop this service entry, Dantyz?")) return;
+            try {
+                const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast('🗑️ Entry purged cleanly.');
+                    loadServices();
+                }
+            } catch (err) { showToast('❌ Error dropping entry', true); }
+        }
+
+        // --- PORTFOLIO DATASET FLOW ---
         async function loadPortfolio() {
             const grid = document.getElementById('portfolioGrid');
             try {
@@ -425,29 +567,55 @@
                     
                     let previewContent = `<span style="color: #666;">Video Link Target Provided</span>`;
                     if (item.media_type === 'image') {
-                        previewContent = `<img src="${item.media_url}" alt="Task Asset" onerror="this.src='https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg'">`;
+                        previewContent = `<img src="${item.media_url}" alt="Asset" onerror="this.src='https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg'">`;
                     }
 
                     card.innerHTML = `
                         <h3>${item.title}</h3>
                         <div class="image-preview">${previewContent}</div>
-                        <div class="form-group">
-                            <label>Media Type</label>
-                            <input type="text" value="${item.media_type.toUpperCase()}" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label>Description Details</label>
-                            <textarea rows="2" disabled>${item.description}</textarea>
-                        </div>
+                        <button class="btn btn-danger" onclick="deletePortfolio(${item.id})">Purge Portfolio Item</button>
                     `;
                     grid.appendChild(card);
                 });
-            } catch (err) {
-                console.error("Failed loading portfolio:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // --- FETCH READ: LOGIN DATABASE USERS ---
+        async function submitPortfolio() {
+            const title = document.getElementById('portTitle').value;
+            const description = document.getElementById('portDesc').value;
+            const media_type = document.getElementById('portType').value;
+            const media_url = document.getElementById('portUrl').value;
+
+            if(!title || !media_url) return alert("Fill required assets target URL.");
+
+            try {
+                const res = await fetch('/api/portfolio', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ title, description, media_type, media_url })
+                });
+                if(res.ok) {
+                    showToast('🚀 Task queued live!');
+                    document.getElementById('portTitle').value = '';
+                    document.getElementById('portDesc').value = '';
+                    document.getElementById('portUrl').value = '';
+                    loadPortfolio();
+                }
+            } catch(e) { showToast('❌ Production entry runtime block', true); }
+        }
+
+        async function deletePortfolio(id) {
+            if(!confirm("Purge selected portfolio asset?")) return;
+            try {
+                const res = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    showToast('🗑️ Asset dropped.');
+                    loadPortfolio();
+                }
+            } catch(e) { showToast('❌ Processing error', true); }
+        }
+
+        // --- READ: LOGIN DATABASE USERS ---
         async function loadUsers() {
             const tbody = document.getElementById('userTableBody');
             try {
@@ -465,92 +633,55 @@
                     `;
                     tbody.appendChild(row);
                 });
-            } catch (err) {
-                console.error("Failed loading users:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // --- WRITE OPERATION: INJECT SERVICE ENTRY ---
-        async function submitService() {
-            const title = document.getElementById('svcTitle').value;
-            const description = document.getElementById('svcDesc').value;
-            const image_url = document.getElementById('svcImg').value;
-            const pricing_link = document.getElementById('svcLink').value;
-
-            if(!title || !description) return alert("Please fill out required title and description fields.");
-
-            const payload = { title, description, image_url, pricing_link };
+        // --- READ/DELETE CONTACT INQUIRIES ---
+        async function loadContacts() {
+            const tbody = document.getElementById('contactTableBody');
             try {
-                const res = await fetch('/api/services', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
+                const res = await fetch('/api/contacts');
+                if(!res.ok) return;
+                const contacts = await res.json();
+                tbody.innerHTML = '';
                 
-                if(res.ok) {
-                    showToast('✅ Service loaded into Neon successfully!');
-                    // Clear fields
-                    document.getElementById('svcTitle').value = '';
-                    document.getElementById('svcDesc').value = '';
-                    // Reload matrix container
-                    loadServices();
-                } else {
-                    showToast('❌ Dynamic service insertion failed', true);
-                }
-            } catch (err) {
-                showToast('❌ Network transaction exception', true);
-            }
-        }
-
-        // --- WRITE OPERATION: INJECT PRODUCTION ITEM ---
-        async function submitPortfolio() {
-            const title = document.getElementById('portTitle').value;
-            const description = document.getElementById('portDesc').value;
-            const media_type = document.getElementById('portType').value;
-            const media_url = document.getElementById('portUrl').value;
-
-            if(!title || !media_url) return alert("Please clarify your custom Title and Media Asset Target URL.");
-
-            const payload = { title, description, media_type, media_url };
-            try {
-                const res = await fetch('/api/portfolio', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
+                contacts.forEach(c => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-size: 0.85rem; color: #777;">${c.created_at || 'Recent'}</td>
+                        <td style="font-weight:600;">${c.name}</td>
+                        <td style="color: var(--accent-orange);">${c.contact_info}</td>
+                        <td style="max-width:300px; font-size:0.9rem; color:#ccc;">${c.message}</td>
+                        <td><button class="logout-btn" style="padding:4px 10px; font-size:0.75rem;" onclick="dismissContact(${c.id})">Dismiss</button></td>
+                    `;
+                    tbody.appendChild(row);
                 });
-
-                if(res.ok) {
-                    showToast('🚀 Task queued live successfully!');
-                    // Clear fields
-                    document.getElementById('portTitle').value = '';
-                    document.getElementById('portDesc').value = '';
-                    document.getElementById('portUrl').value = '';
-                    // Reload live components
-                    loadPortfolio();
-                } else {
-                    showToast('❌ Admin deployment failed', true);
-                }
-            } catch (err) {
-                showToast('❌ Network transaction exception', true);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // --- UTILITY SINK CONTROLLERS ---
+        async function dismissContact(id) {
+            try {
+                const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    showToast('✉️ Message handled and dismissed.');
+                    loadContacts();
+                }
+            } catch (e) { showToast('❌ Dismiss error', true); }
+        }
+
         function syncSystemData() {
             loadServices();
             loadPortfolio();
             loadUsers();
+            loadContacts();
             showToast("🔄 Data collections synced from Neon engine!");
         }
 
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
-            if(isError) {
-                toast.classList.add('error-toast');
-            } else {
-                toast.classList.remove('error-toast');
-            }
+            if(isError) toast.classList.add('error-toast');
+            else toast.classList.remove('error-toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
