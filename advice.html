@@ -1,4 +1,4 @@
-         <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -114,33 +114,211 @@
 </div>
 
 <script>
-    function updatePrice() {
-        const select = document.getElementById('consultType');
-        const price = select.options[select.selectedIndex].getAttribute('data-price');
-        document.getElementById('displayPrice').innerText = "KSH " + parseInt(price).toLocaleString();
+    // ==========================================
+    // 1. PAGE ROUTE AUTOMATIC DETECTION
+    // ==========================================
+    function getCurrentPageRoute() {
+        const path = window.location.pathname;
+        const filename = path.substring(path.lastIndexOf('/') + 1);
+        const route = filename.replace('.html', '').toLowerCase();
+        return (route === '' || route === 'index') ? 'web' : route;
     }
 
+    // ==========================================
+    // 2. UNIVERSAL FORM SUBMISSION TO WHATSAPP
+    // ==========================================
     function sendToWhatsApp() {
-        const name = document.getElementById('userName').value;
-        const type = document.getElementById('consultType').value;
-        const price = document.getElementById('displayPrice').innerText;
-        const desc = document.getElementById('userDesc').value;
+        const currentRoute = getCurrentPageRoute();
+        
+        // Base elements present on all consultation/order forms
+        const nameEl = document.getElementById('userName');
+        const descEl = document.getElementById('userDesc');
+        if (!nameEl) {
+            console.warn("No custom submission form located on this active layout layer.");
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const desc = descEl.value.trim();
 
         if (name === "") {
             alert("Please enter your name.");
             return;
         }
 
-        const message = `*NEW CONSULTANCY INQUIRY*%0A` +
-                        `*Client:* ${name}%0A` +
-                        `*Category:* ${type}%0A` +
-                        `*Fee:* ${price}%0A` +
-                        `*Topic:* ${desc}%0A%0A` +
-                        `_I am requesting a professional ICT session. Payment confirmation attached._`;
+        let message = "";
+
+        // Customize the WhatsApp payload dynamically depending on which page form is submitted
+        if (currentRoute === 'advice') {
+            const type = document.getElementById('consultType').value;
+            const price = document.getElementById('displayPrice').innerText;
+            message = `*NEW CONSULTANCY INQUIRY*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Category:* ${encodeURIComponent(type)}%0A` +
+                      `*Fee:* ${encodeURIComponent(price)}%0A` +
+                      `*Topic:* ${encodeURIComponent(desc)}%0A%0A` +
+                      `_I am requesting a professional ICT session. Payment confirmation attached._`;
+
+        } else if (currentRoute === 'web') {
+            const service = document.getElementById('webService').value;
+            const price = document.getElementById('displayPrice').innerText;
+            const domainInfo = document.getElementById('domainInfo').value.trim();
+            message = `*NEW WEB PRODUCTION ORDER*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Selected Framework:* ${encodeURIComponent(service)}%0A` +
+                      `*Package Cost:* ${encodeURIComponent(price)}%0A` +
+                      `*Proposed Domain:* ${encodeURIComponent(domainInfo || 'None Provided')}%0A` +
+                      `*Project Scope:* ${encodeURIComponent(desc)}%0A%0A` +
+                      `_I am ready to discuss hosting and the initial deposit._`;
+
+        } else if (currentRoute === 'app') {
+            const service = document.getElementById('appService').value;
+            const price = document.getElementById('displayPrice').innerText;
+            const feature = document.getElementById('mainFeature').value.trim();
+            message = `*NEW MOBILE APP PROJECT*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Target Architecture:* ${encodeURIComponent(service)}%0A` +
+                      `*Main Feature:* ${encodeURIComponent(feature)}%0A` +
+                      `*Base Price:* ${encodeURIComponent(price)}%0A` +
+                      `*Scope:* ${encodeURIComponent(desc)}%0A%0A` +
+                      `_I am ready for a technical briefing and to discuss the development timeline._`;
+
+        } else if (currentRoute === 'repairs') {
+            const model = document.getElementById('deviceModel').value.trim();
+            const service = document.getElementById('repairService').value;
+            const price = document.getElementById('displayPrice').innerText;
+            message = `*CRITICAL HARDWARE REPAIR BOOKING*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Device:* ${encodeURIComponent(model)}%0A` +
+                      `*Service:* ${encodeURIComponent(service)}%0A` +
+                      `*Fee:* ${encodeURIComponent(price)}%0A` +
+                      `*Issue:* ${encodeURIComponent(desc)}%0A%0A` +
+                      `_I am booking a slot for repair/maintenance. Confirmation sent._`;
+
+        } else if (currentRoute === 'video') {
+            const service = document.getElementById('videoService').value;
+            const price = document.getElementById('displayPrice').innerText;
+            const linkStatus = document.getElementById('footageLink').value.trim();
+            message = `*VIDEO PRODUCTION ENGAGEMENT*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Package:* ${encodeURIComponent(service)}%0A` +
+                      `*Price:* ${encodeURIComponent(price)}%0A` +
+                      `*Footage Link:* ${encodeURIComponent(linkStatus || 'None Provided')}%0A` +
+                      `*Vibe:* ${encodeURIComponent(desc)}%0A%0A` +
+                      `_I am ready to proceed with the payment confirmation._`;
+
+        } else if (currentRoute === 'graphics') {
+            const service = document.getElementById('designService').value;
+            const price = document.getElementById('displayPrice').innerText;
+            const fileStatus = document.getElementById('fileAttachment').value.trim();
+            message = `*CREATIVE GRAPHIC DESIGN ORDER*%0A` +
+                      `*Client:* ${encodeURIComponent(name)}%0A` +
+                      `*Package:* ${encodeURIComponent(service)}%0A` +
+                      `*Price Paid:* ${encodeURIComponent(price)}%0A` +
+                      `*Instructions:* ${encodeURIComponent(desc)}%0A` +
+                      `*Attachment:* ${encodeURIComponent(fileStatus || 'None Provided')}%0A%0A` +
+                      `_I am sending the payment confirmation and file now..._`;
+        }
 
         window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
     }
+
+    // ==========================================
+    // 3. DROPDOWN PRICE CALCULATOR
+    // ==========================================
+    function updatePrice() {
+        // Looks for whatever main dropdown menu exists on the active page layout
+        const select = document.getElementById('consultType') || 
+                       document.getElementById('webService') || 
+                       document.getElementById('appService') || 
+                       document.getElementById('repairService') || 
+                       document.getElementById('videoService') || 
+                       document.getElementById('designService');
+                       
+        const display = document.getElementById('displayPrice');
+        
+        if (!select || !display) return; 
+        
+        const selectedOption = select.options[select.selectedIndex];
+        if (!selectedOption) return;
+
+        const price = selectedOption.getAttribute('data-price');
+        if (price) {
+            display.innerText = "KSH " + parseInt(price).toLocaleString();
+        }
+    }
+
+    // ==========================================
+    // 4. DYNAMIC API PACKAGE NODE PIPELINE
+    // ==========================================
+    async function loadTargetedPackages() {
+        try {
+            let r = await fetch('/api/services');
+            if (!r.ok) throw new Error("Database service stream connection disruption.");
+            let allServices = await r.json();
+            
+            let targetRoute = getCurrentPageRoute(); 
+            let filtered = allServices.filter(item => item.page_route === targetRoute);
+            
+            let container = document.getElementById('dynamicServicesContainer');
+            if (!container) return; // Silent return if a page template lacks this display target
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#666; font-size:1.1rem; padding: 20px;">Custom tiers coming online soon. Contact support details below.</p>`;
+                return;
+            }
+            
+            container.innerHTML = '';
+            filtered.forEach(pkg => {
+                const safeTitle = pkg.title.replace(/'/g, "\\'");
+                const safePrice = pkg.price.replace(/'/g, "\\'");
+
+                container.innerHTML += `
+                    <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom:20px;">
+                        <h2 style="color: var(--primary-blue); margin-top:0; font-family:'Montserrat', sans-serif;">${pkg.title}</h2>
+                        <p style="color: #444; font-size:1rem; line-height:1.6;">${pkg.description}</p>
+                        <p style="font-weight: bold; font-size: 1.2rem; color: var(--accent-orange); margin: 15px 0;" class="price-tag">Tier Structure: ${pkg.price}</p>
+                        <br>
+                        <button class="btn-order" onclick="triggerWhatsAppCard('${safeTitle}', '${safePrice}')">Order Service Channel Slot →</button>
+                    </div>
+                `;
+            });
+        } catch(err) {
+            console.error("Error connecting package pipeline:", err);
+            let container = document.getElementById('dynamicServicesContainer');
+            if (container) {
+                container.innerHTML = `<p style="text-align:center; color:var(--accent-red);">Failed to connect to the live services deployment node.</p>`;
+            }
+        }
+    }
+    
+    // Dynamic cards WhatsApp handler
+    function triggerWhatsAppCard(title, price) {
+        let msg = encodeURIComponent(`*DAN74TECH MEDIA ORDER SYSTEM*\n\n*Package:* ${title}\n*Investment Target:* ${price}\n\n_I am requesting setup timelines configuration details..._`);
+        window.open(`https://wa.me/254790435584?text=${msg}`, '_blank');
+    }
+
+    // ==========================================
+    // 5. SYNCHRONIZATION INITIALIZER LOOP
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", () => {
+        loadTargetedPackages();
+        updatePrice(); // Run once instantly to ensure default values align
+        
+        // Bind dynamic recalculation event list monitoring to whatever select target is live
+        const mainSelect = document.getElementById('consultType') || 
+                           document.getElementById('webService') || 
+                           document.getElementById('appService') || 
+                           document.getElementById('repairService') || 
+                           document.getElementById('videoService') || 
+                           document.getElementById('designService');
+        if (mainSelect) {
+            mainSelect.addEventListener('change', updatePrice);
+        }
+    });
 </script>
+
+         
 
 <footer>
     <div class="footer-grid">
