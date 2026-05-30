@@ -14,883 +14,491 @@
             --bg-dark: #0a0a0a; 
             --card-bg: rgba(255,255,255,0.04); 
             --text-light: #fff;
+            --border-tint: rgba(255,255,255,0.1);
         }
         body { 
             margin:0; 
             font-family:'Poppins',sans-serif; 
             background: #050505; 
             color: var(--text-light);
+            line-height: 1.6;
         }
         
-        /* --- ADMINISTRATIVE AUTHENTICATION SCREEN --- */
+        /* --- ADMINISTRATIVE AUTHENTICATION LAYERING --- */
         #adminLogin {
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            background:linear-gradient(-45deg,#001133,#000,#0a0a0a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(-45deg, #001133, #000, #0a0a0a);
         }
-        .login-box {
-            background:var(--card-bg);
-            padding:40px;
-            border-radius:15px;
-            max-width:360px;
-            width:100%;
-            border:1px solid rgba(0,68,255,0.25);
-            border-top:4px solid var(--primary-blue);
-            text-align:center;
-            box-shadow:0 20px 45px rgba(0,0,0,0.85);
+        .login-card {
+            background: rgba(10, 10, 20, 0.85);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--border-tint);
+            backdrop-filter: blur(10px);
         }
-        .login-box h2 {
-            font-family:'Montserrat',sans-serif;
-            color:var(--primary-blue);
-            margin-bottom:25px;
-        }
-        
-        /* --- GLOBAL PANEL CORE FIELDS --- */
-        input, select, textarea {
-            width:100%;
-            padding:12px;
-            margin-bottom:12px;
-            background:rgba(255,255,255,0.04);
-            border:1px solid #252525;
-            border-radius:8px;
-            color:white;
-            box-sizing:border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-        
-        /* --- INTERACTIVE ACTION TRIGGERS --- */
-        .btn {
-            width:100%;
-            padding:14px;
-            border-radius:8px;
-            border:none;
-            font-weight:bold;
-            text-transform:uppercase;
-            transition:.3s;
-            color:#fff; 
-            cursor:pointer;
-        }
-        .btn-blue { background:var(--primary-blue); }
-        .btn-blue:hover { background:#0033cc; }
-        .btn-save { background:var(--success-green); }
-        .btn-save:hover { background: #1ebd54; }
-        .btn-danger { background:var(--accent-red); }
-        .btn-danger:hover { background: #cc1f1f; }
-        
-        /* --- CORE BACKEND WORKSPACE STRUCTURE --- */
-        #adminDashboard { display:none; }
-        .dashboard-header {
-            background:#0d0d0d;
-            padding:15px 30px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            border-bottom: 1px solid #151515;
-        }
-        .dashboard-header h1 { 
-            font-family:'Montserrat';
-            font-size:1.4rem; 
-            margin:0;
-            letter-spacing: 1px;
-        }
-        .logout-btn {
-            background:var(--accent-red);
-            color:#fff;
-            border:none;
-            padding:8px 16px;
-            border-radius:6px;
-            font-weight:600;
-            cursor:pointer;
-            transition: .3s;
-        }
-        .logout-btn:hover { background: #cc1f1f; }
-        
-        .dashboard-container { display:flex; min-height: calc(100vh - 67px); }
-        .sidebar {
-            width:250px;
-            background:#0c0c0c;
-            padding:20px 0;
-            border-right: 1px solid #151515;
-        }
-        .nav-item {
-            padding:15px 25px;
-            color:#8a8a8a;
-            cursor:pointer;
-            font-weight:600;
-            transition:.3s;
-            border-left:4px solid transparent;
-        }
-        .nav-item:hover, .nav-item.active {
-            background:rgba(0,68,255,.08);
-            color:white;
-            border-left:4px solid var(--primary-blue);
-        }
-        
-        .content { padding:40px; width:100%; box-sizing: border-box; }
-        .tab-content { display:none; animation:uiFade .35s cubic-bezier(.1,1,.1,1); }
-        .tab-content.active { display:block; }
-        @keyframes uiFade { 
-            from { opacity:0; transform:translateY(8px); } 
-            to { opacity:1; transform:translateY(0); } 
-        }
-        
-        /* --- ARRAYS DATA VISUALIZATION TABLES --- */
-        .data-table {
-            width:100%;
-            border-collapse:collapse;
-            background:var(--card-bg);
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .data-table th, .data-table td { padding:14px; text-align:left; border-bottom: 1px solid #151515; }
-        .data-table th { background:#0e0e0e; color:var(--primary-blue); font-family: 'Montserrat'; font-size: 0.9rem; }
-        .data-table img { max-width:52px; border-radius:6px; display: block; }
-        
-        /* --- CARD OBJECT FORMS & COMPOSITES --- */
-        .edit-form { 
-            background:rgba(255,255,255,0.02); 
-            border:1px solid #151515; 
-            padding:20px; 
-            border-radius:8px; 
+        .login-card h2 {
+            font-family: 'Montserrat', sans-serif;
             margin-bottom: 25px;
+            letter-spacing: 1px;
+            color: #fff;
         }
-        .edit-form h3, .edit-form h4, .edit-form h5 { margin-top: 0; font-family: 'Montserrat'; }
-        .flex { display:flex; gap:12px; flex-wrap: wrap; }
-        .flex input, .flex select, .flex textarea { flex: 1; min-width: 200px; margin-bottom: 0; }
-        .flex textarea { min-width: 100%; margin-top: 10px; }
-        .flex button { margin-top: 10px; }
-        
-        /* --- HIERARCHICAL SUB-SERVICES EXTENSION STYLE INTERFACE --- */
-        .expand { 
-            cursor:pointer; 
-            color:#fff; 
-            background: var(--primary-blue); 
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            font-size: 0.85rem; 
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 8px;
-            transition: .2s;
-        }
-        .expand:hover { background: #0033cc; }
-        .subServiceList { 
-            margin-left: 20px; 
-            margin-top: 15px; 
-            padding: 20px; 
-            background: rgba(0,0,0,0.3); 
-            border-radius: 8px; 
-            border: 1px dashed #252525;
-        }
-        .subServiceCard { 
-            background: #111; 
-            margin:10px 0; 
-            padding: 15px; 
-            border-radius: 6px; 
-            border-left: 3px solid var(--accent-orange);
+
+        /* --- CONTROL ENVIRONMENT PANELS PANEL --- */
+        #adminDashboard { display: none; }
+        .nav-header {
+            background: #0a0a14;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border-tint);
         }
-        
-        .inline-actions button, .subServiceCard button, .data-table button {
-            background: #222;
+        .nav-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            margin: 0;
+            background: linear-gradient(45deg, #fff, var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-logout {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn-logout:hover { opacity: 0.9; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media(max-width: 500px){
+            .dashboard-grid { grid-template-columns: 1fr; padding: 15px; }
+        }
+
+        .panel-box {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 30px;
+            border: 1px solid var(--border-tint);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .panel-box h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-orange);
+            padding-left: 12px;
+        }
+
+        /* --- STYLISH UI FORM INPUT COMPONENTS --- */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-tint);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+        }
+        select.form-control option {
+            background: #111;
             color: #fff;
-            border: 1px solid #333;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-submit:active { transform: scale(0.99); }
+
+        /* --- CONTROL DATATABLE GRID SCHEMES --- */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid var(--border-tint);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-tint);
+        }
+        th {
+            background: rgba(255,255,255,0.02);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #888;
+        }
+        tr:hover td { background: rgba(255,255,255,0.01); }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #222;
+            color: #ccc;
+        }
+        .badge.route-web { background: #0044ff; color: #fff; }
+        .badge.route-app { background: #a100ff; color: #fff; }
+        .badge.route-video { background: #ff0055; color: #fff; }
+        .badge.route-repairs { background: #ff9900; color: #fff; }
+
+        .action-btn {
             padding: 6px 12px;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.8rem;
             margin-right: 5px;
-            transition: .2s;
         }
-        .inline-actions button:hover, .subServiceCard button:hover, .data-table button:hover {
-            background: #333;
-        }
-        .inline-actions .btn-danger, .subServiceCard .btn-danger, .data-table .btn-danger {
-            background: var(--accent-red);
-            border: none;
-        }
-        .inline-actions .btn-danger:hover, .subServiceCard .btn-danger:hover, .data-table .btn-danger:hover {
-            background: #cc1f1f;
-        }
+        .btn-edit { background: #333; color: white; }
+        .btn-edit:hover { background: #444; }
+        .btn-delete { background: var(--accent-red); color: white; }
+        .btn-delete:hover { opacity: 0.9; }
 
-        /* --- TOAST TRANSACTIONS FEEDBACK NOTIFICATION --- */
-        #toast {
-            position:fixed;
-            bottom:30px;
-            right:30px;
-            padding:16px 28px;
-            border-radius:8px;
-            font-weight:bold;
-            box-shadow:0 8px 25px rgba(0,0,0,0.6);
-            background:var(--success-green);
-            z-index:10000;
-            display:none;
-            color: #fff;
-            animation: uiFade 0.3s ease;
+        /* --- SYSTEM GLOBAL TOAST SIGNALS --- */
+        #toastNode {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            z-index: 99999;
+            font-weight: 600;
+            border-left: 5px solid var(--primary-blue);
         }
-        #toast.error-toast { background:var(--accent-red); }
-        
-        hr { border: 0; border-top: 1px solid #151515; margin: 30px 0; }
-
-        @media (max-width:900px) {
-            .dashboard-container { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; display: flex; flex-wrap: wrap; padding: 0; }
-            .nav-item { flex: 1; text-align: center; padding: 15px 10px; border-left: none; border-bottom: 4px solid transparent; }
-            .nav-item:hover, .nav-item.active { border-left: none; border-bottom: 4px solid var(--primary-blue); }
-            .content { padding: 20px; }
+        #toastNode.active {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
+<div id="toastNode">System Broadcast Payload Active</div>
+
 <div id="adminLogin">
-    <div class="login-box">
-        <h2>DAN74TECH MEDIA</h2>
-        <input type="text" id="adminUser" placeholder="Admin Username">
-        <input type="password" id="adminPass" placeholder="Password">
-        <button class="btn btn-blue" onclick="executeLoginAuthentication()">Verify Identity</button>
-        <p id="loginError" style="color: var(--accent-red); font-size: 0.9rem; display:none; margin-top: 15px; font-weight: 600;">Access Denied. Invalid Administrative Credentials.</p>
+    <div class="login-card">
+        <h2>PORTAL GATEWAY</h2>
+        <div class="form-group" style="text-align: left;">
+            <label>Master Security Key Check</label>
+            <input type="password" id="secretPasskey" class="form-control" placeholder="••••••••••••" onkeydown="if(event.key === 'Enter') attemptGateAuthorization()">
+        </div>
+        <button type="button" class="btn-submit" onclick=attemptGateAuthorization()>Authorize Framework Access</button>
     </div>
 </div>
 
 <div id="adminDashboard">
-    <header class="dashboard-header">
-        <h1>DAN74TECH | ENTERPRISE CONTROL PANEL</h1>
-        <button class="logout-btn" onclick="terminateSession()">LOGOUT</button>
-    </header>
-    <div class="dashboard-container">
-        <div class="sidebar">
-            <div class="nav-item active" id="nav-services" onclick="switchTab('services')">📋 Services</div>
-            <div class="nav-item" id="nav-portfolio" onclick="switchTab('portfolio')">🎬 Portfolio</div>
-            <div class="nav-item" id="nav-contacts" onclick="switchTab('contacts')">✉️ Inquiries</div>
-            <div class="nav-item" id="nav-users" onclick="switchTab('users')">👥 Admins</div>
-            <div class="nav-item" id="nav-payments" onclick="switchTab('payments')">💳 Payments</div>
-        </div>
-        <div class="content">
+    <div class="nav-header">
+        <h1>DAN74TECH MEDIA // CORE CONSOLE</h1>
+        <button class="btn-logout" onclick="terminateSession()">Lock Terminal</button>
+    </div>
 
-            <div class="tab-content active" id="tab-services">
-                <h2>Services & Hierarchical Sub-services</h2>
-                <form id="createServiceForm" class="edit-form">
-                    <h3>Create New Master Service</h3>
-                    <div class="flex">
-                        <input type="text" name="title" required placeholder="Title">
-                        <input type="text" name="category" required placeholder="Category">
-                        <input type="text" name="price_range" required placeholder="Price Metrics (e.g. KSH 2,000)">
-                        <input type="text" name="pricing_link" placeholder="Pricing Anchor Link (Default: contact.html)">
-                        <input type="file" name="image" accept="image/*">
-                        <textarea name="description" required placeholder="Service Architecture Description Specifications..."></textarea>
-                    </div>
-                    <button class="btn btn-blue" type="submit">Deploy Master Service</button>
-                </form>
-                <br>
-                <h3>Live Managed System Services</h3>
-                <div id="serviceList"></div>
-            </div>
-
-            <div class="tab-content" id="tab-portfolio">
-                <h2>Manage Interactive Portfolio Display Registry</h2>
-                <form id="createPortfolioForm" class="edit-form">
-                    <h3>Register Asset Entry</h3>
-                    <div class="flex">
-                        <input type="text" name="title" required placeholder="Project Asset Title">
-                        <input type="text" name="category" required placeholder="System Service Functional Category">
-                        <select name="media_type" id="portfolioMediaType" onchange="adjustPortfolioFormInput(this.value)">
-                            <option value="image">Static Binary Image</option>
-                            <option value="video">Streaming External Video Link</option>
-                        </select>
-                        <div id="portfolioMediaContainer" style="width: 100%;">
-                            <input type="file" name="media" id="portfolioFileField" accept="image/*" required>
-                        </div>
-                        <textarea name="description" placeholder="Project implementation context analysis summaries..."></textarea>
-                    </div>
-                    <button class="btn btn-blue" type="submit">Compile To Live Portfolio Gallery</button>
-                </form>
-                <hr>
-                <table class="data-table" id="portfolioTable">
-                    <thead>
-                        <tr><th>Media Asset</th><th>Title</th><th>Category</th><th>Storage Pipeline</th><th>Description</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="tab-content" id="tab-contacts">
-                <h2>Client Inquiry Logging Dashboard Array</h2>
-                <table class="data-table" id="contactsTable">
-                    <thead>
-                        <tr><th>Client Designation Name</th><th>Structural Contact Information</th><th>Service System Type</th><th>Project Scope Specifications</th><th>Received Timeline Stamp</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="tab-content" id="tab-users">
-                <h2>Operator Accounts Dashboard Control</h2>
-                <form id="createUserForm" class="edit-form flex">
-                    <input name="username" placeholder="Administrative Username String" required>
-                    <input name="email" type="email" placeholder="Operator Mail Secure Gateway Address" required>
-                    <input name="password" type="password" placeholder="Passphrase Matrix String" required>
-                    <button class="btn btn-blue" type="submit">Instantiate Identity Node</button>
-                </form>
-                <br>
-                <table class="data-table" id="usersTable">
-                    <thead>
-                        <tr><th>System ID</th><th>Operator Reference Username</th><th>Primary Communication Address</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="tab-content" id="tab-payments">
-                <h2>Payment Systems Gateways Configurations</h2>
-                <div class="edit-form">
-                    <label style="font-weight: 600; display: block; margin-bottom: 5px;">M-PESA Merchant Till / Business Phone Pipeline</label>
-                    <input id="paymentNumber" value="0790 435 584 (Daniel Ngumi)" />
-                    <label style="font-weight: 600; display: block; margin-bottom: 5px; margin-top: 10px;">Alternative Settlement Layer Engine System</label>
-                    <input id="paymentAlt" value="-" />
-                    <button class="btn btn-save" onclick="savePaymentMethods(event)">Save Global State</button>
+    <div class="dashboard-grid">
+        <div class="panel-box">
+            <h2 id="formTitle">✨ Provision New Sub-Service Package</h2>
+            <form id="serviceForm" onsubmit="commitServicePackage(event)">
+                <input type="hidden" id="editServiceId" value="">
+                
+                <div class="form-group">
+                    <label>Package / Service Title</label>
+                    <input type="text" id="serviceTitle" class="form-control" placeholder="e.g., Premium E-Commerce Build" required>
                 </div>
-                <p style="margin-top:10px;color:#aaa;font-size:.95rem;">(Note: This environment parses variables configuration parameters directly to local terminal memory spaces.)</p>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Display Price / Rate</label>
+                        <input type="text" id="servicePrice" class="form-control" placeholder="e.g., KSH 25,000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Page View Deployment</label>
+                        <select id="servicePageRoute" class="form-control">
+                            <option value="web">Web Development (web.html)</option>
+                            <option value="app">App Development (app.html)</option>
+                            <option value="video">Video Production (video.html)</option>
+                            <option value="repairs">Tech Repairs (repairs.html)</option>
+                            <option value="graphics">Graphic Design (graphics.html)</option>
+                            <option value="advice">ICT Consultancy (advice.html)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Package Features & Scope Description</label>
+                    <textarea id="serviceDesc" class="form-control" rows="4" placeholder="Detail component matrices, technical frameworks included, delivery parameters..." required></textarea>
+                </div>
+
+                <button type="submit" id="submitServiceBtn" class="btn-submit">🚀 Publish Package Live</button>
+                <button type="button" id="cancelEditBtn" class="btn-submit" style="background:#222; margin-top:10px; display:none;" onclick="resetServiceForm()">Cancel Modification Session</button>
+            </form>
+        </div>
+
+        <div class="panel-box">
+            <h2>📢 Broadcast Portfolio Asset Showcase</h2>
+            <form id="portfolioForm" onsubmit="commitPortfolioAsset(event)">
+                <div class="form-group">
+                    <label>Showcase Project Name</label>
+                    <input type="text" id="portfolioTitle" class="form-control" placeholder="e.g., Meru Coffee Brand Spot" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Brief Creative/Technical Overview</label>
+                    <input type="text" id="portfolioDesc" class="form-control" placeholder="Describe frameworks used, capture format, or customer objective...">
+                </div>
+
+                <div class="form-group">
+                    <label>Media Asset Type Mapping</label>
+                    <select id="portfolioMediaType" class="form-control" onchange="togglePortfolioUploadFields()">
+                        <option value="image">Static High-Res Graphic asset (Cloudinary Upload)</option>
+                        <option value="video">Streaming Cinematic Showcase Link (YouTube Video)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="portfolioImageGroup">
+                    <label>Select Production File Upload</label>
+                    <input type="file" id="portfolioFile" class="form-control" accept="image/*">
+                </div>
+
+                <div class="form-group" id="portfolioVideoGroup" style="display:none;">
+                    <label>YouTube Stream URL Reference Link</label>
+                    <input type="url" id="portfolioYoutubeUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <button type="submit" class="btn-submit" style="background:var(--accent-orange);">⚡ Sync Milestone To Feed</button>
+            </form>
+        </div>
+
+        <div class="panel-box" style="grid-column: 1 / -1;">
+            <h2>📦 Live Enterprise Service Packages Pipeline</h2>
+            <div class="table-wrapper">
+                <table id="servicesTable">
+                    <thead>
+                        <tr>
+                            <th>Location Tag</th>
+                            <th>Package Variant Title</th>
+                            <th>Cost Configuration</th>
+                            <th>Scope Summary Description</th>
+                            <th style="text-align: right;">Operational Management</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color:#666; font-style: italic;">Querying cloud ledger endpoints...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<div id="toast"></div>
-
 <script>
-// --- RUNTIME TRANSACTION NOTIFIER PIPE ---
-function showToast(msg, error) {
-    var t = document.getElementById("toast");
-    t.innerText = msg;
-    t.className = error ? "error-toast" : "";
-    t.style.display = "block";
-    setTimeout(() => { t.style.display = "none"; }, 3500);
-}
+// ==========================================
+// 1. SYSTEM SECURITY MIDDLEWARE INTERACTION
+// ==========================================
+let sessionTokenSecret = "";
 
-// --- CENTRALIZED BACKEND NAVIGATION TABS SWAP STRATEGY ---
-function switchTab(tab) {
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    document.getElementById('nav-' + tab).classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-}
-
-// --- CORE IDENTITY RECOGNITION VALIDATION POINT ---
-async function executeLoginAuthentication() {
-    let u = document.getElementById("adminUser").value;
-    let p = document.getElementById("adminPass").value;
-    let res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: u, password: p })
-    });
-    if (res.ok) {
-        document.getElementById("adminDashboard").style.display = "block";
+function attemptGateAuthorization() {
+    const input = document.getElementById("secretPasskey").value;
+    // Client security gate confirmation
+    if (input === "dan74tech2026") {
+        sessionTokenSecret = input;
         document.getElementById("adminLogin").style.display = "none";
-        loadAllTables();
+        document.getElementById("adminDashboard").style.display = "block";
+        showToast("Authorization Granted. core-link active.");
+        executeGlobalSystemSync();
     } else {
-        document.getElementById("loginError").style.display = "block";
+        showToast("Invalid Master Token Signature.", true);
     }
 }
 
 function terminateSession() {
+    sessionTokenSecret = "";
+    document.getElementById("secretPasskey").value = "";
     document.getElementById("adminDashboard").style.display = "none";
     document.getElementById("adminLogin").style.display = "flex";
-    document.getElementById("adminPass").value = "";
-    document.getElementById("loginError").style.display = "none";
+    showToast("Terminal Locked down successfully.");
 }
 
-function loadAllTables() {
-    loadServices();
-    loadPortfolio();
-    loadContacts();
-    loadUsers();
+function showToast(msg, isError = false) {
+    const toast = document.getElementById("toastNode");
+    toast.innerText = msg;
+    toast.style.borderLeftColor = isError ? "var(--accent-red)" : "var(--success-green)";
+    toast.classList.add("active");
+    setTimeout(() => { toast.classList.remove("active"); }, 4000);
 }
 
-function adjustPortfolioFormInput(val) {
-    const container = document.getElementById("portfolioMediaContainer");
-    if (val === "image") {
-        container.innerHTML = `<input type="file" name="media" id="portfolioFileField" accept="image/*" required>`;
+function togglePortfolioUploadFields() {
+    const type = document.getElementById("portfolioMediaType").value;
+    if (type === "image") {
+        document.getElementById("portfolioImageGroup").style.display = "block";
+        document.getElementById("portfolioVideoGroup").style.display = "none";
     } else {
-        container.innerHTML = `<input type="url" name="media" id="portfolioFileField" placeholder="Paste YouTube / Google Drive Video Storage Streaming Link Source" required>`;
+        document.getElementById("portfolioImageGroup").style.display = "none";
+        document.getElementById("portfolioVideoGroup").style.display = "block";
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("adminDashboard").style.display = "none";
-    document.getElementById("paymentNumber").value = localStorage.getItem("payments_mpesa") || "0790 435 584 (Daniel Ngumi)";
-    document.getElementById("paymentAlt").value = localStorage.getItem("payments_alt") || "-";
-});
-
-// --- SUB-HIERARCHY DISPLAY TOGGLER INTERCEPT ---
-function toggleSub(id) {
-    let subEl = document.getElementById("subList" + id);
-    if (subEl) subEl.style.display = subEl.style.display === "none" ? "block" : "none";
+// Global engine synchronization sequence
+function executeGlobalSystemSync() {
+    loadServicesPipeline();
 }
 
 // ==========================================
-// 1. MASTER SERVICES + SUB-SERVICES SUBSYSTEMS
+// 2. SUB-SERVICES BUSINESS PIPELINE DATA LOGIC
 // ==========================================
-async function loadServices() {
+let runtimeServiceCacheMemory = [];
+
+async function loadServicesPipeline() {
+    const tbody = document.querySelector("#servicesTable tbody");
     try {
         let res = await fetch("/api/services");
-        let services = await res.json();
-        let container = document.getElementById("serviceList");
-        container.innerHTML = "";
+        if (!res.ok) throw new Error();
         
-        for (const s of services) {
-            let sub = await fetch(`/api/sub-services/${s.id}`);
-            let subArr = await sub.json();
-            
-            container.innerHTML += `
-              <div class="edit-form" style="margin-bottom:18px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
-                  <div>
-                    <h3 style="margin:0;color:var(--primary-blue);">${s.title}</h3>
-                    <p style="margin:5px 0;font-size:0.9rem;color:#aaa;">Category: <b>${s.category}</b> | Top Tier Range: <b>${s.price_range}</b></p>
-                    <p style="margin:5px 0;">${s.description || ""}</p>
-                    ${s.image_url ? `<img src="${s.image_url}" style="max-width:120px;margin-top:10px;border-radius:6px;"/>` : ""}
-                    <br>
-                    <span class="expand" onclick="toggleSub(${s.id})">Configure Sub-services (${subArr.length})</span>
-                  </div>
-                  <div class="inline-actions">
-                    <button class="btn-danger" onclick="deleteService(${s.id})">Purge Service</button>
-                  </div>
-                </div>
-                
-                <div class="subServiceList" id="subList${s.id}" style="display:none;">
-                    <h4 style="color:var(--accent-orange);">Register New Service Sub-Node</h4>
-                    <form onsubmit="return addSubService(event,${s.id})" style="margin-bottom:20px;">
-                      <div style="display:grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
-                          <input name="title" required placeholder="Sub-service Title">
-                          <input name="price" required placeholder="Execution Cost (KSH)" type="number" step="0.01">
-                          <input type="text" name="payment_link" placeholder="Custom Processing Link">
-                          <input type="text" name="payment_method" placeholder="Payment Gateway Method" value="mpesa">
-                          <input type="file" name="image" accept="image/*">
-                      </div>
-                      <textarea name="description" placeholder="Sub-service metric deployment context information guidelines..." style="margin-top:10px;"></textarea>
-                      <button class="btn btn-save" type="submit" style="width:auto;padding:10px 20px;">Deploy Sub-Node</button>
-                    </form>
-                    
-                    <h4 style="border-top:1px dashed #252525;padding-top:15px;">Active Sub-Services Registries</h4>
-                    ${subArr.map(su => `
-                      <div class="subServiceCard">
-                        <div>
-                          <b style="color:#fff;font-size:1.05rem;">${su.title}</b> – KSH <b style="color:var(--success-green);">${su.price}</b>
-                          <p style="margin:5px 0;font-size:0.9rem;color:#ccc;">${su.description || ""}</p>
-                          <small style="color:#777;">Gateway Strategy: ${su.payment_method || "mpesa"} | <a href="${su.payment_link || '#'}" target="_blank" style="color:var(--primary-blue);">Target Node Link</a></small>
-                          ${su.image_url ? `<br><img src="${su.image_url}" style="max-width:60px;margin-top:5px;border-radius:4px;"/>` : ""}
-                        </div>
-                        <div>
-                          <button class="btn-danger" onclick="deleteSubService(${su.id},${s.id})">Purge Node</button>
-                        </div>
-                      </div>
-                    `).join("")}
-                </div>
-              </div>
+        runtimeServiceCacheMemory = await res.json();
+        tbody.innerHTML = "";
+
+        if(runtimeServiceCacheMemory.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#555;">No products initialized inside data tiers yet.</td></tr>`;
+            return;
+        }
+
+        runtimeServiceCacheMemory.forEach(item => {
+            const routeKey = item.page_route || 'web';
+            tbody.innerHTML += `
+                <tr>
+                    <td><span class="badge route-${routeKey}">${routeKey.toUpperCase()}</span></td>
+                    <td><strong>${item.title}</strong></td>
+                    <td style="color:var(--success-green); font-weight:600;">${item.price}</td>
+                    <td style="color:#aaa; font-size:0.85rem;">${item.description}</td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <button class="action-btn btn-edit" onclick="triggerServiceEditorMode(${item.id})">Edit</button>
+                        <button class="action-btn btn-delete" onclick="dropServicePackage(${item.id})">Drop</button>
+                    </td>
+                </tr>
             `;
+        });
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--accent-red);">Database streaming pipe timed out.</td></tr>`;
+    }
+}
+
+async function commitServicePackage(e) {
+    e.preventDefault();
+    const id = document.getElementById("editServiceId").value;
+    const title = document.getElementById("serviceTitle").value;
+    const price = document.getElementById("servicePrice").value;
+    const page_route = document.getElementById("servicePageRoute").value;
+    const description = document.getElementById("serviceDesc").value;
+
+    const payload = { title, price, page_route, category: page_route, description };
+    
+    // Setup routing values based on update vs creation flags
+    const endpoint = id ? `/api/services/${id}` : '/api/services';
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+        let response = await fetch(endpoint, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            showToast(id ? "Package configuration modifications updated successfully." : "New tier synchronized live.");
+            resetServiceForm();
+            loadServicesPipeline();
+        } else {
+            showToast("Server rejection verification fault.", true);
         }
     } catch (err) {
-        showToast("Error processing services sequence: " + err.message, true);
+        showToast("Network pipe insertion interrupted.", true);
     }
 }
 
-document.getElementById("createServiceForm").onsubmit = async function(e) {
-    e.preventDefault();
-    let imgFile = this.image.files[0], imgUrl = "";
-    if (imgFile) {
-        let fd = new FormData(); fd.append('file', imgFile);
-        let r = await fetch('/api/upload', { method: 'POST', body: fd });
-        let d = await r.json(); if (d.url) imgUrl = d.url;
-    }
-    let o = {
-        title: this.title.value, category: this.category.value,
-        price_range: this.price_range.value, description: this.description.value,
-        image_url: imgUrl, pricing_link: this.pricing_link.value || "contact.html"
-    };
-    let r = await fetch("/api/services", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(o)
-    });
-    if (r.ok) {
-        showToast("Master System Service Registered Live!");
-        this.reset();
-        loadServices();
-    } else {
-        showToast("Service Compilation Transaction Failed.", true);
-    }
-};
+function triggerServiceEditorMode(id) {
+    const item = runtimeServiceCacheMemory.find(x => x.id === id);
+    if (!item) return;
 
-async function deleteService(id) {
-    if (!confirm("Permanently purge this service and all relative child sub-service arrays data logs?")) return;
-    let r = await fetch("/api/services/" + id, { method: "DELETE" });
-    if (r.ok) { showToast("Master array block dropped."); loadServices(); }
-    else { showToast("Dropping event failed.", true); }
-}
-
-async function addSubService(e, service_id) {
-    e.preventDefault();
-    let f = e.target; let imgUrl = "";
-    const imgFile = f.image.files[0];
-    if (imgFile) {
-        let fd = new FormData(); fd.append('file', imgFile);
-        let up = await fetch('/api/upload', { method: "POST", body: fd });
-        let d = await up.json(); if (d.url) imgUrl = d.url;
-    }
-    let o = {
-        service_id, title: f.title.value, price: f.price.value, description: f.description.value,
-        image_url: imgUrl, payment_link: f.payment_link.value || "contact.html", payment_method: f.payment_method.value || 'mpesa'
-    };
-    let r = await fetch("/api/sub-services", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(o)
-    });
-    if (r.ok) {
-        showToast("Sub-Node Stream Attached Successfully.");
-        f.reset();
-        loadServices();
-    } else {
-        showToast("Sub-node attachment processing aborted.", true);
-    }
-    return false;
-}
-
-async function deleteSubService(id, service_id) {
-    if (!confirm("Wipe this targeted structural sub-service?")) return;
-    let r = await fetch(`/api/sub-services/${id}`, { method: "DELETE" });
-    if (r.ok) { showToast("Child segment unlinked."); loadServices(); }
-    else { showToast("Purging operation failed.", true); }
-}
-
-// ==========================================
-// 2. PORTFOLIO MEDIA PROCESSING ENGINE
-// ==========================================
-async function loadPortfolio() {
-    let r = await fetch("/api/portfolio"); let d = await r.json();
-    let tbody = document.querySelector("#portfolioTable tbody"); tbody.innerHTML = "";
-    d.forEach(x => {
-        let m = x.media_type === "image" ? `<img src="${x.media_url}"/>` : `<a href="${x.media_url}" target="_blank" style="color:var(--primary-blue); font-weight:600;">Stream Video Link</a>`;
-        tbody.innerHTML += `
-        <tr>
-            <td>${m}</td>
-            <td><b>${x.title}</b></td>
-            <td>${x.category}</td>
-            <td><span style="text-transform:uppercase; font-size:0.8rem; background:#111; padding:4px 8px; border-radius:4px;">${x.media_type}</span></td>
-            <td>${x.description || ""}</td>
-            <td>
-                <button class="btn-danger" onclick="deletePortfolio(${x.id})">Purge</button>
-            </td>
-        </tr>`;
-    });
-}
-
-document.getElementById("createPortfolioForm").onsubmit = async function(e) {
-    e.preventDefault();
-    let mType = this.media_type.value;
-    let mediaUrl = "";
-    
-    if (mType === "image") {
-        let mFile = document.getElementById("portfolioFileField").files[0];
-        if (mFile) {
-            let fd = new FormData(); fd.append("file", mFile);
-            let r = await fetch("/api/upload", { method: "POST", body: fd }); 
-            let d = await r.json(); if (d.url) mediaUrl = d.url;
-        }
-    } else {
-        mediaUrl = document.getElementById("portfolioFileField").value;
-        if (!mediaUrl) return showToast("Target location streaming variable required!", true);
-    }
-    
-    let o = {
-        title: this.title.value, category: this.category.value, media_type: mType, media_url: mediaUrl, description: this.description.value
-    };
-    let r = await fetch("/api/portfolio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(o)
-    });
-    if (r.ok) {
-        showToast("Portfolio Asset Entry Compiled Successfully!");
-        this.reset();
-        adjustPortfolioFormInput(document.getElementById("portfolioMediaType").value);
-        loadPortfolio();
-    } else {
-        showToast("Portfolio asset parsing encountered an exception.", true);
-    }
-};
-
-async function deletePortfolio(id) {
-    if (!confirm("Drop item registry from database storage arrays?")) return;
-    let r = await fetch("/api/portfolio/" + id, { method: "DELETE" });
-    if (r.ok) { showToast("Asset record unlinked."); loadPortfolio(); }
-    else { showToast("Dropping sequence collapsed.", true); }
-}
-
-// ==========================================
-// 3. CAPTURED INTAKE CUSTOMERS INQUIRIES
-// ==========================================
-async function loadContacts() {
-    let r = await fetch('/api/contacts'); let d = await r.json();
-    let tbody = document.querySelector("#contactsTable tbody"); tbody.innerHTML = "";
-    d.forEach(x => {
-        let tStamp = x.created_at ? new Date(x.created_at).toLocaleString() : "N/A";
-        tbody.innerHTML += `
-        <tr>
-            <td><b>${x.client_name}</b></td>
-            <td><span style="color:var(--accent-orange); font-weight:600;">${x.contact_info || ""}</span></td>
-            <td>${x.service_type || ""}</td>
-            <td>${x.project_scope || ""}</td>
-            <td><small style="color:#777;">${tStamp}</small></td>
-            <td>
-                <button class="btn-danger" onclick="deleteContact(${x.id})">Dismiss</button>
-            </td>
-        </tr>`;
-    });
-}
-
-async function deleteContact(id) {
-    if (!confirm("Dismiss and drop this client insight entry log?")) return;
-    let r = await fetch("/api/contacts/" + id, { method: "DELETE" });
-    if (r.ok) { showToast("Inquiry row purged."); loadContacts(); }
-    else { showToast("Purge event faulted.", true); }
-}
-
-// ==========================================
-// 4. OPERATIONAL SYSTEM NODE ACCOUNTS
-// ==========================================
-async function loadUsers() {
-    let r = await fetch("/api/users"); let d = await r.json();
-    let tbody = document.querySelector("#usersTable tbody"); tbody.innerHTML = "";
-    d.forEach(x => {
-        tbody.innerHTML += `
-        <tr>
-            <td><code>#${x.id}</code></td>
-            <td><b>${x.username}</b></td>
-            <td>${x.email}</td>
-        </tr>`;
-    });
-}
-
-document.getElementById("createUserForm").onsubmit = async function(e) {
-    e.preventDefault();
-    showToast("Route mapping interface: Secure registration strategy relies on initialization terminal seeds configuration.", true);
-};
-
-// ==========================================
-// 5. LOCAL MEMORY HARDWARE STRATEGY CONFIG
-// ==========================================
-function savePaymentMethods(e) {
-    e.preventDefault();
-    let p = document.getElementById("paymentNumber").value;
-    let b = document.getElementById("paymentAlt").value;
-    localStorage.setItem("payments_mpesa", p);
-    localStorage.setItem("payments_alt", b);
-    showToast("Global Payment Variable Configuration Cached to Client Container Memory Layers.");
-}
-
-function editService(id) {
-    // Fetch details and show a modal form with prefilled values
-    fetch(`/api/services`).then(r=>r.json()).then(svcs=>{
-        const svc = svcs.find(s=>s.id==id);
-        let modal = document.createElement('div');
-        modal.innerHTML = `
-            <div class="modal-overlay"><div class="modal">
-                <h3>Edit Service</h3>
-                <form id="editServiceForm">
-                    <input name="title" value="${svc.title}" required />
-                    <input name="category" value="${svc.category}" required />
-                    <input name="price_range" value="${svc.price_range}" required />
-                    <input name="pricing_link" value="${svc.pricing_link||''}" />
-                    <input name="image" type="file" />
-                    <textarea name="description">${svc.description||''}</textarea>
-                    <button type="submit">Save</button>
-                    <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
-                </form>
-            </div></div>
-        `;
-        document.body.appendChild(modal);
-
-        document.getElementById('editServiceForm').onsubmit = async function(e) {
-            e.preventDefault();
-            let imgFile = this.image.files[0],imgUrl=svc.image_url;
-            if(imgFile){
-                let fd=new FormData();fd.append('file',imgFile);
-                let up=await fetch('/api/upload',{method:'POST',body:fd});
-                let d=await up.json();if(d.url)imgUrl=d.url;
-            }
-            let payload = {
-                title: this.title.value, category: this.category.value,
-                price_range: this.price_range.value, pricing_link: this.pricing_link.value,
-                description: this.description.value, image_url: imgUrl
-            };
-            await fetch(`/api/services/${id}`, {
-                method: "PUT",
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(payload)
-            });
-            showToast("Updated!"); modal.remove(); loadServices();
-        }
-    });
-}
-// For sub-services, use a similar editSubService(id,parentServiceId) approach
-
-<section class="admin-card">
-    <h2 id="formTitle">✨ Provision New Sub-Service Package</h2>
-    <form id="serviceForm">
-        <input type="hidden" id="editServiceId" value="">
-        
-        <label>Service Package Title:</label>
-        <input type="text" id="serviceTitle" required placeholder="e.g., Premium E-Commerce Build">
-        
-        <<label for="serviceCategory">Target Application Route Module:</label>
-<select id="serviceCategory" required>
-    <option value="web">Web Development (index / web)</option>
-    <option value="app">App Development (app)</option>
-    <option value="repairs">Tech Repairs (repairs)</option>
-    <option value="video">Video Production (video)</option>
-    <option value="graphics">Graphic Design (graphics)</option>
-    <option value="advice">ICT Consultancy (advice)</option>
-</select>
-
-        </select>
-
-        <label>Category Label (Auto-Generated):</label>
-        <input type="text" id="serviceCategory" readonly value="Web Development">
-
-        <label>Pricing Matrix (KSH):</label>
-        <input type="text" id="servicePrice" required placeholder="KSH 15,000">
-
-        <label>Technical Scope / Description Details:</label>
-        <textarea id="serviceDesc" rows="3" required placeholder="Outline package details..."></textarea>
-
-        <button type="submit" id="submitServiceBtn" class="save-btn" style="width:100%; padding:12px; margin-top:10px;">🚀 Publish Package Live</button>
-        <button type="button" id="cancelEditBtn" onclick="resetServiceForm()" style="display:none; width:100%; padding:10px; margin-top:5px; background:#333; color:#fff; border:none; cursor:pointer;">Cancel Edit</button>
-    </form>
-</section>
-
-<script>
-// Auto-fill category string based on selected page target route choice
-function syncCategoryDropdown(val) {
-    const maps = {
-        'web': 'Web Development',
-        'app': 'App Development',
-        'graphics': 'Graphic Design',
-        'repairs': 'Tech Repairs',
-        'advice': 'ICT Consultancy',
-        'video': 'Video Production'
-    };
-    document.getElementById('serviceCategory').value = maps[val] || 'General';
-}
-
-// 1. Read / Load Packages into Admin Dashboard List Display Layout
-async function loadServices() {
-    let r = await fetch("/api/services");
-    let d = await r.json();
-    let tbody = document.querySelector("#servicesTable tbody");
-    tbody.innerHTML = "";
-    
-    d.forEach(x => {
-        tbody.innerHTML += `
-        <tr>
-            <td><code>#${x.id}</code></td>
-            <td><b>${x.title}</b></td>
-            <td><span class="badge" style="background:var(--primary-blue); padding:3px 7px; border-radius:4px; font-size:0.8rem;">${x.page_route}.html</span></td>
-            <td>${x.price}</td>
-            <td>
-                <button class="save-btn" style="padding:4px 10px; background:var(--accent-orange); margin-right:5px;" onclick='initiateEdit(${JSON.stringify(x).replace(/'/g, "&apos;")})'>✏️ Edit</button>
-                <button class="logout-btn" style="padding:4px 10px;" onclick="dropService(${x.id})">🗑️ Drop</button>
-            </td>
-        </tr>`;
-    });
-}
-
-// 2. Handle both CREATE and UPDATE action triggers safely on submit
-document.getElementById("serviceForm").onsubmit = async function(e) {
-    e.preventDefault();
-    
-    let id = document.getElementById("editServiceId").value;
-    let payload = {
-        title: document.getElementById("serviceTitle").value,
-        page_route: document.getElementById("serviceRoute").value,
-        category: document.getElementById("serviceCategory").value,
-        price: document.getElementById("servicePrice").value,
-        description: document.getElementById("serviceDesc").value
-    };
-
-    let url = "/api/services";
-    let method = "POST";
-
-    // If ID exists, switch context into a PUT network transaction request
-    if (id) {
-        url = `/api/services/${id}`;
-        method = "PUT";
-    }
-
-    let r = await fetch(url, {
-        method: method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
-
-    if (r.ok) {
-        showToast(id ? "🔄 Package modified successfully!" : "🚀 Live deployment provisioned!");
-        resetServiceForm();
-        loadServices();
-    } else {
-        showToast("Operation fault encountered.", true);
-    }
-};
-
-// 3. Populates form fields with selected dataset row contents to initiate an active update phase
-function initiateEdit(item) {
-    document.getElementById("formTitle").innerText = `✏️ Editing Package #${item.id}`;
+    document.getElementById("formTitle").innerText = "💾 Modify Dynamic Target Package Node";
     document.getElementById("editServiceId").value = item.id;
     document.getElementById("serviceTitle").value = item.title;
-    document.getElementById("serviceRoute").value = item.page_route || 'web';
-    document.getElementById("serviceCategory").value = item.category;
     document.getElementById("servicePrice").value = item.price;
+    document.getElementById("servicePageRoute").value = item.page_route || 'web';
     document.getElementById("serviceDesc").value = item.description;
     
-    document.getElementById("submitServiceBtn").innerText = "💾 Save Package Changes";
+    document.getElementById("submitServiceBtn").innerText = "Save Package Updates";
     document.getElementById("submitServiceBtn").style.background = "var(--success-green)";
     document.getElementById("cancelEditBtn").style.display = "block";
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Reset the form configuration array states back to clean default inputs mapping structure
 function resetServiceForm() {
     document.getElementById("formTitle").innerText = "✨ Provision New Sub-Service Package";
     document.getElementById("editServiceId").value = "";
     document.getElementById("serviceForm").reset();
-    document.getElementById("serviceCategory").value = "Web Development";
-    
     document.getElementById("submitServiceBtn").innerText = "🚀 Publish Package Live";
     document.getElementById("submitServiceBtn").style.background = "var(--primary-blue)";
     document.getElementById("cancelEditBtn").style.display = "none";
 }
 
-// Delete structural layout element handle pipeline
-async function dropService(id) {
-    if (!confirm("Permanently drop this sub-service package from database records?")) return;
-    let r = await fetch("/api/services/" + id, { method: "DELETE" });
-    if (r.ok) { showToast("Package purged."); loadServices(); }
-}
-</script>
-    
-    
-</script>
-</body>
-</html>
+async function dropServicePackage(id) {
+    if (!confirm("Permanently purge this sub-service package tier from relational tables?")) return;
+    try {
+        let res = aw
