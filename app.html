@@ -144,7 +144,76 @@
 
         window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
     }
+
+    <div id="dynamicServicesContainer" class="details-section" style="display: grid; gap: 20px; border: none; padding:0;">
+    </div>
+    // Automatically determine the route based on the current page's filename
+    function getCurrentPageRoute() {
+        // window.location.pathname gets something like "/web.html" or "/services/app.html"
+        const path = window.location.pathname;
+        const filename = path.substring(path.lastIndexOf('/') + 1);
+        
+        // Extract the name before ".html" (e.g., "web", "app", "repairs")
+        const route = filename.replace('.html', '').toLowerCase();
+        
+        // Fallback default if route can't be resolved or if it's the index home page
+        return (route === '' || route === 'index') ? 'web' : route;
+    }
+
+    // Fetch and display only packages mapped explicitly to this page route target
+    async function loadTargetedPackages() {
+        try {
+            let r = await fetch('/api/services');
+            if (!r.ok) throw new Error("Network response error");
+            let allServices = await r.json();
+            
+            // AUTOMATIC DETECTOR: Identifies 'web', 'app', 'repairs', 'advice', 'video', 'graphics', etc.
+            let targetRoute = getCurrentPageRoute(); 
+            let filtered = allServices.filter(item => item.page_route === targetRoute);
+            
+            let container = document.getElementById('dynamicServicesContainer');
+            if (!container) {
+                console.error("Target container '#dynamicServicesContainer' was not found in this HTML structural template.");
+                return;
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#666; font-size:1.1rem; padding: 20px;">Custom tiers coming online soon. Contact support details below.</p>`;
+                return;
+            }
+            
+            container.innerHTML = '';
+            filtered.forEach(pkg => {
+                container.innerHTML += `
+                    <div style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom:20px;">
+                        <h2 style="color: var(--primary-blue); margin-top:0; font-family:'Montserrat', sans-serif;">${pkg.title}</h2>
+                        <p style="color: #444; font-size:1rem; line-height:1.6;">${pkg.description}</p>
+                        <p style="font-weight: bold; font-size: 1.2rem; color: var(--accent-orange); margin: 15px 0;" class="price-tag">Tier Structure: ${pkg.price}</p>
+                        <br>
+                        <button class="btn-order" onclick="triggerWhatsApp('${pkg.title.replace(/'/g, "\\'")}', '${pkg.price.replace(/'/g, "\\'")}')">Order Service Channel Slot →</button>
+                    </div>
+                `;
+            });
+        } catch(err) {
+            console.error("Error connecting package pipeline:", err);
+            let container = document.getElementById('dynamicServicesContainer');
+            if (container) {
+                container.innerHTML = `<p style="text-align:center; color:var(--accent-red);">Failed to connect to the live services deployment node.</p>`;
+            }
+        }
+    }
+    
+    // Attach WhatsApp routing action logic dynamically 
+    function triggerWhatsApp(title, price) {
+        let msg = encodeURIComponent(`*DAN74TECH MEDIA ORDER SYSTEM*\n\n*Package:* ${title}\n*Investment Target:* ${price}\n\n_I am requesting setup timelines configuration details..._`);
+        window.open(`https://wa.me/254790435584?text=${msg}`, '_blank');
+    }
+
+    // Fire data synchronization stream instantly when UI structural DOM layers complete parsing loops
+    document.addEventListener("DOMContentLoaded", loadTargetedPackages);
 </script>
+    
+
 
 <footer>
     <div class="footer-grid">
