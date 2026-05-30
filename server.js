@@ -171,6 +171,53 @@ app.delete('/api/portfolio/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+// SUB-SERVICES ENDPOINTS
+app.get('/api/sub-services/:service_id', async (req, res) => {
+  const { service_id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM sub_services WHERE service_id=$1', [service_id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/sub-services', async (req, res) => {
+  const { service_id, title, price, description, image_url, payment_link, payment_method } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO sub_services (service_id, title, price, description, image_url, payment_link, payment_method)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [service_id, title, price, description, image_url, payment_link || 'contact.html', payment_method || 'mpesa']
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/sub-services/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, price, description, image_url, payment_link, payment_method } = req.body;
+  try {
+    await pool.query(
+      `UPDATE sub_services SET title=$1, price=$2, description=$3, image_url=$4, payment_link=$5, payment_method=$6 WHERE id=$7`,
+      [title, price, description, image_url, payment_link, payment_method, id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/sub-services/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM sub_services WHERE id = $1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // --- PUBLIC INTAKE CAPTURE OPERATION FOR OTHER WEB PAGES ---
 app.post('/api/public/inquire', async (req, res) => {
