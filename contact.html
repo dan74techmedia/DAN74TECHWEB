@@ -4,191 +4,256 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | DAN74TECH MEDIA</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-blue: #0044ff;
             --accent-orange: #ff9900;
-            --bg-light: #ffffff;
-            --text-dark: #222222;
+            --bg-dark: #07070c;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text-light: #ffffff;
+            --text-dim: #b0b0bc;
+            --border-glow: rgba(255, 255, 255, 0.08);
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             line-height: 1.6;
         }
 
         header {
-            background: var(--primary-blue);
-            color: white;
-            padding: 40px 20px;
+            background: linear-gradient(135deg, #001144 0%, #000011 100%);
+            padding: 50px 20px;
             text-align: center;
+            border-bottom: 1px solid var(--border-glow);
         }
 
-        .logo { width: 100px; height: auto; margin-bottom: 5px; }
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,68,255,0.4));
+        }
 
         header h1 {
             font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;            
+            font-size: 2.5rem;
             margin: 0;
-            font-size: 2.2rem;
+            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        nav {
-            background: var(--accent-orange);
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        header p {
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin: 10px 0 0;
+            letter-spacing: 1px;
         }
 
-        nav a {
-            color: white;
+        .contact-grid {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .info-panel, .form-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            padding: 40px;
+            border-radius: 14px;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .contact-method-item {
+            margin-bottom: 25px;
+        }
+
+        .contact-method-item strong {
+            display: block;
+            color: var(--accent-orange);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .contact-method-item a {
+            color: var(--text-light);
             text-decoration: none;
-            margin: 5px 15px;
-            font-weight: 600;
-            font-size: 13px;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        .contact-method-item a:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Forms Layout Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #aaa;
             text-transform: uppercase;
         }
 
-        nav a:hover { color: var(--primary-blue); }
-
-        .details-section { 
-            padding: 60px 20px; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            text-align: center;
-        }
-        
-        .details-section h2 { 
-            font-family: 'Montserrat', sans-serif; 
-            color: var(--primary-blue); 
-            text-transform: uppercase; 
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-
-        .contact-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-            display: inline-block;
-            margin: 20px auto;
-        }
-
-        .contact-list li {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .contact-list a {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .contact-list a:hover {
-            text-decoration: underline;
-        }
-
-        .quote {
-            margin-top: 40px;
-            font-style: italic;
-            color: #666;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-
-        footer {
-            background: #111;
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
             color: white;
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 50px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #0033cc;
+        }
+
+        .quote-box {
+            margin-top: 35px;
+            border-left: 3px solid var(--accent-orange);
+            padding-left: 15px;
+            font-style: italic;
+            color: var(--text-dim);
         }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
-    <h1>CONTACT US</h1>
+    <img src="logo.png" alt="DAN74TECH" class="logo" onerror="this.style.display='none'">
+    <h1>Initiate Connectivity</h1>
+    <p>Let's Transform Content Production Boundaries Together</p>
 </header>
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="services.html">Services</a>
-    <a href="contact.html">Contact</a>
-</nav>
-
-<section class="details-section">
-    <h2>📫 CONNECT WITH US</h2>
-    <p>Located in Meru, Kenya. Available for remote work worldwide.</p>
-    
-    <div style="margin: 30px 0;">
-        <a href="https://wa.me/254790435584" style="background:#25D366; color:white; padding:15px 40px; border-radius:50px; text-decoration:none; font-weight:bold; font-size: 1.2rem; display: inline-block; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);">
-            WhatsApp Direct
-        </a>
-    </div>
-
-    <ul class="contact-list">
-        <li>📧 <strong>Email:</strong> 
-            <a href="mailto:ngumidaniel425@gmail.com">ngumidaniel425@gmail.com</a>
-        </li>
-        <li>📧 <strong>Secondary:</strong> 
-            <a href="mailto:dantyzmediatech@gmail.com">dantyzmediatech@gmail.com</a>
-        </li>
-        <li>🔗 <strong>LinkedIn:</strong> 
-            <a href="https://www.linkedin.com/in/dantyzmediatech@gmail.com" target="_blank">Daniel Githinji</a>
-        </li>
-        <li>👥 <strong>Facebook:</strong> 
-            <a href="https://www.facebook.com/profile.php?id=61563839114232" target="_blank">Danstan Danty Miku</a>
-        </li>
-        <li>🎬 <strong>Media Page:</strong> 
-            <a href="https://www.facebook.com/profile.php?id=61571415613827" target="_blank">Dantyz Media Page</a>
-        </li>
-    </ul>
-
-    <div class="quote">
-        <p>"Building the future, focusing on productivity."</p>
-    </div>
-</section>
-
-<footer>
-    <div class="footer-grid">
-        <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
-            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
-            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+<div class="contact-grid">
+    <div class="info-panel">
+        <h2>Direct Terminals</h2>
+        
+        <div class="contact-method-item">
+            <strong>📞 Phone Contact Support</strong>
+            <a href="tel:+254790435584">+254 790 435 584</a>
         </div>
-        <div style="text-align: center;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
-            <p style="margin: 15px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
-                   🚀 View Technical GitHub
-                </a>
-            </p>
+
+        <div class="contact-method-item">
+            <strong>💬 Messaging Pipeline</strong>
+            <a href="https://wa.me/254790435584" target="_blank">WhatsApp Direct Link</a>
+        </div>
+
+        <div class="contact-method-item">
+            <strong>👤 Developer Persona Profile</strong>
+            <a href="https://facebook.com/profile.php?id=61563839114232" target="_blank">Danstan Danty Miku</a>
+        </div>
+
+        <div class="contact-method-item">
+            <strong>🎬 Enterprise Media Hub</strong>
+            <a href="https://facebook.com/profile.php?id=61571415613827" target="_blank">Dantyz Media Page</a>
+        </div>
+
+        <div class="quote-box">
+            "Building the future, focusing on productivity."
         </div>
     </div>
-    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
-        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
-    </div>
-</footer>
 
+    <div class="form-panel">
+        <h2>Submit Digital Brief</h2>
+        <form id="contactForm" onsubmit="transmitInquiry(event)">
+            <div class="form-group">
+                <label>Your Full Name / Company Handle</label>
+                <input type="text" id="clientName" class="form-control" placeholder="e.g., Alex Mwenda" required>
+            </div>
+
+            <div class="form-group">
+                <label>Desired Architecture Type</label>
+                <select id="projectCategory" class="form-control">
+                    <option value="Web Development Build">Web Development & Cloud Design</option>
+                    <option value="Mobile Application Engineering">Mobile App Architecture</option>
+                    <option value="Cinematic Video Spot">Video Production Production</option>
+                    <option value="Hardware Device Maintenance">Hardware Technical Repair</option>
+                    <option value="Brand Identity Asset">Graphic Visual Design</option>
+                    <option value="Strategic Business Advice">ICT Strategy Consultation</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Project Scope Overview & Operational Requirements</label>
+                <textarea id="projectScope" class="form-control" rows="5" placeholder="Detail parameters, performance expectations, target dates..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Dispatch Direct via WhatsApp 🚀</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function transmitInquiry(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById("clientName").value;
+        const category = document.getElementById("projectCategory").value;
+        const requirements = document.getElementById("projectScope").value;
+
+        // Structured URL query text creation
+        const messagePayload = encodeURIComponent(
+            `*DAN74TECH MEDIA - NEW DIGITAL BRIEF*\n\n` +
+            `*Client Handle:* ${name}\n` +
+            `*Target Stream:* ${category}\n\n` +
+            `*Scope Outline:*\n${requirements}`
+        );
+
+        const targetLink = `https://wa.me/254790435584?text=${messagePayload}`;
+        window.open(targetLink, '_blank');
+    }
+</script>
 </body>
 </html>
