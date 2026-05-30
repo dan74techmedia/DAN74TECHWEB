@@ -754,14 +754,16 @@ function editService(id) {
         <label>Service Package Title:</label>
         <input type="text" id="serviceTitle" required placeholder="e.g., Premium E-Commerce Build">
         
-        <label>Target Page View Deployment Location:</label>
-        <select id="serviceRoute" required onchange="syncCategoryDropdown(this.value)">
-            <option value="web">Web Development (web.html)</option>
-            <option value="app">App Development (app.html)</option>
-            <option value="graphics">Graphic Design (graphics.html)</option>
-            <option value="repairs">Tech Repairs (repairs.html)</option>
-            <option value="advice">ICT Consultancy (advice.html)</option>
-            <option value="video">Video Production (video.html)</option>
+        <<label for="serviceCategory">Target Application Route Module:</label>
+<select id="serviceCategory" required>
+    <option value="web">Web Development (index / web)</option>
+    <option value="app">App Development (app)</option>
+    <option value="repairs">Tech Repairs (repairs)</option>
+    <option value="video">Video Production (video)</option>
+    <option value="graphics">Graphic Design (graphics)</option>
+    <option value="advice">ICT Consultancy (advice)</option>
+</select>
+
         </select>
 
         <label>Category Label (Auto-Generated):</label>
