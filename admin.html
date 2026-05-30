@@ -699,6 +699,196 @@ function savePaymentMethods(e) {
     localStorage.setItem("payments_alt", b);
     showToast("Global Payment Variable Configuration Cached to Client Container Memory Layers.");
 }
+
+function editService(id) {
+    // Fetch details and show a modal form with prefilled values
+    fetch(`/api/services`).then(r=>r.json()).then(svcs=>{
+        const svc = svcs.find(s=>s.id==id);
+        let modal = document.createElement('div');
+        modal.innerHTML = `
+            <div class="modal-overlay"><div class="modal">
+                <h3>Edit Service</h3>
+                <form id="editServiceForm">
+                    <input name="title" value="${svc.title}" required />
+                    <input name="category" value="${svc.category}" required />
+                    <input name="price_range" value="${svc.price_range}" required />
+                    <input name="pricing_link" value="${svc.pricing_link||''}" />
+                    <input name="image" type="file" />
+                    <textarea name="description">${svc.description||''}</textarea>
+                    <button type="submit">Save</button>
+                    <button type="button" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                </form>
+            </div></div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('editServiceForm').onsubmit = async function(e) {
+            e.preventDefault();
+            let imgFile = this.image.files[0],imgUrl=svc.image_url;
+            if(imgFile){
+                let fd=new FormData();fd.append('file',imgFile);
+                let up=await fetch('/api/upload',{method:'POST',body:fd});
+                let d=await up.json();if(d.url)imgUrl=d.url;
+            }
+            let payload = {
+                title: this.title.value, category: this.category.value,
+                price_range: this.price_range.value, pricing_link: this.pricing_link.value,
+                description: this.description.value, image_url: imgUrl
+            };
+            await fetch(`/api/services/${id}`, {
+                method: "PUT",
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(payload)
+            });
+            showToast("Updated!"); modal.remove(); loadServices();
+        }
+    });
+}
+// For sub-services, use a similar editSubService(id,parentServiceId) approach
+
+<section class="admin-card">
+    <h2 id="formTitle">✨ Provision New Sub-Service Package</h2>
+    <form id="serviceForm">
+        <input type="hidden" id="editServiceId" value="">
+        
+        <label>Service Package Title:</label>
+        <input type="text" id="serviceTitle" required placeholder="e.g., Premium E-Commerce Build">
+        
+        <label>Target Page View Deployment Location:</label>
+        <select id="serviceRoute" required onchange="syncCategoryDropdown(this.value)">
+            <option value="web">Web Development (web.html)</option>
+            <option value="app">App Development (app.html)</option>
+            <option value="graphics">Graphic Design (graphics.html)</option>
+            <option value="repairs">Tech Repairs (repairs.html)</option>
+            <option value="advice">ICT Consultancy (advice.html)</option>
+            <option value="video">Video Production (video.html)</option>
+        </select>
+
+        <label>Category Label (Auto-Generated):</label>
+        <input type="text" id="serviceCategory" readonly value="Web Development">
+
+        <label>Pricing Matrix (KSH):</label>
+        <input type="text" id="servicePrice" required placeholder="KSH 15,000">
+
+        <label>Technical Scope / Description Details:</label>
+        <textarea id="serviceDesc" rows="3" required placeholder="Outline package details..."></textarea>
+
+        <button type="submit" id="submitServiceBtn" class="save-btn" style="width:100%; padding:12px; margin-top:10px;">🚀 Publish Package Live</button>
+        <button type="button" id="cancelEditBtn" onclick="resetServiceForm()" style="display:none; width:100%; padding:10px; margin-top:5px; background:#333; color:#fff; border:none; cursor:pointer;">Cancel Edit</button>
+    </form>
+</section>
+
+<script>
+// Auto-fill category string based on selected page target route choice
+function syncCategoryDropdown(val) {
+    const maps = {
+        'web': 'Web Development',
+        'app': 'App Development',
+        'graphics': 'Graphic Design',
+        'repairs': 'Tech Repairs',
+        'advice': 'ICT Consultancy',
+        'video': 'Video Production'
+    };
+    document.getElementById('serviceCategory').value = maps[val] || 'General';
+}
+
+// 1. Read / Load Packages into Admin Dashboard List Display Layout
+async function loadServices() {
+    let r = await fetch("/api/services");
+    let d = await r.json();
+    let tbody = document.querySelector("#servicesTable tbody");
+    tbody.innerHTML = "";
+    
+    d.forEach(x => {
+        tbody.innerHTML += `
+        <tr>
+            <td><code>#${x.id}</code></td>
+            <td><b>${x.title}</b></td>
+            <td><span class="badge" style="background:var(--primary-blue); padding:3px 7px; border-radius:4px; font-size:0.8rem;">${x.page_route}.html</span></td>
+            <td>${x.price}</td>
+            <td>
+                <button class="save-btn" style="padding:4px 10px; background:var(--accent-orange); margin-right:5px;" onclick='initiateEdit(${JSON.stringify(x).replace(/'/g, "&apos;")})'>✏️ Edit</button>
+                <button class="logout-btn" style="padding:4px 10px;" onclick="dropService(${x.id})">🗑️ Drop</button>
+            </td>
+        </tr>`;
+    });
+}
+
+// 2. Handle both CREATE and UPDATE action triggers safely on submit
+document.getElementById("serviceForm").onsubmit = async function(e) {
+    e.preventDefault();
+    
+    let id = document.getElementById("editServiceId").value;
+    let payload = {
+        title: document.getElementById("serviceTitle").value,
+        page_route: document.getElementById("serviceRoute").value,
+        category: document.getElementById("serviceCategory").value,
+        price: document.getElementById("servicePrice").value,
+        description: document.getElementById("serviceDesc").value
+    };
+
+    let url = "/api/services";
+    let method = "POST";
+
+    // If ID exists, switch context into a PUT network transaction request
+    if (id) {
+        url = `/api/services/${id}`;
+        method = "PUT";
+    }
+
+    let r = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (r.ok) {
+        showToast(id ? "🔄 Package modified successfully!" : "🚀 Live deployment provisioned!");
+        resetServiceForm();
+        loadServices();
+    } else {
+        showToast("Operation fault encountered.", true);
+    }
+};
+
+// 3. Populates form fields with selected dataset row contents to initiate an active update phase
+function initiateEdit(item) {
+    document.getElementById("formTitle").innerText = `✏️ Editing Package #${item.id}`;
+    document.getElementById("editServiceId").value = item.id;
+    document.getElementById("serviceTitle").value = item.title;
+    document.getElementById("serviceRoute").value = item.page_route || 'web';
+    document.getElementById("serviceCategory").value = item.category;
+    document.getElementById("servicePrice").value = item.price;
+    document.getElementById("serviceDesc").value = item.description;
+    
+    document.getElementById("submitServiceBtn").innerText = "💾 Save Package Changes";
+    document.getElementById("submitServiceBtn").style.background = "var(--success-green)";
+    document.getElementById("cancelEditBtn").style.display = "block";
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Reset the form configuration array states back to clean default inputs mapping structure
+function resetServiceForm() {
+    document.getElementById("formTitle").innerText = "✨ Provision New Sub-Service Package";
+    document.getElementById("editServiceId").value = "";
+    document.getElementById("serviceForm").reset();
+    document.getElementById("serviceCategory").value = "Web Development";
+    
+    document.getElementById("submitServiceBtn").innerText = "🚀 Publish Package Live";
+    document.getElementById("submitServiceBtn").style.background = "var(--primary-blue)";
+    document.getElementById("cancelEditBtn").style.display = "none";
+}
+
+// Delete structural layout element handle pipeline
+async function dropService(id) {
+    if (!confirm("Permanently drop this sub-service package from database records?")) return;
+    let r = await fetch("/api/services/" + id, { method: "DELETE" });
+    if (r.ok) { showToast("Package purged."); loadServices(); }
+}
+</script>
+    
+    
 </script>
 </body>
 </html>
