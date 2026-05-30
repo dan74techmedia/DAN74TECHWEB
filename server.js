@@ -9,29 +9,72 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// --- CORE SYSTEM MIDDLEWARE ---
+// ==========================================
+// 1. CORE SYSTEM MIDDLEWARE & ROUTING
+// ==========================================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// --- NEON POSTGRESQL CONNECTIVITY POOL ---
+// Serve static HTML wrappers smoothly
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// ==========================================
+// 2. NEON POSTGRESQL CONNECTIVITY POOL
+// ==========================================
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// --- CLOUDINARY MEDIA GATEWAY CONFIGURATION ---
+// Auto-Initialization Routine to secure table layers
+async function initializeDatabaseSchema() {
+    try {
+        // Services table initialization supporting dynamic routes mapping
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS services (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price VARCHAR(100),
+                category VARCHAR(100),
+                page_route VARCHAR(100) DEFAULT 'web'
+            );
+        `);
+        
+        // Portfolio showcase table initialization
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS portfolio (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                media_url TEXT NOT NULL,
+                media_type VARCHAR(50) DEFAULT 'image',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log("🚀 Neon Database Schema verified and running.");
+    } catch (err) {
+        console.error("❌ Database schema initialization failure:", err);
+    }
+}
+initializeDatabaseSchema();
+
+// ==========================================
+// 3. CLOUDINARY MEDIA GATEWAY CONFIGURATION
+// ==========================================
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_DB,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Multer memory-buffer routing strategy optimized for serverless/ephemeral environments like Render
+// Memory storage for serverless runtime stability
 const upload = multer({ storage: multer.memoryStorage() });
 
-// --- REUSABLE STREAMING UPLOAD HANDLING PIPE TO CLOUDINARY ---
 const uploadToCloudinary = (fileBuffer) => {
     return new Promise((resolve, reject) => {
         let stream = cloudinary.uploader.upload_stream(
@@ -45,274 +88,143 @@ const uploadToCloudinary = (fileBuffer) => {
     });
 };
 
-// --- HTML STATIC FILES ROUTE REDIRECTS ---
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+// ==========================================
+// 4. API ENDPOINTS: PACKAGES & SUB-SERVICES
+// ==========================================
 
-// --- ADMINISTRATIVE ACCESS CONTROL POINT ---
-app.post('/api/auth/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        if (result.rows.length > 0) {
-            const user = result.rows[0];
-            // Simple robust check matching database seeding parameters
-            if (user.password === password) {
-                return res.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
-            }
-        }
-        res.status(401).json({ success: false, error: "Invalid administrative credentials." });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// --- CLOUDINARY DIRECT BINARY INTERCEPT ROUTE ---
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ error: "No asset file structural stream found." });
-        const secureUrl = await uploadToCloudinary(req.file.buffer);
-        res.json({ success: true, url: secureUrl });
-    } catch (err) {
-        res.status(500).json({ error: "Cloudinary compilation transaction collapsed: " + err.message });
-    }
-});
-
-// --- MASTER SERVICES PERSISTENT WEB CRUD ENDPOINTS ---
+// GET all items - Feeds package pipeline to frontend forms and layouts
 app.get('/api/services', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM services ORDER BY category ASC, id DESC');
-        res.json(result.rows);
+        const result = await pool.query('SELECT * FROM services ORDER BY id DESC');
+        
+        // Data sanitization fallback: Map legacy 'category' entries cleanly to page_route keys if blank
+        const sanitizedData = result.rows.map(row => {
+            if (!row.page_route && row.category) {
+                row.page_route = row.category.toLowerCase().split(' ')[0];
+            }
+            return row;
+        });
+        
+        res.json(sanitizedData);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Fetch services error:", err);
+        res.status(500).json({ error: "Failed to pull package dataset streams." });
     }
 });
 
+// POST a new package - Published from admin operations portal
 app.post('/api/services', async (req, res) => {
-    const { title, category, price_range, description, image_url, pricing_link } = req.body;
-    try {
-        const result = await pool.query(
-            `INSERT INTO services (title, category, price_range, description, image_url, pricing_link) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [title, category, price_range, description, image_url, pricing_link || 'contact.html']
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+    const { title, description, price, category, page_route } = req.body;
+    
+    // Clean fallback to ensure page_route is always a neat alphanumeric key
+    const targetRoute = (page_route || category || 'web').toLowerCase().split(' ')[0];
 
-app.put('/api/services/:id', async (req, res) => {
-    const { id } = req.params;
-    const { title, category, price_range, description, image_url, pricing_link } = req.body;
     try {
         await pool.query(
-            `UPDATE services SET title=$1, category=$2, price_range=$3, description=$4, image_url=$5, pricing_link=$6 
-             WHERE id=$7`,
-            [title, category, price_range, description, image_url, pricing_link, id]
+            'INSERT INTO services (title, description, price, category, page_route) VALUES ($1, $2, $3, $4, $5)',
+            [title, description, price, category || targetRoute, targetRoute]
         );
-        res.json({ success: true, message: "Service metrics adjusted successfully." });
+        res.status(201).json({ success: true, message: "New custom tier published live." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Insert service error:", err);
+        res.status(500).json({ error: "Insertion schema validation fault." });
     }
 });
 
-app.delete('/api/services/:id', async (req, res) => {
+// PUT (Update) an existing service package
+app.put('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, price, category, page_route } = req.body;
+    const targetRoute = (page_route || category || 'web').toLowerCase().split(' ')[0];
+
     try {
-        await pool.query('DELETE FROM services WHERE id = $1', [req.params.id]);
-        res.json({ success: true, message: "Service purged from live storage arrays." });
+        const updateResult = await pool.query(
+            'UPDATE services SET title = $1, description = $2, price = $3, category = $4, page_route = $5 WHERE id = $6',
+            [title, description, price, category || targetRoute, targetRoute, id]
+        );
+        
+        if (updateResult.rowCount === 0) {
+            return res.status(404).json({ error: "Target data node not located." });
+        }
+        res.json({ success: true, message: "Package data modifications compiled successfully." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Update service error:", err);
+        res.status(500).json({ error: "Data manipulation update block exception." });
     }
 });
 
-// --- FULL TASKS PORTFOLIO CRUD SYSTEM ENDPOINTS ---
+// DELETE a service package
+app.delete('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deleteResult = await pool.query('DELETE FROM services WHERE id = $1', [id]);
+        if (deleteResult.rowCount === 0) {
+            return res.status(404).json({ error: "Target data record absent." });
+        }
+        res.json({ success: true, message: "Data package dropped permanently." });
+    } catch (err) {
+        console.error("Delete service error:", err);
+        res.status(500).json({ error: "Purge process interrupted." });
+    }
+});
+
+// ==========================================
+// 5. API ENDPOINTS: PORTFOLIO SHOWCASE
+// ==========================================
+
+// GET all showcase work items
 app.get('/api/portfolio', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
         res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Fetch portfolio error:", err);
+        res.status(500).json({ error: "Unable to retrieve production work data feeds." });
     }
 });
 
-app.post('/api/portfolio', async (req, res) => {
-    const { title, category, media_type, media_url, description } = req.body;
+// POST new work item using Multer buffer pipe straight to Cloudinary hosting
+app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
     try {
-        const result = await pool.query(
-            `INSERT INTO portfolio (title, category, media_type, media_url, description) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [title, category, media_type, media_url, description]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+        const { title, description, media_type, youtubeUrl } = req.body;
+        let finalMediaUrl = youtubeUrl || '';
 
-app.put('/api/portfolio/:id', async (req, res) => {
-    const { id } = req.params;
-    const { title, category, media_type, media_url, description } = req.body;
-    try {
+        // If a physical file layout upload is captured, route it to Cloudinary cloud vaults
+        if (req.file) {
+            finalMediaUrl = await uploadToCloudinary(req.file.buffer);
+        }
+
+        if (!finalMediaUrl) {
+            return res.status(400).json({ error: "Missing required asset source reference url or stream file." });
+        }
+
         await pool.query(
-            `UPDATE portfolio SET title=$1, category=$2, media_type=$3, media_url=$4, description=$5 WHERE id=$6`,
-            [title, category, media_type, media_url, description, id]
+            'INSERT INTO portfolio (title, description, media_url, media_type) VALUES ($1, $2, $3, $4)',
+            [title, description, finalMediaUrl, media_type || 'image']
         );
-        res.json({ success: true });
+
+        res.status(201).json({ success: true, message: "Production milestone entry broadcasted." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Portfolio publish error:", err);
+        res.status(500).json({ error: "Showcase module streaming connection fault." });
     }
 });
 
+// DELETE a showcase portfolio record
 app.delete('/api/portfolio/:id', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM portfolio WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- SUB-SERVICES ENDPOINTS ---
-app.get('/api/sub-services/:service_id', async (req, res) => {
-    const { service_id } = req.params;
-    try {
-        const result = await pool.query('SELECT * FROM sub_services WHERE service_id=$1', [service_id]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/sub-services', async (req, res) => {
-    const { service_id, title, price, description, image_url, payment_link, payment_method } = req.body;
-    try {
-        const result = await pool.query(
-            `INSERT INTO sub_services (service_id, title, price, description, image_url, payment_link, payment_method)
-             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [service_id, title, price, description, image_url, payment_link || 'contact.html', payment_method || 'mpesa']
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/sub-services/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, price, description, image_url, payment_link, payment_method } = req.body;
     try {
-        await pool.query(
-            `UPDATE sub_services SET title=$1, price=$2, description=$3, image_url=$4, payment_link=$5, payment_method=$6 WHERE id=$7`,
-            [title, price, description, image_url, payment_link, payment_method, id]
-        );
-        res.json({ success: true });
+        await pool.query('DELETE FROM portfolio WHERE id = $1', [id]);
+        res.json({ success: true, message: "Portfolio item entry dropped." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Delete portfolio item error:", err);
+        res.status(500).json({ error: "Showcase element drop routine failed." });
     }
 });
 
-app.delete('/api/sub-services/:id', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM sub_services WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+// ==========================================
+// 6. SYSTEM INSTANTIATION INITIALIZER
+// ==========================================
+app.listen(PORT, () => {
+    console.log(`📡 Core Application Online Layer Active. Listening on port: ${PORT}`);
 });
-
-// --- PUBLIC INTAKE CAPTURE OPERATION FOR OTHER WEB PAGES ---
-app.post('/api/public/inquire', async (req, res) => {
-    const { client_name, contact_info, service_type, project_scope } = req.body;
-    try {
-        await pool.query(
-            `INSERT INTO contacts (client_name, contact_info, service_type, project_scope) VALUES ($1, $2, $3, $4)`,
-            [client_name, contact_info, service_type, project_scope]
-        );
-        res.json({ success: true, message: "Inquiry logged into backend dashboard system." });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/contacts', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM contacts ORDER BY created_at DESC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/contacts/:id', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM contacts WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/users', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT id, username, email, created_at FROM users');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- SERVICES API WITH FULL CRUD ---
-
-// 1. Fetch all services
-app.get('/api/services', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM services ORDER BY id ASC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: "DB Fetch Error" });
-    }
-});
-
-// 2. Add a new service with its explicit route mapping
-app.post('/api/services', async (req, res) => {
-    const { title, description, price, category, page_route } = req.body;
-    try {
-        await pool.query(
-            'INSERT INTO services (title, description, price, category, page_route) VALUES ($1, $2, $3, $4, $5)',
-            [title, description, price, category, page_route]
-        );
-        res.status(201).json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: "Insertion failed" });
-    }
-});
-
-// 3. UPDATE an existing service package (The missing link!)
-app.put('/api/services/:id', async (req, res) => {
-    const { id } = req.params;
-    const { title, description, price, category, page_route } = req.body;
-    try {
-        await pool.query(
-            'UPDATE services SET title = $1, description = $2, price = $3, category = $4, page_route = $5 WHERE id = $6',
-            [title, description, price, category, page_route, id]
-        );
-        res.json({ success: true, message: "Package updated successfully" });
-    } catch (err) {
-        res.status(500).json({ error: "Update operation failed" });
-    }
-});
-
-// 4. Delete a service
-app.delete('/api/services/:id', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM services WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: "Delete failed" });
-    }
-});
-
-
-// Initial startup execution interface mapping
-app.listen(PORT, () => console.log(`DAN74TECH MEDIA Engine initialized live on port ${PORT}`));
-             
