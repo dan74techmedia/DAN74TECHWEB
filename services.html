@@ -4,216 +4,338 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Services | DAN74TECH MEDIA</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-blue: #0044ff;
             --accent-orange: #ff9900;
-            --bg-light: #ffffff;
-            --text-dark: #222222;
+            --bg-dark: #07070c;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text-light: #ffffff;
+            --text-dim: #b0b0bc;
+            --border-glow: rgba(255, 255, 255, 0.08);
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             line-height: 1.6;
-        }
-        
-           .logo {
-            width: 110px;
-            height: auto;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
 
         header {
-            background: var(--primary-blue);
-            color: white;
-            padding: 40px 20px;
+            background: linear-gradient(135deg, #001144 0%, #000011 100%);
+            padding: 50px 20px;
             text-align: center;
+            border-bottom: 1px solid var(--border-glow);
         }
-        
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,68,255,0.4));
+        }
 
         header h1 {
             font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;            
+            font-size: 2.5rem;
             margin: 0;
-            font-size: 2.2rem;
+            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        nav {
-            background: var(--accent-orange);
-            padding: 12px;
+        header p {
+            color: var(--accent-orange);
+            font-weight: 600;
+            margin: 10px 0 0;
+            letter-spacing: 1px;
+        }
+
+        /* Category Quick Navigation */
+        .category-nav {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 10px;
+            border-bottom: 1px solid var(--border-glow);
         }
 
-        nav a {
-            color: white;
+        .category-nav a {
+            color: var(--text-light);
             text-decoration: none;
-            margin: 5px 15px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 13px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .category-nav a:hover {
+            color: var(--accent-orange);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .service-section {
+            margin-bottom: 60px;
+            scroll-margin-top: 80px; /* Prevents navigation header overlap */
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            border-left: 5px solid var(--primary-blue);
+            padding-left: 15px;
+            margin-bottom: 25px;
             text-transform: uppercase;
         }
 
-        nav a:hover { color: var(--primary-blue); }
-
-        .details-section { 
-            padding: 60px 20px; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            border-bottom: 1px solid #eee; 
-            transition: 0.3s;
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        .details-section:hover { background: #fafafa; }
-
-        .details-section h2 { 
-            font-family: 'Montserrat', sans-serif; 
-            color: var(--primary-blue); 
-            text-transform: uppercase; 
+        .package-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 30px;
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s, border-color 0.3s;
         }
 
-        .price-tag { 
-            color: var(--accent-orange); 
-            font-weight: bold; 
-            font-size: 1.1rem; 
-            background: #fdfdfd;
-            padding: 8px 15px;
-            border-left: 4px solid var(--primary-blue);
-            display: inline-block;
+        .package-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+        }
+
+        .package-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 1.5rem;
+            color: var(--accent-orange);
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
-        .btn-order {
-            display: inline-block;
+        .package-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            flex-grow: 1;
+            white-space: pre-line; /* Keeps form field line breaks intact */
+        }
+
+        .btn-action {
+            display: block;
+            text-align: center;
             background: var(--primary-blue);
             color: white;
             text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 50px;
+            padding: 12px;
+            border-radius: 6px;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 12px;
-            margin-top: 10px;
-            transition: 0.3s;
+            transition: opacity 0.2s;
         }
 
-        .btn-order:hover {
-            background: var(--accent-orange);
-            transform: translateX(10px);
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .empty-notice {
+            color: var(--text-dim);
+            font-style: italic;
+            grid-column: 1 / -1;
+            padding: 20px;
+            background: rgba(255,255,255,0.01);
+            border-radius: 8px;
+            border: 1px dashed var(--border-glow);
         }
 
         footer {
-            background: #111;
-            color: white;
-            text-align: center;
+            background: #030307;
             padding: 40px 20px;
-            margin-top: 50px;
+            margin-top: 80px;
+            border-top: 1px solid var(--border-glow);
+            font-size: 0.9rem;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-link {
+            color: var(--accent-orange);
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-   
 
 <header>
-      <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
-    <h1>OUR SERVICES</h1>
+    <img src="logo.png" alt="DAN74TECH" class="logo" onerror="this.style.display='none'">
+    <h1>Enterprise Service Matrices</h1>
+    <p>Professional Digital Solutions Architecture</p>
 </header>
-  
 
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="services.html">Services</a>
-    <a href="contact.html">Contact</a>
-</nav>
+<div class="category-nav">
+    <a href="#web">Web Dev</a>
+    <a href="#app">Apps</a>
+    <a href="#video">Video</a>
+    <a href="#repairs">Repairs</a>
+    <a href="#graphics">Graphics</a>
+    <a href="#advice">Consultancy</a>
+</div>
 
-<section class="details-section" id="graphics">
-    <h2>🎨 Graphic Design</h2>
-    <p>Professional visual identities. From concept sketches to high-resolution branding, we build designs that command attention.</p>
-    <p class="price-tag">KSH 250 - KSH 2,500</p>
-    <br>
-    <a href="graphics.html" class="btn-order">Order Graphics & Upload Files →</a>
-</section>
+<div class="container">
+    <section class="service-section" id="web">
+        <h2 class="section-title">🌐 Web Development & Hosting</h2>
+        <div class="packages-grid" id="container-web">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
 
-<section class="details-section" id="video">
-    <h2>🎬 Video Production</h2>
-    <p>Cinematic editing, color grading, and motion graphics for TikTok, YouTube, and corporate projects.</p>
-    <p class="price-tag">KSH 500 - KSH 1,500</p>
-    <br>
-    <a href="video.html" class="btn-order">Send Video Project →</a>
-</section>
+    <section class="service-section" id="app">
+        <h2 class="section-title">📱 Mobile Application Engineering</h2>
+        <div class="packages-grid" id="container-app">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
 
-<section class="details-section" id="web">
-    <h2>🌐 Web Development</h2>
-    <p>Secure, fast, and modern responsive websites. We handle everything from landing pages to E-Commerce stores.</p>
-    <p class="price-tag">Starting from KSH 5,000</p>
-    <br>
-    <a href="web.html" class="btn-order">Get a Web Quote →</a>
-</section>
+    <section class="service-section" id="video">
+        <h2 class="section-title">🎥 Cinematic Video Production</h2>
+        <div class="packages-grid" id="container-video">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
 
-<section class="details-section" id="app">
-    <h2>📱 App Development</h2>
-    <p>Custom Android (Java) and Web App solutions. Expert in system automation and registry databases.</p>
-    <p class="price-tag">Starting from KSH 25,000</p>
-    <br>
-    <a href="app.html" class="btn-order">Build Your App →</a>
-</section>
+    <section class="service-section" id="repairs">
+        <h2 class="section-title">🛠️ Hardware Repairs & Diagnostics</h2>
+        <div class="packages-grid" id="container-repairs">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
 
-<section class="details-section" id="repairs">
-    <h2>🔧 Tech Repairs</h2>
-    <p>Level 6 ICT hardware diagnostics, OS installations, and performance optimization for PCs and Mobile.</p>
-    <p class="price-tag">Diagnostic Fee: KSH 500</p>
-    <br>
-    <a href="repairs.html" class="btn-order">Book Repair Slot →</a>
-</section>
+    <section class="service-section" id="graphics">
+        <h2 class="section-title">🎨 Brand Identity & Graphic Design</h2>
+        <div class="packages-grid" id="container-graphics">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
 
-<section class="details-section" id="advice">
-    <h2>💡 ICT Consultancy</h2>
-    <p>Strategic IT solutions, network security audits, and professional troubleshooting advice.</p>
-    <p class="price-tag">Sessions from KSH 800</p>
-    <br>
-    <a href="advice.html" class="btn-order">Book Consultation →</a>
-</section>
+    <section class="service-section" id="advice">
+        <h2 class="section-title">💡 Strategic ICT Consultancy</h2>
+        <div class="packages-grid" id="container-advice">
+            <p class="empty-notice">Querying digital catalog ledger...</p>
+        </div>
+    </section>
+</div>
 
 <footer>
     <div class="footer-grid">
         <div>
             <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
-            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
-            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+            <p style="margin: 5px 0; color: var(--text-dim);">Based in Meru, Kenya</p>
+            <p style="margin: 5px 0; color: var(--text-dim);">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div style="text-align: center;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
-            <p style="margin: 15px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
-                   🚀 View Technical GitHub
-                </a>
-            </p>
+        <div>
+            <h3 style="font-family: 'Montserrat'; color: var(--text-light); margin-bottom: 10px;">Quick Hub</h3>
+            <p style="margin: 5px 0;"><a href="index.html" class="footer-link">Home Platform</a></p>
+            <p style="margin: 5px 0;"><a href="contact.html" class="footer-link">Get In Touch</a></p>
         </div>
-    </div>
-    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
-        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
     </div>
 </footer>
 
+<script>
+    document.addEventListener("DOMContentLoaded", fetchLiveServiceTiers);
+
+    async function fetchLiveServiceTiers() {
+        const structuralCategories = ['web', 'app', 'video', 'repairs', 'graphics', 'advice'];
+        
+        // Clear out placeholder text across targets
+        structuralCategories.forEach(cat => {
+            const el = document.getElementById(`container-${cat}`);
+            if (el) el.innerHTML = "";
+        });
+
+        try {
+            const response = await fetch('/api/services');
+            if (!response.ok) throw new Error("API stream broken");
+            
+            const services = await response.json();
+
+            // Track elements to easily evaluate if any category mapping was empty
+            const counters = { web: 0, app: 0, video: 0, repairs: 0, graphics: 0, advice: 0 };
+
+            services.forEach(item => {
+                // Read routing tags explicitly matching system endpoints
+                const targetRoute = item.page_route || 'web';
+                const gridNode = document.getElementById(`container-${targetRoute}`);
+
+                if (gridNode) {
+                    counters[targetRoute]++;
+                    
+                    // Formulate dynamic WhatsApp direct payload link
+                    const encodedMsg = encodeURIComponent(
+                        `*DAN74TECH MEDIA - INQUIRY SERVICE BOOKING*\n\n` +
+                        `*Package:* ${item.title}\n` +
+                        `*Price / Rate:* ${item.price}\n\n` +
+                        `_Details:_ ${item.description}`
+                    );
+                    const whatsappUrl = `https://wa.me/254790435584?text=${encodedMsg}`;
+
+                    gridNode.innerHTML += `
+                        <div class="package-card">
+                            <div>
+                                <h3 class="package-title">${item.title}</h3>
+                                <div class="package-price">${item.price}</div>
+                                <p class="package-desc">${item.description}</p>
+                            </div>
+                            <a href="${whatsappUrl}" target="_blank" class="btn-action">Secure & Book Package →</a>
+                        </div>
+                    `;
+                }
+            });
+
+            // Fallback for missing configurations
+            structuralCategories.forEach(cat => {
+                if (counters[cat] === 0) {
+                    document.getElementById(`container-${cat}`).innerHTML = 
+                        `<p class="empty-notice">No tier packages currently allocated to this block. Use Admin Terminal to provision assets.</p>`;
+                }
+            });
+
+        } catch (error) {
+            structuralCategories.forEach(cat => {
+                document.getElementById(`container-${cat}`).innerHTML = 
+                    `<p class="empty-notice" style="color:red;">Error processing live cloud catalog repository.</p>`;
+            });
+        }
+    }
+</script>
 </body>
 </html>
