@@ -9,143 +9,76 @@
         :root { 
             --primary-blue: #0044ff; 
             --accent-orange: #ff9900; 
-            --bg-light: #ffffff; 
+            --bg-light: #ffffff; \
             --text-dark: #222222;
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7f6; color: var(--text-dark); line-height: 1.6; }
-        
         header { background: var(--primary-blue); color: white; padding: 30px; text-align: center; }
         .logo { width: 80px; height: auto; }
-        
         nav { background: var(--accent-orange); padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; }
         nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; }
-
-        .container { max-width: 900px; margin: 30px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary-blue); display: flex; flex-direction: column; justify-content: space-between; }
+        .card h3 { margin: 0 0 10px 0; color: #111; }
+        .price { font-size: 1.5rem; font-weight: 800; color: var(--primary-blue); margin: 15px 0; }
+        .desc { font-size: 0.95rem; color: #555; margin-bottom: 20px; flex-grow: 1; }
+        .btn { background: var(--primary-blue); color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: 600; display: inline-block; border: none; cursor: pointer; text-align: center; }
+        .btn:hover { background: #0033cc; }
         
-        h2 { font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; text-align: center; }
-        
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
-        .detail-item { background: #f9f9f9; padding: 20px; border-radius: 12px; border-left: 5px solid var(--primary-blue); }
-
-        .order-form { background: #fff; border: 1px solid #eee; padding: 25px; border-radius: 15px; margin-top: 40px; }
-        label { font-weight: 600; display: block; margin-top: 15px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
-        
-        .mpesa-box { background: #e8f5e9; border: 2px dashed #2e7d32; padding: 25px; border-radius: 15px; text-align: center; margin-top: 25px; }
-        .mpesa-logo { width: 120px; margin-bottom: 10px; }
-        #displayPrice { font-size: 2rem; color: #2e7d32; font-weight: 800; }
-        
-        .btn-pay { 
-            background: #2e7d32; 
-            color: white; 
-            padding: 18px 30px; 
-            border: none; 
-            border-radius: 50px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            width: 100%; 
-            font-size: 1.1rem; 
-            text-transform: uppercase;
-            transition: 0.3s;
-        }
-        .btn-pay:hover { background: #1b5e20; transform: scale(1.02); }
-        
-        footer { background: #111; color: white; text-align: center; padding: 30px; margin-top: 50px; }
+        /* Modal Framework */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 500px; position: relative; }
+        .close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        footer { background: #111; color: white; padding: 40px 20px; margin-top: 60px; font-size: 0.9rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
+        .footer-btn { color: white; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="images/logo.png" alt="Logo" class="logo">
-    <h1>Web Development Studio</h1>
+    <a href="index.html"><img src="logo.png" alt="DAN74TECH MEDIA" class="logo" onerror="this.style.display='none'"></a>
+    <h1>Web Development Hub</h1>
+    <p>Professional serverless platforms, secure dynamic ecosystems, and modern software instances.</p>
 </header>
 
 <nav>
     <a href="index.html">Home</a>
-    <a href="about.html">About</a>
     <a href="services.html">Services</a>
+    <a href="about.html">About Us</a>
     <a href="contact.html">Contact</a>
 </nav>
 
 <div class="container">
-    <h2>Modern & Responsive Web Solutions</h2>
-    
-    <div class="details-grid">
-        <div class="detail-item">
-            <h3>🌐 Business Site</h3>
-            <p>5-page professional website, SEO optimized, and mobile responsive.</p>
-            <p><strong>Starting: KSH 15,000</strong></p>
-        </div>
-        <div class="detail-item">
-            <h3>🏢 Portfolio/Landing</h3>
-            <p>Single-page high-converting site for personal brands or events.</p>
-            <p><strong>Starting: KSH 5,000</strong></p>
-        </div>
-    </div>
-
-    <div class="order-form">
-        <h3>Project Requirements</h3>
-        <form id="orderForm">
-            <label for="userName">Full Name:</label>
-            <input type="text" id="userName" placeholder="Enter your name" required>
-
-            <label for="serviceType">Select Web Package:</label>
-            <select id="serviceType" onchange="updatePrice()">
-                <option value="Professional Business Site" data-price="15000">Business Website - KSH 15,000</option>
-                <option value="Personal Portfolio" data-price="5000">Portfolio/Landing Page - KSH 5,000</option>
-                <option value="E-Commerce Store" data-price="25000">Online Store (Shop) - KSH 25,000</option>
-            </select>
-
-            <label for="domainName">Desired Domain (e.g. yourbrand.com):</label>
-            <input type="text" id="domainName" placeholder="Enter preferred domain name">
-            
-            <label for="userDesc">Describe your website goals:</label>
-            <textarea id="userDesc" rows="4" placeholder="What is the website for? Do you have your own hosting?"></textarea>
-
-            <div class="mpesa-box">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png" alt="M-Pesa" class="mpesa-logo">
-                <p><strong>LIPA NA M-PESA</strong></p>
-                <p>Deposit/Payment to: <strong>0790 435 584</strong> (Daniel Ngumi)</p>
-                <p>Total Cost: <span id="displayPrice">KSH 15,000</span></p>
-                
-                <button type="button" onclick="sendToWhatsApp()" class="btn-pay">Confirm & Consult via WhatsApp</button>
-            </div>
-        </form>
-    </div>
+    <h2>Available Web Development Tiers</h2>
+    <div id="loading" style="text-align: center; color: #666; font-weight: 600;">Connecting to operational node inventory datasets...</div>
+    <div id="webGrid" class="grid"></div>
 </div>
 
-<script>
-    function updatePrice() {
-        const select = document.getElementById('serviceType');
-        const price = select.options[select.selectedIndex].getAttribute('data-price');
-        document.getElementById('displayPrice').innerText = "KSH " + price.toLocaleString();
-    }
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle">Order Strategy Briefing</h3>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Provide configuration details to map deployment timeline dependencies.</p>
+        
+        <input type="hidden" id="selectedService">
+        <input type="hidden" id="selectedPrice">
 
-    function sendToWhatsApp() {
-        const name = document.getElementById('userName').value;
-        const service = document.getElementById('serviceType').value;
-        const price = document.getElementById('displayPrice').innerText;
-        const domain = document.getElementById('domainName').value;
-        const desc = document.getElementById('userDesc').value;
-
-        if (name === "") {
-            alert("Please enter your name.");
-            return;
-        }
-
-        let domainInfo = domain !== "" ? domain : "TBD during consultation";
-
-        const message = `*NEW WEB PROJECT INQUIRY*%0A` +
-                        `*Customer:* ${name}%0A` +
-                        `*Service:* ${service}%0A` +
-                        `*Package Cost:* ${price}%0A` +
-                        `*Proposed Domain:* ${domainInfo}%0A` +
-                        `*Project Scope:* ${desc}%0A%0A` +
-                        `_I am ready to discuss hosting and the initial deposit._`;
-
-        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
-    }
-</script>
+        <div class="form-group">
+            <label for="proposedDomain">Proposed Domain Name / Brand Title:</label>
+            <input type="text" id="proposedDomain" placeholder="e.g., www.myfirm.com">
+        </div>
+        <div class="form-group">
+            <label for="projectScope">Specific Project Requirements or Integrations:</label>
+            <textarea id="projectScope" rows="4" placeholder="Detail specific features, serverless database needs, or workflow automation loops..."></textarea>
+        </div>
+        <button class="btn" style="width:100%; background: var(--accent-orange);" onclick="sendOrder()">🚀 Initiate Order Flow via WhatsApp</button>
+    </div>
+</div>
 
 <footer>
     <div class="footer-grid">
@@ -157,16 +90,86 @@
         <div style="text-align: center;">
             <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
             <p style="margin: 15px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s;">
-                   🚀 View Technical GitHub
-                </a>
+                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" class="footer-btn">Technical Infrastructure Blueprint</a>
             </p>
         </div>
     </div>
-    <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
-        <p style="color: #aaa;">&copy; 2026 | Dedicated to Excellence</p>
-    </div>
 </footer>
 
+<script>
+    const CATEGORY_TARGET = "Web Development";
+
+    async function loadDynamicServices() {
+        try {
+            const response = await fetch('/api/services');
+            if (!response.ok) throw new Error('Operational failure downstream.');
+            const services = await response.json();
+            
+            const filtered = services.filter(s => s.category === CATEGORY_TARGET);
+            const grid = document.getElementById('webGrid');
+            const loader = document.getElementById('loading');
+            
+            loader.style.display = 'none';
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: #666;">No dynamic live instances found for ${CATEGORY_TARGET}. Add packages via Admin Panel.</p>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div class="price">KSH ${Number(item.price).toLocaleString()}</div>
+                            <p class="desc">${item.description}</p>
+                        </div>
+                        <button class="btn" onclick="openModal('${item.title}', '${item.price}')">Order Infrastructure Package →</button>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            document.getElementById('loading').innerText = "Fault detected compiling dynamic node entities.";
+            console.error(error);
+        }
+    }
+
+    function openModal(serviceName, price) {
+        document.getElementById('selectedService').value = serviceName;
+        document.getElementById('selectedPrice').value = price;
+        document.getElementById('modalTitle').innerText = `Order: ${serviceName}`;
+        document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('orderModal').style.display = 'none';
+    }
+
+    function sendOrder() {
+        const service = document.getElementById('selectedService').value;
+        const price = Number(document.getElementById('selectedPrice').value).toLocaleString();
+        const domainInfo = document.getElementById('proposedDomain').value || 'Not provided yet';
+        const desc = document.getElementById('projectScope').value || 'Standard technical layout configuration package requested.';
+
+        const message = `*DAN74TECH MEDIA - PIPELINE ORDER SYSTEM*%0A%0A` +
+                        `*Core Category:* ${CATEGORY_TARGET}%0A` +
+                        `*Package:* ${service}%0A` +
+                        `*Package Cost:* KSH ${price}%0A` +
+                        `*Proposed Domain:* ${domainInfo}%0A` +
+                        `*Project Scope:* ${desc}%0A%0A` +
+                        `_I am ready to discuss database hosting frameworks and the execution roadmap._`;
+
+        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
+        closeModal();
+    }
+
+    window.onclick = function(e) {
+        let modal = document.getElementById('orderModal');
+        if (e.target == modal) closeModal();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDynamicServices);
+</script>
 </body>
 </html>
