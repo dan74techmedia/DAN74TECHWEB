@@ -9,167 +9,209 @@
         :root { 
             --primary-blue: #0044ff; 
             --accent-orange: #ff9900; 
-            --bg-light: #ffffff; \
-            --text-dark: #222222;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text-light: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.08);
         }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7f6; color: var(--text-dark); line-height: 1.6; }
-        header { background: var(--primary-blue); color: white; padding: 30px; text-align: center; }
-        .logo { width: 80px; height: auto; }
-        nav { background: var(--accent-orange); padding: 12px; text-align: center; position: sticky; top: 0; z-index: 1000; }
-        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
-        .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary-blue); display: flex; flex-direction: column; justify-content: space-between; }
-        .card h3 { margin: 0 0 10px 0; color: #111; }
-        .price { font-size: 1.5rem; font-weight: 800; color: var(--primary-blue); margin: 15px 0; }
-        .desc { font-size: 0.95rem; color: #555; margin-bottom: 20px; flex-grow: 1; }
-        .btn { background: var(--primary-blue); color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: 600; display: inline-block; border: none; cursor: pointer; text-align: center; }
-        .btn:hover { background: #0033cc; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            background: var(--bg-dark); 
+            color: var(--text-light); 
+            line-height: 1.6; 
+        }
         
-        /* Modal Framework */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 500px; position: relative; }
-        .close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        footer { background: #111; color: white; padding: 40px 20px; margin-top: 60px; font-size: 0.9rem; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1200px; margin: auto; }
-        .footer-btn { color: white; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block; }
+        header { 
+            background: linear-gradient(135deg, #001133 0%, var(--bg-dark) 100%); 
+            padding: 50px 20px; 
+            text-align: center; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo { width: 90px; height: auto; margin-bottom: 15px; }
+        header h1 { font-family: 'Montserrat'; font-size: 2.5rem; margin: 0; color: #fff; letter-spacing: 1px; }
+        header p { color: #888; margin: 10px 0 0 0; }
+        
+        nav { 
+            background: rgba(5, 5, 5, 0.85); 
+            backdrop-filter: blur(10px); 
+            padding: 15px; 
+            text-align: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--border-color);
+        }
+        nav a { color: #aaa; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
+        nav a:hover, nav a.active { color: var(--accent-orange); }
+
+        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 30px; 
+            margin-top: 40px;
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 16px; 
+            padding: 35px; 
+            text-align: left; 
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary-blue); 
+        }
+        .card h3 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0 0 15px 0; color: #fff; }
+        .card p { color: #aaa; font-size: 0.95rem; margin: 0 0 25px 0; min-height: 50px; }
+        .price { font-size: 1.8rem; font-weight: 700; color: var(--accent-orange); margin-bottom: 25px; font-family: 'Montserrat'; }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #888; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
+        .input-group input { 
+            width: 100%; 
+            padding: 12px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            color: #fff; 
+            font-family: 'Poppins';
+            box-sizing: border-box;
+        }
+        .input-group input:focus { border-color: var(--primary-blue); outline: none; }
+
+        .btn { 
+            display: block; 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary-blue); 
+            color: white; 
+            text-align: center; 
+            text-decoration: none; 
+            font-weight: 600; 
+            border-radius: 8px; 
+            border: none;
+            font-family: 'Poppins';
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover { background: #0033cc; }
+
+        footer { border-top: 1px solid var(--border-color); background: #020202; padding: 40px 20px; margin-top: 100px; font-size: 0.9rem; color: #666; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .footer-grid h3 { font-family: 'Montserrat'; font-size: 1.1rem; }
+        
+        .loading-text { text-align: center; font-size: 1.2rem; color: #666; width: 100%; grid-column: 1 / -1; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="index.html"><img src="logo.png" alt="DAN74TECH MEDIA" class="logo" onerror="this.style.display='none'"></a>
-    <h1>Web Development Hub</h1>
-    <p>Professional serverless platforms, secure dynamic ecosystems, and modern software instances.</p>
+    <img src="logo.png" alt="DAN74TECH" class="logo">
+    <h1>Web Development Architecture</h1>
+    <p>High-performance, secure, and modern serverless deployments.</p>
 </header>
 
 <nav>
     <a href="index.html">Home</a>
     <a href="services.html">Services</a>
-    <a href="about.html">About Us</a>
+    <a href="web.html" class="active">Web Dev</a>
+    <a href="app.html">Apps</a>
+    <a href="video.html">Video</a>
+    <a href="repairs.html">Repairs</a>
+    <a href="graphics.html">Graphics</a>
+    <a href="advice.html">Consultancy</a>
     <a href="contact.html">Contact</a>
 </nav>
 
 <div class="container">
-    <h2>Available Web Development Tiers</h2>
-    <div id="loading" style="text-align: center; color: #666; font-weight: 600;">Connecting to operational node inventory datasets...</div>
-    <div id="webGrid" class="grid"></div>
-</div>
-
-<div id="orderModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3 id="modalTitle">Order Strategy Briefing</h3>
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Provide configuration details to map deployment timeline dependencies.</p>
-        
-        <input type="hidden" id="selectedService">
-        <input type="hidden" id="selectedPrice">
-
-        <div class="form-group">
-            <label for="proposedDomain">Proposed Domain Name / Brand Title:</label>
-            <input type="text" id="proposedDomain" placeholder="e.g., www.myfirm.com">
-        </div>
-        <div class="form-group">
-            <label for="projectScope">Specific Project Requirements or Integrations:</label>
-            <textarea id="projectScope" rows="4" placeholder="Detail specific features, serverless database needs, or workflow automation loops..."></textarea>
-        </div>
-        <button class="btn" style="width:100%; background: var(--accent-orange);" onclick="sendOrder()">🚀 Initiate Order Flow via WhatsApp</button>
+    <div class="grid" id="tiersContainer">
+        <p class="loading-text">Fetching active database configuration parameters...</p>
     </div>
 </div>
 
 <footer>
     <div class="footer-grid">
         <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
-            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
-            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+            <h3>DAN74TECH MEDIA</h3>
+            <p>Based in Meru, Kenya</p>
+            <p>Working Hours: Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div style="text-align: center;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
-            <p style="margin: 15px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" class="footer-btn">Technical Infrastructure Blueprint</a>
-            </p>
+        <div style="text-align: right;">
+            <h3>TECHNICAL STANDARDS</h3>
+            <p>&copy; 2026 DAN74TECH MEDIA. Production Architecture Built Secure.</p>
         </div>
     </div>
 </footer>
 
 <script>
-    const CATEGORY_TARGET = "Web Development";
+    // System targeted category mapping
+    const SYSTEM_CATEGORY = "Web Development";
 
-    async function loadDynamicServices() {
+    document.addEventListener("DOMContentLoaded", loadDynamicTiers);
+
+    async function loadDynamicTiers() {
+        const container = document.getElementById("tiersContainer");
         try {
-            const response = await fetch('/api/services');
-            if (!response.ok) throw new Error('Operational failure downstream.');
-            const services = await response.json();
+            let response = await fetch("/api/services");
+            let data = await response.json();
             
-            const filtered = services.filter(s => s.category === CATEGORY_TARGET);
-            const grid = document.getElementById('webGrid');
-            const loader = document.getElementById('loading');
+            // Filter live records to pinpoint matches targeting this specific route layer
+            let targetPackages = data.filter(item => item.category === SYSTEM_CATEGORY);
             
-            loader.style.display = 'none';
-            grid.innerHTML = '';
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: #666;">No dynamic live instances found for ${CATEGORY_TARGET}. Add packages via Admin Panel.</p>`;
+            if (targetPackages.length === 0) {
+                container.innerHTML = `<p class="loading-text">No active tiers provisioned for ${SYSTEM_CATEGORY}. Check admin terminal panel logs.</p>`;
                 return;
             }
-
-            filtered.forEach(item => {
-                grid.innerHTML += `
+            
+            container.innerHTML = "";
+            targetPackages.forEach((item, index) => {
+                container.innerHTML += `
                     <div class="card">
                         <div>
                             <h3>${item.title}</h3>
+                            <p>${item.description}</p>
                             <div class="price">KSH ${Number(item.price).toLocaleString()}</div>
-                            <p class="desc">${item.description}</p>
+                            
+                            <div class="input-group">
+                                <label for="domain_${index}">Proposed Domain Name</label>
+                                <input type="text" id="domain_${index}" placeholder="e.g. mybusiness.com">
+                            </div>
+                            <div class="input-group">
+                                <label for="desc_${index}">Custom Feature Requirements</label>
+                                <input type="text" id="desc_${index}" placeholder="e.g. dynamic database engine, dashboard layout">
+                            </div>
                         </div>
-                        <button class="btn" onclick="openModal('${item.title}', '${item.price}')">Order Infrastructure Package →</button>
+                        <button class="btn" onclick="sendOrder('${item.title}', '${item.price}', ${index})">Initialize Project Gateway →</button>
                     </div>
                 `;
             });
-        } catch (error) {
-            document.getElementById('loading').innerText = "Fault detected compiling dynamic node entities.";
-            console.error(error);
+        } catch (err) {
+            container.innerHTML = `<p class="loading-text" style="color:red;">Pipeline timeout: Failed to load service arrays from core schema registry endpoints.</p>`;
         }
     }
 
-    function openModal(serviceName, price) {
-        document.getElementById('selectedService').value = serviceName;
-        document.getElementById('selectedPrice').value = price;
-        document.getElementById('modalTitle').innerText = `Order: ${serviceName}`;
-        document.getElementById('orderModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('orderModal').style.display = 'none';
-    }
-
-    function sendOrder() {
-        const service = document.getElementById('selectedService').value;
-        const price = Number(document.getElementById('selectedPrice').value).toLocaleString();
-        const domainInfo = document.getElementById('proposedDomain').value || 'Not provided yet';
-        const desc = document.getElementById('projectScope').value || 'Standard technical layout configuration package requested.';
-
-        const message = `*DAN74TECH MEDIA - PIPELINE ORDER SYSTEM*%0A%0A` +
-                        `*Core Category:* ${CATEGORY_TARGET}%0A` +
-                        `*Package:* ${service}%0A` +
-                        `*Package Cost:* KSH ${price}%0A` +
-                        `*Proposed Domain:* ${domainInfo}%0A` +
-                        `*Project Scope:* ${desc}%0A%0A` +
-                        `_I am ready to discuss database hosting frameworks and the execution roadmap._`;
+    function sendOrder(tierTitle, basePrice, index) {
+        let domainVal = document.getElementById(`domain_${index}`).value || "Not provided yet";
+        let clientNotes = document.getElementById(`desc_${index}`).value || "Standard bundle specifications";
+        
+        let message = `*DAN74TECH MEDIA CORE ROUTER SYSTEM*%0A` +
+                        `*Service Request:* ${SYSTEM_CATEGORY}%0A` +
+                        `*Selected Package:* ${tierTitle}%0A` +
+                        `*System Pricing:* KSH ${Number(basePrice).toLocaleString()}%0A` +
+                        `*Proposed Domain:* ${domainVal}%0A` +
+                        `*Project Scope Parameters:* ${clientNotes}%0A%0A` +
+                        `_System payload prepared. Standing by for onboarding review initialization step._`;
 
         window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
-        closeModal();
     }
-
-    window.onclick = function(e) {
-        let modal = document.getElementById('orderModal');
-        if (e.target == modal) closeModal();
-    }
-
-    document.addEventListener('DOMContentLoaded', loadDynamicServices);
 </script>
 </body>
 </html>
