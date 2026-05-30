@@ -261,6 +261,58 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+// --- SERVICES API WITH FULL CRUD ---
+
+// 1. Fetch all services
+app.get('/api/services', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM services ORDER BY id ASC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: "DB Fetch Error" });
+    }
+});
+
+// 2. Add a new service with its explicit route mapping
+app.post('/api/services', async (req, res) => {
+    const { title, description, price, category, page_route } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO services (title, description, price, category, page_route) VALUES ($1, $2, $3, $4, $5)',
+            [title, description, price, category, page_route]
+        );
+        res.status(201).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Insertion failed" });
+    }
+});
+
+// 3. UPDATE an existing service package (The missing link!)
+app.put('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, price, category, page_route } = req.body;
+    try {
+        await pool.query(
+            'UPDATE services SET title = $1, description = $2, price = $3, category = $4, page_route = $5 WHERE id = $6',
+            [title, description, price, category, page_route, id]
+        );
+        res.json({ success: true, message: "Package updated successfully" });
+    } catch (err) {
+        res.status(500).json({ error: "Update operation failed" });
+    }
+});
+
+// 4. Delete a service
+app.delete('/api/services/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM services WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Delete failed" });
+    }
+});
+
+
 // Initial startup execution interface mapping
 app.listen(PORT, () => console.log(`DAN74TECH MEDIA Engine initialized live on port ${PORT}`));
              
