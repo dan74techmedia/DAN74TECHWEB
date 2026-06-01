@@ -4,142 +4,437 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICT Consultancy | DAN74TECH MEDIA</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { 
-            --primary-blue: #0044ff; 
-            --accent-orange: #ff9900; 
-            --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --text-light: #ffffff;
-            --border-color: rgba(255, 255, 255, 0.08);
+        :root {
+            --primary-blue: #0044ff;
+            --deep-blue: #0022aa;
+            --accent-yellow: #ffd700;
+            --accent-red: #ff2a2a;
+            --bg-light: #f5f7fa;
+            --text-dark: #1e1e24;
+            --card-bg: #ffffff;
         }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text-light); line-height: 1.6; }
-        header { background: linear-gradient(135deg, #001133 0%, var(--bg-dark) 100%); padding: 50px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .logo { width: 90px; height: auto; margin-bottom: 15px; }
-        header h1 { font-family: 'Montserrat'; font-size: 2.5rem; margin: 0; color: #fff; letter-spacing: 1px; }
-        header p { color: #888; margin: 10px 0 0 0; }
-        nav { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(10px); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        nav a { color: #aaa; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
-        nav a:hover, nav a.active { color: var(--accent-orange); }
-        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 40px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 35px; text-align: left; transition: transform 0.3s ease, border-color 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
-        .card:hover { transform: translateY(-5px); border-color: var(--primary-blue); }
-        .card h3 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: #fff; }
-        .card p { color: #aaa; font-size: 0.95rem; margin: 15px 0 25px 0; min-height: 50px; }
-        .price { font-size: 1.8rem; font-weight: 700; color: var(--accent-orange); margin-bottom: 25px; font-family: 'Montserrat'; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 0.85rem; color: #888; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-family: 'Poppins'; box-sizing: border-box; }
-        .input-group input:focus { border-color: var(--primary-blue); outline: none; }
-        .btn { display: block; width: 100%; padding: 14px; background: var(--primary-blue); color: white; text-align: center; text-decoration: none; font-weight: 600; border-radius: 8px; border: none; font-family: 'Poppins'; cursor: pointer; transition: background 0.3s; }
-        .btn:hover { background: #0033cc; }
-        footer { border-top: 1px solid var(--border-color); background: #020202; padding: 40px 20px; margin-top: 100px; font-size: 0.9rem; color: #666; }
-        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .footer-grid h3 { font-family: 'Montserrat'; font-size: 1.1rem; }
-        .loading-text { text-align: center; font-size: 1.2rem; color: #666; width: 100%; grid-column: 1 / -1; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-yellow);
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;            
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        nav {
+            background: var(--deep-blue);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        .details-section { 
+            padding: 60px 20px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            min-height: 50vh;
+        }
+        
+        .details-section h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--primary-blue); 
+            text-transform: uppercase; 
+            margin-bottom: 15px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .details-section p.desc {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .details-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; 
+            margin: 40px 0; 
+        }
+
+        .detail-item { 
+            background: var(--card-bg); 
+            padding: 30px 25px; 
+            border-radius: 15px; 
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-red);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .detail-item h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--deep-blue);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price-tag { 
+            color: var(--accent-red); 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            background: #fff0f0;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .order-form { 
+            background: var(--card-bg); 
+            border: 2px solid var(--accent-yellow); 
+            padding: 35px; 
+            border-radius: 15px; 
+            margin-top: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .order-form h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        label { 
+            font-weight: 700; 
+            display: block; 
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, textarea, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 68, 255, 0.15);
+        }
+
+        .mpesa-box { 
+            background: linear-gradient(135deg, rgba(0, 68, 255, 0.05), rgba(255, 215, 0, 0.05)); 
+            border: 2px dashed var(--primary-blue); 
+            padding: 30px; 
+            border-radius: 15px; 
+            text-align: center; 
+            margin-top: 30px; 
+        }
+
+        .mpesa-logo { width: 120px; margin-bottom: 15px; }
+
+        #displayPrice { 
+            font-size: 2rem; 
+            color: var(--accent-red); 
+            font-weight: 800; 
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-pay { 
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-red)); 
+            color: white; 
+            padding: 18px 30px; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 1.1rem; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-pay:hover { 
+            transform: translateY(-2px) scale(1.02); 
+            box-shadow: 0 10px 30px rgba(0, 68, 255, 0.4);
+        }
+
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 60px 20px 30px;
+            border-top: 4px solid var(--accent-red);
+            margin-top: 50px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            text-align: left;
+        }
+
+        .loader { text-align: center; padding: 60px; color: var(--primary-blue); font-size: 1.5rem; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .details-section { padding: 40px 20px; }
+            .order-form { padding: 25px 20px; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" alt="DAN74TECH" class="logo">
-    <h1>ICT Strategy & Technical Consultancy Node</h1>
-    <p>Network orchestration topology analysis, software scaling advisory, and audit logic.</p>
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/100x100/0044ff/FFF?text=D74'">
+    <h1 id="serviceTitle">ICT CONSULTANCY & STRATEGY</h1>
 </header>
 
 <nav>
-    <a href="index.html">Home</a>
-    <a href="services.html">Services</a>
-    <a href="web.html">Web Dev</a>
-    <a href="app.html">Apps</a>
-    <a href="video.html">Video</a>
-    <a href="repairs.html">Repairs</a>
-    <a href="graphics.html">Graphics</a>
-    <a href="advice.html" class="active">Consultancy</a>
-    <a href="contact.html">Contact</a>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="about.html"><i class="fa-solid fa-user-tie"></i> About</a>
+    <a href="services.html"><i class="fa-solid fa-layer-group"></i> Services</a>
+    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
 </nav>
 
-<div class="container">
-    <div class="grid" id="tiersContainer">
-        <p class="loading-text">Fetching active database configuration parameters...</p>
-    </div>
-</div>
+<section class="details-section" id="consultancy-container">
+    <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading service details...</div>
+</section>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceId = urlParams.get('id');
+
+    async function loadConsultancyService() {
+        const container = document.getElementById('consultancy-container');
+        
+        try {
+            const res = await fetch('/api/services');
+            if (!res.ok) throw new Error('Failed to fetch');
+            
+            const allServices = await res.json();
+            
+            // Find main consultancy service by ID
+            const mainService = allServices.find(s => s.id == serviceId);
+            
+            if (!mainService) {
+                container.innerHTML = `<div style="text-align:center;padding:50px;color:var(--accent-red);"><h3>Service not found</h3></div>`;
+                return;
+            }
+
+            // Update header with DB title
+            document.getElementById('serviceTitle').textContent = mainService.title.toUpperCase();
+            document.title = `${mainService.title} | DAN74TECH MEDIA`;
+
+            // Find sub-services with same category
+            const subServices = allServices.filter(s => 
+                s.category === mainService.category && s.id != mainService.id
+            );
+
+            // Build sub-service cards from DB
+            const subCards = subServices.length > 0 ? subServices.map(sub => `
+                <div class="detail-item">
+                    <h3>${sub.icon || '💼'} ${sub.title}</h3>
+                    <p>${sub.description || 'Professional consultation service.'}</p>
+                    <div class="price-tag"><i class="fa-solid fa-tag"></i> ${sub.price || 'Custom Pricing'}</div>
+                </div>
+            `).join('') : '';
+
+            // Build select options from sub-services
+            const selectOptions = subServices.length > 0 ? subServices.map(sub => 
+                `<option value="${sub.title}" data-price="${sub.price ? sub.price.replace(/[^0-9]/g, '') : '1000'}">${sub.title} - ${sub.price || 'Custom Pricing'}</option>`
+            ).join('') : `
+                <option value="General Consultation" data-price="1000">General Consultation - KSH 1,000</option>
+            `;
+
+            container.innerHTML = `
+                <h2><i class="fa-solid fa-microchip"></i> ${mainService.title}</h2>
+                <p class="desc">${mainService.description || 'Leveraging deep technical knowledge to solve complex digital challenges.'}</p>
+                
+                ${subCards ? `<div class="details-grid">${subCards}</div>` : ''}
+
+                <div class="order-form">
+                    <h3><i class="fa-solid fa-calendar-check"></i> Book a Session</h3>
+                    <form id="orderForm">
+                        <div class="form-group">
+                            <label for="userName">Client Name:</label>
+                            <input type="text" id="userName" placeholder="Your name or business" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="consultType">Consultation Category:</label>
+                            <select id="consultType" onchange="updatePrice()">
+                                ${selectOptions}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userDesc">What is your primary tech challenge?</label>
+                            <textarea id="userDesc" rows="4" placeholder="Describe the problem or the project you need advice on..."></textarea>
+                        </div>
+
+                        <div class="mpesa-box">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png" alt="M-Pesa" class="mpesa-logo">
+                            <p><strong>LIPA NA M-PESA</strong></p>
+                            <p>Payment to: <strong>0790 435 584</strong> (Daniel Ngumi)</p>
+                            <p>Consultation Fee: <span id="displayPrice">KSH 1,000</span></p>
+                            
+                            <button type="button" onclick="sendToWhatsApp()" class="btn-pay">
+                                <i class="fa-brands fa-whatsapp"></i> Book Session & Open WhatsApp
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            // Init price on load
+            updatePrice();
+
+        } catch (error) {
+            console.error('Error loading service:', error);
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px; color: var(--accent-red);">
+                    <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+                    <h3>Unable to load service</h3>
+                    <p>Please ensure the server is running.</p>
+                </div>`;
+        }
+    }
+
+    function updatePrice() {
+        const select = document.getElementById('consultType');
+        if (!select) return;
+        const price = select.options[select.selectedIndex].getAttribute('data-price');
+        document.getElementById('displayPrice').innerText = "KSH " + parseInt(price).toLocaleString();
+    }
+
+    function sendToWhatsApp() {
+        const name = document.getElementById('userName').value;
+        const type = document.getElementById('consultType').value;
+        const price = document.getElementById('displayPrice').innerText;
+        const desc = document.getElementById('userDesc').value;
+
+        if (name === "") {
+            alert("Please enter your name.");
+            return;
+        }
+
+        const message = `*NEW CONSULTANCY INQUIRY*%0A` +
+                        `*Client:* ${name}%0A` +
+                        `*Category:* ${type}%0A` +
+                        `*Fee:* ${price}%0A` +
+                        `*Topic:* ${desc}%0A%0A` +
+                        `_I am requesting a professional ICT session. Payment confirmation attached._`;
+
+        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadConsultancyService);
+</script>
 
 <footer>
     <div class="footer-grid">
         <div>
-            <h3>DAN74TECH MEDIA</h3>
-            <p>Based in Meru, Kenya</p>
-            <p>Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
         </div>
         <div style="text-align: right;">
-            <h3>TECHNICAL STANDARDS</h3>
-            <p>&copy; 2026 DAN74TECH MEDIA. High-Availability Operational Engineering Advisory Portal.</p>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
+            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #444;">
+               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+            </a>
         </div>
+    </div>
+    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
+        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
 
-<script>
-    const SYSTEM_CATEGORY = "ICT Consultancy";
-
-    document.addEventListener("DOMContentLoaded", loadDynamicTiers);
-
-    async function loadDynamicTiers() {
-        const container = document.getElementById("tiersContainer");
-        try {
-            let response = await fetch("/api/services");
-            let data = await response.json();
-            
-            let targetPackages = data.filter(item => item.category === SYSTEM_CATEGORY);
-            
-            if (targetPackages.length === 0) {
-                container.innerHTML = `<p class="loading-text">No active tiers provisioned for ${SYSTEM_CATEGORY}. Check admin terminal panel logs.</p>`;
-                return;
-            }
-            
-            container.innerHTML = "";
-            targetPackages.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="card">
-                        <div>
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                            <div class="price">KSH ${Number(item.price).toLocaleString()}</div>
-                            
-                            <div class="input-group">
-                                <label for="target_${index}">Primary Technical Challenge Entity</label>
-                                <input type="text" id="target_${index}" placeholder="e.g. slow database scaling layer, cloud migration strategy">
-                            </div>
-                            <div class="input-group">
-                                <label for="desc_${index}">Urgency / Timeline Expectation</label>
-                                <input type="text" id="desc_${index}" placeholder="e.g. emergency infrastructure outage response, routine monthly audit">
-                            </div>
-                        </div>
-                        <button class="btn" onclick="sendOrder('${item.title}', '${item.price}', ${index})">Request Strategy Briefing Session →</button>
-                    </div>
-                `;
-            });
-        } catch (err) {
-            container.innerHTML = `<p class="loading-text" style="color:red;">Pipeline timeout: Failed to load service arrays from core schema registry endpoints.</p>`;
-        }
-    }
-
-    function sendOrder(tierTitle, basePrice, index) {
-        let coreChallenge = document.getElementById(`target_${index}`).value || "General systems operation overview assessment requested";
-        let operationalUrgency = document.getElementById(`desc_${index}`).value || "Standard processing priority timeline window";
-        
-        let message = `*DAN74TECH MEDIA CORE ROUTER SYSTEM*%0A` +
-                        `*Service Request:* ${SYSTEM_CATEGORY}%0A` +
-                        `*Consultancy Tier Selection:* ${tierTitle}%0A` +
-                        `*Session Standard Valuation Rate:* KSH ${Number(basePrice).toLocaleString()}%0A` +
-                        `*System Architecture Vulnerability Profile:* ${coreChallenge}%0A` +
-                        `*Urgency Context Vectors:* ${operationalUrgency}%0A%0A` +
-                        `_System payload prepared. Ready to initiate calendar coordination allocation handshake sequence._`;
-
-        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
-    }
-</script>
 </body>
 </html>
