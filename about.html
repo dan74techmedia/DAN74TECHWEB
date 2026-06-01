@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>About Us | DAN74TECH MEDIA</title>
-    <meta name="description" content="DAN74TECH MEDIA - Expert ICT Engineering, Android Development, and Creative Media Strategists in Meru, Kenya.">
-    <meta name="keywords" content="ICT Meru, Web Development Kenya, Android Apps, Dan74tech, Media Production">
-    <meta name="author" content="Dantyz">
-
+    
+    <!-- Typography -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 for Modern UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
+            /* Official Theme Palette from Admin */
             --primary-blue: #0044ff;
-            --accent-red: #ff2a2a; /* New Red for that smart border look */
-            --accent-orange: #ff9900;
-            --bg-light: #fdfdfd;
-            --text-dark: #1a1a1a;
-            --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --deep-blue: #0022aa;
+            --accent-yellow: #ffd700;
+            --accent-red: #ff2a2a;
+            
+            /* Backgrounds & Text */
+            --bg-light: #f5f7fa;
+            --text-dark: #1e1e24;
+            --card-bg: #ffffff;
         }
-
-        html { scroll-behavior: smooth; }
 
         body {
             margin: 0;
@@ -30,281 +32,239 @@
             background-color: var(--bg-light);
             color: var(--text-dark);
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
-        /* Header & Brand Identity */
+        /* --- Header --- */
         header {
-            background: linear-gradient(135deg, var(--primary-blue), #002288);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
             color: white;
-            padding: 60px 20px;
+            padding: 50px 20px;
             text-align: center;
-            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            border-bottom: 4px solid var(--accent-yellow);
         }
 
-        .logo { width: 110px; height: auto; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
 
         header h1 {
             font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;            
             margin: 0;
-            font-size: 2.8rem;
-            letter-spacing: 4px;
-            animation: fadeInDown 1s ease;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive Navigation */
+        /* --- Navigation --- */
         nav {
-            background: rgba(255, 153, 0, 0.95);
-            backdrop-filter: blur(10px);
+            background: var(--deep-blue);
             padding: 15px;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         nav a {
             color: white;
             text-decoration: none;
-            margin: 0 20px;
+            margin: 5px 20px;
             font-weight: 600;
             font-size: 14px;
             text-transform: uppercase;
-            transition: var(--transition);
+            letter-spacing: 1px;
+            transition: color 0.3s, transform 0.3s;
         }
 
-        nav a:hover { color: var(--primary-blue); transform: translateY(-2px); }
+        nav a:hover {
+            color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
 
-        /* Content Section */
+        /* --- Main Content Section --- */
         .details-section { 
-            padding: 100px 20px; 
-            max-width: 1100px; 
+            padding: 60px 20px; 
+            max-width: 900px; 
             margin: 0 auto; 
             text-align: center;
+            min-height: 50vh;
         }
         
         .details-section h2 { 
             font-family: 'Montserrat', sans-serif; 
             color: var(--primary-blue); 
             text-transform: uppercase; 
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-
-        /* Card System with Smart Borders */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 35px;
-            margin-top: 60px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 20px;
-            position: relative;
-            /* The Smart Border Logic */
-            border-top: 5px solid var(--primary-blue);
-            border-bottom: 5px solid var(--accent-red);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            transition: var(--transition);
-            text-align: left;
-        }
-
-        .info-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 50px rgba(0, 0, 255, 0.1);
-        }
-
-        .info-card h4 {
-            color: var(--primary-blue);
             margin-bottom: 15px;
-            font-size: 1.3rem;
-            font-family: 'Montserrat', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 2rem;
         }
 
-        /* Special Highlight Box */
+        .details-section h3 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--accent-red);
+            font-weight: 600;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+        }
+
+        .info-pill {
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin: 10px;
+            border: 1px solid rgba(0, 68, 255, 0.1);
+        }
+
+        .details-section p {
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* --- Highlight Box with Faint Background --- */
         .highlight-box {
-            position: relative; 
-            background: #f8f9ff;
-            padding: 60px 40px;
-            border-radius: 25px;
-            border-left: 8px solid var(--primary-blue);
-            border-right: 8px solid var(--accent-red);
+            position: relative; /* Necessary to contain the background */
+            background: var(--card-bg);
+            padding: 50px 40px;
+            border-radius: 15px;
+            border-left: 8px solid var(--accent-red);
             text-align: left;
-            margin: 60px 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
-            overflow: hidden;
+            margin-top: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            overflow: hidden; /* Keeps the background image inside the corners */
         }
 
         .highlight-box::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('images/Dantyz.png'); 
-            background-size: cover; background-position: center;
-            opacity: 0.1; z-index: 0;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            background-image: url('images/dantyz.png'); /* User specified image path */
+            background-size: cover;
+            background-position: center;
+            opacity: 0.10; /* Very faint so text remains readable */
+            z-index: 0;
+            filter: grayscale(50%); /* Slightly tones down the image colors for a professional look */
         }
 
-        .highlight-box > * { position: relative; z-index: 1; }
+        /* Ensures text stays above the background image */
+        .highlight-box > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .highlight-box h2 {
+            font-size: 1.8rem;
+            color: var(--deep-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0;
+        }
 
-        /* Footer */
+        .about-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-bottom: 2px solid var(--accent-yellow);
+            font-weight: 700;
+            transition: 0.3s;
+        }
+        
+        .about-link:hover {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* --- Footer --- */
         footer {
-            background: #0a0a0a;
+            background: #111;
             color: white;
-            padding: 80px 20px 30px;
-            margin-top: 100px;
-            border-top: 5px solid var(--primary-blue);
+            text-align: center;
+            padding: 60px 20px 30px;
+            border-top: 4px solid var(--accent-red);
+            margin-top: 50px;
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 50px;
-            max-width: 1100px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            text-align: left;
         }
 
-        .footer-btn {
-            color: #fff; text-decoration: none; font-weight: 800; 
-            background: var(--primary-blue); padding: 15px 30px; 
-            border-radius: 12px; display: inline-block; 
-            transition: var(--transition);
-            box-shadow: 0 8px 20px rgba(0, 68, 255, 0.3);
-            text-transform: uppercase; letter-spacing: 1px;
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            .highlight-box { padding: 30px 20px; }
         }
-
-        .footer-btn:hover {
-            background: var(--accent-red);
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 42, 42, 0.4);
-        }
-
-        /* Back to Top Button */
-        #backToTop {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--accent-orange);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: none;
-            z-index: 2000;
-            transition: 0.3s;
-        }
-
-        #backToTop:hover { background: var(--primary-blue); }
-
     </style>
 </head>
 <body>
 
 <header>
-    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo">
-    <h1>DAN74TECH MEDIA</h1>
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/100x100/0044ff/FFF?text=D74'">
+    <h1>ABOUT US</h1>
 </header>
 
 <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="services.html">Services</a>
-    <a href="contact.html">Contact</a>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="about.html" style="color: var(--accent-yellow);"><i class="fa-solid fa-user-tie"></i> About</a>
+    <a href="services.html"><i class="fa-solid fa-layer-group"></i> Services</a>
+    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
 </nav>
 
 <section class="details-section">
-    <h2>ENGINEERING THE FUTURE 👋</h2>
-    <h3>Premium ICT Solutions & Media Strategy</h3>
-    <p>Based in <strong>Meru, Kenya</strong>, we bridge the gap between technical complexity and creative excellence.</p>
+    <h2>We are DAN74TECH MEDIA 👋</h2>
+    <h3><i class="fa-solid fa-laptop-code"></i> ICT Technicians | Android Developers | Creative Media Strategists</h3>
+    
+    <div>
+        <span class="info-pill">
+            <i class="fa-solid fa-location-dot" style="color: var(--accent-red);"></i> <strong>Location:</strong> Meru, Kenya 🇰🇪
+        </span>
+    </div>
+    
+    <p style="margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <strong><i class="fa-solid fa-bullseye" style="color: var(--primary-blue);"></i> Focus:</strong> Engineering robust digital systems and crafting professional brand identities for modern businesses.
+    </p>
 
     <div class="highlight-box">
-        <h2>🚀 The Visionary Core</h2>
-        <p>At <strong>DAN74TECH MEDIA</strong>, we don't just follow trends; we engineer them. Our process integrates deep-level system architecture with high-end visual storytelling. Whether it's securing a corporate network or building an Android ecosystem, we deliver with precision.</p>
-    </div>
-
-    <div class="info-grid">
-        <div class="info-card">
-            <h4>🔵 Our Mission</h4>
-            <p>To empower businesses through robust software development and cinematic brand identities that resonate on a global scale.</p>
-        </div>
-        <div class="info-card">
-            <h4>🔴 Our Vision</h4>
-            <p>To be the definitive tech hub in East Africa, leading the charge in digital transformation and innovative media engineering.</p>
-        </div>
-    </div>
-
-    <div style="margin-top: 100px;">
-        <h2>🛠️ THE TECH STACK</h2>
-        <div class="info-grid">
-            <div class="info-card">
-                <h4>⚙️ System Engineering</h4>
-                <p>Advanced diagnostics, network security, and hardware optimization to keep your infrastructure running at 100%.</p>
-            </div>
-            <div class="info-card">
-                <h4>📱 App Development</h4>
-                <p>Native Android development using modern database architectures (Neon, Xata) for seamless user experiences.</p>
-            </div>
-            <div class="info-card">
-                <h4>🎥 Media Production</h4>
-                <p>Professional cinematography and graphic design to give your project the elite look it deserves.</p>
-            </div>
-        </div>
+        <h2>🚀 <a href="https://whatsapp.com/channel/0029VbCBaqjLo4hpbjPPNm2r" class="about-link" target="_blank">About Us</a></h2>
+        <p>We are specialized ICT Technicians who thrive at the intersection of technical logic and creative design. Our expertise ranges from deep-level hardware maintenance and network security to building full-stack mobile applications and high-performance websites.</p>
+        <p>Under our brand <strong>Dan74tech Media</strong> (or <strong>dantyz Media</strong>), we coordinate digital communications, design professional branding, edit high-quality video content for musical and corporate projects, and build professional, user-friendly applications.</p>
     </div>
 </section>
 
-<button id="backToTop" onclick="window.scrollTo(0,0)">↑</button>
-
 <footer>
     <div class="footer-grid">
-        <div style="text-align: left;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange);">DAN74TECH MEDIA</h3>
-            <p style="color: #888;">Innovating from Meru, Kenya.</p>
-            <p style="font-size: 0.8rem; color: #555;">Available Mon - Sat | Professional Grade Only.</p>
+        <div>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div style="text-align: center;">
-            <h3 style="font-family: 'Montserrat'; color: var(--primary-blue);">CONNECT</h3>
-            <p style="margin: 20px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" class="footer-btn">
-                   Technical Portfolio
-                </a>
-            </p>
+        <div style="text-align: right;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
+            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #444;">
+               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+            </a>
         </div>
     </div>
-    <div style="border-top: 1px solid #222; padding-top: 30px; margin-top: 50px; text-align: center;">
-        <p style="color: #444; font-size: 0.8rem;">&copy; 2026 DAN74TECH MEDIA | All Rights Reserved.</p>
+    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
+        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
-
-<script>
-    // Show back to top button on scroll
-    window.onscroll = function() {
-        const btn = document.getElementById("backToTop");
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = "flex";
-        } else {
-            btn.style.display = "none";
-        }
-    };
-</script>
 
 </body>
 </html>
