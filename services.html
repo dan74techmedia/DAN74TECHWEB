@@ -4,338 +4,310 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Services | DAN74TECH MEDIA</title>
+    
+    <!-- Typography -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 for Modern UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
+            /* Official Theme Palette from Admin */
             --primary-blue: #0044ff;
-            --accent-orange: #ff9900;
-            --bg-dark: #07070c;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --text-light: #ffffff;
-            --text-dim: #b0b0bc;
-            --border-glow: rgba(255, 255, 255, 0.08);
+            --deep-blue: #0022aa;
+            --accent-yellow: #ffd700;
+            --accent-red: #ff2a2a;
+            
+            /* Backgrounds & Text */
+            --bg-light: #f5f7fa;
+            --text-dark: #1e1e24;
+            --card-bg: #ffffff;
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             line-height: 1.6;
+            scroll-behavior: smooth;
         }
-
+        
+        /* --- Header --- */
         header {
-            background: linear-gradient(135deg, #001144 0%, #000011 100%);
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+            color: white;
             padding: 50px 20px;
             text-align: center;
-            border-bottom: 1px solid var(--border-glow);
+            border-bottom: 4px solid var(--accent-yellow);
         }
 
         .logo {
             width: 100px;
             height: auto;
             margin-bottom: 15px;
-            filter: drop-shadow(0 4px 8px rgba(0,68,255,0.4));
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
 
         header h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
+            text-transform: uppercase;            
             margin: 0;
-            text-transform: uppercase;
+            font-size: 2.5rem;
             letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        header p {
-            color: var(--accent-orange);
-            font-weight: 600;
-            margin: 10px 0 0;
-            letter-spacing: 1px;
-        }
-
-        /* Category Quick Navigation */
-        .category-nav {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        /* --- Navigation --- */
+        nav {
+            background: var(--deep-blue);
+            padding: 15px;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-glow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .category-nav a {
-            color: var(--text-light);
+        nav a {
+            color: white;
             text-decoration: none;
-            padding: 8px 16px;
-            font-size: 0.85rem;
+            margin: 5px 20px;
             font-weight: 600;
+            font-size: 14px;
             text-transform: uppercase;
-            transition: color 0.3s;
+            letter-spacing: 1px;
+            transition: color 0.3s, transform 0.3s;
         }
 
-        .category-nav a:hover {
-            color: var(--accent-orange);
+        nav a:hover {
+            color: var(--accent-yellow);
+            transform: translateY(-2px);
         }
 
-        .container {
-            max-width: 1200px;
+        /* --- Services Container --- */
+        .services-wrapper {
+            max-width: 900px;
             margin: 40px auto;
             padding: 0 20px;
+            min-height: 50vh;
         }
 
-        .service-section {
-            margin-bottom: 60px;
-            scroll-margin-top: 80px; /* Prevents navigation header overlap */
-        }
-
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            border-left: 5px solid var(--primary-blue);
-            padding-left: 15px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
-
-        .packages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .package-card {
+        .details-section { 
             background: var(--card-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 12px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s, border-color 0.3s;
-        }
-
-        .package-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-blue);
-        }
-
-        .package-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.3rem;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .package-price {
-            font-size: 1.5rem;
-            color: var(--accent-orange);
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .package-desc {
-            color: var(--text-dim);
-            font-size: 0.95rem;
+            padding: 40px 30px; 
             margin-bottom: 25px;
-            flex-grow: 1;
-            white-space: pre-line; /* Keeps form field line breaks intact */
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-blue); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-action {
-            display: block;
-            text-align: center;
+        .details-section:hover { 
+            transform: translateX(5px);
+            border-left: 5px solid var(--accent-red);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .details-section h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            color: var(--deep-blue); 
+            text-transform: uppercase; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        .details-section p.desc {
+            font-size: 1.05rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .price-tag { 
+            color: var(--accent-red); 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            background: #fff0f0;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .btn-order {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: var(--primary-blue);
             color: white;
             text-decoration: none;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 12px 25px;
+            border-radius: 50px;
             font-weight: 600;
-            transition: opacity 0.2s;
+            text-transform: uppercase;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 68, 255, 0.2);
         }
 
-        .btn-action:hover {
-            opacity: 0.9;
+        .btn-order:hover {
+            background: var(--accent-red);
+            transform: translateX(5px);
+            box-shadow: 0 6px 15px rgba(255, 42, 42, 0.3);
+            color: white;
         }
 
-        .empty-notice {
-            color: var(--text-dim);
-            font-style: italic;
-            grid-column: 1 / -1;
-            padding: 20px;
-            background: rgba(255,255,255,0.01);
-            border-radius: 8px;
-            border: 1px dashed var(--border-glow);
-        }
-
+        /* --- Footer --- */
         footer {
-            background: #030307;
-            padding: 40px 20px;
-            margin-top: 80px;
-            border-top: 1px solid var(--border-glow);
-            font-size: 0.9rem;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 60px 20px 30px;
+            border-top: 4px solid var(--accent-red);
+            margin-top: 50px;
         }
 
         .footer-grid {
-            max-width: 1200px;
-            margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            text-align: left;
         }
 
-        .footer-link {
-            color: var(--accent-orange);
-            text-decoration: none;
+        .loader {
+            text-align: center;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            padding: 60px;
+        }
+
+        @media (max-width: 600px) {
+            .details-section { padding: 25px 20px; }
+            header h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" alt="DAN74TECH" class="logo" onerror="this.style.display='none'">
-    <h1>Enterprise Service Matrices</h1>
-    <p>Professional Digital Solutions Architecture</p>
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/100x100/0044ff/FFF?text=D74'">
+    <h1>OUR SERVICES</h1>
 </header>
+  
+<nav>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="about.html"><i class="fa-solid fa-user-tie"></i> About</a>
+    <a href="services.html" style="color: var(--accent-yellow);"><i class="fa-solid fa-layer-group"></i> Services</a>
+    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+</nav>
 
-<div class="category-nav">
-    <a href="#web">Web Dev</a>
-    <a href="#app">Apps</a>
-    <a href="#video">Video</a>
-    <a href="#repairs">Repairs</a>
-    <a href="#graphics">Graphics</a>
-    <a href="#advice">Consultancy</a>
-</div>
-
-<div class="container">
-    <section class="service-section" id="web">
-        <h2 class="section-title">🌐 Web Development & Hosting</h2>
-        <div class="packages-grid" id="container-web">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
-
-    <section class="service-section" id="app">
-        <h2 class="section-title">📱 Mobile Application Engineering</h2>
-        <div class="packages-grid" id="container-app">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
-
-    <section class="service-section" id="video">
-        <h2 class="section-title">🎥 Cinematic Video Production</h2>
-        <div class="packages-grid" id="container-video">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
-
-    <section class="service-section" id="repairs">
-        <h2 class="section-title">🛠️ Hardware Repairs & Diagnostics</h2>
-        <div class="packages-grid" id="container-repairs">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
-
-    <section class="service-section" id="graphics">
-        <h2 class="section-title">🎨 Brand Identity & Graphic Design</h2>
-        <div class="packages-grid" id="container-graphics">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
-
-    <section class="service-section" id="advice">
-        <h2 class="section-title">💡 Strategic ICT Consultancy</h2>
-        <div class="packages-grid" id="container-advice">
-            <p class="empty-notice">Querying digital catalog ledger...</p>
-        </div>
-    </section>
+<!-- Dynamic Services List Container -->
+<div class="services-wrapper" id="services-container">
+    <div class="loader"><i class="fas fa-spinner fa-spin"></i> Fetching Services Menu...</div>
 </div>
 
 <footer>
     <div class="footer-grid">
         <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
-            <p style="margin: 5px 0; color: var(--text-dim);">Based in Meru, Kenya</p>
-            <p style="margin: 5px 0; color: var(--text-dim);">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--text-light); margin-bottom: 10px;">Quick Hub</h3>
-            <p style="margin: 5px 0;"><a href="index.html" class="footer-link">Home Platform</a></p>
-            <p style="margin: 5px 0;"><a href="contact.html" class="footer-link">Get In Touch</a></p>
+        <div style="text-align: right;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
+            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #444;">
+               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+            </a>
         </div>
+    </div>
+    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
+        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
 
+<!-- ========================================== -->
+<!-- DYNAMIC DATABASE INJECTION SCRIPT -->
+<!-- ========================================== -->
 <script>
-    document.addEventListener("DOMContentLoaded", fetchLiveServiceTiers);
+    // Smart Call-To-Action generator based on the service route
+    function getCallToAction(route) {
+        const ctas = {
+            'graphics': 'Order Graphics & Upload Files',
+            'video': 'Send Video Project',
+            'web': 'Get a Web Quote',
+            'app': 'Build Your App',
+            'repairs': 'Book Repair Slot',
+            'advice': 'Book Consultation'
+        };
+        return ctas[route] || 'View Details & Order';
+    }
 
-    async function fetchLiveServiceTiers() {
-        const structuralCategories = ['web', 'app', 'video', 'repairs', 'graphics', 'advice'];
-        
-        // Clear out placeholder text across targets
-        structuralCategories.forEach(cat => {
-            const el = document.getElementById(`container-${cat}`);
-            if (el) el.innerHTML = "";
-        });
-
+    async function fetchDetailedServices() {
+        const container = document.getElementById('services-container');
         try {
-            const response = await fetch('/api/services');
-            if (!response.ok) throw new Error("API stream broken");
+            const res = await fetch('/api/services');
+            if (!res.ok) throw new Error('Failed to fetch services');
             
-            const services = await response.json();
+            const data = await res.json();
+            
+            // Filter out sub-packages if you only want the main categories, 
+            // OR display all. Assuming main categories have the 'page_route' property defined clearly.
+            const mainServices = data.filter(s => s.page_route); 
 
-            // Track elements to easily evaluate if any category mapping was empty
-            const counters = { web: 0, app: 0, video: 0, repairs: 0, graphics: 0, advice: 0 };
+            if (mainServices.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>Updating Services Menu...</h3>
+                        <p>Our database is currently syncing. Please check back shortly.</p>
+                    </div>`;
+                return;
+            }
 
-            services.forEach(item => {
-                // Read routing tags explicitly matching system endpoints
-                const targetRoute = item.page_route || 'web';
-                const gridNode = document.getElementById(`container-${targetRoute}`);
-
-                if (gridNode) {
-                    counters[targetRoute]++;
-                    
-                    // Formulate dynamic WhatsApp direct payload link
-                    const encodedMsg = encodeURIComponent(
-                        `*DAN74TECH MEDIA - INQUIRY SERVICE BOOKING*\n\n` +
-                        `*Package:* ${item.title}\n` +
-                        `*Price / Rate:* ${item.price}\n\n` +
-                        `_Details:_ ${item.description}`
-                    );
-                    const whatsappUrl = `https://wa.me/254790435584?text=${encodedMsg}`;
-
-                    gridNode.innerHTML += `
-                        <div class="package-card">
-                            <div>
-                                <h3 class="package-title">${item.title}</h3>
-                                <div class="package-price">${item.price}</div>
-                                <p class="package-desc">${item.description}</p>
-                            </div>
-                            <a href="${whatsappUrl}" target="_blank" class="btn-action">Secure & Book Package →</a>
-                        </div>
-                    `;
-                }
-            });
-
-            // Fallback for missing configurations
-            structuralCategories.forEach(cat => {
-                if (counters[cat] === 0) {
-                    document.getElementById(`container-${cat}`).innerHTML = 
-                        `<p class="empty-notice">No tier packages currently allocated to this block. Use Admin Terminal to provision assets.</p>`;
-                }
-            });
+            container.innerHTML = mainServices.map(service => {
+                const ctaText = getCallToAction(service.page_route);
+                const displayPrice = service.price ? service.price : 'Custom Pricing Available';
+                
+                return `
+                    <section class="details-section" id="${service.page_route}">
+                        <h2>${service.icon || '💼'} ${service.title}</h2>
+                        <p class="desc">${service.description}</p>
+                        <div class="price-tag"><i class="fa-solid fa-tag"></i> ${displayPrice}</div>
+                        <br>
+                        <a href="${service.page_route}.html" class="btn-order">
+                            ${ctaText} <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </section>
+                `;
+            }).join('');
 
         } catch (error) {
-            structuralCategories.forEach(cat => {
-                document.getElementById(`container-${cat}`).innerHTML = 
-                    `<p class="empty-notice" style="color:red;">Error processing live cloud catalog repository.</p>`;
-            });
+            console.error('Error fetching services:', error);
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px; color: var(--accent-red);">
+                    <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+                    <h3>Unable to load services database</h3>
+                    <p>Please ensure the backend server is running.</p>
+                </div>`;
         }
     }
+
+    document.addEventListener('DOMContentLoaded', fetchDetailedServices);
 </script>
+
 </body>
 </html>
+
