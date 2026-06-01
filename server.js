@@ -41,7 +41,8 @@ async function initializeDatabaseSchema() {
                 description TEXT,
                 price VARCHAR(100),
                 category VARCHAR(100),
-                page_route VARCHAR(100) DEFAULT 'web'
+                page_route VARCHAR(100) DEFAULT 'web',
+                icon VARCHAR(50) DEFAULT '🔧'
             );
         `);
         
@@ -92,15 +93,20 @@ const uploadToCloudinary = (fileBuffer) => {
 // 4. API ENDPOINTS: PACKAGES & SUB-SERVICES
 // ==========================================
 
+// Helper function to match frontend route slug generation
+const generateSlug = (str) => {
+    return str ? str.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
+};
+
 // GET all items - Feeds package pipeline to frontend forms and layouts
 app.get('/api/services', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM services ORDER BY id DESC');
         
-        // Data sanitization fallback: Map legacy 'category' entries cleanly to page_route keys if blank
+        // Data sanitization fallback: Map page_route cleanly using regex hyphenation if missing
         const sanitizedData = result.rows.map(row => {
             if (!row.page_route && row.category) {
-                row.page_route = row.category.toLowerCase().split(' ')[0];
+                row.page_route = generateSlug(row.category);
             }
             return row;
         });
@@ -112,17 +118,17 @@ app.get('/api/services', async (req, res) => {
     }
 });
 
-// POST a new package - Published from admin operations portal
+// POST a new category/package - Published from admin operations portal
 app.post('/api/services', async (req, res) => {
-    const { title, description, price, category, page_route } = req.body;
+    const { title, description, price, category, page_route, icon } = req.body;
     
-    // Clean fallback to ensure page_route is always a neat alphanumeric key
-    const targetRoute = (page_route || category || 'web').toLowerCase().split(' ')[0];
+    // Strict match to admin.html schema logic
+    const finalRoute = page_route || generateSlug(category || title);
 
     try {
         await pool.query(
-            'INSERT INTO services (title, description, price, category, page_route) VALUES ($1, $2, $3, $4, $5)',
-            [title, description, price, category || targetRoute, targetRoute]
+            'INSERT INTO services (title, description, price, category, page_route, icon) VALUES ($1, $2, $3, $4, $5, $6)',
+            [title, description, price || '0', category, finalRoute, icon || '🔧']
         );
         res.status(201).json({ success: true, message: "New custom tier published live." });
     } catch (err) {
@@ -131,16 +137,17 @@ app.post('/api/services', async (req, res) => {
     }
 });
 
-// PUT (Update) an existing service package
+// PUT (Update) an existing service category/package
 app.put('/api/services/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, description, price, category, page_route } = req.body;
-    const targetRoute = (page_route || category || 'web').toLowerCase().split(' ')[0];
+    const { title, description, price, category, page_route, icon } = req.body;
+    
+    const finalRoute = page_route || generateSlug(category || title);
 
     try {
         const updateResult = await pool.query(
-            'UPDATE services SET title = $1, description = $2, price = $3, category = $4, page_route = $5 WHERE id = $6',
-            [title, description, price, category || targetRoute, targetRoute, id]
+            'UPDATE services SET title = $1, description = $2, price = $3, category = $4, page_route = $5, icon = $6 WHERE id = $7',
+            [title, description, price || '0', category, finalRoute, icon || '🔧', id]
         );
         
         if (updateResult.rowCount === 0) {
