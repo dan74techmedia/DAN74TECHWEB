@@ -4,292 +4,541 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAN74TECH MEDIA | OFFICIAL</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
+            /* Official Theme Palette from Admin */
             --primary-blue: #0044ff;
-            --accent-orange: #ff9900;
+            --deep-blue: #0022aa;
+            --accent-yellow: #ffd700;
             --accent-red: #ff2a2a;
-            --bg-light: #ffffff;
-            --text-dark: #222222;
-            --card-bg: #f9f9f9;
+            
+            /* Backgrounds & Text */
+            --bg-light: #f5f7fa;
+            --text-dark: #1e1e24;
+            --card-bg: #ffffff;
         }
-        body { 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--bg-light); 
-            color: var(--text-dark); 
-            line-height: 1.6; 
-            scroll-behavior: smooth; 
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            scroll-behavior: smooth;
         }
-        header { 
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #002288 100%); 
-            color: white; 
-            padding: 60px 20px; 
-            text-align: center; 
-            position: relative; 
-            overflow: hidden; 
+
+        /* --- Header Section with Red Sparks --- */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid var(--accent-yellow);
         }
-        
-        nav { 
-            background: var(--accent-orange); 
-            padding: 15px 10px; 
-            text-align: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+        /* Red Sparks Animation */
+        .spark {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-red), 0 0 20px var(--accent-red), 0 0 30px #ff8888;
+            animation: floatUp 4s infinite ease-in;
+            bottom: -10px;
+            opacity: 0;
         }
-        nav a { 
-            color: white; 
-            text-decoration: none; 
-            margin: 0 15px; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            font-size: 14px; 
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150px) scale(0); opacity: 0; }
+        }
+
+        .spark:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 3.5s; }
+        .spark:nth-child(2) { left: 30%; animation-delay: 1.2s; animation-duration: 4s; }
+        .spark:nth-child(3) { left: 50%; animation-delay: 0.5s; animation-duration: 3s; }
+        .spark:nth-child(4) { left: 70%; animation-delay: 2.5s; animation-duration: 4.5s; }
+        .spark:nth-child(5) { left: 85%; animation-delay: 0.8s; animation-duration: 3.2s; }
+        .spark:nth-child(6) { left: 10%; animation-delay: 1.8s; animation-duration: 5s; }
+        .spark:nth-child(7) { left: 90%; animation-delay: 0.3s; animation-duration: 3.8s; }
+
+        .logo {
+            width: 110px;
+            height: auto;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;            
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+        }
+
+        header p.tagline {
+            margin: 10px 0 0;
+            font-weight: 300;
+            text-transform: capitalize;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .pro-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--accent-yellow);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
+        }
+
+        /* --- Navigation --- */
+        nav {
+            background: var(--deep-blue);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 5px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        /* --- Dynamic Grid Sections --- */
+        .services-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
             letter-spacing: 1px;
         }
-        nav a:hover {
-            text-decoration: underline;
+
+        .section-desc {
+            text-align: center;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+            font-size: 1.1rem;
         }
 
-        .container { 
-            max-width: 1200px; 
-            margin: 40px auto; 
-            padding: 0 20px; 
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
         }
-        h2 { 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: 2rem; 
-            text-align: center; 
-            margin-bottom: 30px; 
-            text-transform: uppercase;
+
+        /* Card Styling aligned to Admin UI */
+        .service-card {
+            background: var(--card-bg);
+            padding: 35px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 68, 255, 0.1);
+            border-bottom: 4px solid var(--primary-blue);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
             position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
-        h2::after {
-            content: '';
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 42, 42, 0.15);
+            border-color: var(--accent-red);
+            border-bottom: 4px solid var(--accent-red);
+        }
+
+        .icon-wrapper {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .service-card:hover .icon-wrapper {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .service-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            color: var(--deep-blue);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .service-card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .pricing-link {
+            color: var(--primary-blue);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .service-card:hover .pricing-link {
+            color: var(--accent-red);
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: inherit;
             display: block;
-            width: 60px;
-            height: 4px;
-            background: var(--accent-red);
-            margin: 10px auto 0 auto;
-            border-radius: 2px;
         }
 
-        /* Services Grid Layout */
-        .services-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 60px;
-        }
-        .service-card { 
-            background: var(--card-bg); 
-            border-radius: 12px; 
-            padding: 30px 20px; 
-            text-align: center; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-top: 4px solid var(--primary-blue);
-        }
-        .service-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        }
-        .service-card h3 { 
-            margin: 15px 0 10px 0; 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: 1.25rem; 
-        }
-        .btn-explore { 
-            display: inline-block; 
-            background: var(--primary-blue); 
-            color: white; 
-            padding: 10px 20px; 
-            margin-top: 15px; 
-            border-radius: 6px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        .btn-explore:hover { 
-            background: #0022cc; 
+        /* --- Video & Image Portfolio Overrides --- */
+        .portfolio-media {
+            width: 100%;
+            height: 220px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* Portfolio Media Section Layout */
-        .portfolio-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
-        .video-container {
+        .portfolio-video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             border-radius: 10px;
-            background: #000;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .video-container iframe {
+
+        .portfolio-video-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: 0;
         }
 
-        footer { 
-            background: #111; 
-            color: #fff; 
-            padding: 40px 20px; 
-            margin-top: 80px; 
-            font-size: 0.9rem;
+        /* --- Buttons --- */
+        .cta-btn {
+            background: var(--primary-blue);
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
+            font-size: 1.1rem;
         }
-        .footer-grid { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 30px; 
+
+        .cta-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 42, 42, 0.4);
+            color: white;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 60px 20px 30px;
+            border-top: 4px solid var(--accent-red);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            text-align: left;
+        }
+
+        .badge-icon {
+            width: 32px;
+            height: 32px;
+            fill: #0095f6;
+            display: inline-block;
+            vertical-align: middle;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .loader {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            .badge-icon { width: 24px; height: 24px; }
+            header h1 { font-size: 1.8rem !important; }
+            .services-section { padding: 50px 15px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="font-family: 'Montserrat'; font-size: 3rem; margin: 0; letter-spacing: 2px;">DAN74TECH MEDIA</h1>
-    <p style="font-size: 1.2rem; margin: 10px 0 0 0; font-weight: 300; opacity: 0.9;">Professional Grade ICT Systems & Digital Production</p>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+    <div class="spark"></div>
+
+    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/110x110/0044ff/FFF?text=D74'">    
+   
+    <h1>
+        DAN74TECH MEDIA 
+        <span class="verified-badge" title="Verified Professional">
+            <svg viewBox="0 0 24 24" aria-label="Verified" class="badge-icon">
+                <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.13-.44.18-.9.18-1.35 0-2.48-2.02-4.5-4.5-4.5-.45 0-.9.05-1.35.18-.7-1.3-2.07-2.18-3.65-2.18s-2.95.88-3.65 2.18c-.44-.13-.9-.18-1.35-.18-2.48 0-4.5 2.02-4.5 4.5 0 .45.05.9.18 1.35-1.3.7-2.18 2.07-2.18 3.65 0 1.58.88 2.95 2.18 3.65-.13.44-.18.9-.18 1.35 0 2.48 2.02 4.5 4.5 4.5.45 0 .9-.05 1.35-.18.7 1.3 2.07 2.18 3.65 2.18s2.95-.88 3.65-2.18c.44.13.9.18 1.35.18 2.48 0 4.5-2.02 4.5-4.5 0-.45-.05-.9-.18-1.35 1.3-.7 2.18-2.07 2.18-3.65zm-12.65 5.08l-3.42-3.41 1.41-1.41 2.01 2.01 5.13-5.12 1.41 1.41-6.54 6.52z"></path>
+            </svg>
+        </span>
+    </h1>
+   
+    <p class="tagline">Innovation • Creativity • Solutions</p>
+    <p class="tagline" style="font-weight: 400; color: var(--accent-yellow);">Your Ultimate Partner in Tech & Media Excellence</p>
+    
+    <div class="pro-badge">
+        <i class="fa-solid fa-laptop-code"></i> ICT Technician <i class="fa-solid fa-computer-mouse"></i>
+    </div>
 </header>
 
 <nav>
-    <a href="index.html">Home</a>
-    <a href="services.html">All Services</a>
-    <a href="about.html">About Us</a>
-    <a href="contact.html">Contact Channel</a>
+    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="about.html"><i class="fa-solid fa-user-tie"></i> About</a>
+    <a href="services.html"><i class="fa-solid fa-layer-group"></i> Services</a>
+    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
 </nav>
 
-<div class="container">
-    <h2>Our Specialties</h2>
-    <div class="services-grid">
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">💻 Web Development</h3>
-            <p>Custom landing pages, professional business architecture, and full-stack web applications.</p>
-            <a href="web.html" class="btn-explore">View Packages →</a>
+<section class="services-section" id="services">
+    <h2>Our Expertise</h2>
+    <p class="section-desc">We combine technical precision with creative vision to deliver scalable solutions for modern businesses.</p>
+    
+    <div class="services-grid" id="dynamic-services">
+        <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Services...</div>
+    </div>
+</section>
+
+<section id="portfolio" style="background: var(--card-bg); border-top: 1px solid #eaeaea;">
+    <div class="services-section">
+        <h2>Featured Work</h2>
+        <p class="section-desc" style="margin-bottom: 50px;">A glimpse into our recent successful digital deployments.</p>
+        
+        <div class="services-grid" id="dynamic-portfolio">
+            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Portfolio...</div>
         </div>
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">📱 App Development</h3>
-            <p>High-performance Android applications built to scale with rich system components.</p>
-            <a href="app.html" class="btn-explore">View Packages →</a>
-        </div>
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">🎬 Video Production</h3>
-            <p>Cinematic advertisements, framing layout design, and expert color grading workflows.</p>
-            <a href="video.html" class="btn-explore">View Packages →</a>
-        </div>
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">🛠️ Tech Repairs</h3>
-            <p>Component-level diagnosis, maintenance routines, and computer system optimization.</p>
-            <a href="repairs.html" class="btn-explore">View Packages →</a>
-        </div>
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">🎨 Graphic Design</h3>
-            <p>Corporate identity frameworks, premium posters, and high-impact vector artwork.</p>
-            <a href="graphics.html" class="btn-explore">View Packages →</a>
-        </div>
-        <div class="service-card">
-            <h3 style="color: var(--primary-blue);">💡 ICT Consultancy</h3>
-            <p>Network infrastructure setup, secure troubleshooting, and expert project roadmapping.</p>
-            <a href="advice.html" class="btn-explore">View Packages →</a>
-        </div>
+    </div>
+</section>
+
+<section id="contact" style="text-align: center; padding: 80px 20px; background: var(--bg-light);">
+    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; font-size: 2.2rem; margin-bottom: 10px;">Get In Touch</h2>
+    <p style="font-size: 1.15rem; color: #555; max-width: 500px; margin: 0 auto 40px auto;">Ready to start your next technical or creative project? Let's talk tech.</p>
+    
+    <div>
+        <a href="https://wa.me/254790435584" class="cta-btn" style="background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+            <i class="fa-brands fa-whatsapp fa-lg"></i> Message on WhatsApp
+        </a>
     </div>
 
-    <h2>Production Portfolio Showcase</h2>
-    <div id="livePortfolioContainer" class="portfolio-grid">
-        <p style="text-align: center; width: 100%; color: #666; font-style: italic;">Connecting to asset stream matrix...</p>
+    <div style="margin-top: 50px;">
+        <p style="color: #666; font-size: 1rem;">Or reach me directly via email:</p>
+        <a href="mailto:dan74techmedia@gmail.com" style="color: var(--primary-blue); font-weight: bold; text-decoration: none; font-size: 1.3rem; transition: color 0.3s;"><i class="fa-solid fa-envelope"></i> dan74techmedia@gmail.com</a>
     </div>
-</div>
+</section>
 
 <footer>
     <div class="footer-grid">
         <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">DAN74TECH MEDIA</h3>
-            <p style="margin: 5px 0; color: #ccc;">Based in Meru, Kenya</p>
-            <p style="margin: 5px 0; color: #ccc;">Working Hours: Mon - Sat (8 AM - 6 PM)</p>
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
+            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div style="text-align: center;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-orange); margin-bottom: 10px;">PORTFOLIO</h3>
-            <p style="margin: 15px 0;">
-                <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #333; padding: 8px 15px; border-radius: 5px; display: inline-block;">Technical Profile</a>
-            </p>
+        <div style="text-align: right;">
+            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
+            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #444;">
+               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+            </a>
         </div>
     </div>
-    <div style="border-top: 1px solid #222; text-align: center; padding-top: 20px; margin-top: 30px; color: #666;">
-        &copy; 2026 DAN74TECH MEDIA. All Rights Reserved.
+    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
+        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
 
 <script>
-    // System utility to accurately filter and build embed links from diverse YouTube URL structures
-    function getYoutubeEmbedUrl(url) {
-        if (!url) return '';
-        let videoId = '';
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    // Helper to convert standard YouTube links to Embed format securely
+    function extractYouTubeEmbedUrl(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
-        if (match && match[2].length === 11) {
-            videoId = match[2];
-        } else {
-            videoId = url; // Fallback if user only enters raw 11-char ID node
-        }
-        return `https://www.youtube.com/embed/${videoId}`;
+        return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
     }
 
-    // Run execution cycle as soon as layout loads
-    window.addEventListener('DOMContentLoaded', streamLivePortfolio);
-
-    async function streamLivePortfolio() {
-        const container = document.getElementById('livePortfolioContainer');
+    // 1. Fetch Main Services Category
+    async function loadServices() {
+        const container = document.getElementById('dynamic-services');
         try {
-            // Relative routing pattern matching our server's live base path asset endpoints
-            const response = await fetch('/api/portfolio');
-            if(!response.ok) throw new Error("Dataset response bad.");
+            const res = await fetch('/api/services');
+            if (!res.ok) throw new Error('Network response was not ok');
+            const allServices = await res.json();
             
-            const portfolioItems = await response.json();
-            container.innerHTML = ''; // Clear status message
-
-            if (!portfolioItems || portfolioItems.length === 0) {
-                container.innerHTML = `<p style="text-align:center; width:100%; color:#666; grid-column: 1/-1;">No production work items online right now.</p>`;
+            // Filter out packages (price > 0), keep only main categories
+            const mainCategories = allServices.filter(s => !s.price || s.price === '0');
+            
+            if (mainCategories.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Services update in progress...</p>';
                 return;
             }
 
-            portfolioItems.forEach(item => {
-                let mediaBlock = '';
-                if(item.media_type === 'image' || !item.media_type) {
-                    mediaBlock = `<img src="${item.media_url}" alt="${item.title}" style="width: 100%; height: 220px; border-radius: 10px; object-fit: cover; display:block;">`;
-                } else {
-                    const embedUrl = getYoutubeEmbedUrl(item.media_url);
-                    mediaBlock = `
-                        <div class="video-container">
-                            <iframe src="${embedUrl}" allowfullscreen></iframe>
-                        </div>
-                    `;
-                }
-
-                container.innerHTML += `
-                    <div class="service-card" style="padding: 20px; text-align:left; border-top:none; border-left:4px solid var(--accent-orange);">
-                        ${mediaBlock}
-                        <h3 style="margin-top: 15px; font-size:1.1rem; color:var(--text-dark);">${item.title}</h3>
-                        <p style="font-size:0.9rem; color:#555; margin-bottom:0;">${item.description || ''}</p>
+            container.innerHTML = mainCategories.map(cat => `
+                <a href="${cat.page_route}.html" class="card-link">
+                    <div class="service-card">
+                        <div class="icon-wrapper">${cat.icon || '💻'}</div>
+                        <h3>${cat.title}</h3>
+                        <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
+                        <div class="pricing-link">Explore Packages <i class="fa-solid fa-arrow-right"></i></div>
                     </div>
-                `;
-            });
-        } catch(err) {
-            console.error(err);
-            container.innerHTML = `<p style="color:var(--accent-red); text-align:center; width:100%; grid-column: 1/-1;">Failed to load production items portfolio dataset.</p>`;
+                </a>
+            `).join('');
+            
+        } catch (error) {
+            console.error('Error loading services:', error);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load server data.</p>';
         }
     }
+
+    // 2. Fetch Portfolio Showcase
+    async function loadPortfolio() {
+        const container = document.getElementById('dynamic-portfolio');
+        try {
+            const res = await fetch('/api/portfolio');
+            if (!res.ok) throw new Error('Network response was not ok');
+            const portfolioItems = await res.json();
+
+            if (portfolioItems.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">New portfolio items dropping soon...</p>';
+                return;
+            }
+
+            container.innerHTML = portfolioItems.map(item => {
+                let mediaHTML = '';
+                let badgeHTML = '';
+
+                if (item.media_type === 'video') {
+                    const embedUrl = extractYouTubeEmbedUrl(item.media_url);
+                    mediaHTML = `
+                        <div class="portfolio-video-wrapper">
+                            <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+                        </div>`;
+                    badgeHTML = `<span style="color: var(--accent-red); font-weight: 700; font-size: 0.9rem;"><i class="fa-brands fa-youtube"></i> Watch Project</span>`;
+                } else {
+                    mediaHTML = `<img src="${item.media_url}" alt="${item.title}" class="portfolio-media">`;
+                    badgeHTML = `<span style="color: var(--primary-blue); font-weight: 700; font-size: 0.9rem;"><i class="fa-solid fa-image"></i> View Detail</span>`;
+                }
+
+                return `
+                    <a href="${item.media_url}" target="_blank" class="card-link">
+                        <div class="service-card" style="padding: 20px;">
+                            ${mediaHTML}
+                            <h3 style="margin-top: 10px; margin-bottom: 5px;">${item.title}</h3>
+                            <p style="margin-bottom: 15px;">${item.description}</p>
+                            ${badgeHTML}
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+        } catch (error) {
+            console.error('Error loading portfolio:', error);
+            container.innerHTML = ''; // Fail silently or add custom error text
+        }
+    }
+
+    // Initialize Page Fetches
+    document.addEventListener('DOMContentLoaded', () => {
+        loadServices();
+        loadPortfolio();
+    });
 </script>
+
 </body>
 </html>
