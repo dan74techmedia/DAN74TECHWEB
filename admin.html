@@ -1115,12 +1115,44 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-let adminAuthed = false;
+
+    let adminAuthed = false;
 let mainServices = [];
 let packages = [];
 let portfolioItems = [];
 let editingServiceId = null;
 let editingPackageId = null;
+
+// Cache DOM elements safely after DOM content loads
+let serviceForm, serviceName, serviceIcon, serviceDesc;
+let editServiceForm, editServiceName, editServiceIcon, editServiceDesc;
+let packageForm, packageName, packageCategory, packagePrice, packageDesc;
+let editPackageForm, editPackageName, editPackageCategory, editPackagePrice, editPackageDesc;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Form and Element bindings
+    serviceForm = document.getElementById('serviceForm');
+    serviceName = document.getElementById('serviceName');
+    serviceIcon = document.getElementById('serviceIcon');
+    serviceDesc = document.getElementById('serviceDesc');
+
+    editServiceForm = document.getElementById('editServiceForm');
+    editServiceName = document.getElementById('editServiceName');
+    editServiceIcon = document.getElementById('editServiceIcon');
+    editServiceDesc = document.getElementById('editServiceDesc');
+
+    packageForm = document.getElementById('packageForm');
+    packageName = document.getElementById('packageName');
+    packageCategory = document.getElementById('packageCategory');
+    packagePrice = document.getElementById('packagePrice');
+    packageDesc = document.getElementById('packageDesc');
+
+    editPackageForm = document.getElementById('editPackageForm');
+    editPackageName = document.getElementById('editPackageName');
+    editPackageCategory = document.getElementById('editPackageCategory');
+    editPackagePrice = document.getElementById('editPackagePrice');
+    editPackageDesc = document.getElementById('editPackageDesc');
+});
 
 // ================= LOGIN =================
 function handleLogin(e) {
@@ -1155,12 +1187,12 @@ function switchTab(tabName) {
 
     document.getElementById(tabName).classList.add('active');
 
-    // safe event handling
     if (window.event) {
         window.event.target.closest('.tab-btn').classList.add('active');
     }
 }
-    async function safeFetch(url, options = {}) {
+
+async function safeFetch(url, options = {}) {
     const res = await fetch(url, options);
     let data;
 
@@ -1182,8 +1214,11 @@ function openModal(id) {
     document.getElementById(id).classList.add('active');
 }
 
+// Fixed function to clear state adjustments cleanly on modal close
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
+    if (id === 'editServiceModal') editingServiceId = null;
+    if (id === 'editPackageModal') editingPackageId = null;
 }
 
 // ================= DATA LOADING =================
@@ -1213,16 +1248,13 @@ function updateDashboardStats() {
 // ================= SERVICES =================
 async function loadMainServices() {
     try {
-        const res = await fetch('/api/services');
-        const data = await res.json();
-
-        mainServices = Array.from(
-            new Map(data.map(s => [s.category, s])).values()
-        );
+        const data = await safeFetch('/api/services');
+        
+        // Services are identified explicitly as entries having a price of '0'
+        mainServices = data.filter(s => !s.price || s.price === '0');
 
         renderServices();
         document.getElementById('serviceCount').textContent = mainServices.length;
-
     } catch (err) {
         showToast('❌ Failed to load services', 'error');
     }
@@ -1234,13 +1266,12 @@ function renderServices() {
 
     if (!mainServices.length) {
         const empty = `<tr><td colspan="4" style="text-align:center;padding:40px;">No services</td></tr>`;
-        tbody.innerHTML = empty;
-        allTbody.innerHTML = empty;
+        if (tbody) tbody.innerHTML = empty;
+        if (allTbody) allTbody.innerHTML = empty;
         return;
     }
 
     let html = '';
-
     mainServices.forEach(s => {
         html += `
         <tr>
@@ -1254,8 +1285,8 @@ function renderServices() {
         </tr>`;
     });
 
-    tbody.innerHTML = html;
-    allTbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
+    if (allTbody) allTbody.innerHTML = html;
 }
 
 // ================= CREATE SERVICE =================
@@ -1263,12 +1294,12 @@ async function handleAddService(e) {
     e.preventDefault();
 
     try {
-        const data = await safeFetch('/api/services', {
+        await safeFetch('/api/services', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
                 title: serviceName.value,
-                category: serviceName.value,
+                category: serviceName.value, // Syncs with categories system cleanly
                 icon: serviceIcon.value,
                 description: serviceDesc.value,
                 price: '0'
@@ -1277,15 +1308,27 @@ async function handleAddService(e) {
 
         showToast('Service added', 'success');
         serviceForm.reset();
-
         await loadMainServices();
-
+        populateCategoryDropdowns();
+        updateDashboardStats();
     } catch (err) {
         showToast(err.message, 'error');
     }
 }
 
-// ================= EDIT SERVICE =================
+// ================= EDIT SERVICE (RECTIFIED) =================
+function editService(id) {
+    const service = mainServices.find(s => s.id === id);
+    if (!service) return showToast('Service item matching ID not found', 'error');
+
+    editingServiceId = id;
+    editServiceName.value = service.category;
+    editServiceIcon.value = service.icon || '🔧';
+    editServiceDesc.value = service.description || '';
+    
+    openModal('editServiceModal');
+}
+
 async function handleUpdateService(e) {
     e.preventDefault();
 
@@ -1310,30 +1353,26 @@ async function handleUpdateService(e) {
         closeModal('editServiceModal');
 
         await loadMainServices();
-
+        await loadPackages(); // Reload packages in case category relationships updated
+        populateCategoryDropdowns();
+        updateDashboardStats();
     } catch (err) {
         showToast(err.message, 'error');
     }
 }
+
 // ================= DELETE SERVICE =================
 async function deleteService(id) {
-    if (!confirm('Delete service?')) return;
+    if (!confirm('Delete service? All associated statistics will recalculate.')) return;
 
     try {
-        const res = await fetch(`/api/services/${id}`, {
-            method: 'DELETE'
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
+        await safeFetch(`/api/services/${id}`, { method: 'DELETE' });
         showToast('🗑 Deleted', 'success');
 
         await loadMainServices();
         await loadPackages();
         populateCategoryDropdowns();
         updateDashboardStats();
-
     } catch (err) {
         showToast(err.message, 'error');
     }
@@ -1342,16 +1381,11 @@ async function deleteService(id) {
 // ================= PACKAGES =================
 async function loadPackages() {
     try {
-        const res = await fetch('/api/services');
-        const data = await res.json();
-
-        packages = data.filter(p =>
-            p.price && p.price !== '0'
-        );
+        const data = await safeFetch('/api/services');
+        packages = data.filter(p => p.price && p.price !== '0');
 
         renderPackages();
         document.getElementById('packageCount').textContent = packages.length;
-
     } catch (err) {
         showToast('❌ Failed packages', 'error');
     }
@@ -1363,13 +1397,12 @@ function renderPackages() {
 
     if (!packages.length) {
         const empty = `<tr><td colspan="5" style="text-align:center;padding:40px;">No packages</td></tr>`;
-        tbody.innerHTML = empty;
-        allTbody.innerHTML = empty;
+        if (tbody) tbody.innerHTML = empty;
+        if (allTbody) allTbody.innerHTML = empty;
         return;
     }
 
     let html = '';
-
     packages.forEach(p => {
         html += `
         <tr>
@@ -1384,8 +1417,8 @@ function renderPackages() {
         </tr>`;
     });
 
-    tbody.innerHTML = html;
-    allTbody.innerHTML = html;
+    if (tbody) tbody.innerHTML = html;
+    if (allTbody) allTbody.innerHTML = html;
 }
 
 // ================= ADD PACKAGE =================
@@ -1399,25 +1432,61 @@ async function handleAddPackage(e) {
         category: packageCategory.value,
         price: packagePrice.value,
         description: packageDesc.value,
-        page_route: packageCategory.value.toLowerCase().replace(/\s+/g, '-')
+        icon: '🔧'
     };
 
     try {
-        const res = await fetch('/api/services', {
+        await safeFetch('/api/services', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify(payload)
         });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
 
         showToast('✅ Package added', 'success');
         packageForm.reset();
 
         await loadPackages();
         updateDashboardStats();
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
 
+// ================= EDIT PACKAGE (RECTIFIED) =================
+function editPackage(id) {
+    const pkg = packages.find(p => p.id === id);
+    if (!pkg) return showToast('Package not found', 'error');
+
+    editingPackageId = id;
+    editPackageName.value = pkg.title;
+    editPackageCategory.value = pkg.category;
+    editPackagePrice.value = pkg.price;
+    editPackageDesc.value = pkg.description || '';
+
+    openModal('editPackageModal');
+}
+
+async function handleUpdatePackage(e) {
+    e.preventDefault();
+    if (!editingPackageId) return showToast("No package selected", "error");
+
+    try {
+        await safeFetch(`/api/services/${editingPackageId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: editPackageName.value,
+                category: editPackageCategory.value,
+                price: editPackagePrice.value,
+                description: editPackageDesc.value,
+                icon: '🔧'
+            })
+        });
+
+        showToast('Package updated successfully', 'success');
+        closeModal('editPackageModal');
+        await loadPackages();
+        updateDashboardStats();
     } catch (err) {
         showToast(err.message, 'error');
     }
@@ -1428,18 +1497,11 @@ async function deletePackage(id) {
     if (!confirm('Delete package?')) return;
 
     try {
-        const res = await fetch(`/api/services/${id}`, {
-            method:'DELETE'
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
+        await safeFetch(`/api/services/${id}`, { method: 'DELETE' });
         showToast('🗑 Deleted', 'success');
 
         await loadPackages();
         updateDashboardStats();
-
     } catch (err) {
         showToast(err.message, 'error');
     }
@@ -1448,12 +1510,9 @@ async function deletePackage(id) {
 // ================= PORTFOLIO =================
 async function loadPortfolio() {
     try {
-        const res = await fetch('/api/portfolio');
-        portfolioItems = await res.json();
-
+        portfolioItems = await safeFetch('/api/portfolio');
         renderPortfolio();
         document.getElementById('portfolioCount').textContent = portfolioItems.length;
-
     } catch (err) {
         showToast('❌ Portfolio error', 'error');
     }
@@ -1461,6 +1520,7 @@ async function loadPortfolio() {
 
 function renderPortfolio() {
     const tbody = document.querySelector('#portfolioTable tbody');
+    if (!tbody) return;
 
     if (!portfolioItems.length) {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;">No items</td></tr>`;
@@ -1468,7 +1528,6 @@ function renderPortfolio() {
     }
 
     let html = '';
-
     portfolioItems.forEach(p => {
         html += `
         <tr>
@@ -1490,18 +1549,11 @@ async function deletePortfolio(id) {
     if (!confirm('Delete item?')) return;
 
     try {
-        const res = await fetch(`/api/portfolio/${id}`, {
-            method:'DELETE'
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
+        await safeFetch(`/api/portfolio/${id}`, { method: 'DELETE' });
         showToast('🗑 Deleted', 'success');
 
         await loadPortfolio();
         updateDashboardStats();
-
     } catch (err) {
         showToast(err.message, 'error');
     }
@@ -1511,7 +1563,6 @@ async function deletePortfolio(id) {
 function populateCategoryDropdowns() {
     document.querySelectorAll('[id$="Category"]').forEach(select => {
         const current = select.value;
-
         select.innerHTML = '<option value="">Select category</option>';
 
         mainServices.forEach(s => {
@@ -1528,16 +1579,17 @@ function populateCategoryDropdowns() {
 // ================= TOAST =================
 function showToast(msg, type='info') {
     const c = document.getElementById('toastContainer');
+    if (!c) return;
 
     const div = document.createElement('div');
     div.className = `toast ${type}`;
     div.innerHTML = msg;
 
     c.appendChild(div);
-
     setTimeout(() => div.remove(), 4000);
 }
 </script>
+
         
 </body>
 </html>
