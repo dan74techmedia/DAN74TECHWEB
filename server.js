@@ -63,14 +63,14 @@ app.get('/api/services', async (req, res) => {
     }
 });
 
-// Add service
+// Add service (Rectified to accept icon column metadata)
 app.post('/api/services', async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, icon, description } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO services (name, description) VALUES ($1, $2) RETURNING *`,
-            [name, description]
+            `INSERT INTO services (name, icon, description) VALUES ($1, $2, $3) RETURNING *`,
+            [name, icon, description]
         );
 
         res.json({ success: true, data: result.rows[0] });
@@ -79,15 +79,15 @@ app.post('/api/services', async (req, res) => {
     }
 });
 
-// Update service
+// Update service (Rectified to retain updated icon strings/emojis)
 app.put('/api/services/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description } = req.body;
+        const { name, icon, description } = req.body;
 
         const result = await pool.query(
-            `UPDATE services SET name = $1, description = $2 WHERE id = $3 RETURNING *`,
-            [name, description, id]
+            `UPDATE services SET name = $1, icon = $2, description = $3 WHERE id = $4 RETURNING *`,
+            [name, icon, description, id]
         );
 
         res.json({ success: true, data: result.rows[0] });
@@ -194,6 +194,123 @@ app.get('/api/sub-services/:serviceName', async (req, res) => {
     }
 });
 
+// ================= ORDERS MANAGEMENT =================
+
+// Fetch all orders for the admin console
+app.get('/api/orders', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM orders ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Create/Save a new order (called right before WhatsApp forwarding)
+app.post('/api/orders', async (req, res) => {
+    try {
+        const {
+            customer_name,
+            phone,
+            service,
+            sub_service,
+            domain,
+            device_model,
+            project_details,
+            price,
+            status,
+            payment_status
+        } = req.body;
+
+        const result = await pool.query(
+            `INSERT INTO orders (
+                customer_name, phone, service, sub_service, domain, 
+                device_model, project_details, price, status, payment_status
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+            [
+                customer_name, 
+                phone, 
+                service, 
+                sub_service, 
+                domain || 'N/A', 
+                device_model || 'Web Client', 
+                project_details, 
+                price, 
+                status || 'pending', 
+                payment_status || 'unpaid'
+            ]
+        );
+
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update order status or payment status (for admin modifications)
+app.put('/api/orders/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, payment_status } = req.body;
+        const result = await pool.query(
+            `UPDATE orders SET status = $1, payment_status = $2 WHERE id = $3 RETURNING *`,
+            [status, payment_status, id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete an order from admin console view
+app.delete('/api/orders/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ================= MESSAGES (CONTACT FORM) =================
+
+// Fetch all messages for the admin console
+app.get('/api/messages', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM messages ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Save a message (submitted from your Contact Us form)
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+
+        const result = await pool.query(
+            `INSERT INTO messages (name, email, subject, message, status) 
+             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [name, email, subject || 'General Inquiry', message, 'unread']
+        );
+
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a contact form message log
+app.delete('/api/messages/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM messages WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ================= ROOT TEST ROUTE =================
 app.get('/', (req, res) => {
     res.send('🚀 DAN74TECH MEDIA API is running...');
@@ -203,3 +320,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server fully operational on port ${PORT}`);
 });
+            
