@@ -17,6 +17,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
+// Helper function for dynamic route data-sanitization slug creation
+function generateSlug(text) {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')       // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+        .replace(/\-\-+/g, '-');    // Replace multiple - with single -
+}
+
 // Serve static HTML wrappers smoothly
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
@@ -30,10 +41,10 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Auto-Initialization Routine to secure table layers
+// Auto-Initialization Routine to secure table layers across system modules
 async function initializeDatabaseSchema() {
     try {
-        // Services table initialization supporting dynamic routes mapping
+        // Services parent table initialization supporting dynamic routes mapping
         await pool.query(`
             CREATE TABLE IF NOT EXISTS services (
                 id SERIAL PRIMARY KEY,
@@ -43,6 +54,30 @@ async function initializeDatabaseSchema() {
                 category VARCHAR(100),
                 page_route VARCHAR(100) DEFAULT 'web',
                 icon VARCHAR(50) DEFAULT '🔧'
+            );
+        `);
+
+        // Sub-services detailed structural tables mappings
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS sub_services (
+                id SERIAL PRIMARY KEY,
+                service_id INTEGER REFERENCES services(id) ON DELETE CASCADE,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price VARCHAR(100) NOT NULL
+            );
+        `);
+
+        // Orders Tracking Registry table initialization matching form submissions
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                customer_name VARCHAR(255) NOT NULL,
+                service_type TEXT NOT NULL,
+                amount_paid INTEGER NOT NULL,
+                instructions TEXT,
+                status VARCHAR(100) DEFAULT 'Pending Verification',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
         
@@ -57,7 +92,7 @@ async function initializeDatabaseSchema() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log("🚀 Neon Database Schema verified and running.");
+        console.log("🚀 Neon Database Schema verified and completely initialized.");
     } catch (err) {
         console.error("❌ Database schema initialization failure:", err);
     }
@@ -90,34 +125,50 @@ const uploadToCloudinary = (fileBuffer) => {
 };
 
 // ==========================================
-// GET SUB SERVICES BY ROUTE
+// 4. API ENDPOINTS: SERVICES & SUB-SERVICES
 // ==========================================
+
+// CLEAN SUB SERVICES API (FIXED VERSION)
 app.get('/api/sub-services/:route', async (req, res) => {
     const { route } = req.params;
 
     try {
-        const result = await pool.query(`
-            SELECT
-                ss.id,
-                ss.title,
-                ss.description,
-                ss.price
-            FROM sub_services ss
-            JOIN services s
-            ON ss.service_id = s.id
-            WHERE s.page_route = $1
-            ORDER BY ss.price ASC
-        `,[route]);
+        // Step 1: Get service ID from route parameters safely
+        const service = await pool.query(
+            `SELECT id FROM services WHERE page_route = $1`,
+            [route]
+        );
 
-        res.json(result.rows);
+        if (service.rows.length === 0) {
+            return res.json([]);
+        }
 
-    } catch(err){
-        console.error(err);
+        const serviceId = service.rows[0].id;
+
+        // Step 2: Get child sub-services sorted analytically by price values
+        const subServices = await pool.query(
+            `SELECT 
+                id,
+                title,
+                description,
+                price
+             FROM sub_services
+             WHERE service_id = $1
+             ORDER BY CAST(price AS INTEGER) ASC`,
+            [serviceId]
+        );
+
+        // Step 3: Clean output payload return directly to front facing views
+        res.json(subServices.rows);
+
+    } catch (err) {
+        console.error("Sub-services payload generation error:", err);
         res.status(500).json({
-            error:'Failed to load service packages'
+            error: "Failed to load sub services assets array mapping cleanly."
         });
     }
 });
+
 // GET all items - Feeds package pipeline to frontend forms and layouts
 app.get('/api/services', async (req, res) => {
     try {
@@ -142,7 +193,7 @@ app.get('/api/services', async (req, res) => {
 app.post('/api/services', async (req, res) => {
     const { title, description, price, category, page_route, icon } = req.body;
     
-    // Strict match to admin.html schema logic
+    // Strict match to admin schema logic mapping profiles
     const finalRoute = page_route || generateSlug(category || title);
 
     try {
@@ -196,7 +247,28 @@ app.delete('/api/services/:id', async (req, res) => {
 });
 
 // ==========================================
-// 5. API ENDPOINTS: PORTFOLIO SHOWCASE
+// 5. API ENDPOINTS: ORDERS INTERCEPTOR
+// ==========================================
+
+// POST incoming checkout configurations directly to tracking database
+app.post('/api/orders', async (req, res) => {
+    const { customerName, serviceType, amountPaid, instructions, status } = req.body;
+
+    try {
+        await pool.query(
+            `INSERT INTO orders (customer_name, service_type, amount_paid, instructions, status) 
+             VALUES ($1, $2, $3, $4, $5)`,
+            [customerName, serviceType, amountPaid, instructions, status || 'Pending Verification']
+        );
+        res.status(201).json({ success: true, message: "Order records processed and recorded flawlessly." });
+    } catch (err) {
+        console.error("Order insertion pipeline transaction error:", err);
+        res.status(500).json({ error: "Internal ledger processing data exception." });
+    }
+});
+
+// ==========================================
+// 6. API ENDPOINTS: PORTFOLIO SHOWCASE
 // ==========================================
 
 // GET all showcase work items
@@ -249,44 +321,8 @@ app.delete('/api/portfolio/:id', async (req, res) => {
     }
 });
 
-app.get('/api/sub-services/:route', async (req, res) => {
-    try {
-
-        const { route } = req.params;
-
-        const serviceResult = await pool.query(
-            `SELECT id
-             FROM services
-             WHERE page_route = $1`,
-            [route]
-        );
-
-        if (serviceResult.rows.length === 0) {
-            return res.json([]);
-        }
-
-        const serviceId = serviceResult.rows[0].id;
-
-        const subResult = await pool.query(
-            `SELECT *
-             FROM sub_services
-             WHERE service_id = $1
-             ORDER BY price ASC`,
-            [serviceId]
-        );
-
-        res.json(subResult.rows);
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'Failed loading sub services'
-        });
-    }
-});
-
 // ==========================================
-// 6. SYSTEM INSTANTIATION INITIALIZER
+// 7. SYSTEM INSTANTIATION INITIALIZER
 // ==========================================
 app.listen(PORT, () => {
     console.log(`📡 Core Application Online Layer Active. Listening on port: ${PORT}`);
