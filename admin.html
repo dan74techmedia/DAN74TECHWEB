@@ -1115,526 +1115,441 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-    let adminAuthed = false;
-    let mainServices = [];
-    let packages = [];
-    let portfolioItems = [];
-    let editingServiceId = null;
-    let editingPackageId = null;
+let adminAuthed = false;
+let mainServices = [];
+let packages = [];
+let portfolioItems = [];
+let editingServiceId = null;
+let editingPackageId = null;
 
-    function handleLogin(e) {
-        e.preventDefault();
-        const password = document.getElementById('passwordInput').value;
-        
-        if (password === 'dan74tech2026') {
-            adminAuthed = true;
-            document.getElementById('authLayer').style.display = 'none';
-            document.getElementById('dashboardLayer').style.display = 'block';
-            showToast('🔓 Access Granted!', 'success');
-            loadAllData();
-        } else {
-            showToast('❌ Invalid password', 'error');
-        }
+// ================= LOGIN =================
+function handleLogin(e) {
+    e.preventDefault();
+    const password = document.getElementById('passwordInput').value;
+
+    if (password === 'dan74techadmin!') {
+        adminAuthed = true;
+        document.getElementById('authLayer').style.display = 'none';
+        document.getElementById('dashboardLayer').style.display = 'block';
+        showToast('🔓 Access Granted!', 'success');
+        loadAllData();
+    } else {
+        showToast('❌ Invalid password', 'error');
+    }
+}
+
+function handleLogout() {
+    if (confirm('Logout?')) {
+        adminAuthed = false;
+        document.getElementById('authLayer').style.display = 'flex';
+        document.getElementById('dashboardLayer').style.display = 'none';
+        document.getElementById('passwordInput').value = '';
+        showToast('🔒 Logged out', 'success');
+    }
+}
+
+// ================= TABS =================
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    document.getElementById(tabName).classList.add('active');
+
+    // safe event handling
+    if (window.event) {
+        window.event.target.closest('.tab-btn').classList.add('active');
+    }
+}
+
+// ================= MODALS =================
+function openModal(id) {
+    document.getElementById(id).classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// ================= DATA LOADING =================
+async function loadAllData() {
+    await loadMainServices();
+    await loadPackages();
+    await loadPortfolio();
+    populateCategoryDropdowns();
+    updateDashboardStats();
+}
+
+// ================= STATS =================
+function updateDashboardStats() {
+    document.getElementById('serviceStat').textContent = mainServices.length;
+    document.getElementById('packageStat').textContent = packages.length;
+    document.getElementById('portfolioStat').textContent = portfolioItems.length;
+
+    const revenue = packages.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+
+    document.getElementById('revenueStat').textContent = 'KSH ' + revenue.toLocaleString();
+    document.getElementById('dashServiceCount').textContent = mainServices.length;
+    document.getElementById('dashPackageCount').textContent = packages.length;
+    document.getElementById('dashPortfolioCount').textContent = portfolioItems.length;
+    document.getElementById('dashRevenueCount').textContent = 'KSH ' + revenue.toLocaleString();
+}
+
+// ================= SERVICES =================
+async function loadMainServices() {
+    try {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+
+        mainServices = Array.from(
+            new Map(data.map(s => [s.category, s])).values()
+        );
+
+        renderServices();
+        document.getElementById('serviceCount').textContent = mainServices.length;
+
+    } catch (err) {
+        showToast('❌ Failed to load services', 'error');
+    }
+}
+
+function renderServices() {
+    const tbody = document.querySelector('#servicesTable tbody');
+    const allTbody = document.querySelector('#allServicesTable tbody');
+
+    if (!mainServices.length) {
+        const empty = `<tr><td colspan="4" style="text-align:center;padding:40px;">No services</td></tr>`;
+        tbody.innerHTML = empty;
+        allTbody.innerHTML = empty;
+        return;
     }
 
-    function handleLogout() {
-        if (confirm('Logout?')) {
-            adminAuthed = false;
-            document.getElementById('authLayer').style.display = 'flex';
-            document.getElementById('dashboardLayer').style.display = 'none';
-            document.getElementById('passwordInput').value = '';
-            showToast('🔒 Logged out', 'success');
-        }
-    }
+    let html = '';
 
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        event.target.closest('.tab-btn').classList.add('active');
-    }
+    mainServices.forEach(s => {
+        html += `
+        <tr>
+            <td style="font-size:20px">${s.icon || '🔧'}</td>
+            <td><b>${s.category}</b></td>
+            <td>${(s.description || '').substring(0, 60)}</td>
+            <td style="text-align:right">
+                <button class="btn-action btn-edit" onclick="editService(${s.id})">Edit</button>
+                <button class="btn-action btn-delete" onclick="deleteService(${s.id})">Delete</button>
+            </td>
+        </tr>`;
+    });
 
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.add('active');
-    }
+    tbody.innerHTML = html;
+    allTbody.innerHTML = html;
+}
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
-    }
+// ================= CREATE SERVICE =================
+async function handleAddService(e) {
+    e.preventDefault();
 
-    async function loadAllData() {
+    const payload = {
+        title: serviceName.value,
+        category: serviceName.value,
+        icon: serviceIcon.value,
+        description: serviceDesc.value,
+        price: '0',
+        page_route: serviceName.value.toLowerCase().replace(/\s+/g, '-')
+    };
+
+    try {
+        const res = await fetch('/api/services', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('✅ Service added', 'success');
+        serviceForm.reset();
+
         await loadMainServices();
         await loadPackages();
-        await loadPortfolio();
         populateCategoryDropdowns();
         updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
     }
+}
 
-    function updateDashboardStats() {
-        document.getElementById('serviceStat').textContent = mainServices.length;
-        document.getElementById('packageStat').textContent = packages.length;
-        document.getElementById('portfolioStat').textContent = portfolioItems.length;
-        
-        const totalRevenue = packages.reduce((sum, pkg) => sum + (Number(pkg.price) || 0), 0);
-        document.getElementById('revenueStat').textContent = 'KSH ' + totalRevenue.toLocaleString();
-        
-        document.getElementById('dashServiceCount').textContent = mainServices.length;
-        document.getElementById('dashPackageCount').textContent = packages.length;
-        document.getElementById('dashPortfolioCount').textContent = portfolioItems.length;
-        document.getElementById('dashRevenueCount').textContent = 'KSH ' + totalRevenue.toLocaleString();
-    }
+// ================= EDIT SERVICE =================
+function editService(id) {
+    const s = mainServices.find(x => x.id === id);
+    if (!s) return;
 
-    async function loadMainServices() {
-        try {
-            const res = await fetch('/api/services');
-            if (!res.ok) throw new Error('Failed');
-            
-            let allServices = await res.json();
-            mainServices = Array.from(new Map(allServices.map(s => [s.category, s])).values());
-            renderMainServices();
-            document.getElementById('serviceCount').textContent = mainServices.length;
-        } catch (err) {
-            showToast('❌ Error loading services', 'error');
-        }
-    }
+    editingServiceId = id;
 
-    function renderMainServices() {
-        const tbody = document.querySelector('#servicesTable tbody');
-        const allTbody = document.querySelector('#allServicesTable tbody');
+    editServiceName.value = s.category;
+    editServiceIcon.value = s.icon;
+    editServiceDesc.value = s.description;
 
-        if (mainServices.length === 0) {
-            const empty = '<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-gray);">No categories yet</td></tr>';
-            tbody.innerHTML = empty;
-            allTbody.innerHTML = empty;
-            return;
-        }
+    openModal('editServiceModal');
+}
 
-        let html = '';
-        mainServices.forEach(service => {
-            html += `
-                <tr>
-                    <td style="font-size:1.5rem;">${service.icon || '🔧'}</td>
-                    <td><strong>${service.category}</strong></td>
-                    <td style="color: var(--text-gray); font-size: 0.9rem;">${(service.description || 'N/A').substring(0, 60)}</td>
-                    <td style="text-align: right;">
-                        <div class="action-buttons">
-                            <button class="btn-action btn-edit" onclick="openEditServiceModal(${service.id})">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-action btn-delete" onclick="deleteService(${service.id})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+async function handleUpdateService(e) {
+    e.preventDefault();
+
+    const payload = {
+        title: editServiceName.value,
+        category: editServiceName.value,
+        icon: editServiceIcon.value,
+        description: editServiceDesc.value,
+        price: '0',
+        page_route: editServiceName.value.toLowerCase().replace(/\s+/g, '-')
+    };
+
+    try {
+        const res = await fetch(`/api/services/${editingServiceId}`, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
         });
 
-        tbody.innerHTML = html;
-        allTbody.innerHTML = html;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('✅ Updated', 'success');
+        closeModal('editServiceModal');
+
+        await loadMainServices();
+        await loadPackages();
+        populateCategoryDropdowns();
+        updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
     }
+}
 
-    async function handleAddService(e) {
-        e.preventDefault();
-        
-        const category = document.getElementById('serviceName').value;
-        const icon = document.getElementById('serviceIcon').value;
-        const description = document.getElementById('serviceDesc').value;
+// ================= DELETE SERVICE =================
+async function deleteService(id) {
+    if (!confirm('Delete service?')) return;
 
-        const payload = {
-            title: category,
-            category: category,
-            icon: icon,
-            description: description,
-            price: '0',
-            page_route: category.toLowerCase().replace(/\s+/g, '-')
-        };
-
-        try {
-            const res = await fetch('/api/services', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error('Failed');
-
-            showToast('✅ Category created!', 'success');
-            document.getElementById('serviceForm').reset();
-            loadMainServices();
-            populateCategoryDropdowns();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    function openEditServiceModal(id) {
-        const service = mainServices.find(s => s.id === id);
-        if (!service) return;
-
-        editingServiceId = id;
-        document.getElementById('editServiceName').value = service.category;
-        document.getElementById('editServiceIcon').value = service.icon || '';
-        document.getElementById('editServiceDesc').value = service.description || '';
-        openModal('editServiceModal');
-    }
-
-    async function handleUpdateService(e) {
-        e.preventDefault();
-        
-        const payload = {
-            title: document.getElementById('editServiceName').value,
-            category: document.getElementById('editServiceName').value,
-            icon: document.getElementById('editServiceIcon').value,
-            description: document.getElementById('editServiceDesc').value,
-            price: '0',
-            page_route: document.getElementById('editServiceName').value.toLowerCase().replace(/\s+/g, '-')
-        };
-
-        try {
-            const res = await fetch(`/api/services/${editingServiceId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error('Failed');
-
-            showToast('✅ Category updated!', 'success');
-            closeModal('editServiceModal');
-            loadMainServices();
-            populateCategoryDropdowns();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    async function deleteService(id) {
-        if (!confirm('Delete this category?')) return;
-        try {
-            const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed');
-            showToast('✅ Deleted!', 'success');
-            loadMainServices();
-            populateCategoryDropdowns();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    function resetServiceForm() {
-        document.getElementById('serviceForm').reset();
-    }
-
-    function populateCategoryDropdowns() {
-        const selects = document.querySelectorAll('[id$="Category"]');
-        selects.forEach(select => {
-            const currentValue = select.value;
-            select.innerHTML = '<option value="">Select a category</option>';
-            mainServices.forEach(service => {
-                const option = document.createElement('option');
-                option.value = service.category;
-                option.textContent = service.category;
-                select.appendChild(option);
-            });
-            if (currentValue) select.value = currentValue;
-        });
-    }
-
-    async function loadPackages() {
-        try {
-            const res = await fetch('/api/services');
-            if (!res.ok) throw new Error('Failed');
-            
-            const allServices = await res.json();
-            packages = allServices.filter(s => s.price && s.price !== '0');
-            renderPackages();
-            document.getElementById('packageCount').textContent = packages.length;
-        } catch (err) {
-            showToast('❌ Error loading packages', 'error');
-        }
-    }
-
-    function renderPackages() {
-        const tbody = document.querySelector('#packagesTable tbody');
-        const allTbody = document.querySelector('#allPackagesTable tbody');
-
-        if (packages.length === 0) {
-            const empty = '<tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-gray);">No packages yet</td></tr>';
-            tbody.innerHTML = empty;
-            allTbody.innerHTML = empty;
-            return;
-        }
-
-        let html = '';
-        packages.forEach(pkg => {
-            const descShort = (pkg.description || '').substring(0, 60);
-            html += `
-                <tr>
-                    <td><span class="badge">${pkg.category}</span></td>
-                    <td><strong>${pkg.title}</strong></td>
-                    <td style="color: #25D366; font-weight: 600;">KSH ${Number(pkg.price).toLocaleString()}</td>
-                    <td style="color: var(--text-gray); font-size: 0.9rem;">${descShort}</td>
-                    <td style="text-align: right;">
-                        <div class="action-buttons">
-                            <button class="btn-action btn-edit" onclick="openEditPackageModal(${pkg.id})">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-action btn-delete" onclick="deletePackage(${pkg.id})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+    try {
+        const res = await fetch(`/api/services/${id}`, {
+            method: 'DELETE'
         });
 
-        tbody.innerHTML = html;
-        allTbody.innerHTML = html;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('🗑 Deleted', 'success');
+
+        await loadMainServices();
+        await loadPackages();
+        populateCategoryDropdowns();
+        updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
+
+// ================= PACKAGES =================
+async function loadPackages() {
+    try {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+
+        packages = data.filter(p =>
+            p.price && p.price !== '0'
+        );
+
+        renderPackages();
+        document.getElementById('packageCount').textContent = packages.length;
+
+    } catch (err) {
+        showToast('❌ Failed packages', 'error');
+    }
+}
+
+function renderPackages() {
+    const tbody = document.querySelector('#packagesTable tbody');
+    const allTbody = document.querySelector('#allPackagesTable tbody');
+
+    if (!packages.length) {
+        const empty = `<tr><td colspan="5" style="text-align:center;padding:40px;">No packages</td></tr>`;
+        tbody.innerHTML = empty;
+        allTbody.innerHTML = empty;
+        return;
     }
 
-    async function handleAddPackage(e) {
-        e.preventDefault();
-        
-        const title = document.getElementById('packageName').value;
-        const category = document.getElementById('packageCategory').value;
-        const price = document.getElementById('packagePrice').value;
-        const description = document.getElementById('packageDesc').value;
+    let html = '';
 
-        if (!category) {
-            showToast('❌ Select a category', 'error');
-            return;
-        }
+    packages.forEach(p => {
+        html += `
+        <tr>
+            <td><span class="badge">${p.category}</span></td>
+            <td><b>${p.title}</b></td>
+            <td>KSH ${Number(p.price).toLocaleString()}</td>
+            <td>${(p.description || '').substring(0,60)}</td>
+            <td style="text-align:right">
+                <button class="btn-action btn-edit" onclick="editPackage(${p.id})">Edit</button>
+                <button class="btn-action btn-delete" onclick="deletePackage(${p.id})">Delete</button>
+            </td>
+        </tr>`;
+    });
 
-        const payload = {
-            title,
-            category,
-            price,
-            description,
-            page_route: category.toLowerCase().replace(/\s+/g, '-')
-        };
+    tbody.innerHTML = html;
+    allTbody.innerHTML = html;
+}
 
-        try {
-            const res = await fetch('/api/services', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+// ================= ADD PACKAGE =================
+async function handleAddPackage(e) {
+    e.preventDefault();
 
-            if (!res.ok) throw new Error('Failed');
+    if (!packageCategory.value) return showToast('Select category', 'error');
 
-            showToast('✅ Created!', 'success');
-            resetPackageForm();
-            loadPackages();
-            updateDashboardStats();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
+    const payload = {
+        title: packageName.value,
+        category: packageCategory.value,
+        price: packagePrice.value,
+        description: packageDesc.value,
+        page_route: packageCategory.value.toLowerCase().replace(/\s+/g, '-')
+    };
 
-    function openEditPackageModal(id) {
-        const pkg = packages.find(p => p.id === id);
-        if (!pkg) return;
-
-        editingPackageId = id;
-        document.getElementById('editPackageName').value = pkg.title;
-        document.getElementById('editPackageCategory').value = pkg.category;
-        document.getElementById('editPackagePrice').value = pkg.price;
-        document.getElementById('editPackageDesc').value = pkg.description;
-        openModal('editPackageModal');
-    }
-
-    async function handleUpdatePackage(e) {
-        e.preventDefault();
-        
-        const payload = {
-            title: document.getElementById('editPackageName').value,
-            category: document.getElementById('editPackageCategory').value,
-            price: document.getElementById('editPackagePrice').value,
-            description: document.getElementById('editPackageDesc').value,
-            page_route: document.getElementById('editPackageCategory').value.toLowerCase().replace(/\s+/g, '-')
-        };
-
-        try {
-            const res = await fetch(`/api/services/${editingPackageId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error('Failed');
-
-            showToast('✅ Updated!', 'success');
-            closeModal('editPackageModal');
-            loadPackages();
-            updateDashboardStats();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    async function deletePackage(id) {
-        if (!confirm('Delete?')) return;
-        try {
-            const res = await fetch(`/api/services/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed');
-            showToast('✅ Deleted!', 'success');
-            loadPackages();
-            updateDashboardStats();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    function resetPackageForm() {
-        document.getElementById('packageForm').reset();
-    }
-
-    async function loadPortfolio() {
-        try {
-            const res = await fetch('/api/portfolio');
-            if (!res.ok) throw new Error('Failed');
-            
-            portfolioItems = await res.json();
-            renderPortfolio();
-            document.getElementById('portfolioCount').textContent = portfolioItems.length;
-        } catch (err) {
-            showToast('❌ Error loading portfolio', 'error');
-        }
-    }
-
-    function renderPortfolio() {
-        const tbody = document.querySelector('#portfolioTable tbody');
-        const allTbody = document.querySelector('#allPortfolioTable tbody');
-
-        if (portfolioItems.length === 0) {
-            const empty = '<tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-gray);">No items yet</td></tr>';
-            tbody.innerHTML = empty;
-            allTbody.innerHTML = empty;
-            return;
-        }
-
-        let html = '';
-        portfolioItems.forEach(item => {
-            const descShort = (item.description || '').substring(0, 50);
-            const typeClass = item.media_type === 'image' ? 'image' : 'video-type';
-            html += `
-                <tr>
-                    <td><strong>${item.title}</strong></td>
-                    <td><span class="badge ${typeClass}">${item.media_type.toUpperCase()}</span></td>
-                    <td style="color: var(--text-gray); font-size: 0.9rem;">${descShort}</td>
-                    <td style="text-align: right;">
-                        <div class="action-buttons">
-                            <a href="${item.media_url}" target="_blank" class="btn-action btn-view">
-                                <i class="fas fa-external-link-alt"></i> View
-                            </a>
-                            <button class="btn-action btn-delete" onclick="deletePortfolio(${item.id})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+    try {
+        const res = await fetch('/api/services', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
         });
 
-        tbody.innerHTML = html;
-        allTbody.innerHTML = html;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('✅ Package added', 'success');
+        packageForm.reset();
+
+        await loadPackages();
+        updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
+
+// ================= DELETE PACKAGE =================
+async function deletePackage(id) {
+    if (!confirm('Delete package?')) return;
+
+    try {
+        const res = await fetch(`/api/services/${id}`, {
+            method:'DELETE'
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('🗑 Deleted', 'success');
+
+        await loadPackages();
+        updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
+
+// ================= PORTFOLIO =================
+async function loadPortfolio() {
+    try {
+        const res = await fetch('/api/portfolio');
+        portfolioItems = await res.json();
+
+        renderPortfolio();
+        document.getElementById('portfolioCount').textContent = portfolioItems.length;
+
+    } catch (err) {
+        showToast('❌ Portfolio error', 'error');
+    }
+}
+
+function renderPortfolio() {
+    const tbody = document.querySelector('#portfolioTable tbody');
+
+    if (!portfolioItems.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;">No items</td></tr>`;
+        return;
     }
 
-    function togglePortfolioFields() {
-        const type = document.getElementById('portfolioMediaType').value;
-        
-        if (type === 'image') {
-            document.getElementById('imageUploadGroup').style.display = 'block';
-            document.getElementById('videoUrlGroup').style.display = 'none';
-        } else if (type === 'video') {
-            document.getElementById('imageUploadGroup').style.display = 'none';
-            document.getElementById('videoUrlGroup').style.display = 'block';
-        }
+    let html = '';
+
+    portfolioItems.forEach(p => {
+        html += `
+        <tr>
+            <td><b>${p.title}</b></td>
+            <td><span class="badge">${p.media_type}</span></td>
+            <td>${(p.description || '').substring(0,60)}</td>
+            <td style="text-align:right">
+                <a class="btn-action btn-view" href="${p.media_url}" target="_blank">View</a>
+                <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})">Delete</button>
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+}
+
+// ================= DELETE PORTFOLIO =================
+async function deletePortfolio(id) {
+    if (!confirm('Delete item?')) return;
+
+    try {
+        const res = await fetch(`/api/portfolio/${id}`, {
+            method:'DELETE'
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('🗑 Deleted', 'success');
+
+        await loadPortfolio();
+        updateDashboardStats();
+
+    } catch (err) {
+        showToast(err.message, 'error');
     }
+}
 
-    async function handleAddPortfolio(e) {
-        e.preventDefault();
+// ================= CATEGORY DROPDOWN =================
+function populateCategoryDropdowns() {
+    document.querySelectorAll('[id$="Category"]').forEach(select => {
+        const current = select.value;
 
-        const title = document.getElementById('portfolioTitle').value;
-        const description = document.getElementById('portfolioDesc').value;
-        const mediaType = document.getElementById('portfolioMediaType').value;
+        select.innerHTML = '<option value="">Select category</option>';
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('media_type', mediaType);
+        mainServices.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.category;
+            opt.textContent = s.category;
+            select.appendChild(opt);
+        });
 
-        if (mediaType === 'image') {
-            const file = document.getElementById('portfolioImageFile').files[0];
-            if (!file) {
-                showToast('❌ Select image', 'error');
-                return;
-            }
-            formData.append('mediaFile', file);
-        } else {
-            const url = document.getElementById('portfolioVideoUrl').value;
-            if (!url) {
-                showToast('❌ Enter YouTube URL', 'error');
-                return;
-            }
-            formData.append('youtubeUrl', url);
-        }
+        select.value = current;
+    });
+}
 
-        try {
-            showToast('⏳ Uploading...', 'success');
-            
-            const res = await fetch('/api/portfolio', {
-                method: 'POST',
-                body: formData
-            });
+// ================= TOAST =================
+function showToast(msg, type='info') {
+    const c = document.getElementById('toastContainer');
 
-            if (!res.ok) throw new Error('Failed');
+    const div = document.createElement('div');
+    div.className = `toast ${type}`;
+    div.innerHTML = msg;
 
-            showToast('✅ Added!', 'success');
-            resetPortfolioForm();
-            loadPortfolio();
-            updateDashboardStats();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
+    c.appendChild(div);
 
-    async function deletePortfolio(id) {
-        if (!confirm('Delete?')) return;
-        try {
-            const res = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Failed');
-            showToast('✅ Deleted!', 'success');
-            loadPortfolio();
-            updateDashboardStats();
-        } catch (err) {
-            showToast('❌ Error', 'error');
-        }
-    }
-
-    function resetPortfolioForm() {
-        document.getElementById('portfolioForm').reset();
-        document.getElementById('imageUploadGroup').style.display = 'none';
-        document.getElementById('videoUrlGroup').style.display = 'none';
-    }
-
-    function showToast(message, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        
-        toast.className = `toast ${type}`;
-        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle';
-        toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
-        
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.animation = 'slideIn 0.3s ease-out reverse';
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
-    }
+    setTimeout(() => div.remove(), 4000);
+}
 </script>
-
+        
 </body>
 </html>
