@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -35,9 +34,7 @@ header{
     padding:50px 20px;
 }
 
-.logo{
-    width:90px;
-}
+.logo{width:90px}
 
 /* NAV */
 nav{
@@ -73,7 +70,6 @@ nav a{
     gap:20px;
 }
 
-/* CARD */
 .card{
     background:#f9f9f9;
     padding:20px;
@@ -122,7 +118,6 @@ button{
     border-radius:30px;
     font-weight:bold;
     cursor:pointer;
-    transition:0.3s;
 }
 
 button:hover{
@@ -139,7 +134,6 @@ footer{
 }
 
 </style>
-
 </head>
 
 <body>
@@ -163,7 +157,6 @@ Fast & Secure Online Cyber Services
 </h2>
 
 <div class="grid">
-
     <div class="card">
         <h3>Government Forms</h3>
         <p>NTSA, KRA, HELB, eCitizen applications</p>
@@ -178,7 +171,6 @@ Fast & Secure Online Cyber Services
         <h3>Online Applications</h3>
         <p>Jobs, scholarships, passports & admissions</p>
     </div>
-
 </div>
 
 <!-- FORM -->
@@ -217,34 +209,42 @@ Confirm & Continue via WhatsApp
 
 <script>
 
-/* DATABASE ONLY LOADER */
+/* SAFE DATABASE LOADER (FIXED) */
 async function loadPackages(){
 
     try{
 
         const res = await fetch('/api/sub-services/cyber-services');
 
-        if(!res.ok){
-            throw new Error("Failed loading services");
-        }
+        console.log("RAW RESPONSE STATUS:", res.status);
 
-        const packages = await res.json();
+        const data = await res.json();
+        console.log("RAW API DATA:", data);
 
         const select = document.getElementById('serviceType');
 
         select.innerHTML = '';
 
-        if(!packages || packages.length === 0){
-            select.innerHTML = `<option value="">No services available</option>`;
-            document.getElementById('displayPrice').innerText = "KSH 0";
+        // HANDLE DIFFERENT BACKEND FORMATS
+        const packages =
+            Array.isArray(data) ? data :
+            data.services ? data.services :
+            data.data ? data.data :
+            [];
+
+        if(!packages.length){
+            select.innerHTML = `<option>No services available</option>`;
             return;
         }
 
         packages.forEach(p => {
 
+            const title = p.title || p.name || "Untitled Service";
+            const price = p.price || p.amount || 0;
+
             select.innerHTML += `
-                <option value="${p.title}" data-price="${p.price}">
-                    ${p.title} - KSH ${p.price}
+                <option value="${title}" data-price="${price}">
+                    ${title} - KSH ${price}
                 </option>
             `;
         });
@@ -252,11 +252,10 @@ async function loadPackages(){
         updatePrice();
 
     }catch(err){
-
-        console.error(err);
+        console.error("LOAD ERROR:", err);
 
         document.getElementById('serviceType').innerHTML =
-        `<option value="">Error loading services</option>`;
+        `<option>Error loading services</option>`;
     }
 }
 
@@ -264,13 +263,12 @@ async function loadPackages(){
 function updatePrice(){
 
     const select = document.getElementById('serviceType');
-
     const price = select.options[select.selectedIndex]?.dataset.price || 0;
 
     document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
-/* WHATSAPP ORDER */
+/* WHATSAPP */
 function sendToWhatsApp(){
 
     const name = document.getElementById('userName').value.trim();
