@@ -1115,30 +1115,26 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-
-    let adminAuthed = false;
+let adminAuthed = false;
 let mainServices = [];
 let packages = [];
 let portfolioItems = [];
 let editingServiceId = null;
 let editingPackageId = null;
 
-// Cache DOM elements safely after DOM content loads
-let serviceForm, serviceName, serviceIcon, serviceDesc;
-let editServiceForm, editServiceName, editServiceIcon, editServiceDesc;
+// DOM Elements
+let serviceForm, serviceName, serviceDesc;
+let editServiceForm, editServiceName, editServiceDesc;
 let packageForm, packageName, packageCategory, packagePrice, packageDesc;
 let editPackageForm, editPackageName, editPackageCategory, editPackagePrice, editPackageDesc;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Form and Element bindings
     serviceForm = document.getElementById('serviceForm');
     serviceName = document.getElementById('serviceName');
-    serviceIcon = document.getElementById('serviceIcon');
     serviceDesc = document.getElementById('serviceDesc');
 
     editServiceForm = document.getElementById('editServiceForm');
     editServiceName = document.getElementById('editServiceName');
-    editServiceIcon = document.getElementById('editServiceIcon');
     editServiceDesc = document.getElementById('editServiceDesc');
 
     packageForm = document.getElementById('packageForm');
@@ -1180,48 +1176,28 @@ function handleLogout() {
     }
 }
 
-// ================= TABS =================
 function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
     document.getElementById(tabName).classList.add('active');
-
-    if (window.event) {
-        window.event.target.closest('.tab-btn').classList.add('active');
-    }
+    if (window.event) window.event.target.closest('.tab-btn').classList.add('active');
 }
 
 async function safeFetch(url, options = {}) {
     const res = await fetch(url, options);
     let data;
-
-    try {
-        data = await res.json();
-    } catch (e) {
-        throw new Error("Server returned invalid response");
-    }
-
-    if (!res.ok) {
-        throw new Error(data.error || "Request failed");
-    }
-
+    try { data = await res.json(); } catch (e) { throw new Error("Invalid response"); }
+    if (!res.ok) throw new Error(data.error || "Request failed");
     return data;
 }
 
-// ================= MODALS =================
-function openModal(id) {
-    document.getElementById(id).classList.add('active');
-}
-
-// Fixed function to clear state adjustments cleanly on modal close
+function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
     if (id === 'editServiceModal') editingServiceId = null;
     if (id === 'editPackageModal') editingPackageId = null;
 }
 
-// ================= DATA LOADING =================
 async function loadAllData() {
     await loadMainServices();
     await loadPackages();
@@ -1230,44 +1206,27 @@ async function loadAllData() {
     updateDashboardStats();
 }
 
-// ================= STATS =================
 function updateDashboardStats() {
     document.getElementById('serviceStat').textContent = mainServices.length;
     document.getElementById('packageStat').textContent = packages.length;
     document.getElementById('portfolioStat').textContent = portfolioItems.length;
 
     const revenue = packages.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
-
     document.getElementById('revenueStat').textContent = 'KSH ' + revenue.toLocaleString();
-    document.getElementById('dashServiceCount').textContent = mainServices.length;
-    document.getElementById('dashPackageCount').textContent = packages.length;
-    document.getElementById('dashPortfolioCount').textContent = portfolioItems.length;
-    document.getElementById('dashRevenueCount').textContent = 'KSH ' + revenue.toLocaleString();
 }
 
 // ================= SERVICES =================
 async function loadMainServices() {
     try {
-        const data = await safeFetch('/api/services');
-        
-        // Services are identified explicitly as entries having a price of '0'
-        mainServices = data.filter(s => !s.price || s.price === '0');
-
+        mainServices = await safeFetch('/api/services');
         renderServices();
-        document.getElementById('serviceCount').textContent = mainServices.length;
-    } catch (err) {
-        showToast('❌ Failed to load services', 'error');
-    }
+    } catch (err) { showToast('❌ Failed services', 'error'); }
 }
 
 function renderServices() {
     const tbody = document.querySelector('#servicesTable tbody');
-    const allTbody = document.querySelector('#allServicesTable tbody');
-
     if (!mainServices.length) {
-        const empty = `<tr><td colspan="4" style="text-align:center;padding:40px;">No services</td></tr>`;
-        if (tbody) tbody.innerHTML = empty;
-        if (allTbody) allTbody.innerHTML = empty;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No services</td></tr>`;
         return;
     }
 
@@ -1275,8 +1234,8 @@ function renderServices() {
     mainServices.forEach(s => {
         html += `
         <tr>
-            <td style="font-size:20px">${s.icon || '🔧'}</td>
-            <td><b>${s.category}</b></td>
+            <td style="font-size:20px">📂</td>
+            <td><b>${s.name}</b></td>
             <td>${(s.description || '').substring(0, 60)}</td>
             <td style="text-align:right">
                 <button class="btn-action btn-edit" onclick="editService(${s.id})">Edit</button>
@@ -1284,121 +1243,67 @@ function renderServices() {
             </td>
         </tr>`;
     });
-
     if (tbody) tbody.innerHTML = html;
-    if (allTbody) allTbody.innerHTML = html;
 }
 
-// ================= CREATE SERVICE =================
 async function handleAddService(e) {
     e.preventDefault();
-
     try {
         await safeFetch('/api/services', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                title: serviceName.value,
-                category: serviceName.value, // Syncs with categories system cleanly
-                icon: serviceIcon.value,
-                description: serviceDesc.value,
-                price: '0'
-            })
+            body: JSON.stringify({ name: serviceName.value, description: serviceDesc.value })
         });
-
         showToast('Service added', 'success');
         serviceForm.reset();
-        await loadMainServices();
-        populateCategoryDropdowns();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= EDIT SERVICE (RECTIFIED) =================
 function editService(id) {
     const service = mainServices.find(s => s.id === id);
-    if (!service) return showToast('Service item matching ID not found', 'error');
-
+    if (!service) return;
     editingServiceId = id;
-    editServiceName.value = service.category;
-    editServiceIcon.value = service.icon || '🔧';
+    editServiceName.value = service.name;
     editServiceDesc.value = service.description || '';
-    
     openModal('editServiceModal');
 }
 
 async function handleUpdateService(e) {
     e.preventDefault();
-
-    if (!editingServiceId) {
-        return showToast("No service selected", "error");
-    }
-
     try {
         await safeFetch(`/api/services/${editingServiceId}`, {
             method: 'PUT',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                title: editServiceName.value,
-                category: editServiceName.value,
-                icon: editServiceIcon.value,
-                description: editServiceDesc.value,
-                price: '0'
-            })
+            body: JSON.stringify({ name: editServiceName.value, description: editServiceDesc.value })
         });
-
         showToast('Updated successfully', 'success');
         closeModal('editServiceModal');
-
-        await loadMainServices();
-        await loadPackages(); // Reload packages in case category relationships updated
-        populateCategoryDropdowns();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= DELETE SERVICE =================
 async function deleteService(id) {
-    if (!confirm('Delete service? All associated statistics will recalculate.')) return;
-
+    if (!confirm('Delete service?')) return;
     try {
         await safeFetch(`/api/services/${id}`, { method: 'DELETE' });
         showToast('🗑 Deleted', 'success');
-
-        await loadMainServices();
-        await loadPackages();
-        populateCategoryDropdowns();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= PACKAGES =================
+// ================= PACKAGES (SUB SERVICES) =================
 async function loadPackages() {
     try {
-        const data = await safeFetch('/api/services');
-        packages = data.filter(p => p.price && p.price !== '0');
-
+        packages = await safeFetch('/api/sub-services');
         renderPackages();
-        document.getElementById('packageCount').textContent = packages.length;
-    } catch (err) {
-        showToast('❌ Failed packages', 'error');
-    }
+    } catch (err) { showToast('❌ Failed packages', 'error'); }
 }
 
 function renderPackages() {
     const tbody = document.querySelector('#packagesTable tbody');
-    const allTbody = document.querySelector('#allPackagesTable tbody');
-
     if (!packages.length) {
-        const empty = `<tr><td colspan="5" style="text-align:center;padding:40px;">No packages</td></tr>`;
-        if (tbody) tbody.innerHTML = empty;
-        if (allTbody) allTbody.innerHTML = empty;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No packages</td></tr>`;
         return;
     }
 
@@ -1406,7 +1311,7 @@ function renderPackages() {
     packages.forEach(p => {
         html += `
         <tr>
-            <td><span class="badge">${p.category}</span></td>
+            <td><span class="badge">${p.category_name || 'General'}</span></td>
             <td><b>${p.title}</b></td>
             <td>KSH ${Number(p.price).toLocaleString()}</td>
             <td>${(p.description || '').substring(0,60)}</td>
@@ -1416,106 +1321,73 @@ function renderPackages() {
             </td>
         </tr>`;
     });
-
     if (tbody) tbody.innerHTML = html;
-    if (allTbody) allTbody.innerHTML = html;
 }
 
-// ================= ADD PACKAGE =================
 async function handleAddPackage(e) {
     e.preventDefault();
-
-    if (!packageCategory.value) return showToast('Select category', 'error');
-
-    const payload = {
-        title: packageName.value,
-        category: packageCategory.value,
-        price: packagePrice.value,
-        description: packageDesc.value,
-        icon: '🔧'
-    };
-
     try {
-        await safeFetch('/api/services', {
+        await safeFetch('/api/sub-services', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                service_id: packageCategory.value,
+                title: packageName.value,
+                price: packagePrice.value,
+                description: packageDesc.value
+            })
         });
-
         showToast('✅ Package added', 'success');
         packageForm.reset();
-
-        await loadPackages();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= EDIT PACKAGE (RECTIFIED) =================
 function editPackage(id) {
     const pkg = packages.find(p => p.id === id);
-    if (!pkg) return showToast('Package not found', 'error');
-
+    if (!pkg) return;
     editingPackageId = id;
     editPackageName.value = pkg.title;
-    editPackageCategory.value = pkg.category;
+    editPackageCategory.value = pkg.service_id;
     editPackagePrice.value = pkg.price;
     editPackageDesc.value = pkg.description || '';
-
     openModal('editPackageModal');
 }
 
 async function handleUpdatePackage(e) {
     e.preventDefault();
-    if (!editingPackageId) return showToast("No package selected", "error");
-
     try {
-        await safeFetch(`/api/services/${editingPackageId}`, {
+        await safeFetch(`/api/sub-services/${editingPackageId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
+                service_id: editPackageCategory.value,
                 title: editPackageName.value,
-                category: editPackageCategory.value,
                 price: editPackagePrice.value,
-                description: editPackageDesc.value,
-                icon: '🔧'
+                description: editPackageDesc.value
             })
         });
-
-        showToast('Package updated successfully', 'success');
+        showToast('Package updated', 'success');
         closeModal('editPackageModal');
-        await loadPackages();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= DELETE PACKAGE =================
 async function deletePackage(id) {
     if (!confirm('Delete package?')) return;
-
     try {
-        await safeFetch(`/api/services/${id}`, { method: 'DELETE' });
+        await safeFetch(`/api/sub-services/${id}`, { method: 'DELETE' });
         showToast('🗑 Deleted', 'success');
-
-        await loadPackages();
-        updateDashboardStats();
-    } catch (err) {
-        showToast(err.message, 'error');
-    }
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= PORTFOLIO =================
+// ================= PORTFOLIO (PICTURE UPLOADS INTACT) =================
 async function loadPortfolio() {
     try {
         portfolioItems = await safeFetch('/api/portfolio');
         renderPortfolio();
-        document.getElementById('portfolioCount').textContent = portfolioItems.length;
-    } catch (err) {
-        showToast('❌ Portfolio error', 'error');
-    }
+    } catch (err) { showToast('❌ Portfolio error', 'error'); }
 }
 
 function renderPortfolio() {
@@ -1523,7 +1395,7 @@ function renderPortfolio() {
     if (!tbody) return;
 
     if (!portfolioItems.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;">No items</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No items</td></tr>`;
         return;
     }
 
@@ -1532,59 +1404,86 @@ function renderPortfolio() {
         html += `
         <tr>
             <td><b>${p.title}</b></td>
-            <td><span class="badge">${p.media_type}</span></td>
+            <td><span class="badge">${p.category || 'General'}</span></td>
             <td>${(p.description || '').substring(0,60)}</td>
             <td style="text-align:right">
-                <a class="btn-action btn-view" href="${p.media_url}" target="_blank">View</a>
+                <a class="btn-action btn-view" href="${p.link}" target="_blank">View File</a>
                 <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})">Delete</button>
             </td>
         </tr>`;
     });
-
     tbody.innerHTML = html;
 }
 
-// ================= DELETE PORTFOLIO =================
-async function deletePortfolio(id) {
-    if (!confirm('Delete item?')) return;
+// FULLY RECTIFIED UPLOAD LOGIC 
+async function handleAddPortfolio(e) {
+    e.preventDefault();
+    
+    // Using FormData enables true file multipart uploads
+    const formData = new FormData();
+    formData.append('title', document.getElementById('portfolioTitle')?.value || '');
+    formData.append('category', document.getElementById('portfolioCategory')?.value || '');
+    formData.append('description', document.getElementById('portfolioDesc')?.value || '');
+    
+    // Attach the actual picture file from the input to send to Node.js
+    const fileInput = document.getElementById('portfolioImage'); // Matches standard file inputs
+    if (fileInput && fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+    } else {
+        // Fallback for text links
+        const linkVal = document.getElementById('portfolioLink')?.value;
+        if(linkVal) formData.append('link', linkVal);
+    }
 
     try {
-        await safeFetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-        showToast('🗑 Deleted', 'success');
+        const res = await fetch('/api/portfolio', {
+            method: 'POST',
+            body: formData // No Content-Type header needed; browser calculates boundaries
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-        await loadPortfolio();
-        updateDashboardStats();
+        showToast('✅ Upload complete!', 'success');
+        const formObj = document.getElementById('portfolioForm');
+        if (formObj) formObj.reset();
+        
+        await loadAllData();
     } catch (err) {
         showToast(err.message, 'error');
     }
 }
 
-// ================= CATEGORY DROPDOWN =================
+async function deletePortfolio(id) {
+    if (!confirm('Delete item?')) return;
+    try {
+        await safeFetch(`/api/portfolio/${id}`, { method: 'DELETE' });
+        showToast('🗑 Deleted', 'success');
+        await loadAllData();
+    } catch (err) { showToast(err.message, 'error'); }
+}
+
 function populateCategoryDropdowns() {
     document.querySelectorAll('[id$="Category"]').forEach(select => {
+        if (select.tagName !== 'SELECT') return; // Skips text inputs
         const current = select.value;
-        select.innerHTML = '<option value="">Select category</option>';
-
+        select.innerHTML = '<option value="">Select category parent</option>';
         mainServices.forEach(s => {
             const opt = document.createElement('option');
-            opt.value = s.category;
-            opt.textContent = s.category;
+            opt.value = s.id;
+            opt.textContent = s.name;
             select.appendChild(opt);
         });
-
         select.value = current;
     });
 }
 
-// ================= TOAST =================
 function showToast(msg, type='info') {
     const c = document.getElementById('toastContainer');
     if (!c) return;
-
     const div = document.createElement('div');
     div.className = `toast ${type}`;
     div.innerHTML = msg;
-
     c.appendChild(div);
     setTimeout(() => div.remove(), 4000);
 }
