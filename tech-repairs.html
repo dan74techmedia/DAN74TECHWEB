@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -13,8 +15,6 @@
 :root{
     --primary-blue:#0044ff;
     --deep-blue:#0022aa;
-    --accent-yellow:#ffd700;
-    --accent-red:#ff2a2a;
     --bg:#f4f7f6;
     --success:#2e7d32;
     --text:#222;
@@ -35,7 +35,9 @@ header{
     padding:50px 20px;
 }
 
-.logo{width:90px}
+.logo{
+    width:90px;
+}
 
 /* NAV */
 nav{
@@ -124,7 +126,7 @@ button{
 }
 
 button:hover{
-    background:var(--accent-red);
+    background:#ff2a2a;
 }
 
 /* FOOTER */
@@ -137,6 +139,7 @@ footer{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -156,24 +159,26 @@ footer{
 <div class="container">
 
 <h2 style="text-align:center;color:var(--primary-blue);">
-Certified ICT Maintenance & Repairs
+Certified ICT Maintenance & Repair Services
 </h2>
 
 <div class="grid">
+
     <div class="card">
         <h3>Software Care</h3>
-        <p>OS installation, virus removal & optimization</p>
+        <p>OS installation, virus removal & system optimization</p>
     </div>
 
     <div class="card">
         <h3>Hardware Fix</h3>
-        <p>Repairs, upgrades & diagnostics</p>
+        <p>Diagnostics, repairs & component upgrades</p>
     </div>
 
     <div class="card">
         <h3>Full Maintenance</h3>
-        <p>Complete system servicing & tune-up</p>
+        <p>Complete system servicing & performance tuning</p>
     </div>
+
 </div>
 
 <!-- FORM -->
@@ -182,21 +187,16 @@ Certified ICT Maintenance & Repairs
 <h3>Book Repair Service</h3>
 
 <label>Full Name</label>
-<input id="userName">
+<input id="userName" type="text">
 
 <label>Device Model</label>
-<input id="deviceModel">
+<input id="deviceModel" type="text">
 
 <label>Select Service</label>
-<select id="serviceType" onchange="updatePrice()">
-    <option value="OS Installation & Cleanup" data-price="1000">OS Installation & Cleanup - KSH 1,000</option>
-    <option value="Hardware Diagnostic" data-price="500">Hardware Diagnostic - KSH 500</option>
-    <option value="Hardware Upgrade" data-price="1500">Hardware Upgrade - KSH 1,500</option>
-    <option value="Full Maintenance" data-price="2500">Full Maintenance - KSH 2,500</option>
-</select>
+<select id="serviceType" onchange="updatePrice()"></select>
 
 <label>Issue Description</label>
-<textarea id="desc"></textarea>
+<textarea id="desc" rows="4"></textarea>
 
 <div class="mpesa">
 
@@ -220,8 +220,7 @@ Confirm & Continue
 
 <script>
 
-let packages = [];
-
+/* DATABASE ONLY LOADER */
 async function loadPackages(){
 
     try{
@@ -229,36 +228,22 @@ async function loadPackages(){
         const res = await fetch('/api/sub-services/tech-repairs');
 
         if(!res.ok){
-            throw new Error('Failed loading packages');
+            throw new Error("Failed loading packages");
         }
 
-        packages = await res.json();
+        const packages = await res.json();
 
-        const container = document.getElementById('packagesContainer');
         const select = document.getElementById('serviceType');
 
-        container.innerHTML = '';
         select.innerHTML = '';
 
-        if(packages.length === 0){
-            container.innerHTML =
-            '<div class="card"><h3>No Packages Available</h3></div>';
-
-            select.innerHTML =
-            '<option value="">No packages available</option>';
-
+        if(!packages || packages.length === 0){
+            select.innerHTML = `<option value="">No services available</option>`;
+            document.getElementById('displayPrice').innerText = "KSH 0";
             return;
         }
 
         packages.forEach(p => {
-
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${p.title}</h3>
-                    <p>${p.description}</p>
-                    <strong>KSH ${p.price}</strong>
-                </div>
-            `;
 
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
@@ -271,36 +256,32 @@ async function loadPackages(){
 
     }catch(err){
         console.error(err);
+
+        document.getElementById('serviceType').innerHTML =
+        `<option value="">Error loading services</option>`;
     }
 }
 
+/* PRICE UPDATE */
 function updatePrice(){
 
     const select = document.getElementById('serviceType');
 
-    const price =
-        select.options[select.selectedIndex]?.dataset.price || 0;
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
 
-    document.getElementById('displayPrice').innerText =
-        `KSH ${price}`;
+    document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
+/* WHATSAPP ORDER */
 function sendToWhatsApp(){
 
-    const name =
-        document.getElementById('userName').value.trim();
-
-    const service =
-        document.getElementById('serviceType').value;
-
-    const desc =
-        document.getElementById('userDesc').value.trim();
-
-    const price =
-        document.getElementById('displayPrice').innerText;
+    const name = document.getElementById('userName').value.trim();
+    const service = document.getElementById('serviceType').value;
+    const desc = document.getElementById('desc').value.trim();
+    const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert('Enter your name');
+        alert("Enter your name");
         return;
     }
 
@@ -308,21 +289,18 @@ function sendToWhatsApp(){
 `*TECH REPAIR ORDER*
 
 Customer: ${name}
+Device: ${document.getElementById('deviceModel').value}
 Service: ${service}
 Price: ${price}
 
-Instructions:
+Issue:
 ${desc}`;
 
     window.open(
         `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
-        '_blank'
+        "_blank"
     );
 }
-
-document
-.getElementById('serviceType')
-.addEventListener('change', updatePrice);
 
 document.addEventListener('DOMContentLoaded', loadPackages);
 
