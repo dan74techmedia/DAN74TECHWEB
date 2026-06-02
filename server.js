@@ -1,274 +1,258 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+const express = require('express');
+const { Pool } = require('pg');
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const streamifier = require('streamifier');
+const path = require('path');
+const cors = require('cors');
 
-<title>Graphic Design | DAN74TECH MEDIA</title>
+const app = express();
+const PORT = process.env.PORT || 10000;
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+// ==========================================
+// 1. CORE SYSTEM MIDDLEWARE
+// ==========================================
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname)));
 
-<style>
+// Home route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-:root{
-    --primary-blue:#0044ff;
-    --deep-blue:#0022aa;
-    --accent-yellow:#ffd700;
-    --accent-red:#ff2a2a;
-    --bg:#f4f7f6;
-    --success:#2e7d32;
-    --text:#222;
+// ==========================================
+// 2. POSTGRESQL (NEON) CONNECTION POOL
+// ==========================================
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
+
+// ==========================================
+// AUTO DATABASE INITIALIZATION
+// ==========================================
+async function initializeDatabaseSchema() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS services (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price VARCHAR(100),
+                category VARCHAR(100),
+                page_route VARCHAR(100) DEFAULT 'web',
+                icon VARCHAR(50) DEFAULT '🔧'
+            );
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS portfolio (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                media_url TEXT NOT NULL,
+                media_type VARCHAR(50) DEFAULT 'image',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        console.log("🚀 Database schema ready (services + portfolio)");
+    } catch (err) {
+        console.error("❌ DB schema error:", err);
+    }
 }
+initializeDatabaseSchema();
 
-body{
-    margin:0;
-    font-family:Poppins,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
+// ==========================================
+// 3. CLOUDINARY CONFIG
+// ==========================================
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_DB,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-/* HEADER */
-header{
-    background:linear-gradient(135deg,var(--primary-blue),var(--deep-blue));
-    color:white;
-    text-align:center;
-    padding:50px 20px;
-}
+const upload = multer({ storage: multer.memoryStorage() });
 
-.logo{width:90px}
+const uploadToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: "dan74tech_media_assets" },
+            (error, result) => {
+                if (result) resolve(result.secure_url);
+                else reject(error);
+            }
+        );
+        streamifier.createReadStream(fileBuffer).pipe(stream);
+    });
+};
 
-/* NAV */
-nav{
-    background:var(--deep-blue);
-    text-align:center;
-    padding:14px;
-    position:sticky;
-    top:0;
-    z-index:1000;
-}
+// ==========================================
+// 4. UTIL FUNCTION
+// ==========================================
+const generateSlug = (str) => {
+    return str ? str.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
+};
 
-nav a{
-    color:white;
-    margin:0 15px;
-    text-decoration:none;
-    font-weight:600;
-}
+// ==========================================
+// 5. SERVICES API (CORE FOR YOUR FRONTEND)
+// ==========================================
 
-/* CONTAINER */
-.container{
-    max-width:950px;
-    margin:30px auto;
-    background:white;
-    padding:40px;
-    border-radius:18px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
+// GET ALL SERVICES
+app.get('/api/services', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM services ORDER BY id DESC');
 
-/* GRID (same system as web page) */
-.packages{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    margin:20px 0;
-}
-
-.card{
-    background:#f9f9f9;
-    padding:20px;
-    border-left:5px solid var(--primary-blue);
-    border-radius:12px;
-}
-
-/* FORM */
-.form-box{
-    margin-top:30px;
-    border:1px solid #eee;
-    padding:25px;
-    border-radius:15px;
-}
-
-input,select,textarea{
-    width:100%;
-    padding:12px;
-    margin:8px 0;
-    border-radius:8px;
-    border:1px solid #ddd;
-}
-
-/* MPESA */
-.mpesa{
-    background:#e8f5e9;
-    border:2px dashed var(--success);
-    padding:20px;
-    border-radius:12px;
-    text-align:center;
-}
-
-#displayPrice{
-    font-size:2rem;
-    font-weight:bold;
-    color:var(--success);
-}
-
-/* BUTTON (MATCH WEB STYLE EXACTLY) */
-button{
-    width:100%;
-    padding:15px;
-    border:none;
-    background:var(--success);
-    color:white;
-    border-radius:30px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-button:hover{
-    background:#1b5e20;
-}
-
-/* FOOTER */
-footer{
-    background:#111;
-    color:white;
-    text-align:center;
-    padding:30px;
-    margin-top:40px;
-}
-
-</style>
-</head>
-
-<body>
-
-<header>
-    <img src="images/logo.png" class="logo">
-    <h1>Graphic Design Studio</h1>
-</header>
-
-<nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="services.html">Services</a>
-    <a href="contact.html">Contact</a>
-</nav>
-
-<div class="container">
-
-<h2 style="text-align:center;color:var(--primary-blue);">
-Creative Branding & Graphic Solutions
-</h2>
-
-<!-- PACKAGES (FROM DB LIKE WEB PAGE) -->
-<div class="packages" id="packagesContainer"></div>
-
-<!-- FORM -->
-<div class="form-box">
-
-<h3>Place Graphic Design Order</h3>
-
-<label>Full Name</label>
-<input id="userName">
-
-<label>Select Package</label>
-<select id="serviceType" onchange="updatePrice()"></select>
-
-<label>Design Instructions</label>
-<textarea id="userDesc"></textarea>
-
-<div class="mpesa">
-
-<p><b>M-PESA PAY</b></p>
-<p>0790 435 584</p>
-
-<p>Total Cost</p>
-<div id="displayPrice">KSH 0</div>
-
-<button onclick="sendToWhatsApp()">
-Confirm & Continue
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<footer>© 2026 DAN74TECH MEDIA</footer>
-
-<script>
-
-let services = [];
-
-/* SAME BACKEND PATTERN AS WEB PAGE */
-async function loadServices(){
-    try{
-        const res = await fetch('/api/sub-services/graphics');
-        services = await res.json();
-
-        const container = document.getElementById('packagesContainer');
-        const select = document.getElementById('serviceType');
-
-        container.innerHTML = '';
-        select.innerHTML = '';
-
-        services.forEach(s => {
-
-            container.innerHTML += `
-            <div class="card">
-                <h3>${s.title}</h3>
-                <p>${s.description}</p>
-            </div>`;
-
-            select.innerHTML += `
-            <option value="${s.title}" data-price="${s.price}">
-                ${s.title} - KSH ${s.price}
-            </option>`;
+        const cleaned = result.rows.map(r => {
+            if (!r.page_route) {
+                r.page_route = generateSlug(r.category || r.title);
+            }
+            return r;
         });
 
-        updatePrice();
-
-    } catch(err){
-        console.log("Failed loading graphics services", err);
+        res.json(cleaned);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch services" });
     }
-}
+});
 
-/* SAME PRICE SYSTEM */
-function updatePrice(){
-    const select = document.getElementById('serviceType');
-    const price = select.options[select.selectedIndex]?.dataset.price || 0;
-    document.getElementById('displayPrice').innerText = `KSH ${price}`;
-}
+// CREATE SERVICE (ADMIN)
+app.post('/api/services', async (req, res) => {
+    const { title, description, price, category, page_route, icon } = req.body;
 
-/* SAME WHATSAPP ORDER SYSTEM */
-function sendToWhatsApp(){
+    try {
+        await pool.query(
+            `INSERT INTO services (title, description, price, category, page_route, icon)
+             VALUES ($1,$2,$3,$4,$5,$6)`,
+            [
+                title,
+                description,
+                price || '0',
+                category,
+                page_route || generateSlug(category || title),
+                icon || '🔧'
+            ]
+        );
 
-    const name = document.getElementById('userName').value;
-    const service = document.getElementById('serviceType').value;
-    const desc = document.getElementById('userDesc').value;
-    const price = document.getElementById('displayPrice').innerText;
+        res.status(201).json({ success: true, message: "Service created" });
 
-    if(!name){
-        alert("Enter your name");
-        return;
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Insert failed" });
     }
+});
 
-    const msg =
-`*GRAPHIC DESIGN ORDER*
-Customer: ${name}
-Service: ${service}
-Price: ${price}
-Instructions: ${desc}`;
+// UPDATE SERVICE
+app.put('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, price, category, page_route, icon } = req.body;
 
-    window.open(
-        `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
-        '_blank'
-    );
-}
+    try {
+        const result = await pool.query(
+            `UPDATE services
+             SET title=$1, description=$2, price=$3, category=$4, page_route=$5, icon=$6
+             WHERE id=$7`,
+            [
+                title,
+                description,
+                price || '0',
+                category,
+                page_route || generateSlug(category || title),
+                icon || '🔧',
+                id
+            ]
+        );
 
-loadServices();
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Service not found" });
+        }
 
-</script>
+        res.json({ success: true, message: "Updated successfully" });
 
-</body>
-</html>
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Update failed" });
+    }
+});
+
+// DELETE SERVICE
+app.delete('/api/services/:id', async (req, res) => {
+    try {
+        const result = await pool.query('DELETE FROM services WHERE id=$1', [req.params.id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "Not found" });
+        }
+
+        res.json({ success: true, message: "Deleted successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Delete failed" });
+    }
+});
+
+// ==========================================
+// 6. PORTFOLIO API
+// ==========================================
+
+// GET PORTFOLIO
+app.get('/api/portfolio', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Portfolio fetch failed" });
+    }
+});
+
+// CREATE PORTFOLIO ITEM
+app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
+    try {
+        const { title, description, media_type, youtubeUrl } = req.body;
+
+        let media_url = youtubeUrl || '';
+
+        if (req.file) {
+            media_url = await uploadToCloudinary(req.file.buffer);
+        }
+
+        if (!media_url) {
+            return res.status(400).json({ error: "Media required" });
+        }
+
+        await pool.query(
+            `INSERT INTO portfolio (title, description, media_url, media_type)
+             VALUES ($1,$2,$3,$4)`,
+            [title, description, media_url, media_type || 'image']
+        );
+
+        res.status(201).json({ success: true, message: "Portfolio added" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Upload failed" });
+    }
+});
+
+// DELETE PORTFOLIO
+app.delete('/api/portfolio/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM portfolio WHERE id=$1', [req.params.id]);
+        res.json({ success: true, message: "Deleted" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Delete failed" });
+    }
+});
+
+// ==========================================
+// 7. START SERVER
+// ==========================================
+app.listen(PORT, () => {
+    console.log(`📡 Server running on port ${PORT}`);
+});
