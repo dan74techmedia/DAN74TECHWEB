@@ -1160,6 +1160,22 @@ function switchTab(tabName) {
         window.event.target.closest('.tab-btn').classList.add('active');
     }
 }
+    async function safeFetch(url, options = {}) {
+    const res = await fetch(url, options);
+    let data;
+
+    try {
+        data = await res.json();
+    } catch (e) {
+        throw new Error("Server returned invalid response");
+    }
+
+    if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+    }
+
+    return data;
+}
 
 // ================= MODALS =================
 function openModal(id) {
@@ -1246,32 +1262,23 @@ function renderServices() {
 async function handleAddService(e) {
     e.preventDefault();
 
-    const payload = {
-        title: serviceName.value,
-        category: serviceName.value,
-        icon: serviceIcon.value,
-        description: serviceDesc.value,
-        price: '0',
-        page_route: serviceName.value.toLowerCase().replace(/\s+/g, '-')
-    };
-
     try {
-        const res = await fetch('/api/services', {
+        const data = await safeFetch('/api/services', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                title: serviceName.value,
+                category: serviceName.value,
+                icon: serviceIcon.value,
+                description: serviceDesc.value,
+                price: '0'
+            })
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        showToast('✅ Service added', 'success');
+        showToast('Service added', 'success');
         serviceForm.reset();
 
         await loadMainServices();
-        await loadPackages();
-        populateCategoryDropdowns();
-        updateDashboardStats();
 
     } catch (err) {
         showToast(err.message, 'error');
@@ -1279,57 +1286,33 @@ async function handleAddService(e) {
 }
 
 // ================= EDIT SERVICE =================
-function editService(id) {
-    const s = mainServices.find(x => x.id === id);
-    if (!s) return;
-
-    editingServiceId = id;
-
-    editServiceName.value = s.category;
-    editServiceIcon.value = s.icon;
-    editServiceDesc.value = s.description;
-
-    openModal('editServiceModal');
-}
-
 async function handleUpdateService(e) {
     e.preventDefault();
 
-    const payload = {
-        title: editServiceName.value || '',
-        category: editServiceName.value || '',
-        icon: editServiceIcon.value || '🔧',
-        description: editServiceDesc.value || '',
-        price: '0',
-        page_route: (editServiceName.value || '')
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, '-')
-    };
+    if (!editingServiceId) {
+        return showToast("No service selected", "error");
+    }
 
     try {
-        const res = await fetch(`/api/services/${editingServiceId}`, {
+        await safeFetch(`/api/services/${editingServiceId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                title: editServiceName.value,
+                category: editServiceName.value,
+                icon: editServiceIcon.value,
+                description: editServiceDesc.value,
+                price: '0'
+            })
         });
 
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-            throw new Error(data.error || 'Update failed');
-        }
-
-        showToast('✅ Updated successfully', 'success');
+        showToast('Updated successfully', 'success');
         closeModal('editServiceModal');
 
         await loadMainServices();
-        await loadPackages();
-        populateCategoryDropdowns();
-        updateDashboardStats();
 
     } catch (err) {
-        showToast('❌ ' + err.message, 'error');
+        showToast(err.message, 'error');
     }
 }
 // ================= DELETE SERVICE =================
