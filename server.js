@@ -191,24 +191,22 @@ app.listen(PORT, () => {
 app.get('/api/sub-services/:serviceName', async (req, res) => {
     try {
 
-        const formattedName = req.params.serviceName
+        const serviceName = req.params.serviceName
             .replace(/-/g, ' ')
-            .replace(/\b\w/g, c => c.toUpperCase());
+            .toLowerCase();
 
-        const query = `
+        const result = await pool.query(`
             SELECT ss.*
             FROM sub_services ss
             JOIN services s ON ss.service_id = s.id
-            WHERE LOWER(s.name) = LOWER($1)
+            WHERE LOWER(s.name) = $1
             ORDER BY ss.id ASC
-        `;
-
-        const result = await pool.query(query, [formattedName]);
+        `,[serviceName]);
 
         res.json(result.rows);
 
-    } catch (err) {
+    } catch(err){
         console.error(err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({error: err.message});
     }
 });
