@@ -1,11 +1,307 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Coming Soon</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Online Cyber Services | DAN74TECH MEDIA</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --primary-blue:#0044ff;
+    --deep-blue:#0022aa;
+    --bg:#f4f7f6;
+    --success:#2e7d32;
+    --text:#222;
+}
+
+body{
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* HEADER */
+header{
+    background:linear-gradient(135deg,var(--primary-blue),var(--deep-blue));
+    color:white;
+    text-align:center;
+    padding:50px 20px;
+}
+
+.logo{
+    width:90px;
+}
+
+/* NAV */
+nav{
+    background:var(--deep-blue);
+    text-align:center;
+    padding:14px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+nav a{
+    color:white;
+    margin:0 15px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* CONTAINER */
+.container{
+    max-width:950px;
+    margin:30px auto;
+    background:white;
+    padding:40px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.card{
+    background:#f9f9f9;
+    padding:20px;
+    border-left:5px solid var(--primary-blue);
+    border-radius:12px;
+}
+
+/* FORM */
+.form-box{
+    margin-top:30px;
+    border:1px solid #eee;
+    padding:25px;
+    border-radius:15px;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+/* MPESA */
+.mpesa{
+    background:#e8f5e9;
+    border:2px dashed var(--success);
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+}
+
+#displayPrice{
+    font-size:2rem;
+    font-weight:bold;
+    color:var(--success);
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    background:var(--primary-blue);
+    color:white;
+    border-radius:30px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#ff2a2a;
+}
+
+/* FOOTER */
+footer{
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:30px;
+    margin-top:40px;
+}
+
+</style>
+
 </head>
+
 <body>
-    <h1>Service Page Coming Soon</h1>
-    <p>This service has been added but its detailed page is still under development.</p>
-    <a href="index.html">Return Home</a>
+
+<header>
+    <img src="images/logo.png" class="logo">
+    <h1>Online Cyber Services</h1>
+</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
+</nav>
+
+<div class="container">
+
+<h2 style="text-align:center;color:var(--primary-blue);">
+Fast & Secure Online Cyber Services
+</h2>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>Government Forms</h3>
+        <p>NTSA, KRA, HELB, eCitizen applications</p>
+    </div>
+
+    <div class="card">
+        <h3>Document Processing</h3>
+        <p>CVs, letters, PDF editing & printing services</p>
+    </div>
+
+    <div class="card">
+        <h3>Online Applications</h3>
+        <p>Jobs, school, passport & scholarship applications</p>
+    </div>
+
+</div>
+
+<!-- FORM -->
+<div class="form-box">
+
+<h3>Request Cyber Service</h3>
+
+<label>Full Name</label>
+<input id="userName" type="text">
+
+<label>Select Service</label>
+<select id="serviceType" onchange="updatePrice()"></select>
+
+<label>Describe Your Request</label>
+<textarea id="desc" rows="4"></textarea>
+
+<div class="mpesa">
+
+<p><b>M-PESA PAY</b></p>
+<p>0790 435 584</p>
+
+<p>Total Cost</p>
+<div id="displayPrice">KSH 0</div>
+
+<button onclick="sendToWhatsApp()">
+Confirm & Continue via WhatsApp
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>© 2026 DAN74TECH MEDIA</footer>
+
+<script>
+
+/* DATABASE ONLY LOADER */
+async function loadPackages(){
+
+    try{
+
+        const res = await fetch('/api/sub-services/cyber-services');
+
+        if(!res.ok){
+            throw new Error("Failed loading services");
+        }
+
+        const packages = await res.json();
+
+        const select = document.getElementById('serviceType');
+
+        select.innerHTML = '';
+
+        if(!packages || packages.length === 0){
+            select.innerHTML = `<option value="">No services available</option>`;
+            document.getElementById('displayPrice').innerText = "KSH 0";
+            return;
+        }
+
+        packages.forEach(p => {
+
+            select.innerHTML += `
+                <option value="${p.title}" data-price="${p.price}">
+                    ${p.title} - KSH ${p.price}
+                </option>
+            `;
+        });
+
+        updatePrice();
+
+    }catch(err){
+
+        console.error(err);
+
+        document.getElementById('serviceType').innerHTML =
+        `<option value="">Error loading services</option>`;
+    }
+}
+
+/* PRICE UPDATE */
+function updatePrice(){
+
+    const select = document.getElementById('serviceType');
+
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
+
+    document.getElementById('displayPrice').innerText = `KSH ${price}`;
+}
+
+/* WHATSAPP ORDER */
+function sendToWhatsApp(){
+
+    const name = document.getElementById('userName').value.trim();
+    const service = document.getElementById('serviceType').value;
+    const desc = document.getElementById('desc').value.trim();
+    const price = document.getElementById('displayPrice').innerText;
+
+    if(!name){
+        alert("Enter your name");
+        return;
+    }
+
+    const msg =
+`*CYBER SERVICES ORDER*
+
+Customer: ${name}
+Service: ${service}
+Price: ${price}
+
+Request Details:
+${desc}`;
+
+    window.open(
+        `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
+        "_blank"
+    );
+}
+
+document.addEventListener('DOMContentLoaded', loadPackages);
+
+</script>
+
 </body>
 </html>
