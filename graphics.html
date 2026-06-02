@@ -8,9 +8,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
 
 :root{
@@ -18,57 +15,36 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     --deep-blue:#0022aa;
     --accent-yellow:#ffd700;
     --accent-red:#ff2a2a;
-
-    --bg-light:#f5f7fa;
-    --text-dark:#1e1e24;
-    --card-bg:#ffffff;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+    --bg:#f4f7f6;
+    --success:#2e7d32;
+    --text:#222;
 }
 
 body{
-    font-family:'Poppins',sans-serif;
-    background:var(--bg-light);
-    color:var(--text-dark);
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:var(--bg);
+    color:var(--text);
 }
 
-/* HEADER */
-
+/* HEADER (UNIFIED) */
 header{
-    background:linear-gradient(
-        135deg,
-        var(--primary-blue),
-        var(--deep-blue)
-    );
+    background:linear-gradient(135deg,var(--primary-blue),var(--deep-blue));
     color:white;
     text-align:center;
     padding:50px 20px;
-    border-bottom:4px solid var(--accent-yellow);
 }
 
 .logo{
-    width:100px;
-    margin-bottom:15px;
+    width:90px;
+    margin-bottom:10px;
 }
 
-header h1{
-    font-family:'Montserrat',sans-serif;
-    font-size:2.5rem;
-    text-transform:uppercase;
-}
-
-/* NAV */
-
+/* NAV (UNIFIED) */
 nav{
     background:var(--deep-blue);
-    padding:15px;
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
+    text-align:center;
+    padding:14px;
     position:sticky;
     top:0;
     z-index:1000;
@@ -76,396 +52,231 @@ nav{
 
 nav a{
     color:white;
+    margin:0 15px;
     text-decoration:none;
-    margin:5px 20px;
     font-weight:600;
 }
 
-nav a:hover{
-    color:var(--accent-yellow);
+/* MAIN CONTAINER (MATCH WEB PAGE STYLE) */
+.container{
+    max-width:950px;
+    margin:30px auto;
+    background:white;
+    padding:40px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 /* HERO */
-
 .hero{
-    max-width:1100px;
-    margin:40px auto;
-    padding:40px;
-    background:white;
-    border-radius:15px;
     text-align:center;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
-}
-
-.hero h2{
-    color:var(--primary-blue);
-    font-family:'Montserrat';
-    margin-bottom:15px;
-}
-
-.hero p{
-    max-width:800px;
-    margin:auto;
-}
-
-/* PACKAGES */
-
-.packages{
-    max-width:1100px;
-    margin:40px auto;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-    gap:25px;
-    padding:0 20px;
-}
-
-.package-card{
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    box-shadow:0 5px 15px rgba(0,0,0,.05);
-    border-left:5px solid var(--primary-blue);
-    transition:.3s;
-}
-
-.package-card:hover{
-    transform:translateY(-5px);
-    border-left-color:var(--accent-red);
-}
-
-.package-card h3{
-    color:var(--deep-blue);
-    margin-bottom:10px;
-}
-
-.price{
-    color:var(--accent-red);
-    font-weight:700;
-    font-size:1.3rem;
-    margin:15px 0;
-}
-
-/* ORDER SECTION */
-
-.order-section{
-    max-width:900px;
-    margin:50px auto;
-    background:white;
-    padding:40px;
-    border-radius:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
-}
-
-.order-section h2{
-    text-align:center;
-    color:var(--primary-blue);
     margin-bottom:25px;
 }
 
-label{
-    font-weight:600;
+/* PACKAGES GRID */
+.packages{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    margin:20px 0;
 }
 
-input,
-textarea,
-select{
-    width:100%;
-    padding:12px;
-    margin-top:8px;
-    margin-bottom:20px;
-    border:1px solid #ddd;
-    border-radius:8px;
+.card{
+    background:#f9f9f9;
+    padding:20px;
+    border-left:5px solid var(--primary-blue);
+    border-radius:12px;
 }
 
-.mpesa-box{
-    background:#e8f5e9;
-    border:2px dashed #2e7d32;
+/* FORM BOX (UNIFIED WITH WEB PAGE) */
+.form-box{
+    margin-top:30px;
+    border:1px solid #eee;
     padding:25px;
     border-radius:15px;
-    text-align:center;
 }
 
-.mpesa-logo{
-    width:120px;
-    margin-bottom:15px;
+input,select,textarea{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+/* MPESA BOX */
+.mpesa{
+    background:#e8f5e9;
+    border:2px dashed var(--success);
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
 }
 
 #displayPrice{
     font-size:2rem;
-    font-weight:800;
-    color:#2e7d32;
+    font-weight:bold;
+    color:var(--success);
 }
 
-.btn-order{
+/* BUTTON (MATCH WEB FLOW) */
+button{
     width:100%;
+    padding:15px;
     border:none;
     background:var(--primary-blue);
     color:white;
-    padding:16px;
-    border-radius:50px;
+    border-radius:30px;
+    font-weight:bold;
     cursor:pointer;
-    font-size:1rem;
-    font-weight:700;
-    margin-top:20px;
+    transition:0.3s;
 }
 
-.btn-order:hover{
+button:hover{
     background:var(--accent-red);
 }
 
 /* FOOTER */
-
 footer{
     background:#111;
     color:white;
     text-align:center;
-    padding:50px 20px;
-    margin-top:50px;
-    border-top:4px solid var(--accent-red);
-}
-
-.loader{
-    text-align:center;
-    padding:40px;
+    padding:30px;
+    margin-top:40px;
 }
 
 </style>
 </head>
+
 <body>
 
 <header>
-
-<img src="images/logo.png"
-class="logo"
-alt="Logo">
-
-<h1>Graphic Design</h1>
-
+    <img src="images/logo.png" class="logo">
+    <h1>Graphic Design Studio</h1>
 </header>
 
 <nav>
-
-<a href="index.html">Home</a>
-<a href="about.html">About</a>
-<a href="services.html">Services</a>
-<a href="contact.html">Contact</a>
-
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="contact.html">Contact</a>
 </nav>
 
-<section class="hero">
+<div class="container">
 
-<h2>Professional Graphic Design Solutions</h2>
-
-<p>
-Brand identities, logos, posters, flyers,
-business cards, social media creatives
-and complete branding systems.
-</p>
-
-</section>
-
-<div id="packagesContainer" class="packages">
-
-<div class="loader">
-Loading Graphic Design Packages...
+<!-- HERO -->
+<div class="hero">
+    <h2>Professional Graphic Design Solutions</h2>
+    <p>Logos, branding, posters, flyers, business cards & full identity systems.</p>
 </div>
 
-</div>
+<!-- PACKAGES -->
+<div class="packages" id="packagesContainer"></div>
 
-<section class="order-section">
+<!-- FORM -->
+<div class="form-box">
 
-<h2>Place Graphic Design Order</h2>
-
-<form>
+<h3>Place Graphic Design Order</h3>
 
 <label>Full Name</label>
-<input id="userName" required>
+<input id="userName">
 
 <label>Select Package</label>
-
-<select id="serviceType"
-onchange="updatePrice()">
-</select>
+<select id="serviceType" onchange="updatePrice()"></select>
 
 <label>Design Instructions</label>
+<textarea id="userDesc" rows="4"></textarea>
 
-<textarea
-id="userDesc"
-rows="5">
-</textarea>
+<div class="mpesa">
 
-<div class="mpesa-box">
+<p><b>M-PESA PAY</b></p>
+<p>0790 435 584</p>
 
-<img
-class="mpesa-logo"
-src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png">
+<p>Total Cost</p>
+<div id="displayPrice">KSH 0</div>
 
-<p><strong>LIPA NA M-PESA</strong></p>
-
-<p>
-Pay To:
-<strong>0790 435 584</strong>
-</p>
-
-<p>
-
-Total:
-<span id="displayPrice">
-KSH 0
-</span>
-
-</p>
-
-<button
-type="button"
-onclick="sendToWhatsApp()"
-class="btn-order">
-
-Confirm & Open WhatsApp
-
+<button onclick="sendToWhatsApp()">
+Confirm & Continue via WhatsApp
 </button>
 
 </div>
 
-</form>
+</div>
 
-</section>
+</div>
 
 <footer>
-
-<p>
 © 2026 DAN74TECH MEDIA
-</p>
-
 </footer>
 
 <script>
 
-let packages=[];
+let packages = [];
 
+/* SAME BACKEND PATTERN AS WEB PAGE */
 async function loadPackages(){
-
     try{
+        const res = await fetch('/api/sub-services/graphics');
+        packages = await res.json();
 
-        const res=
-        await fetch('/api/sub-services/graphics');
+        const container = document.getElementById('packagesContainer');
+        const select = document.getElementById('serviceType');
 
-        packages=
-        await res.json();
+        container.innerHTML = '';
+        select.innerHTML = '';
 
-        const container=
-        document.getElementById(
-        'packagesContainer'
-        );
-
-        const select=
-        document.getElementById(
-        'serviceType'
-        );
-
-        container.innerHTML='';
-
-        select.innerHTML='';
-
-        packages.forEach(pkg=>{
+        packages.forEach(p => {
 
             container.innerHTML += `
-            <div class="package-card">
-
-                <h3>${pkg.title}</h3>
-
-                <p>${pkg.description}</p>
-
-                <div class="price">
-                KSH ${pkg.price}
-                </div>
-
-            </div>
-            `;
+            <div class="card">
+                <h3>${p.title}</h3>
+                <p>${p.description}</p>
+            </div>`;
 
             select.innerHTML += `
-            <option
-            value="${pkg.title}"
-            data-price="${pkg.price}">
-            ${pkg.title} - KSH ${pkg.price}
-            </option>
-            `;
+            <option value="${p.title}" data-price="${p.price}">
+                ${p.title} - KSH ${p.price}
+            </option>`;
         });
 
         updatePrice();
 
-    }catch(err){
-
-        document.getElementById(
-        'packagesContainer'
-        ).innerHTML=
-        '<h3>Failed to load packages</h3>';
-
-        console.error(err);
+    } catch(err){
+        console.log("Error loading graphics packages", err);
     }
 }
 
+/* SAME PRICE LOGIC AS WEB PAGE */
 function updatePrice(){
-
-    const select=
-    document.getElementById(
-    'serviceType'
-    );
-
-    const price=
-    select.options[
-    select.selectedIndex
-    ]?.dataset.price || 0;
-
-    document.getElementById(
-    'displayPrice'
-    ).innerText=
-    `KSH ${price}`;
+    const select = document.getElementById('serviceType');
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
+    document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
+/* SAME WHATSAPP FLOW */
 function sendToWhatsApp(){
 
-    const name=
-    document.getElementById(
-    'userName'
-    ).value;
-
-    const service=
-    document.getElementById(
-    'serviceType'
-    ).value;
-
-    const desc=
-    document.getElementById(
-    'userDesc'
-    ).value;
-
-    const price=
-    document.getElementById(
-    'displayPrice'
-    ).innerText;
+    const name = document.getElementById('userName').value;
+    const service = document.getElementById('serviceType').value;
+    const desc = document.getElementById('userDesc').value;
+    const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert('Enter your name');
+        alert("Enter your name");
         return;
     }
 
-    const message=
+    const msg =
 `*GRAPHIC DESIGN ORDER*
 Customer: ${name}
+Service: ${service}
+Price: ${price}
+Instructions: ${desc}`;
 
-Package: ${service}
-
-Amount: ${price}
-
-Instructions:
-${desc}`;
-
-window.open(
-`https://wa.me/254790435584?text=${encodeURIComponent(message)}`,
-'_blank'
-);
-
+    window.open(
+        `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
+        '_blank'
+    );
 }
 
 loadPackages();
