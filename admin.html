@@ -1399,45 +1399,54 @@ async function deletePackage(id) {
 }
 
 // ================= DYNAMIC PORTFOLIO CONTROLLER =================
+let portfolioItems = [];
+
 async function loadPortfolio() {
     try {
         portfolioItems = await safeFetch('/api/portfolio');
         renderPortfolio();
-    } catch (err) { showToast('❌ Portfolio sync sync failure', 'error'); }
+    } catch (err) { 
+        showToast('❌ Portfolio database synchronization failure', 'error'); 
+    }
 }
 
-// Manages image drop areas vs text url swaps dynamically
+// Manages form group visibility and structural requirements dynamically based on media type selection
 function togglePortfolioFields() {
-    const mediaType = document.getElementById('portfolioMediaType').value;
+    const mediaTypeField = document.getElementById('portfolioMediaType');
+    if (!mediaTypeField) return;
+
+    const mediaType = mediaTypeField.value;
     const imageGroup = document.getElementById('imageUploadGroup');
     const videoGroup = document.getElementById('videoUrlGroup');
     const fileInput = document.getElementById('portfolioImageFile');
     const urlInput = document.getElementById('portfolioVideoUrl');
 
     if (mediaType === 'image') {
-        imageGroup.style.display = 'block';
-        videoGroup.style.display = 'none';
+        if (imageGroup) imageGroup.style.display = 'block';
+        if (videoGroup) videoGroup.style.display = 'none';
         if (fileInput) fileInput.required = true;
         if (urlInput) { urlInput.required = false; urlInput.value = ''; }
     } else if (mediaType === 'video') {
-        imageGroup.style.display = 'none';
-        videoGroup.style.display = 'block';
+        if (imageGroup) imageGroup.style.display = 'none';
+        if (videoGroup) videoGroup.style.display = 'block';
         if (fileInput) { fileInput.required = false; fileInput.value = ''; }
         if (urlInput) urlInput.required = true;
     } else {
-        imageGroup.style.display = 'none';
-        videoGroup.style.display = 'none';
+        if (imageGroup) imageGroup.style.display = 'none';
+        if (videoGroup) videoGroup.style.display = 'none';
         if (fileInput) fileInput.required = false;
-        if (urlInput) fileInput.required = false;
+        if (urlInput) urlInput.required = false;
     }
 }
 
+// Resets interface form elements and falls back cleanly to safe default states
 function resetPortfolioForm() {
     const form = document.getElementById('portfolioForm');
     if (form) form.reset();
     togglePortfolioFields();
 }
 
+// Intercepts administrative submission cycles to process multi-part upload streams
 async function handleAddPortfolio(e) {
     e.preventDefault();
 
@@ -1448,43 +1457,49 @@ async function handleAddPortfolio(e) {
     const fileInput = document.getElementById('portfolioImageFile');
     const urlInput = document.getElementById('portfolioVideoUrl');
 
+    // Instantiate native multi-part form constructor
     const formData = new FormData();
-    formData.append('title', titleField.value);
-    formData.append('category', categoryField.value);
-    formData.append('description', descField.value);
+    formData.append('title', titleField?.value || '');
+    formData.append('category', categoryField?.value || 'General');
+    formData.append('description', descField?.value || '');
+    formData.append('media_type', mediaTypeField?.value || 'image');
 
+    // Attach conditional data variants based on user selection parameters
     if (mediaTypeField.value === 'image') {
         if (fileInput && fileInput.files[0]) {
+            // Appends the raw picture binary file directly to your Node/Multer upload channel
             formData.append('image', fileInput.files[0]);
         } else {
-            return showToast('Please select an image file to upload', 'error');
+            return showToast('Please select a local picture file to execute upload.', 'error');
         }
     } else if (mediaTypeField.value === 'video') {
         if (urlInput && urlInput.value) {
             formData.append('link', urlInput.value);
         } else {
-            return showToast('Please paste a target YouTube watch URL link', 'error');
+            return showToast('Please paste a target YouTube project reference link.', 'error');
         }
     }
 
     try {
+        // Multi-part boundary declarations are handled natively by leaving headers unassigned
         const res = await fetch('/api/portfolio', {
             method: 'POST',
-            body: formData // Boundaries computed automatically by standard browsers
+            body: formData
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Server upload exception encountered.');
+        if (!res.ok) throw new Error(data.error || 'Server error encountered during processing.');
 
         showToast('🚀 Portfolio asset processed and locked into database!', 'success');
         resetPortfolioForm();
-        await loadAllData();
+        await loadAllData(); // Triggers global interface counters refresh
     } catch (err) {
-        console.error('Portfolio submission failure:', err);
+        console.error('Portfolio insertion failure:', err);
         showToast(err.message, 'error');
     }
 }
 
+// Renders synchronized administrative tables mapping destinations and badges correctly
 function renderPortfolio() {
     const tbody = document.querySelector('#portfolioTable tbody');
     const counterElement = document.getElementById('portfolioCount');
@@ -1493,30 +1508,35 @@ function renderPortfolio() {
     if (!tbody) return;
 
     if (!portfolioItems.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">No portfolio records discovered.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">No portfolio records discovered inside system database.</td></tr>`;
         return;
     }
 
     let html = '';
     portfolioItems.forEach(p => {
-        const isVideo = p.link && (p.link.includes('youtube.com') || p.link.includes('youtu.be'));
+        // Evaluate dynamic indicators from links or explicit type rows
+        const isVideo = p.media_type === 'video' || (p.link && (p.link.includes('youtube.com') || p.link.includes('youtu.be')));
         const displayTypeBadge = isVideo 
-            ? `<span class="badge" style="background:#ff4d4d; color:white; font-size:0.75rem; padding:2px 6px;"><i class="fab fa-youtube"></i> Video Stream</span>` 
-            : `<span class="badge" style="background:#007bff; color:white; font-size:0.75rem; padding:2px 6px;"><i class="fas fa-image"></i> Local Asset</span>`;
+            ? `<span class="badge" style="background:#ff4d4d; color:white; font-size:0.75rem; padding:2px 6px; border-radius:4px;"><i class="fab fa-youtube"></i> Video Stream</span>` 
+            : `<span class="badge" style="background:#007bff; color:white; font-size:0.75rem; padding:2px 6px; border-radius:4px;"><i class="fas fa-image"></i> Local Asset</span>`;
 
         html += `
         <tr>
             <td>
                 <strong>${p.title || 'Untitled Project'}</strong>
-                <div style="font-size:0.8rem; color:#666; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.description || 'No description provided.'}</div>
+                <div style="font-size:0.8rem; color:#666; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.description || 'No descriptive context recorded.'}</div>
             </td>
             <td>
-                <div style="margin-bottom: 4px; font-weight:600;">${p.category || 'General'}</div>
+                <div style="margin-bottom:4px; font-weight:600;">${p.category || 'General'}</div>
                 ${displayTypeBadge}
             </td>
-            <td><a href="${p.link}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem; text-decoration:underline; word-break:break-all;">${p.link}</a></td>
+            <td>
+                <a href="${p.link}" target="_blank" style="color:var(--primary-blue, #0056b3); font-size:0.85rem; text-decoration:underline; word-break:break-all;">
+                    ${p.link ? p.link : 'Missing Asset Reference Link'}
+                </a>
+            </td>
             <td style="text-align:right">
-                <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})" style="padding: 5px 10px; background:#dc3545; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})" style="padding:5px 10px; background:#dc3545; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
             </td>
         </tr>`;
     });
@@ -1525,12 +1545,14 @@ function renderPortfolio() {
 }
 
 async function deletePortfolio(id) {
-    if (!confirm('Are you sure you want to permanently remove this portfolio item?')) return;
+    if (!confirm('Are you sure you want to permanently remove this portfolio item from system storage?')) return;
     try {
         await safeFetch(`/api/portfolio/${id}`, { method: 'DELETE' });
         showToast('🗑 Portfolio entry removed successfully', 'success');
         await loadAllData();
-    } catch (err) { showToast(err.message, 'error'); }
+    } catch (err) { 
+        showToast(err.message, 'error'); 
+    }
 }
 
 // ================= FORM POPULATIONS & POPUPS =================
