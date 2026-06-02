@@ -13,8 +13,6 @@
 :root{
     --primary-blue:#0044ff;
     --deep-blue:#0022aa;
-    --accent-yellow:#ffd700;
-    --accent-red:#ff2a2a;
     --bg:#f4f7f6;
     --success:#2e7d32;
     --text:#222;
@@ -27,7 +25,7 @@ body{
     color:var(--text);
 }
 
-/* HEADER (UNIFIED) */
+/* HEADER */
 header{
     background:linear-gradient(135deg,var(--primary-blue),var(--deep-blue));
     color:white;
@@ -35,12 +33,9 @@ header{
     padding:50px 20px;
 }
 
-.logo{
-    width:90px;
-    margin-bottom:10px;
-}
+.logo{width:90px}
 
-/* NAV (UNIFIED) */
+/* NAV */
 nav{
     background:var(--deep-blue);
     text-align:center;
@@ -57,7 +52,7 @@ nav a{
     font-weight:600;
 }
 
-/* MAIN CONTAINER (MATCH WEB PAGE STYLE) */
+/* CONTAINER */
 .container{
     max-width:950px;
     margin:30px auto;
@@ -67,20 +62,14 @@ nav a{
     box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
-/* HERO */
-.hero{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-/* PACKAGES GRID */
-.packages{
+/* GRID */
+.grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:20px;
-    margin:20px 0;
 }
 
+/* CARD */
 .card{
     background:#f9f9f9;
     padding:20px;
@@ -88,7 +77,7 @@ nav a{
     border-radius:12px;
 }
 
-/* FORM BOX (UNIFIED WITH WEB PAGE) */
+/* FORM */
 .form-box{
     margin-top:30px;
     border:1px solid #eee;
@@ -104,7 +93,7 @@ input,select,textarea{
     border:1px solid #ddd;
 }
 
-/* MPESA BOX */
+/* MPESA */
 .mpesa{
     background:#e8f5e9;
     border:2px dashed var(--success);
@@ -119,7 +108,7 @@ input,select,textarea{
     color:var(--success);
 }
 
-/* BUTTON (MATCH WEB FLOW) */
+/* BUTTON */
 button{
     width:100%;
     padding:15px;
@@ -133,7 +122,7 @@ button{
 }
 
 button:hover{
-    background:var(--accent-red);
+    background:#ff2a2a;
 }
 
 /* FOOTER */
@@ -164,14 +153,28 @@ footer{
 
 <div class="container">
 
-<!-- HERO -->
-<div class="hero">
-    <h2>Professional Graphic Design Solutions</h2>
-    <p>Logos, branding, posters, flyers, business cards & full identity systems.</p>
-</div>
+<h2 style="text-align:center;color:var(--primary-blue);">
+Professional Graphic Design Solutions
+</h2>
 
-<!-- PACKAGES -->
-<div class="packages" id="packagesContainer"></div>
+<div class="grid">
+
+    <div class="card">
+        <h3>Logo Design</h3>
+        <p>Brand identity, modern logos & visual systems</p>
+    </div>
+
+    <div class="card">
+        <h3>Poster Design</h3>
+        <p>Events, marketing posters & social media creatives</p>
+    </div>
+
+    <div class="card">
+        <h3>Branding</h3>
+        <p>Full business identity packages & design systems</p>
+    </div>
+
+</div>
 
 <!-- FORM -->
 <div class="form-box">
@@ -179,13 +182,13 @@ footer{
 <h3>Place Graphic Design Order</h3>
 
 <label>Full Name</label>
-<input id="userName">
+<input id="userName" type="text">
 
-<label>Select Package</label>
+<label>Select Service</label>
 <select id="serviceType" onchange="updatePrice()"></select>
 
 <label>Design Instructions</label>
-<textarea id="userDesc" rows="4"></textarea>
+<textarea id="desc" rows="4"></textarea>
 
 <div class="mpesa">
 
@@ -205,20 +208,19 @@ Confirm & Continue via WhatsApp
 
 </div>
 
-<footer>
-© 2026 DAN74TECH MEDIA
-</footer>
+<footer>© 2026 DAN74TECH MEDIA</footer>
 
 <script>
 
-async function loadPackages() {
+/* DATABASE ONLY LOADER (NO HARD CODING) */
+async function loadPackages(){
 
-    try {
+    try{
 
         const res = await fetch('/api/sub-services/graphic-design');
 
-        if (!res.ok) {
-            throw new Error('Failed loading packages');
+        if(!res.ok){
+            throw new Error("Failed loading packages");
         }
 
         const packages = await res.json();
@@ -227,6 +229,12 @@ async function loadPackages() {
 
         select.innerHTML = '';
 
+        if(!packages || packages.length === 0){
+            select.innerHTML = `<option value="">No services available</option>`;
+            document.getElementById('displayPrice').innerText = "KSH 0";
+            return;
+        }
+
         packages.forEach(p => {
 
             select.innerHTML += `
@@ -234,52 +242,44 @@ async function loadPackages() {
                     ${p.title} - KSH ${p.price}
                 </option>
             `;
-
         });
 
         updatePrice();
 
-    } catch(err) {
+    }catch(err){
 
         console.error(err);
 
         document.getElementById('serviceType').innerHTML =
-        '<option>Error Loading Packages</option>';
+        `<option value="">Error loading services</option>`;
     }
 }
 
+/* PRICE UPDATE */
 function updatePrice(){
 
     const select = document.getElementById('serviceType');
 
-    const price =
-        select.options[select.selectedIndex]?.dataset.price || 0;
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
 
-    document.getElementById('displayPrice').innerText =
-        `KSH ${price}`;
+    document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
+/* WHATSAPP ORDER */
 function sendToWhatsApp(){
 
-    const name =
-        document.getElementById('userName').value.trim();
-
-    const service =
-        document.getElementById('serviceType').value;
-
-    const desc =
-        document.getElementById('desc').value.trim();
-
-    const price =
-        document.getElementById('displayPrice').innerText;
+    const name = document.getElementById('userName').value.trim();
+    const service = document.getElementById('serviceType').value;
+    const desc = document.getElementById('desc').value.trim();
+    const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert('Enter your name');
+        alert("Enter your name");
         return;
     }
 
     const msg =
-`*GRAPHICS ORDER*
+`*GRAPHIC DESIGN ORDER*
 
 Customer: ${name}
 Service: ${service}
@@ -290,14 +290,13 @@ ${desc}`;
 
     window.open(
         `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
-        '_blank'
+        "_blank"
     );
 }
 
 document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
-
 
 </body>
 </html>
