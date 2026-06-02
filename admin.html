@@ -1296,25 +1296,31 @@ async function handleUpdateService(e) {
     e.preventDefault();
 
     const payload = {
-        title: editServiceName.value,
-        category: editServiceName.value,
-        icon: editServiceIcon.value,
-        description: editServiceDesc.value,
+        title: editServiceName.value || '',
+        category: editServiceName.value || '',
+        icon: editServiceIcon.value || '🔧',
+        description: editServiceDesc.value || '',
         price: '0',
-        page_route: editServiceName.value.toLowerCase().replace(/\s+/g, '-')
+        page_route: (editServiceName.value || '')
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
     };
 
     try {
         const res = await fetch(`/api/services/${editingServiceId}`, {
             method: 'PUT',
-            headers: {'Content-Type':'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        const data = await res.json().catch(() => ({}));
 
-        showToast('✅ Updated', 'success');
+        if (!res.ok) {
+            throw new Error(data.error || 'Update failed');
+        }
+
+        showToast('✅ Updated successfully', 'success');
         closeModal('editServiceModal');
 
         await loadMainServices();
@@ -1323,10 +1329,9 @@ async function handleUpdateService(e) {
         updateDashboardStats();
 
     } catch (err) {
-        showToast(err.message, 'error');
+        showToast('❌ ' + err.message, 'error');
     }
 }
-
 // ================= DELETE SERVICE =================
 async function deleteService(id) {
     if (!confirm('Delete service?')) return;
