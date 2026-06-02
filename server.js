@@ -1,10 +1,9 @@
 const express = require('express');
 const { Pool } = require('pg');
-const cloudinary = require('cloudinary').v2;
-const multer = require('multer');
-const streamifier = require('streamifier');
 const path = require('path');
 const cors = require('cors');
+const multer = require('multer'); // Restored for picture uploads
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -15,180 +14,136 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// ================= DATABASE =================
+// Ensure uploads directory exists for picture uploads
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+// Serve uploaded pictures statically
+app.use('/uploads', express.static(uploadDir));
+
+// Configure Multer for local picture storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'portfolio-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+// ================= DATABASE CONNECTION =================
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false } // Required for platforms like Render/Heroku
 });
 
-// ================= INIT DB =================
-async function initDB() {
-    try {
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS services (
-                id SERIAL PRIMARY KEY,
-                title TEXT,
-                description TEXT,
-                price TEXT,
-                category TEXT,
-                page_route TEXT,
-                icon TEXT
-            );
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS portfolio (
-                id SERIAL PRIMARY KEY,
-                title TEXT,
-                description TEXT,
-                media_url TEXT,
-                media_type TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `);
-
-        console.log("✅ DB READY");
-    } catch (err) {
-        console.error("DB ERROR:", err);
-    }
-}
-initDB();
-
-// ================= CLOUDINARY =================
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_DB,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
-const upload = multer({ storage: multer.memoryStorage() });
-
-const uploadToCloudinary = (buffer) =>
-    new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            { folder: "assets" },
-            (err, result) => {
-                if (result) resolve(result.secure_url);
-                else reject(err);
-            }
-        );
-        streamifier.createReadStream(buffer).pipe(stream);
-    });
-
-// ================= UTIL =================
-const slug = (t) => t ? t.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
-
-// ================= ROUTES =================
-
-// Root endpoint serves your UI safely without overriding content headers across asset files
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// ROUTE INTERCEPTOR FOR API ENDPOINTS - Sets JSON selectively for clean processing
-app.use('/api', (req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-    next();
+pool.query("SELECT NOW()", (err, res) => {
+    if (err) console.error("❌ Database Connection Error:", err);
+    else console.log("✅ Postgres Database Connected Successfully");
 });
 
 // ================= SERVICES ENDPOINTS =================
-
-// GET
 app.get('/api/services', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM services ORDER BY id DESC');
-        // Aligned perfectly: Returns raw arrays expected by both UI data iterations
         res.json(data.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// CREATE
 app.post('/api/services', async (req, res) => {
     try {
-        const { title, description, price, category, icon } = req.body;
-
+        const { name, description } = req.body;
         const result = await pool.query(
-            `INSERT INTO services (title, description, price, category, page_route, icon)
-             VALUES ($1,$2,$3,$4,$5,$6)
-             RETURNING *`,
-            [
-                title,
-                description,
-                price || '0',
-                category,
-                slug(category || title),
-                icon || '🔧'
-            ]
+            `INSERT INTO services (name, description) VALUES ($1, $2) RETURNING *`,
+            [name, description]
         );
-
-        // Standardized to directly return the object, resolving raw array unpack exceptions in frontend
-        res.json(result.rows[0]);
-
+        res.json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// UPDATE
 app.put('/api/services/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, price, category, icon } = req.body;
-
+        const { name, description } = req.body;
         const result = await pool.query(
-            `UPDATE services SET
-                title=$1,
-                description=$2,
-                price=$3,
-                category=$4,
-                page_route=$5,
-                icon=$6
-             WHERE id=$7
-             RETURNING *`,
-            [
-                title,
-                description,
-                price || '0',
-                category,
-                slug(category || title),
-                icon || '🔧',
-                id
-            ]
+            `UPDATE services SET name = $1, description = $2 WHERE id = $3 RETURNING *`,
+            [name, description, id]
         );
-
-        if (!result.rows.length) {
-            return res.status(404).json({ error: "Not found" });
-        }
-
-        res.json(result.rows[0]);
-
+        res.json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// DELETE
 app.delete('/api/services/:id', async (req, res) => {
     try {
-        const result = await pool.query(
-            'DELETE FROM services WHERE id=$1 RETURNING *',
-            [req.params.id]
-        );
-
-        if (!result.rows.length) {
-            return res.status(404).json({ error: "Not found" });
-        }
-
+        await pool.query('DELETE FROM services WHERE id = $1', [req.params.id]);
         res.json({ success: true });
-
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// ================= PORTFOLIO ENDPOINTS =================
+// ================= SUB SERVICES (PACKAGES) =================
+app.get('/api/sub-services', async (req, res) => {
+    try {
+        const queryText = `
+            SELECT sub_services.*, services.name AS category_name 
+            FROM sub_services 
+            JOIN services ON sub_services.service_id = services.id 
+            ORDER BY sub_services.id DESC`;
+        const data = await pool.query(queryText);
+        res.json(data.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/sub-services', async (req, res) => {
+    try {
+        const { service_id, title, description, price } = req.body;
+        const result = await pool.query(
+            `INSERT INTO sub_services (service_id, title, description, price) 
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [service_id, title, description, price]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/sub-services/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { service_id, title, description, price } = req.body;
+        const result = await pool.query(
+            `UPDATE sub_services SET service_id = $1, title = $2, description = $3, price = $4 
+             WHERE id = $5 RETURNING *`,
+            [service_id, title, description, price, id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/sub-services/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM sub_services WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ================= PORTFOLIO (PICTURE UPLOADS INTACT) =================
 app.get('/api/portfolio', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
@@ -198,29 +153,23 @@ app.get('/api/portfolio', async (req, res) => {
     }
 });
 
-app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
+// The crucial upload route: handles FormData + File Uploads via Multer
+app.post('/api/portfolio', upload.single('image'), async (req, res) => {
     try {
-        const { title, description, media_type, youtubeUrl } = req.body;
-
-        let media_url = youtubeUrl || '';
-
+        const { title, category, description } = req.body;
+        let link = req.body.link || ''; 
+        
+        // If a file was uploaded, save the generated path to the DB
         if (req.file) {
-            media_url = await uploadToCloudinary(req.file.buffer);
-        }
-
-        if (!media_url) {
-            return res.status(400).json({ error: "No media source provided" });
+            link = `/uploads/${req.file.filename}`;
         }
 
         const result = await pool.query(
-            `INSERT INTO portfolio (title, description, media_url, media_type)
-             VALUES ($1,$2,$3,$4)
-             RETURNING *`,
-            [title, description, media_url, media_type || 'image']
+            `INSERT INTO portfolio (title, category, description, link) 
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [title, category, description, link]
         );
-
-        res.json(result.rows[0]);
-
+        res.json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -228,17 +177,13 @@ app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
 
 app.delete('/api/portfolio/:id', async (req, res) => {
     try {
-        const result = await pool.query('DELETE FROM portfolio WHERE id=$1 RETURNING *', [req.params.id]);
-        if (!result.rows.length) {
-            return res.status(404).json({ error: "Portfolio item not found" });
-        }
+        await pool.query('DELETE FROM portfolio WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// ================= START SERVER =================
 app.listen(PORT, () => {
-    console.log(`🚀 Server running perfectly on port ${PORT}`);
+    console.log(`🚀 Server fully operational on port ${PORT}`);
 });
