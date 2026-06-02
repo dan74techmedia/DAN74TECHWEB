@@ -1,146 +1,529 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Production | DAN74TECH MEDIA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --primary-blue: #0044ff; 
-            --accent-orange: #ff9900; 
-            --bg-dark: #050505;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --text-light: #ffffff;
-            --border-color: rgba(255, 255, 255, 0.08);
-        }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text-light); line-height: 1.6; }
-        header { background: linear-gradient(135deg, #001133 0%, var(--bg-dark) 100%); padding: 50px 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .logo { width: 90px; height: auto; margin-bottom: 15px; }
-        header h1 { font-family: 'Montserrat'; font-size: 2.5rem; margin: 0; color: #fff; letter-spacing: 1px; }
-        header p { color: #888; margin: 10px 0 0 0; }
-        nav { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(10px); padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-        nav a { color: #aaa; text-decoration: none; margin: 0 15px; font-weight: 600; text-transform: uppercase; font-size: 13px; transition: 0.3s; }
-        nav a:hover, nav a.active { color: var(--accent-orange); }
-        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 40px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 35px; text-align: left; transition: transform 0.3s ease, border-color 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; }
-        .card:hover { transform: translateY(-5px); border-color: var(--primary-blue); }
-        .card h3 { font-family: 'Montserrat'; font-size: 1.5rem; margin: 0; color: #fff; }
-        .card p { color: #aaa; font-size: 0.95rem; margin: 15px 0 25px 0; min-height: 50px; }
-        .price { font-size: 1.8rem; font-weight: 700; color: var(--accent-orange); margin-bottom: 25px; font-family: 'Montserrat'; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 0.85rem; color: #888; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-family: 'Poppins'; box-sizing: border-box; }
-        .input-group input:focus { border-color: var(--primary-blue); outline: none; }
-        .btn { display: block; width: 100%; padding: 14px; background: var(--primary-blue); color: white; text-align: center; text-decoration: none; font-weight: 600; border-radius: 8px; border: none; font-family: 'Poppins'; cursor: pointer; transition: background 0.3s; }
-        .btn:hover { background: #0033cc; }
-        footer { border-top: 1px solid var(--border-color); background: #020202; padding: 40px 20px; margin-top: 100px; font-size: 0.9rem; color: #666; }
-        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .footer-grid h3 { font-family: 'Montserrat'; font-size: 1.1rem; }
-        .loading-text { text-align: center; font-size: 1.2rem; color: #666; width: 100%; grid-column: 1 / -1; }
-    </style>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<title>Video Production | DAN74TECH MEDIA</title>
+
+
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+
+<style>
+
+
+
+:root{
+
+    --primary-blue:#0044ff;
+
+    --deep-blue:#0022aa;
+
+    --accent-yellow:#ffd700;
+
+    --accent-red:#ff2a2a;
+
+    --bg:#f4f7f6;
+
+    --success:#2e7d32;
+
+    --text:#222;
+
+}
+
+
+
+body{
+
+    margin:0;
+
+    font-family:Poppins,sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+}
+
+
+
+/* HEADER */
+
+header{
+
+    background:linear-gradient(135deg,var(--primary-blue),var(--deep-blue));
+
+    color:white;
+
+    text-align:center;
+
+    padding:50px 20px;
+
+}
+
+
+
+.logo{width:90px}
+
+
+
+/* NAV */
+
+nav{
+
+    background:var(--deep-blue);
+
+    text-align:center;
+
+    padding:14px;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+}
+
+
+
+nav a{
+
+    color:white;
+
+    margin:0 15px;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+}
+
+
+
+/* CONTAINER */
+
+.container{
+
+    max-width:950px;
+
+    margin:30px auto;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+
+}
+
+
+
+/* GRID */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+}
+
+
+
+.card{
+
+    background:#f9f9f9;
+
+    padding:20px;
+
+    border-left:5px solid var(--primary-blue);
+
+    border-radius:12px;
+
+}
+
+
+
+/* FORM */
+
+.form-box{
+
+    margin-top:30px;
+
+    border:1px solid #eee;
+
+    padding:25px;
+
+    border-radius:15px;
+
+}
+
+
+
+input,select,textarea{
+
+    width:100%;
+
+    padding:12px;
+
+    margin:8px 0;
+
+    border-radius:8px;
+
+    border:1px solid #ddd;
+
+}
+
+
+
+/* MPESA */
+
+.mpesa{
+
+    background:#e8f5e9;
+
+    border:2px dashed var(--success);
+
+    padding:20px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+}
+
+
+
+#displayPrice{
+
+    font-size:2rem;
+
+    font-weight:bold;
+
+    color:var(--success);
+
+}
+
+
+
+button{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    background:var(--success);
+
+    color:white;
+
+    border-radius:30px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+    background:#1b5e20;
+
+}
+
+
+
+/* FOOTER */
+
+footer{
+
+    background:#111;
+
+    color:white;
+
+    text-align:center;
+
+    padding:30px;
+
+    margin-top:40px;
+
+}
+
+
+
+</style>
+
 </head>
+
+
+
 <body>
 
+
+
 <header>
-    <img src="logo.png" alt="DAN74TECH" class="logo">
-    <h1>Video Editing & Creative Production</h1>
-    <p>Premium visual rendering pipeline and cinematic grading arrangements.</p>
+
+    <img src="images/logo.png" class="logo">
+
+    <h1>Video Production Studio</h1>
+
 </header>
 
+
+
 <nav>
+
     <a href="index.html">Home</a>
+
+    <a href="about.html">About</a>
+
     <a href="services.html">Services</a>
-    <a href="web.html">Web Dev</a>
-    <a href="app.html">Apps</a>
-    <a href="video.html" class="active">Video</a>
-    <a href="repairs.html">Repairs</a>
-    <a href="graphics.html">Graphics</a>
-    <a href="advice.html">Consultancy</a>
+
     <a href="contact.html">Contact</a>
+
 </nav>
 
+
+
 <div class="container">
-    <div class="grid" id="tiersContainer">
-        <p class="loading-text">Fetching active database configuration parameters...</p>
+
+
+
+<h2 style="text-align:center;color:var(--primary-blue);">
+
+Cinematic Visual Storytelling
+
+</h2>
+
+
+
+<div class="grid">
+
+    <div class="card">
+
+        <h3>Pro Editing</h3>
+
+        <p>Color grading, transitions, cinematic cuts & professional editing</p>
+
     </div>
+
+
+
+    <div class="card">
+
+        <h3>Social Content</h3>
+
+        <p>Reels, TikTok videos, YouTube shorts with captions & effects</p>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h3>Intro / Outro</h3>
+
+        <p>Brand intros, animated logos and outro sequences</p>
+
+    </div>
+
 </div>
 
-<footer>
-    <div class="footer-grid">
-        <div>
-            <h3>DAN74TECH MEDIA</h3>
-            <p>Based in Meru, Kenya</p>
-            <p>Working Hours: Mon - Sat (8 AM - 6 PM)</p>
-        </div>
-        <div style="text-align: right;">
-            <h3>TECHNICAL STANDARDS</h3>
-            <p>&copy; 2026 DAN74TECH MEDIA. Professional Linear Digital Assets Editing Gateway.</p>
-        </div>
-    </div>
-</footer>
+
+
+<div class="form-box">
+
+
+
+<h3>Submit Video Production Order</h3>
+
+
+
+<label>Full Name</label>
+
+<input id="userName">
+
+
+
+<label>Select Package</label>
+
+<select id="serviceType" onchange="updatePrice()"></select>
+
+
+
+<label>Footage Link</label>
+
+<input id="footageLink">
+
+
+
+<label>Editing Instructions</label>
+
+<textarea id="desc"></textarea>
+
+
+
+<div class="mpesa">
+
+<p><b>M-PESA PAY</b></p>
+
+<p>0790 435 584</p>
+
+
+
+<p>Total Cost</p>
+
+<div id="displayPrice">KSH 0</div>
+
+
+
+<button onclick="sendToWhatsApp()">Confirm & Continue</button>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<footer>© 2026 DAN74TECH MEDIA</footer>
+
+
 
 <script>
-    const SYSTEM_CATEGORY = "Video Production";
 
-    document.addEventListener("DOMContentLoaded", loadDynamicTiers);
 
-    async function loadDynamicTiers() {
-        const container = document.getElementById("tiersContainer");
-        try {
-            let response = await fetch("/api/services");
-            let data = await response.json();
-            
-            let targetPackages = data.filter(item => item.category === SYSTEM_CATEGORY);
-            
-            if (targetPackages.length === 0) {
-                container.innerHTML = `<p class="loading-text">No active tiers provisioned for ${SYSTEM_CATEGORY}. Check admin terminal panel logs.</p>`;
-                return;
-            }
-            
-            container.innerHTML = "";
-            targetPackages.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="card">
-                        <div>
-                            <h3>${item.title}</h3>
-                            <p>${item.description}</p>
-                            <div class="price">KSH ${Number(item.price).toLocaleString()}</div>
-                            
-                            <div class="input-group">
-                                <label for="link_${index}">Raw Raw-Footage Drive Link</label>
-                                <input type="text" id="link_${index}" placeholder="Google Drive / WeTransfer URL link">
-                            </div>
-                            <div class="input-group">
-                                <label for="desc_${index}">Target Creative Vibe Style</label>
-                                <input type="text" id="desc_${index}" placeholder="e.g. dynamic cinematic, energetic YouTube vlog cut">
-                            </div>
-                        </div>
-                        <button class="btn" onclick="sendOrder('${item.title}', '${item.price}', ${index})">Lock Production Reservation Slot →</button>
-                    </div>
-                `;
-            });
-        } catch (err) {
-            container.innerHTML = `<p class="loading-text" style="color:red;">Pipeline timeout: Failed to load service arrays from core schema registry endpoints.</p>`;
-        }
+
+let services=[];
+
+
+
+async function loadServices(){
+
+    try{
+
+        const res = await fetch('/api/sub-services/web');
+
+        services = await res.json();
+
+
+
+        const select = document.getElementById('serviceType');
+
+        select.innerHTML='';
+
+
+
+        services.forEach(s=>{
+
+            select.innerHTML += `
+
+            <option value="${s.title}" data-price="${s.price}">
+
+                ${s.title} - KSH ${s.price}
+
+            </option>`;
+
+        });
+
+
+
+        updatePrice();
+
+    }catch(err){
+
+        console.log("Failed to load services",err);
+
     }
 
-    // Process output array generation
-    function sendOrder(tierTitle, basePrice, index) {
-        let footageUrl = document.getElementById(`link_${index}`).value || "Will provide after deployment discussion";
-        let creativeStyle = document.getElementById(`desc_${index}`).value || "Standard premium corporate grading theme";
-        
-        let message = `*DAN74TECH MEDIA CORE ROUTER SYSTEM*%0A` +
-                        `*Service Request:* ${SYSTEM_CATEGORY}%0A` +
-                        `*Selected Package:* ${tierTitle}%0A` +
-                        `*System Pricing:* KSH ${Number(basePrice).toLocaleString()}%0A` +
-                        `*Footage Source Repository:* ${footageUrl}%0A` +
-                        `*Aesthetic Parameters Description:* ${creativeStyle}%0A%0A` +
-                        `_System payload prepared. Awaiting raw file transfer execution configuration confirm._`;
+}
 
-        window.open(`https://wa.me/254790435584?text=${message}`, '_blank');
-    }
+
+
+function updatePrice(){
+
+    const select=document.getElementById('serviceType');
+
+    const price=select.options[select.selectedIndex]?.dataset.price || 0;
+
+    document.getElementById('displayPrice').innerText=`KSH ${price}`;
+
+}
+
+
+
+function sendToWhatsApp(){
+
+
+
+    const name=document.getElementById('userName').value;
+
+    const service=document.getElementById('serviceType').value;
+
+    const link=document.getElementById('footageLink').value;
+
+    const desc=document.getElementById('desc').value;
+
+    const price=document.getElementById('displayPrice').innerText;
+
+
+
+    if(!name){ alert("Enter name"); return; }
+
+
+
+    const msg =
+
+`*NEW VIDEO PRODUCTION ORDER*
+
+Customer: ${name}
+
+Service: ${service}
+
+Footage Link: ${link || "TBD"}
+
+Price: ${price}
+
+Details: ${desc}`;
+
+
+
+    window.open(`https://wa.me/254790435584?text=${encodeURIComponent(msg)}`, '_blank');
+
+}
+
+
+
+loadServices();
+
+
+
 </script>
+
+
+
 </body>
+
 </html>
