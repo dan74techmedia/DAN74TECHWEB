@@ -469,21 +469,23 @@
                 return;
             }
 
-            container.innerHTML = mainCategories.map(cat => {
-                // Dynamically build a clean routing filename from the category name column
-                const generatedRoute = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                
-                return `
-                    <a href="${generatedRoute}.html" class="card-link">
-                        <div class="service-card">
-                            <div class="icon-wrapper">${cat.icon || '💻'}</div>
-                            <h3>${cat.name}</h3>
-                            <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
-                            <div class="pricing-link">Explore Packages <i class="fa-solid fa-arrow-right"></i></div>
-                        </div>
-                    </a>
-                `;
-            }).join('');
+container.innerHTML = mainCategories.map(cat => {
+    return `
+        <a href="${cat.route}" class="card-link">
+            <div class="service-card">
+                <div class="icon-wrapper">${cat.icon || '💻'}</div>
+                <h3>${cat.name}</h3>
+                <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
+                <div class="pricing-link">
+                    Explore Packages
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </div>
+        </a>
+    `;
+}).join('');
+
+            
             
         } catch (error) {
             console.error('Error loading services:', error);
