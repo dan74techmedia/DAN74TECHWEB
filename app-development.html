@@ -213,57 +213,40 @@ Custom Android & Web Applications
 
 <script>
 
-let packages = [];
+async function loadPackages() {
 
-async function loadPackages(){
-
-    try{
+    try {
 
         const res = await fetch('/api/sub-services/app-development');
 
-        if(!res.ok){
+        if (!res.ok) {
             throw new Error('Failed loading packages');
         }
 
-        packages = await res.json();
+        const packages = await res.json();
 
-        const container = document.getElementById('packagesContainer');
         const select = document.getElementById('serviceType');
 
-        container.innerHTML = '';
         select.innerHTML = '';
 
-        if(packages.length === 0){
-            container.innerHTML =
-            '<div class="card"><h3>No Packages Available</h3></div>';
-
-            select.innerHTML =
-            '<option value="">No packages available</option>';
-
-            return;
-        }
-
         packages.forEach(p => {
-
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${p.title}</h3>
-                    <p>${p.description}</p>
-                    <strong>KSH ${p.price}</strong>
-                </div>
-            `;
 
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
                     ${p.title} - KSH ${p.price}
                 </option>
             `;
+
         });
 
         updatePrice();
 
-    }catch(err){
+    } catch(err) {
+
         console.error(err);
+
+        document.getElementById('serviceType').innerHTML =
+        '<option>Error Loading Packages</option>';
     }
 }
 
@@ -287,7 +270,7 @@ function sendToWhatsApp(){
         document.getElementById('serviceType').value;
 
     const desc =
-        document.getElementById('userDesc').value.trim();
+        document.getElementById('desc').value.trim();
 
     const price =
         document.getElementById('displayPrice').innerText;
@@ -313,13 +296,9 @@ ${desc}`;
     );
 }
 
-document
-.getElementById('serviceType')
-.addEventListener('change', updatePrice);
-
 document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
-
+    
 </body>
 </html>
