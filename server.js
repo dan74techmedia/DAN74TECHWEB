@@ -90,14 +90,34 @@ const uploadToCloudinary = (fileBuffer) => {
 };
 
 // ==========================================
-// 4. API ENDPOINTS: PACKAGES & SUB-SERVICES
+// GET SUB SERVICES BY ROUTE
 // ==========================================
+app.get('/api/sub-services/:route', async (req, res) => {
+    const { route } = req.params;
 
-// Helper function to match frontend route slug generation
-const generateSlug = (str) => {
-    return str ? str.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
-};
+    try {
+        const result = await pool.query(`
+            SELECT
+                ss.id,
+                ss.title,
+                ss.description,
+                ss.price
+            FROM sub_services ss
+            JOIN services s
+            ON ss.service_id = s.id
+            WHERE s.page_route = $1
+            ORDER BY ss.price ASC
+        `,[route]);
 
+        res.json(result.rows);
+
+    } catch(err){
+        console.error(err);
+        res.status(500).json({
+            error:'Failed to load service packages'
+        });
+    }
+});
 // GET all items - Feeds package pipeline to frontend forms and layouts
 app.get('/api/services', async (req, res) => {
     try {
