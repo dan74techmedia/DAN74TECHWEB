@@ -170,8 +170,6 @@ app.get('/api/sub-services/:serviceName', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: err.message });
 
-        app.listen(PORT, () => {
+    app.listen(PORT, () => {
     console.log(`🚀 Server fully operational on port ${PORT}`);
-});
-    }
 });
