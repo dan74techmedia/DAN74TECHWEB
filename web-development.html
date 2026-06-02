@@ -13,8 +13,6 @@
 :root{
     --primary-blue:#0044ff;
     --deep-blue:#0022aa;
-    --accent-yellow:#ffd700;
-    --accent-red:#ff2a2a;
     --bg:#f4f7f6;
     --success:#2e7d32;
     --text:#222;
@@ -71,6 +69,7 @@ nav a{
     gap:20px;
 }
 
+/* CARD */
 .card{
     background:#f9f9f9;
     padding:20px;
@@ -109,6 +108,7 @@ input,select,textarea{
     color:var(--success);
 }
 
+/* BUTTON */
 button{
     width:100%;
     padding:15px;
@@ -118,6 +118,7 @@ button{
     border-radius:30px;
     font-weight:bold;
     cursor:pointer;
+    transition:0.3s;
 }
 
 button:hover{
@@ -159,44 +160,49 @@ Modern & Responsive Web Solutions
 <div class="grid">
     <div class="card">
         <h3>Business Website</h3>
-        <p>5-page SEO optimized website</p>
+        <p>SEO optimized multi-page business websites</p>
     </div>
 
     <div class="card">
         <h3>Portfolio Site</h3>
-        <p>Landing page / branding</p>
+        <p>Personal branding and landing pages</p>
     </div>
 
     <div class="card">
         <h3>E-Commerce</h3>
-        <p>Full online store system</p>
+        <p>Full online store with payments integration</p>
     </div>
 </div>
 
+<!-- FORM -->
 <div class="form-box">
 
 <h3>Order Web Development Service</h3>
 
 <label>Full Name</label>
-<input id="userName">
+<input id="userName" type="text">
 
 <label>Select Package</label>
 <select id="serviceType" onchange="updatePrice()"></select>
 
 <label>Domain Name</label>
-<input id="domain">
+<input id="domain" type="text" placeholder="e.g. mywebsite.com">
 
 <label>Project Description</label>
-<textarea id="desc"></textarea>
+<textarea id="desc" rows="4"></textarea>
 
 <div class="mpesa">
+
 <p><b>M-PESA PAY</b></p>
 <p>0790 435 584</p>
 
 <p>Total Cost</p>
 <div id="displayPrice">KSH 0</div>
 
-<button onclick="sendToWhatsApp()">Confirm & Continue</button>
+<button onclick="sendToWhatsApp()">
+Confirm & Continue via WhatsApp
+</button>
+
 </div>
 
 </div>
@@ -205,9 +211,7 @@ Modern & Responsive Web Solutions
 
 <footer>© 2026 DAN74TECH MEDIA</footer>
 
-
-
-</body><script>
+<script>
 
 let packages = [];
 
@@ -215,7 +219,7 @@ async function loadPackages(){
 
     try{
 
-        const res = await fetch('/api/sub-services/graphics');
+        const res = await fetch('/api/sub-services/web-development');
 
         if(!res.ok){
             throw new Error('Failed loading packages');
@@ -223,31 +227,17 @@ async function loadPackages(){
 
         packages = await res.json();
 
-        const container = document.getElementById('packagesContainer');
         const select = document.getElementById('serviceType');
 
-        container.innerHTML = '';
         select.innerHTML = '';
 
-        if(packages.length === 0){
-            container.innerHTML =
-            '<div class="card"><h3>No Packages Available</h3></div>';
-
-            select.innerHTML =
-            '<option value="">No packages available</option>';
-
+        if(!packages || packages.length === 0){
+            select.innerHTML = '<option value="">No services available</option>';
+            document.getElementById('displayPrice').innerText = "KSH 0";
             return;
         }
 
         packages.forEach(p => {
-
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${p.title}</h3>
-                    <p>${p.description}</p>
-                    <strong>KSH ${p.price}</strong>
-                </div>
-            `;
 
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
@@ -260,6 +250,8 @@ async function loadPackages(){
 
     }catch(err){
         console.error(err);
+        document.getElementById('serviceType').innerHTML =
+        '<option value="">Error loading services</option>';
     }
 }
 
@@ -267,8 +259,7 @@ function updatePrice(){
 
     const select = document.getElementById('serviceType');
 
-    const price =
-        select.options[select.selectedIndex]?.dataset.price || 0;
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
 
     document.getElementById('displayPrice').innerText =
         `KSH ${price}`;
@@ -276,20 +267,14 @@ function updatePrice(){
 
 function sendToWhatsApp(){
 
-    const name =
-        document.getElementById('userName').value.trim();
-
-    const service =
-        document.getElementById('serviceType').value;
-
-    const desc =
-        document.getElementById('userDesc').value.trim();
-
-    const price =
-        document.getElementById('displayPrice').innerText;
+    const name = document.getElementById('userName').value.trim();
+    const service = document.getElementById('serviceType').value;
+    const domain = document.getElementById('domain').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert('Enter your name');
+        alert("Enter your name");
         return;
     }
 
@@ -298,6 +283,7 @@ function sendToWhatsApp(){
 
 Customer: ${name}
 Service: ${service}
+Domain: ${domain}
 Price: ${price}
 
 Instructions:
@@ -305,15 +291,13 @@ ${desc}`;
 
     window.open(
         `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
-        '_blank'
+        "_blank"
     );
 }
-
-document
-.getElementById('serviceType')
-.addEventListener('change', updatePrice);
 
 document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
+
+</body>
 </html>
