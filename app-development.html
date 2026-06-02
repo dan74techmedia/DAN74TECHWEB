@@ -15,8 +15,6 @@
 :root{
     --primary-blue:#0044ff;
     --deep-blue:#0022aa;
-    --accent-yellow:#ffd700;
-    --accent-red:#ff2a2a;
     --bg:#f4f7f6;
     --success:#2e7d32;
     --text:#222;
@@ -111,6 +109,7 @@ input,select,textarea{
     color:var(--success);
 }
 
+/* BUTTON */
 button{
     width:100%;
     padding:15px;
@@ -182,7 +181,7 @@ Custom Android & Web Applications
 <h3>Order App Development Service</h3>
 
 <label>Full Name</label>
-<input id="userName">
+<input id="userName" type="text">
 
 <label>Select Package</label>
 <select id="serviceType" onchange="updatePrice()"></select>
@@ -201,7 +200,9 @@ Custom Android & Web Applications
 <p>Total Cost</p>
 <div id="displayPrice">KSH 0</div>
 
-<button onclick="sendToWhatsApp()">Confirm & Continue</button>
+<button onclick="sendToWhatsApp()">
+Confirm & Continue
+</button>
 
 </div>
 
@@ -213,15 +214,14 @@ Custom Android & Web Applications
 
 <script>
 
-async function loadPackages() {
+/* LOAD PACKAGES FROM SAME API STYLE */
+async function loadPackages(){
 
-    try {
+    try{
 
         const res = await fetch('/api/sub-services/app-development');
 
-        if (!res.ok) {
-            throw new Error('Failed loading packages');
-        }
+        if(!res.ok) throw new Error("API failed");
 
         const packages = await res.json();
 
@@ -229,76 +229,77 @@ async function loadPackages() {
 
         select.innerHTML = '';
 
-        packages.forEach(p => {
+        if(!packages || packages.length === 0){
+            select.innerHTML = `<option value="Basic App" data-price="5000">Basic App - KSH 5000</option>`;
+            updatePrice();
+            return;
+        }
 
+        packages.forEach(p=>{
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
                     ${p.title} - KSH ${p.price}
                 </option>
             `;
-
         });
 
         updatePrice();
 
-    } catch(err) {
+    }catch(err){
 
         console.error(err);
 
         document.getElementById('serviceType').innerHTML =
-        '<option>Error Loading Packages</option>';
+        `<option value="Basic App" data-price="5000">Basic App - KSH 5000</option>`;
+
+        updatePrice();
     }
 }
 
+/* PRICE UPDATE */
 function updatePrice(){
 
     const select = document.getElementById('serviceType');
 
-    const price =
-        select.options[select.selectedIndex]?.dataset.price || 0;
+    const price = select.options[select.selectedIndex]?.dataset.price || 0;
 
-    document.getElementById('displayPrice').innerText =
-        `KSH ${price}`;
+    document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
+/* WHATSAPP SENDER */
 function sendToWhatsApp(){
 
-    const name =
-        document.getElementById('userName').value.trim();
-
-    const service =
-        document.getElementById('serviceType').value;
-
-    const desc =
-        document.getElementById('desc').value.trim();
-
-    const price =
-        document.getElementById('displayPrice').innerText;
+    const name = document.getElementById('userName').value.trim();
+    const service = document.getElementById('serviceType').value;
+    const feature = document.getElementById('feature').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert('Enter your name');
+        alert("Please enter your name");
         return;
     }
 
     const msg =
-`*APP ORDER*
+`*APP DEVELOPMENT ORDER*
 
 Customer: ${name}
 Service: ${service}
+Feature: ${feature}
 Price: ${price}
 
-Instructions:
+Project Description:
 ${desc}`;
 
     window.open(
         `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
-        '_blank'
+        "_blank"
     );
 }
 
 document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
-    
+
 </body>
 </html>
