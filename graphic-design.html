@@ -213,10 +213,16 @@ Confirm & Continue via WhatsApp
 
 let packages = [];
 
-/* SAME BACKEND PATTERN AS WEB PAGE */
 async function loadPackages(){
+
     try{
+
         const res = await fetch('/api/sub-services/graphics');
+
+        if(!res.ok){
+            throw new Error('Failed loading packages');
+        }
+
         packages = await res.json();
 
         const container = document.getElementById('packagesContainer');
@@ -225,53 +231,79 @@ async function loadPackages(){
         container.innerHTML = '';
         select.innerHTML = '';
 
+        if(packages.length === 0){
+            container.innerHTML =
+            '<div class="card"><h3>No Packages Available</h3></div>';
+
+            select.innerHTML =
+            '<option value="">No packages available</option>';
+
+            return;
+        }
+
         packages.forEach(p => {
 
             container.innerHTML += `
-            <div class="card">
-                <h3>${p.title}</h3>
-                <p>${p.description}</p>
-            </div>`;
+                <div class="card">
+                    <h3>${p.title}</h3>
+                    <p>${p.description}</p>
+                    <strong>KSH ${p.price}</strong>
+                </div>
+            `;
 
             select.innerHTML += `
-            <option value="${p.title}" data-price="${p.price}">
-                ${p.title} - KSH ${p.price}
-            </option>`;
+                <option value="${p.title}" data-price="${p.price}">
+                    ${p.title} - KSH ${p.price}
+                </option>
+            `;
         });
 
         updatePrice();
 
-    } catch(err){
-        console.log("Error loading graphics packages", err);
+    }catch(err){
+        console.error(err);
     }
 }
 
-/* SAME PRICE LOGIC AS WEB PAGE */
 function updatePrice(){
+
     const select = document.getElementById('serviceType');
-    const price = select.options[select.selectedIndex]?.dataset.price || 0;
-    document.getElementById('displayPrice').innerText = `KSH ${price}`;
+
+    const price =
+        select.options[select.selectedIndex]?.dataset.price || 0;
+
+    document.getElementById('displayPrice').innerText =
+        `KSH ${price}`;
 }
 
-/* SAME WHATSAPP FLOW */
 function sendToWhatsApp(){
 
-    const name = document.getElementById('userName').value;
-    const service = document.getElementById('serviceType').value;
-    const desc = document.getElementById('userDesc').value;
-    const price = document.getElementById('displayPrice').innerText;
+    const name =
+        document.getElementById('userName').value.trim();
+
+    const service =
+        document.getElementById('serviceType').value;
+
+    const desc =
+        document.getElementById('userDesc').value.trim();
+
+    const price =
+        document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert("Enter your name");
+        alert('Enter your name');
         return;
     }
 
     const msg =
 `*GRAPHIC DESIGN ORDER*
+
 Customer: ${name}
 Service: ${service}
 Price: ${price}
-Instructions: ${desc}`;
+
+Instructions:
+${desc}`;
 
     window.open(
         `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
@@ -279,7 +311,11 @@ Instructions: ${desc}`;
     );
 }
 
-loadPackages();
+document
+.getElementById('serviceType')
+.addEventListener('change', updatePrice);
+
+document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
 
