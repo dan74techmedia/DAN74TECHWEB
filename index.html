@@ -448,6 +448,7 @@
 <script>
     // Helper to convert standard YouTube links to Embed format securely
     function extractYouTubeEmbedUrl(url) {
+        if (!url) return '';
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
@@ -456,29 +457,33 @@
     // 1. Fetch Main Services Category
     async function loadServices() {
         const container = document.getElementById('dynamic-services');
+        if (!container) return;
+        
         try {
             const res = await fetch('/api/services');
             if (!res.ok) throw new Error('Network response was not ok');
-            const allServices = await res.json();
-            
-            // Filter out packages (price > 0), keep only main categories
-            const mainCategories = allServices.filter(s => !s.price || s.price === '0');
+            const mainCategories = await res.json();
             
             if (mainCategories.length === 0) {
                 container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Services update in progress...</p>';
                 return;
             }
 
-            container.innerHTML = mainCategories.map(cat => `
-                <a href="${cat.page_route}.html" class="card-link">
-                    <div class="service-card">
-                        <div class="icon-wrapper">${cat.icon || '💻'}</div>
-                        <h3>${cat.title}</h3>
-                        <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
-                        <div class="pricing-link">Explore Packages <i class="fa-solid fa-arrow-right"></i></div>
-                    </div>
-                </a>
-            `).join('');
+            container.innerHTML = mainCategories.map(cat => {
+                // Dynamically build a clean routing filename from the category name column
+                const generatedRoute = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                
+                return `
+                    <a href="${generatedRoute}.html" class="card-link">
+                        <div class="service-card">
+                            <div class="icon-wrapper">${cat.icon || '💻'}</div>
+                            <h3>${cat.name}</h3>
+                            <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
+                            <div class="pricing-link">Explore Packages <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
             
         } catch (error) {
             console.error('Error loading services:', error);
@@ -486,9 +491,11 @@
         }
     }
 
-    // 2. Fetch Portfolio Showcase
+    // 2. Fetch Portfolio Showcase (Supports both uploads and stream video links)
     async function loadPortfolio() {
         const container = document.getElementById('dynamic-portfolio');
+        if (!container) return;
+
         try {
             const res = await fetch('/api/portfolio');
             if (!res.ok) throw new Error('Network response was not ok');
@@ -502,25 +509,30 @@
             container.innerHTML = portfolioItems.map(item => {
                 let mediaHTML = '';
                 let badgeHTML = '';
+                const targetLink = item.link || '#';
 
-                if (item.media_type === 'video') {
-                    const embedUrl = extractYouTubeEmbedUrl(item.media_url);
+                // Intelligent format detection by parsing the target link value
+                const isVideo = targetLink.includes('youtube.com') || targetLink.includes('youtu.be');
+
+                if (isVideo) {
+                    const embedUrl = extractYouTubeEmbedUrl(targetLink);
                     mediaHTML = `
                         <div class="portfolio-video-wrapper">
                             <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
                         </div>`;
                     badgeHTML = `<span style="color: var(--accent-red); font-weight: 700; font-size: 0.9rem;"><i class="fa-brands fa-youtube"></i> Watch Project</span>`;
                 } else {
-                    mediaHTML = `<img src="${item.media_url}" alt="${item.title}" class="portfolio-media">`;
+                    // Displays uploaded file path structures seamlessly
+                    mediaHTML = `<img src="${targetLink}" alt="${item.title || 'Showcase Image'}" class="portfolio-media" onerror="this.src='https://placehold.co/600x400?text=View+Project'">`;
                     badgeHTML = `<span style="color: var(--primary-blue); font-weight: 700; font-size: 0.9rem;"><i class="fa-solid fa-image"></i> View Detail</span>`;
                 }
 
                 return `
-                    <a href="${item.media_url}" target="_blank" class="card-link">
+                    <a href="${targetLink}" target="_blank" class="card-link">
                         <div class="service-card" style="padding: 20px;">
                             ${mediaHTML}
-                            <h3 style="margin-top: 10px; margin-bottom: 5px;">${item.title}</h3>
-                            <p style="margin-bottom: 15px;">${item.description}</p>
+                            <h3 style="margin-top: 10px; margin-bottom: 5px;">${item.title || 'Untitled Project'}</h3>
+                            <p style="margin-bottom: 15px;">${item.description || 'No description provided.'}</p>
                             ${badgeHTML}
                         </div>
                     </a>
@@ -529,7 +541,7 @@
 
         } catch (error) {
             console.error('Error loading portfolio:', error);
-            container.innerHTML = ''; // Fail silently or add custom error text
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load portfolio item showcase.</p>';
         }
     }
 
