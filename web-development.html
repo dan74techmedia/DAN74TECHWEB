@@ -205,61 +205,115 @@ Modern & Responsive Web Solutions
 
 <footer>© 2026 DAN74TECH MEDIA</footer>
 
-<script>
 
-let services=[];
 
-async function loadServices(){
+</body><script>
+
+let packages = [];
+
+async function loadPackages(){
+
     try{
-        const res = await fetch('/api/sub-services/web');
-        services = await res.json();
 
+        const res = await fetch('/api/sub-services/graphics');
+
+        if(!res.ok){
+            throw new Error('Failed loading packages');
+        }
+
+        packages = await res.json();
+
+        const container = document.getElementById('packagesContainer');
         const select = document.getElementById('serviceType');
-        select.innerHTML='';
 
-        services.forEach(s=>{
+        container.innerHTML = '';
+        select.innerHTML = '';
+
+        if(packages.length === 0){
+            container.innerHTML =
+            '<div class="card"><h3>No Packages Available</h3></div>';
+
+            select.innerHTML =
+            '<option value="">No packages available</option>';
+
+            return;
+        }
+
+        packages.forEach(p => {
+
+            container.innerHTML += `
+                <div class="card">
+                    <h3>${p.title}</h3>
+                    <p>${p.description}</p>
+                    <strong>KSH ${p.price}</strong>
+                </div>
+            `;
+
             select.innerHTML += `
-            <option value="${s.title}" data-price="${s.price}">
-                ${s.title} - KSH ${s.price}
-            </option>`;
+                <option value="${p.title}" data-price="${p.price}">
+                    ${p.title} - KSH ${p.price}
+                </option>
+            `;
         });
 
         updatePrice();
+
     }catch(err){
-        console.log("Failed to load services",err);
+        console.error(err);
     }
 }
 
 function updatePrice(){
-    const select=document.getElementById('serviceType');
-    const price=select.options[select.selectedIndex]?.dataset.price || 0;
-    document.getElementById('displayPrice').innerText=`KSH ${price}`;
+
+    const select = document.getElementById('serviceType');
+
+    const price =
+        select.options[select.selectedIndex]?.dataset.price || 0;
+
+    document.getElementById('displayPrice').innerText =
+        `KSH ${price}`;
 }
 
 function sendToWhatsApp(){
 
-    const name=document.getElementById('userName').value;
-    const service=document.getElementById('serviceType').value;
-    const domain=document.getElementById('domain').value;
-    const desc=document.getElementById('desc').value;
-    const price=document.getElementById('displayPrice').innerText;
+    const name =
+        document.getElementById('userName').value.trim();
 
-    if(!name){ alert("Enter name"); return; }
+    const service =
+        document.getElementById('serviceType').value;
+
+    const desc =
+        document.getElementById('userDesc').value.trim();
+
+    const price =
+        document.getElementById('displayPrice').innerText;
+
+    if(!name){
+        alert('Enter your name');
+        return;
+    }
 
     const msg =
-`*NEW WEB DEVELOPMENT ORDER*
+`*WEB DEVELOPMENT ORDER*
+
 Customer: ${name}
 Service: ${service}
-Domain: ${domain || "TBD"}
 Price: ${price}
-Details: ${desc}`;
 
-    window.open(`https://wa.me/254790435584?text=${encodeURIComponent(msg)}`, '_blank');
+Instructions:
+${desc}`;
+
+    window.open(
+        `https://wa.me/254790435584?text=${encodeURIComponent(msg)}`,
+        '_blank'
+    );
 }
 
-loadServices();
+document
+.getElementById('serviceType')
+.addEventListener('change', updatePrice);
+
+document.addEventListener('DOMContentLoaded', loadPackages);
 
 </script>
-
-</body>
 </html>
