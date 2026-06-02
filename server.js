@@ -9,65 +9,58 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ==========================================
-// 1. CORE SYSTEM MIDDLEWARE
-// ==========================================
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Home route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+// FORCE JSON SAFETY RESPONSE
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
 });
 
-// ==========================================
-// 2. POSTGRESQL (NEON) CONNECTION POOL
-// ==========================================
+// ================= DATABASE =================
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// ==========================================
-// AUTO DATABASE INITIALIZATION
-// ==========================================
-async function initializeDatabaseSchema() {
+// ================= INIT DB =================
+async function initDB() {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS services (
                 id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
+                title TEXT,
                 description TEXT,
-                price VARCHAR(100),
-                category VARCHAR(100),
-                page_route VARCHAR(100) DEFAULT 'web',
-                icon VARCHAR(50) DEFAULT '🔧'
+                price TEXT,
+                category TEXT,
+                page_route TEXT,
+                icon TEXT
             );
         `);
 
         await pool.query(`
             CREATE TABLE IF NOT EXISTS portfolio (
                 id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
+                title TEXT,
                 description TEXT,
-                media_url TEXT NOT NULL,
-                media_type VARCHAR(50) DEFAULT 'image',
+                media_url TEXT,
+                media_type TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
-        console.log("🚀 Database schema ready (services + portfolio)");
+        console.log("✅ DB READY");
     } catch (err) {
-        console.error("❌ DB schema error:", err);
+        console.error("DB ERROR:", err);
     }
 }
-initializeDatabaseSchema();
+initDB();
 
-// ==========================================
-// 3. CLOUDINARY CONFIG
-// ==========================================
+// ================= CLOUDINARY =================
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_DB,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -76,141 +69,131 @@ cloudinary.config({
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-const uploadToCloudinary = (fileBuffer) => {
-    return new Promise((resolve, reject) => {
+const uploadToCloudinary = (buffer) =>
+    new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-            { folder: "dan74tech_media_assets" },
-            (error, result) => {
+            { folder: "assets" },
+            (err, result) => {
                 if (result) resolve(result.secure_url);
-                else reject(error);
+                else reject(err);
             }
         );
-        streamifier.createReadStream(fileBuffer).pipe(stream);
+        streamifier.createReadStream(buffer).pipe(stream);
     });
-};
 
-// ==========================================
-// 4. UTIL FUNCTION
-// ==========================================
-const generateSlug = (str) => {
-    return str ? str.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
-};
+// ================= UTIL =================
+const slug = (t) => t ? t.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
 
-// ==========================================
-// 5. SERVICES API (CORE FOR YOUR FRONTEND)
-// ==========================================
+// ================= ROUTES =================
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-// GET ALL SERVICES
+// ================= SERVICES =================
+
+// GET
 app.get('/api/services', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM services ORDER BY id DESC');
-
-        const cleaned = result.rows.map(r => {
-            if (!r.page_route) {
-                r.page_route = generateSlug(r.category || r.title);
-            }
-            return r;
-        });
-
-        res.json(cleaned);
+        const data = await pool.query('SELECT * FROM services ORDER BY id DESC');
+        res.json(data.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to fetch services" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// CREATE SERVICE (ADMIN)
+// CREATE (FIXED RETURN)
 app.post('/api/services', async (req, res) => {
-    const { title, description, price, category, page_route, icon } = req.body;
-
     try {
-        await pool.query(
+        const { title, description, price, category, icon } = req.body;
+
+        const result = await pool.query(
             `INSERT INTO services (title, description, price, category, page_route, icon)
-             VALUES ($1,$2,$3,$4,$5,$6)`,
+             VALUES ($1,$2,$3,$4,$5,$6)
+             RETURNING *`,
             [
                 title,
                 description,
                 price || '0',
                 category,
-                page_route || generateSlug(category || title),
+                slug(category || title),
                 icon || '🔧'
             ]
         );
 
-        res.status(201).json({ success: true, message: "Service created" });
+        res.json({ success: true, data: result.rows[0] });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Insert failed" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// UPDATE SERVICE
+// UPDATE (CRITICAL FIX: RETURNING *)
 app.put('/api/services/:id', async (req, res) => {
-    const { id } = req.params;
-    const { title, description, price, category, page_route, icon } = req.body;
-
     try {
+        const { id } = req.params;
+        const { title, description, price, category, icon } = req.body;
+
         const result = await pool.query(
-            `UPDATE services
-             SET title=$1, description=$2, price=$3, category=$4, page_route=$5, icon=$6
-             WHERE id=$7`,
+            `UPDATE services SET
+                title=$1,
+                description=$2,
+                price=$3,
+                category=$4,
+                page_route=$5,
+                icon=$6
+             WHERE id=$7
+             RETURNING *`,
             [
                 title,
                 description,
                 price || '0',
                 category,
-                page_route || generateSlug(category || title),
+                slug(category || title),
                 icon || '🔧',
                 id
             ]
         );
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ error: "Service not found" });
-        }
-
-        res.json({ success: true, message: "Updated successfully" });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Update failed" });
-    }
-});
-
-// DELETE SERVICE
-app.delete('/api/services/:id', async (req, res) => {
-    try {
-        const result = await pool.query('DELETE FROM services WHERE id=$1', [req.params.id]);
-
-        if (result.rowCount === 0) {
+        if (!result.rows.length) {
             return res.status(404).json({ error: "Not found" });
         }
 
-        res.json({ success: true, message: "Deleted successfully" });
+        res.json({ success: true, data: result.rows[0] });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Delete failed" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// ==========================================
-// 6. PORTFOLIO API
-// ==========================================
+// DELETE
+app.delete('/api/services/:id', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'DELETE FROM services WHERE id=$1 RETURNING *',
+            [req.params.id]
+        );
 
-// GET PORTFOLIO
+        if (!result.rows.length) {
+            return res.status(404).json({ error: "Not found" });
+        }
+
+        res.json({ success: true });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ================= PORTFOLIO =================
 app.get('/api/portfolio', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
-        res.json(result.rows);
+        const data = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
+        res.json(data.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Portfolio fetch failed" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// CREATE PORTFOLIO ITEM
 app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
     try {
         const { title, description, media_type, youtubeUrl } = req.body;
@@ -222,37 +205,33 @@ app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
         }
 
         if (!media_url) {
-            return res.status(400).json({ error: "Media required" });
+            return res.status(400).json({ error: "No media" });
         }
 
-        await pool.query(
+        const result = await pool.query(
             `INSERT INTO portfolio (title, description, media_url, media_type)
-             VALUES ($1,$2,$3,$4)`,
+             VALUES ($1,$2,$3,$4)
+             RETURNING *`,
             [title, description, media_url, media_type || 'image']
         );
 
-        res.status(201).json({ success: true, message: "Portfolio added" });
+        res.json({ success: true, data: result.rows[0] });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Upload failed" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// DELETE PORTFOLIO
 app.delete('/api/portfolio/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM portfolio WHERE id=$1', [req.params.id]);
-        res.json({ success: true, message: "Deleted" });
+        res.json({ success: true });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Delete failed" });
+        res.status(500).json({ error: err.message });
     }
 });
 
-// ==========================================
-// 7. START SERVER
-// ==========================================
+// ================= START =================
 app.listen(PORT, () => {
-    console.log(`📡 Server running on port ${PORT}`);
+    console.log(`🚀 Server running on ${PORT}`);
 });
