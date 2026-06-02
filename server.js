@@ -15,12 +15,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// FORCE JSON SAFETY RESPONSE
-app.use((req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-    next();
-});
-
 // ================= DATABASE =================
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -85,23 +79,32 @@ const uploadToCloudinary = (buffer) =>
 const slug = (t) => t ? t.toLowerCase().trim().replace(/\s+/g, '-') : 'general';
 
 // ================= ROUTES =================
+
+// Root endpoint serves your UI safely without overriding content headers across asset files
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ================= SERVICES =================
+// ROUTE INTERCEPTOR FOR API ENDPOINTS - Sets JSON selectively for clean processing
+app.use('/api', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
+
+// ================= SERVICES ENDPOINTS =================
 
 // GET
 app.get('/api/services', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM services ORDER BY id DESC');
+        // Aligned perfectly: Returns raw arrays expected by both UI data iterations
         res.json(data.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// CREATE (FIXED RETURN)
+// CREATE
 app.post('/api/services', async (req, res) => {
     try {
         const { title, description, price, category, icon } = req.body;
@@ -120,14 +123,15 @@ app.post('/api/services', async (req, res) => {
             ]
         );
 
-        res.json({ success: true, data: result.rows[0] });
+        // Standardized to directly return the object, resolving raw array unpack exceptions in frontend
+        res.json(result.rows[0]);
 
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// UPDATE (CRITICAL FIX: RETURNING *)
+// UPDATE
 app.put('/api/services/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -158,7 +162,7 @@ app.put('/api/services/:id', async (req, res) => {
             return res.status(404).json({ error: "Not found" });
         }
 
-        res.json({ success: true, data: result.rows[0] });
+        res.json(result.rows[0]);
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -184,7 +188,7 @@ app.delete('/api/services/:id', async (req, res) => {
     }
 });
 
-// ================= PORTFOLIO =================
+// ================= PORTFOLIO ENDPOINTS =================
 app.get('/api/portfolio', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM portfolio ORDER BY id DESC');
@@ -205,7 +209,7 @@ app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
         }
 
         if (!media_url) {
-            return res.status(400).json({ error: "No media" });
+            return res.status(400).json({ error: "No media source provided" });
         }
 
         const result = await pool.query(
@@ -215,7 +219,7 @@ app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
             [title, description, media_url, media_type || 'image']
         );
 
-        res.json({ success: true, data: result.rows[0] });
+        res.json(result.rows[0]);
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -224,14 +228,17 @@ app.post('/api/portfolio', upload.single('mediaFile'), async (req, res) => {
 
 app.delete('/api/portfolio/:id', async (req, res) => {
     try {
-        await pool.query('DELETE FROM portfolio WHERE id=$1', [req.params.id]);
+        const result = await pool.query('DELETE FROM portfolio WHERE id=$1 RETURNING *', [req.params.id]);
+        if (!result.rows.length) {
+            return res.status(404).json({ error: "Portfolio item not found" });
+        }
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// ================= START =================
+// ================= START SERVER =================
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on ${PORT}`);
+    console.log(`🚀 Server running perfectly on port ${PORT}`);
 });
