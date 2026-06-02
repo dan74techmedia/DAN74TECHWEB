@@ -898,81 +898,93 @@
                 </div>
             </div>
         </div>
-
-        <!-- ==================== PORTFOLIO TAB ==================== -->
+        
+    <!-- ==================== PORTFOLIO TAB ==================== -->
+        
         <div id="portfolio" class="tab-content">
-            <div class="form-section">
-                <h2><i class="fas fa-image"></i> Add Portfolio Item</h2>
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i> Portfolio items display on your homepage. Upload images to Cloudinary or link YouTube videos
-                </div>
-                <form id="portfolioForm" onsubmit="handleAddPortfolio(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-heading"></i> Project Title</label>
-                            <input type="text" id="portfolioTitle" class="form-control" placeholder="e.g., Meru Coffee Brand" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Project Description</label>
-                        <textarea id="portfolioDesc" class="form-control" placeholder="Describe the project, technologies, results..." required></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-file-type"></i> Media Type</label>
-                            <select id="portfolioMediaType" class="form-control" onchange="togglePortfolioFields()" required>
-                                <option value="">Select Type</option>
-                                <option value="image">Image/Screenshot</option>
-                                <option value="video">YouTube Video</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div id="imageUploadGroup" class="form-group" style="display:none;">
-                        <label><i class="fas fa-cloud-upload-alt"></i> Upload Image</label>
-                        <div class="file-upload">
-                            <input type="file" id="portfolioImageFile" accept="image/*">
-                            <label for="portfolioImageFile"><i class="fas fa-image"></i> Click to select or drag & drop</label>
-                        </div>
-                    </div>
-
-                    <div id="videoUrlGroup" class="form-group" style="display:none;">
-                        <label><i class="fas fa-video"></i> YouTube URL</label>
-                        <input type="url" id="portfolioVideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="submit" class="btn-submit"><i class="fas fa-check-circle"></i> Add to Portfolio</button>
-                        <button type="button" class="btn-cancel" onclick="resetPortfolioForm()"><i class="fas fa-times"></i> Clear</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="table-section">
-                <div class="table-header">
-                    <h3><i class="fas fa-gallery"></i> Portfolio Items</h3>
-                    <span style="font-size: 0.9rem; color: var(--text-gray);"><i class="fas fa-database"></i> <span id="portfolioCount">0</span> items</span>
-                </div>
-                <div class="table-wrapper">
-                    <table id="portfolioTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                                <th style="text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-gray);"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="form-section">
+        <h2><i class="fas fa-image"></i> Add Portfolio Item</h2>
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i> Portfolio items display on your homepage. Select local files to upload them directly, or paste a YouTube watch link.
         </div>
+        <form id="portfolioForm" onsubmit="handleAddPortfolio(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Project Title</label>
+                    <input type="text" id="portfolioTitle" class="form-control" placeholder="e.g., Meru Coffee Brand Web System" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tags"></i> Project Category</label>
+                    <select id="portfolioCategory" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="App Development">App Development</option>
+                        <option value="ICT Consultancy">ICT Consultancy</option>
+                        <option value="Tech Repairs">Tech Repairs</option>
+                        <option value="Video Production">Video Production</option>
+                        <option value="Software">Software</option>
+                    </select>
+                </div>
+            </div>
 
+            <div class="form-group">
+                <label><i class="fas fa-align-left"></i> Project Description</label>
+                <textarea id="portfolioDesc" class="form-control" rows="3" placeholder="Describe the project scope, technologies utilized, and final results..." required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-file-invoice"></i> Media Type Selection</label>
+                    <select id="portfolioMediaType" class="form-control" onchange="togglePortfolioFields()" required>
+                        <option value="">Select Source Type</option>
+                        <option value="image">Local Picture File Upload</option>
+                        <option value="video">YouTube Video URL</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="imageUploadGroup" class="form-group" style="display:none;">
+                <label><i class="fas fa-cloud-upload-alt"></i> Upload Picture From Device</label>
+                <div class="file-upload" style="border: 2px dashed #ccc; padding: 20px; text-align: center; border-radius: 8px; background: #fafafa; position: relative;">
+                    <input type="file" id="portfolioImageFile" accept="image/*" style="cursor: pointer;">
+                    <p style="margin-top: 10px; color: #666;"><i class="fas fa-images fa-2x"></i><br>Click to choose an item or drop your project snapshot file here</p>
+                </div>
+            </div>
+
+            <div id="videoUrlGroup" class="form-group" style="display:none;">
+                <label><i class="fas fa-video"></i> Production YouTube Link</label>
+                <input type="url" id="portfolioVideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+
+            <div class="btn-group" style="margin-top: 20px;">
+                <button type="submit" class="btn-submit"><i class="fas fa-check-circle"></i> Add to Portfolio</button>
+                <button type="button" class="btn-cancel" onclick="resetPortfolioForm()"><i class="fas fa-times"></i> Clear Fields</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <h3><i class="fas fa-photo-film"></i> Live Portfolio Item Directory</h3>
+            <span style="font-size: 0.9rem; color: var(--text-gray);"><i class="fas fa-database"></i> <span id="portfolioCount">0</span> items configured</span>
+        </div>
+        <div class="table-wrapper">
+            <table id="portfolioTable">
+                <thead>
+                    <tr>
+                        <th>Project Details</th>
+                        <th>Classification</th>
+                        <th>Resource Path Reference</th>
+                        <th style="text-align: right;">Management Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-gray);"><i class="fas fa-spinner fa-spin"></i> Loading data rows...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
         <!-- ==================== MANAGE ALL TAB ==================== -->
         <div id="manage" class="tab-content">
             <div class="form-section">
@@ -1150,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editPackageDesc = document.getElementById('editPackageDesc');
 });
 
-// ================= LOGIN =================
+// ================= GLOBAL UTILITIES & AUTH =================
 function handleLogin(e) {
     e.preventDefault();
     const password = document.getElementById('passwordInput').value;
@@ -1186,8 +1198,8 @@ function switchTab(tabName) {
 async function safeFetch(url, options = {}) {
     const res = await fetch(url, options);
     let data;
-    try { data = await res.json(); } catch (e) { throw new Error("Invalid response"); }
-    if (!res.ok) throw new Error(data.error || "Request failed");
+    try { data = await res.json(); } catch (e) { throw new Error("Invalid response from server"); }
+    if (!res.ok) throw new Error(data.error || "Server request failed");
     return data;
 }
 
@@ -1215,18 +1227,20 @@ function updateDashboardStats() {
     document.getElementById('revenueStat').textContent = 'KSH ' + revenue.toLocaleString();
 }
 
-// ================= SERVICES =================
+// ================= SERVICES MANAGEMENT =================
 async function loadMainServices() {
     try {
         mainServices = await safeFetch('/api/services');
         renderServices();
-    } catch (err) { showToast('❌ Failed services', 'error'); }
+    } catch (err) { showToast('❌ Failed to load services', 'error'); }
 }
 
 function renderServices() {
     const tbody = document.querySelector('#servicesTable tbody');
+    if (!tbody) return;
+    
     if (!mainServices.length) {
-        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No services</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No services added yet.</td></tr>`;
         return;
     }
 
@@ -1236,14 +1250,14 @@ function renderServices() {
         <tr>
             <td style="font-size:20px">📂</td>
             <td><b>${s.name}</b></td>
-            <td>${(s.description || '').substring(0, 60)}</td>
+            <td>${(s.description || '').substring(0, 60)}${(s.description || '').length > 60 ? '...' : ''}</td>
             <td style="text-align:right">
                 <button class="btn-action btn-edit" onclick="editService(${s.id})">Edit</button>
                 <button class="btn-action btn-delete" onclick="deleteService(${s.id})">Delete</button>
             </td>
         </tr>`;
     });
-    if (tbody) tbody.innerHTML = html;
+    tbody.innerHTML = html;
 }
 
 async function handleAddService(e) {
@@ -1254,7 +1268,7 @@ async function handleAddService(e) {
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ name: serviceName.value, description: serviceDesc.value })
         });
-        showToast('Service added', 'success');
+        showToast('✅ Service added successfully', 'success');
         serviceForm.reset();
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
@@ -1277,33 +1291,35 @@ async function handleUpdateService(e) {
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ name: editServiceName.value, description: editServiceDesc.value })
         });
-        showToast('Updated successfully', 'success');
+        showToast('✅ Service updated successfully', 'success');
         closeModal('editServiceModal');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
 
 async function deleteService(id) {
-    if (!confirm('Delete service?')) return;
+    if (!confirm('Are you sure you want to delete this service category? This may affect linked packages.')) return;
     try {
         await safeFetch(`/api/services/${id}`, { method: 'DELETE' });
-        showToast('🗑 Deleted', 'success');
+        showToast('🗑 Service category deleted', 'success');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= PACKAGES (SUB SERVICES) =================
+// ================= PACKAGES (SUB SERVICES) MANAGEMENT =================
 async function loadPackages() {
     try {
         packages = await safeFetch('/api/sub-services');
         renderPackages();
-    } catch (err) { showToast('❌ Failed packages', 'error'); }
+    } catch (err) { showToast('❌ Failed to load packages', 'error'); }
 }
 
 function renderPackages() {
     const tbody = document.querySelector('#packagesTable tbody');
+    if (!tbody) return;
+
     if (!packages.length) {
-        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No packages</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No active pricing packages found.</td></tr>`;
         return;
     }
 
@@ -1314,14 +1330,14 @@ function renderPackages() {
             <td><span class="badge">${p.category_name || 'General'}</span></td>
             <td><b>${p.title}</b></td>
             <td>KSH ${Number(p.price).toLocaleString()}</td>
-            <td>${(p.description || '').substring(0,60)}</td>
+            <td>${(p.description || '').substring(0, 60)}${(p.description || '').length > 60 ? '...' : ''}</td>
             <td style="text-align:right">
                 <button class="btn-action btn-edit" onclick="editPackage(${p.id})">Edit</button>
                 <button class="btn-action btn-delete" onclick="deletePackage(${p.id})">Delete</button>
             </td>
         </tr>`;
     });
-    if (tbody) tbody.innerHTML = html;
+    tbody.innerHTML = html;
 }
 
 async function handleAddPackage(e) {
@@ -1337,7 +1353,7 @@ async function handleAddPackage(e) {
                 description: packageDesc.value
             })
         });
-        showToast('✅ Package added', 'success');
+        showToast('✅ Pricing package added', 'success');
         packageForm.reset();
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
@@ -1367,105 +1383,160 @@ async function handleUpdatePackage(e) {
                 description: editPackageDesc.value
             })
         });
-        showToast('Package updated', 'success');
+        showToast('✅ Pricing package updated', 'success');
         closeModal('editPackageModal');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
 
 async function deletePackage(id) {
-    if (!confirm('Delete package?')) return;
+    if (!confirm('Are you sure you want to delete this package?')) return;
     try {
         await safeFetch(`/api/sub-services/${id}`, { method: 'DELETE' });
-        showToast('🗑 Deleted', 'success');
+        showToast('🗑 Package deleted successfully', 'success');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
 
-// ================= PORTFOLIO (PICTURE UPLOADS INTACT) =================
+// ================= DYNAMIC PORTFOLIO CONTROLLER =================
 async function loadPortfolio() {
     try {
         portfolioItems = await safeFetch('/api/portfolio');
         renderPortfolio();
-    } catch (err) { showToast('❌ Portfolio error', 'error'); }
+    } catch (err) { showToast('❌ Portfolio sync sync failure', 'error'); }
 }
 
-function renderPortfolio() {
-    const tbody = document.querySelector('#portfolioTable tbody');
-    if (!tbody) return;
+// Manages image drop areas vs text url swaps dynamically
+function togglePortfolioFields() {
+    const mediaType = document.getElementById('portfolioMediaType').value;
+    const imageGroup = document.getElementById('imageUploadGroup');
+    const videoGroup = document.getElementById('videoUrlGroup');
+    const fileInput = document.getElementById('portfolioImageFile');
+    const urlInput = document.getElementById('portfolioVideoUrl');
 
-    if (!portfolioItems.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No items</td></tr>`;
-        return;
+    if (mediaType === 'image') {
+        imageGroup.style.display = 'block';
+        videoGroup.style.display = 'none';
+        if (fileInput) fileInput.required = true;
+        if (urlInput) { urlInput.required = false; urlInput.value = ''; }
+    } else if (mediaType === 'video') {
+        imageGroup.style.display = 'none';
+        videoGroup.style.display = 'block';
+        if (fileInput) { fileInput.required = false; fileInput.value = ''; }
+        if (urlInput) urlInput.required = true;
+    } else {
+        imageGroup.style.display = 'none';
+        videoGroup.style.display = 'none';
+        if (fileInput) fileInput.required = false;
+        if (urlInput) fileInput.required = false;
     }
-
-    let html = '';
-    portfolioItems.forEach(p => {
-        html += `
-        <tr>
-            <td><b>${p.title}</b></td>
-            <td><span class="badge">${p.category || 'General'}</span></td>
-            <td>${(p.description || '').substring(0,60)}</td>
-            <td style="text-align:right">
-                <a class="btn-action btn-view" href="${p.link}" target="_blank">View File</a>
-                <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})">Delete</button>
-            </td>
-        </tr>`;
-    });
-    tbody.innerHTML = html;
 }
 
-// FULLY RECTIFIED UPLOAD LOGIC 
+function resetPortfolioForm() {
+    const form = document.getElementById('portfolioForm');
+    if (form) form.reset();
+    togglePortfolioFields();
+}
+
 async function handleAddPortfolio(e) {
     e.preventDefault();
-    
-    // Using FormData enables true file multipart uploads
+
+    const titleField = document.getElementById('portfolioTitle');
+    const categoryField = document.getElementById('portfolioCategory');
+    const descField = document.getElementById('portfolioDesc');
+    const mediaTypeField = document.getElementById('portfolioMediaType');
+    const fileInput = document.getElementById('portfolioImageFile');
+    const urlInput = document.getElementById('portfolioVideoUrl');
+
     const formData = new FormData();
-    formData.append('title', document.getElementById('portfolioTitle')?.value || '');
-    formData.append('category', document.getElementById('portfolioCategory')?.value || '');
-    formData.append('description', document.getElementById('portfolioDesc')?.value || '');
-    
-    // Attach the actual picture file from the input to send to Node.js
-    const fileInput = document.getElementById('portfolioImage'); // Matches standard file inputs
-    if (fileInput && fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
-    } else {
-        // Fallback for text links
-        const linkVal = document.getElementById('portfolioLink')?.value;
-        if(linkVal) formData.append('link', linkVal);
+    formData.append('title', titleField.value);
+    formData.append('category', categoryField.value);
+    formData.append('description', descField.value);
+
+    if (mediaTypeField.value === 'image') {
+        if (fileInput && fileInput.files[0]) {
+            formData.append('image', fileInput.files[0]);
+        } else {
+            return showToast('Please select an image file to upload', 'error');
+        }
+    } else if (mediaTypeField.value === 'video') {
+        if (urlInput && urlInput.value) {
+            formData.append('link', urlInput.value);
+        } else {
+            return showToast('Please paste a target YouTube watch URL link', 'error');
+        }
     }
 
     try {
         const res = await fetch('/api/portfolio', {
             method: 'POST',
-            body: formData // No Content-Type header needed; browser calculates boundaries
+            body: formData // Boundaries computed automatically by standard browsers
         });
-        
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
 
-        showToast('✅ Upload complete!', 'success');
-        const formObj = document.getElementById('portfolioForm');
-        if (formObj) formObj.reset();
-        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Server upload exception encountered.');
+
+        showToast('🚀 Portfolio asset processed and locked into database!', 'success');
+        resetPortfolioForm();
         await loadAllData();
     } catch (err) {
+        console.error('Portfolio submission failure:', err);
         showToast(err.message, 'error');
     }
 }
 
+function renderPortfolio() {
+    const tbody = document.querySelector('#portfolioTable tbody');
+    const counterElement = document.getElementById('portfolioCount');
+    
+    if (counterElement) counterElement.textContent = portfolioItems.length;
+    if (!tbody) return;
+
+    if (!portfolioItems.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">No portfolio records discovered.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    portfolioItems.forEach(p => {
+        const isVideo = p.link && (p.link.includes('youtube.com') || p.link.includes('youtu.be'));
+        const displayTypeBadge = isVideo 
+            ? `<span class="badge" style="background:#ff4d4d; color:white; font-size:0.75rem; padding:2px 6px;"><i class="fab fa-youtube"></i> Video Stream</span>` 
+            : `<span class="badge" style="background:#007bff; color:white; font-size:0.75rem; padding:2px 6px;"><i class="fas fa-image"></i> Local Asset</span>`;
+
+        html += `
+        <tr>
+            <td>
+                <strong>${p.title || 'Untitled Project'}</strong>
+                <div style="font-size:0.8rem; color:#666; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.description || 'No description provided.'}</div>
+            </td>
+            <td>
+                <div style="margin-bottom: 4px; font-weight:600;">${p.category || 'General'}</div>
+                ${displayTypeBadge}
+            </td>
+            <td><a href="${p.link}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem; text-decoration:underline; word-break:break-all;">${p.link}</a></td>
+            <td style="text-align:right">
+                <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})" style="padding: 5px 10px; background:#dc3545; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+}
+
 async function deletePortfolio(id) {
-    if (!confirm('Delete item?')) return;
+    if (!confirm('Are you sure you want to permanently remove this portfolio item?')) return;
     try {
         await safeFetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-        showToast('🗑 Deleted', 'success');
+        showToast('🗑 Portfolio entry removed successfully', 'success');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
 
+// ================= FORM POPULATIONS & POPUPS =================
 function populateCategoryDropdowns() {
     document.querySelectorAll('[id$="Category"]').forEach(select => {
-        if (select.tagName !== 'SELECT') return; // Skips text inputs
+        if (select.tagName !== 'SELECT' || select.id === 'portfolioCategory') return; 
         const current = select.value;
         select.innerHTML = '<option value="">Select category parent</option>';
         mainServices.forEach(s => {
