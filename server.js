@@ -249,6 +249,42 @@ app.delete('/api/portfolio/:id', async (req, res) => {
     }
 });
 
+app.get('/api/sub-services/:route', async (req, res) => {
+    try {
+
+        const { route } = req.params;
+
+        const serviceResult = await pool.query(
+            `SELECT id
+             FROM services
+             WHERE page_route = $1`,
+            [route]
+        );
+
+        if (serviceResult.rows.length === 0) {
+            return res.json([]);
+        }
+
+        const serviceId = serviceResult.rows[0].id;
+
+        const subResult = await pool.query(
+            `SELECT *
+             FROM sub_services
+             WHERE service_id = $1
+             ORDER BY price ASC`,
+            [serviceId]
+        );
+
+        res.json(subResult.rows);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: 'Failed loading sub services'
+        });
+    }
+});
+
 // ==========================================
 // 6. SYSTEM INSTANTIATION INITIALIZER
 // ==========================================
