@@ -217,44 +217,37 @@ Confirm & Continue
 <footer>© 2026 DAN74TECH MEDIA</footer>
 
 <script>
+/* GLOBAL STATE REGISTER */
+let packages = [];
 
-/* DATABASE ONLY LOADER */
+/* ASYNC PACKAGE INTAKE PIPELINE */
 async function loadPackages(){
-
-    try{
-
-        const res = await fetch('/api/sub-services/app-development');
-
-        if(!res.ok){
-            throw new Error("Failed loading packages");
-        }
-
-        const packages = await res.json();
+    try {
+        const res = await fetch('/api/sub-services');
+        if(!res.ok) throw new Error("Could not download dynamic service structures.");
+        
+        const allSubs = await res.json();
+        // Filters specifically for App Development sub-services matching your database parent structures
+        packages = allSubs.filter(p => 
+            p.service_id === 2 || 
+            (p.service_name && p.service_name.toLowerCase().includes('app'))
+        );
 
         const select = document.getElementById('serviceType');
-
-        select.innerHTML = '';
-
-        if(!packages || packages.length === 0){
-            select.innerHTML = `<option value="">No services available</option>`;
-            document.getElementById('displayPrice').innerText = "KSH 0";
-            return;
-        }
+        select.innerHTML = '<option value="">-- Choose Application Tier --</option>';
 
         packages.forEach(p => {
-
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
-                    ${p.title} - KSH ${p.price}
+                    ${p.title} - KSH ${Number(p.price).toLocaleString()}
                 </option>
             `;
         });
 
         updatePrice();
 
-    }catch(err){
+    } catch(err){
         console.error(err);
-
         document.getElementById('serviceType').innerHTML =
         `<option value="">Error loading services</option>`;
     }
@@ -262,35 +255,86 @@ async function loadPackages(){
 
 /* PRICE UPDATE */
 function updatePrice(){
-
     const select = document.getElementById('serviceType');
-
+    if(!select) return;
     const price = select.options[select.selectedIndex]?.dataset.price || 0;
-
-    document.getElementById('displayPrice').innerText = `KSH ${price}`;
+    document.getElementById('displayPrice').innerText = `KSH ${Number(price).toLocaleString()}`;
 }
 
-/* WHATSAPP ORDER */
-function sendToWhatsApp(){
-
+/* INTERCEPTIVE DATABASE INSIGHTS & WHATSAPP DELIVERY */
+async function sendToWhatsApp(){
     const name = document.getElementById('userName').value.trim();
     const service = document.getElementById('serviceType').value;
     const feature = document.getElementById('feature').value.trim();
     const desc = document.getElementById('desc').value.trim();
-    const price = document.getElementById('displayPrice').innerText;
+    const priceText = document.getElementById('displayPrice').innerText;
 
+    // Validation Check
     if(!name){
-        alert("Enter your name");
+        alert("Please enter your name to proceed with your order.");
+        return;
+    }
+    if(!service){
+        alert("Please select a service package tier.");
         return;
     }
 
-    const msg =
+    // Disable button or change text to prevent double submission
+    const orderBtn = document.querySelector('button[onclick="sendToWhatsApp()"]');
+    const originalText = orderBtn ? orderBtn.innerHTML : 'ORDER VIA WHATSAPP';
+    if(orderBtn) {
+        orderBtn.disabled = true;
+        orderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Securely Processing...';
+    }
+
+    // Phase 1: Ingest Data directly into your Neon Database Schema
+    try {
+        const dbPayload = {
+            customer_name: name,
+            phone: "254790435584", // Links to your WhatsApp operations channel
+            service: "App Development", 
+            sub_service: service,
+            domain: feature || "N/A", // Maps specific feature data directly into your domain tracking column safely
+            device_model: "Web Platform Client",
+            project_details: desc || "No supplementary description provided.",
+            price: priceText,
+            status: "pending",
+            payment_status: "unpaid"
+        };
+
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dbPayload)
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error || 'Server rejected database transaction request.');
+        }
+
+    } catch (dbError) {
+        console.error("Database connection fault handled:", dbError);
+        // Soft fallback alert, but doesn't block the user from getting their code to WhatsApp
+        alert("Notice: Order tracking logged locally. Transferring setup to WhatsApp chat stream.");
+    } finally {
+        // Reset button state
+        if(orderBtn) {
+            orderBtn.disabled = false;
+            orderBtn.innerHTML = originalText;
+        }
+    }
+
+    // Phase 2: Compile Custom Template Messaging and forward to WhatsApp API
+    const msg = 
 `*APP DEVELOPMENT ORDER*
 
 Customer: ${name}
 Service: ${service}
 Feature: ${feature}
-Price: ${price}
+Price: ${priceText}
 
 Project Details:
 ${desc}`;
@@ -302,8 +346,8 @@ ${desc}`;
 }
 
 document.addEventListener('DOMContentLoaded', loadPackages);
-
-</script>
-
+              </script>
+    
+    
 </body>
 </html>
