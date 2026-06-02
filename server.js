@@ -90,58 +90,6 @@ app.delete('/api/services/:id', async (req, res) => {
     }
 });
 
-// ================= SUB SERVICES (PACKAGES) =================
-app.get('/api/sub-services', async (req, res) => {
-    try {
-        const queryText = `
-            SELECT sub_services.*, services.name AS category_name 
-            FROM sub_services 
-            JOIN services ON sub_services.service_id = services.id 
-            ORDER BY sub_services.id DESC`;
-        const data = await pool.query(queryText);
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/sub-services', async (req, res) => {
-    try {
-        const { service_id, title, description, price } = req.body;
-        const result = await pool.query(
-            `INSERT INTO sub_services (service_id, title, description, price) 
-             VALUES ($1, $2, $3, $4) RETURNING *`,
-            [service_id, title, description, price]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/sub-services/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { service_id, title, description, price } = req.body;
-        const result = await pool.query(
-            `UPDATE sub_services SET service_id = $1, title = $2, description = $3, price = $4 
-             WHERE id = $5 RETURNING *`,
-            [service_id, title, description, price, id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/sub-services/:id', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM sub_services WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
 // ================= PORTFOLIO (PICTURE UPLOADS INTACT) =================
 app.get('/api/portfolio', async (req, res) => {
@@ -184,8 +132,21 @@ app.delete('/api/portfolio/:id', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server fully operational on port ${PORT}`);
+// ================= SUB SERVICES (PACKAGES) =================
+app.get('/api/sub-services', async (req, res) => {
+    try {
+        const queryText = `
+            SELECT sub_services.*, services.name AS category_name
+            FROM sub_services
+            JOIN services ON sub_services.service_id = services.id
+            ORDER BY sub_services.id DESC`;
+
+        const data = await pool.query(queryText);
+        res.json(data.rows);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.get('/api/sub-services/:serviceName', async (req, res) => {
@@ -201,12 +162,16 @@ app.get('/api/sub-services/:serviceName', async (req, res) => {
             JOIN services s ON ss.service_id = s.id
             WHERE LOWER(s.name) = $1
             ORDER BY ss.id ASC
-        `,[serviceName]);
+        `, [serviceName]);
 
         res.json(result.rows);
 
-    } catch(err){
+    } catch (err) {
         console.error(err);
-        res.status(500).json({error: err.message});
+        res.status(500).json({ error: err.message });
+
+        app.listen(PORT, () => {
+    console.log(`🚀 Server fully operational on port ${PORT}`);
+});
     }
 });
