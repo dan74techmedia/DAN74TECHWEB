@@ -71,6 +71,7 @@ nav a{
     gap:20px;
 }
 
+/* CARD */
 .card{
     background:#f9f9f9;
     padding:20px;
@@ -114,15 +115,16 @@ button{
     width:100%;
     padding:15px;
     border:none;
-    background:var(--success);
+    background:var(--primary-blue);
     color:white;
     border-radius:30px;
     font-weight:bold;
     cursor:pointer;
+    transition:0.3s;
 }
 
 button:hover{
-    background:#1b5e20;
+    background:#ff2a2a;
 }
 
 /* FOOTER */
@@ -135,6 +137,7 @@ footer{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -154,28 +157,29 @@ footer{
 <div class="container">
 
 <h2 style="text-align:center;color:var(--primary-blue);">
-Custom Android & Web Applications
+Custom Android & Web Application Development
 </h2>
 
 <div class="grid">
 
     <div class="card">
         <h3>Android App</h3>
-        <p>Native mobile applications (Java/Kotlin, QR systems, offline DB)</p>
+        <p>Native mobile apps (Java/Kotlin, offline DB, QR systems)</p>
     </div>
 
     <div class="card">
         <h3>Web App (PWA)</h3>
-        <p>Full dashboard systems with online/offline functionality</p>
+        <p>Progressive web apps with dashboards & automation systems</p>
     </div>
 
     <div class="card">
         <h3>Hybrid System</h3>
-        <p>Combined Android + Web platform with admin control panel</p>
+        <p>Android + Web integrated systems with admin panels</p>
     </div>
 
 </div>
 
+<!-- FORM -->
 <div class="form-box">
 
 <h3>Order App Development Service</h3>
@@ -183,14 +187,14 @@ Custom Android & Web Applications
 <label>Full Name</label>
 <input id="userName" type="text">
 
-<label>Select Package</label>
+<label>Select Service</label>
 <select id="serviceType" onchange="updatePrice()"></select>
 
 <label>Core Feature</label>
-<input id="feature" placeholder="e.g. QR scanning, booking system, payments">
+<input id="feature" type="text" placeholder="e.g. QR scanning, payments, booking system">
 
 <label>Project Description</label>
-<textarea id="desc"></textarea>
+<textarea id="desc" rows="4"></textarea>
 
 <div class="mpesa">
 
@@ -214,14 +218,16 @@ Confirm & Continue
 
 <script>
 
-/* LOAD PACKAGES FROM SAME API STYLE */
+/* DATABASE ONLY LOADER */
 async function loadPackages(){
 
     try{
 
         const res = await fetch('/api/sub-services/app-development');
 
-        if(!res.ok) throw new Error("API failed");
+        if(!res.ok){
+            throw new Error("Failed loading packages");
+        }
 
         const packages = await res.json();
 
@@ -230,12 +236,13 @@ async function loadPackages(){
         select.innerHTML = '';
 
         if(!packages || packages.length === 0){
-            select.innerHTML = `<option value="Basic App" data-price="5000">Basic App - KSH 5000</option>`;
-            updatePrice();
+            select.innerHTML = `<option value="">No services available</option>`;
+            document.getElementById('displayPrice').innerText = "KSH 0";
             return;
         }
 
-        packages.forEach(p=>{
+        packages.forEach(p => {
+
             select.innerHTML += `
                 <option value="${p.title}" data-price="${p.price}">
                     ${p.title} - KSH ${p.price}
@@ -246,13 +253,10 @@ async function loadPackages(){
         updatePrice();
 
     }catch(err){
-
         console.error(err);
 
         document.getElementById('serviceType').innerHTML =
-        `<option value="Basic App" data-price="5000">Basic App - KSH 5000</option>`;
-
-        updatePrice();
+        `<option value="">Error loading services</option>`;
     }
 }
 
@@ -266,7 +270,7 @@ function updatePrice(){
     document.getElementById('displayPrice').innerText = `KSH ${price}`;
 }
 
-/* WHATSAPP SENDER */
+/* WHATSAPP ORDER */
 function sendToWhatsApp(){
 
     const name = document.getElementById('userName').value.trim();
@@ -276,7 +280,7 @@ function sendToWhatsApp(){
     const price = document.getElementById('displayPrice').innerText;
 
     if(!name){
-        alert("Please enter your name");
+        alert("Enter your name");
         return;
     }
 
@@ -288,7 +292,7 @@ Service: ${service}
 Feature: ${feature}
 Price: ${price}
 
-Project Description:
+Project Details:
 ${desc}`;
 
     window.open(
