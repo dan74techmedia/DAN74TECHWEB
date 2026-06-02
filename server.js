@@ -191,21 +191,9 @@ app.listen(PORT, () => {
 app.get('/api/sub-services/:serviceName', async (req, res) => {
     try {
 
-        const serviceMap = {
-            graphics: 'GRAPHIC DESIGN',
-            web: 'Web Development',
-            app: 'App Development',
-            advice: 'ICT Consultancy',
-            repair: 'Tech Repairs',
-            video: 'Video Production',
-            cyber: 'Cyber Cafe Services'
-        };
-
-        const serviceName = serviceMap[req.params.serviceName];
-
-        if (!serviceName) {
-            return res.json([]);
-        }
+        const formattedName = req.params.serviceName
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
 
         const query = `
             SELECT ss.*
@@ -215,7 +203,7 @@ app.get('/api/sub-services/:serviceName', async (req, res) => {
             ORDER BY ss.id ASC
         `;
 
-        const result = await pool.query(query, [serviceName]);
+        const result = await pool.query(query, [formattedName]);
 
         res.json(result.rows);
 
