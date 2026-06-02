@@ -470,8 +470,12 @@
             }
 
 container.innerHTML = mainCategories.map(cat => {
+    const generatedRoute = cat.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-');
+
     return `
-        <a href="${cat.route}" class="card-link">
+        <a href="${generatedRoute}.html" class="card-link">
             <div class="service-card">
                 <div class="icon-wrapper">${cat.icon || '💻'}</div>
                 <h3>${cat.name}</h3>
@@ -484,7 +488,6 @@ container.innerHTML = mainCategories.map(cat => {
         </a>
     `;
 }).join('');
-
             
             
         } catch (error) {
