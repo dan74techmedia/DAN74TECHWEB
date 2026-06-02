@@ -187,3 +187,40 @@ app.delete('/api/portfolio/:id', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server fully operational on port ${PORT}`);
 });
+
+app.get('/api/sub-services/:serviceName', async (req, res) => {
+    try {
+
+        const serviceMap = {
+            graphics: 'GRAPHIC DESIGN',
+            web: 'Web Development',
+            app: 'App Development',
+            advice: 'ICT Consultancy',
+            repair: 'Tech Repairs',
+            video: 'Video Production',
+            cyber: 'Cyber Cafe Services'
+        };
+
+        const serviceName = serviceMap[req.params.serviceName];
+
+        if (!serviceName) {
+            return res.json([]);
+        }
+
+        const query = `
+            SELECT ss.*
+            FROM sub_services ss
+            JOIN services s ON ss.service_id = s.id
+            WHERE LOWER(s.name) = LOWER($1)
+            ORDER BY ss.id ASC
+        `;
+
+        const result = await pool.query(query, [serviceName]);
+
+        res.json(result.rows);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
