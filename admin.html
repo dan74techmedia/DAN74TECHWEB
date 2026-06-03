@@ -195,8 +195,8 @@
 
         .tab-btn {
             flex: 1;
-            min-width: 130px;
-            padding: 16px 20px;
+            min-width: 140px;
+            padding: 16px 12px;
             background: transparent;
             border: none;
             color: var(--text-gray);
@@ -205,7 +205,8 @@
             transition: all 0.3s;
             text-transform: uppercase;
             border-bottom: 3px solid transparent;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            text-align: center;
         }
 
         .tab-btn:hover {
@@ -429,16 +430,13 @@
             border: 1px solid var(--primary-blue);
         }
         
-        .badge.video {
-            background: rgba(255, 42, 42, 0.1);
-            color: var(--accent-red);
-            border-color: var(--accent-red);
-        }
-        
+        .badge.video { background: rgba(255, 42, 42, 0.1); color: var(--accent-red); border-color: var(--accent-red); }
         .badge.status-pending { background: #fff3cd; color: #856404; border-color: #ffeeba; }
         .badge.status-completed { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .badge.payment-paid { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .badge.payment-unpaid { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .badge.approved { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .badge.pending { background: #fff3cd; color: #856404; border-color: #ffeeba; }
 
         .action-buttons {
             display: flex;
@@ -464,6 +462,36 @@
 
         .btn-delete { background: rgba(255, 42, 42, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .btn-delete:hover { background: rgba(255, 42, 42, 0.25); transform: scale(1.05); }
+
+        /* Media grid */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .media-card {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .media-card:hover { border-color: var(--accent-yellow); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .media-preview { width: 100%; height: 140px; background: #eaedf2; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .media-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .media-preview i { font-size: 3rem; color: var(--text-gray); }
+        .media-info { padding: 12px; }
+        .media-info h5 { font-size: 0.85rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Reports grid */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
 
         /* ==================== TOAST ==================== */
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 500px; }
@@ -621,8 +649,15 @@
         <button class="tab-btn" onclick="switchTab('services')"><i class="fas fa-cogs"></i> Services</button>
         <button class="tab-btn" onclick="switchTab('packages')"><i class="fas fa-box"></i> Packages</button>
         <button class="tab-btn" onclick="switchTab('portfolio')"><i class="fas fa-images"></i> Portfolio</button>
-        <button class="tab-btn" onclick="switchTab('orders-feed')"><i class="fas fa-receipt"></i> Orders & Feed</button>
-        <button class="tab-btn" onclick="switchTab('manage')"><i class="fas fa-th-list"></i> Manage All</button>
+        <button class="tab-btn" onclick="switchTab('blog')"><i class="fas fa-blog"></i> Blog</button>
+        <button class="tab-btn" onclick="switchTab('testimonials')"><i class="fas fa-comment-dots"></i> Reviews</button>
+        <button class="tab-btn" onclick="switchTab('newsletter')"><i class="fas fa-newspaper"></i> Marketing</button>
+        <button class="tab-btn" onclick="switchTab('media')"><i class="fas fa-photo-film"></i> Media</button>
+        <button class="tab-btn" onclick="switchTab('consultations')"><i class="fas fa-calendar-check"></i> Bookings</button>
+        <button class="tab-btn" onclick="switchTab('orders-feed')"><i class="fas fa-receipt"></i> Intake Feed</button>
+        <button class="tab-btn" onclick="switchTab('users')"><i class="fas fa-users-cog"></i> Users</button>
+        <button class="tab-btn" onclick="switchTab('reports')"><i class="fas fa-chart-pie"></i> Metrics</button>
+        <button class="tab-btn" onclick="switchTab('manage')"><i class="fas fa-th-list"></i> Sync Grid</button>
     </div>
 
     <div class="dashboard-container">
@@ -659,6 +694,10 @@
                     <li>Showcase Media Nodes: <strong id="dashPortfolioCount">0</strong></li>
                     <li>Client Orders Tracked: <strong id="dashOrdersCount">0</strong></li>
                     <li>Client Feedback Messages: <strong id="dashMessagesCount">0</strong></li>
+                    <li>Published Tech Tips / Blogs: <strong id="dashBlogCount">0</strong></li>
+                    <li>System Verified Testimonials: <strong id="dashTestimonialCount">0</strong></li>
+                    <li>Active Newsletter Subscribers: <strong id="dashSubscriberCount">0</strong></li>
+                    <li>Consultations Scheduled: <strong id="dashConsultationCount">0</strong></li>
                 </ul>
             </div>
         </div>
@@ -815,7 +854,7 @@
             <div class="table-section">
                 <div class="table-header">
                     <h3><i class="fas fa-photo-film"></i> Visual Presentation Index</h3>
-                    <span style="font-size: 0.9rem; color: var(--text-gray);"><i class="fas fa-database"></i> <span id="portfolioCount">0</span> metrics live</span>
+                    <span style="font-size: 0.9rem; color: var(--text-gray);"><i class="fas fa-database"></i> <span id="portfolioCount">0</span> items live</span>
                 </div>
                 <div class="table-wrapper">
                     <table id="portfolioTable">
@@ -825,6 +864,200 @@
                                 <th>Category</th>
                                 <th>Type</th>
                                 <th>Storage Target Path</th>
+                                <th style="text-align: right;">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="blog" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-blog"></i> Publish New Blog / Tech Article</h2>
+                <form id="blogForm" onsubmit="handleAddBlog(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Article Title</label>
+                            <input type="text" id="blogTitle" class="form-control" placeholder="e.g., Why Cybersecurity Matters for Small Businesses" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Blog Category</label>
+                            <input type="text" id="blogCategoryInput" class="form-control" placeholder="e.g., Tech Tips, Security" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Author Node</label>
+                            <input type="text" id="blogAuthor" class="form-control" value="DAN74TECH Admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Featured Cover Image Link</label>
+                            <input type="text" id="blogImage" class="form-control" placeholder="https://cloudinary.com/...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Brief Abstract / Summary</label>
+                        <input type="text" id="blogSummary" class="form-control" placeholder="Short description for SEO architecture snippets..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Post Body Content (Quill Engine Editor Compatible Layout)</label>
+                        <textarea id="blogContent" class="form-control" style="min-height: 200px;" placeholder="Write body content formatting using markup standard references..." required></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn-submit"><i class="fas fa-upload"></i> Broadcast Article</button>
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('blogForm').reset()"><i class="fas fa-times"></i> Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-file-alt"></i> Distributed Publications Registry</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table id="blogTable">
+                        <thead>
+                            <tr>
+                                <th>Title & Author</th>
+                                <th>Category</th>
+                                <th>Summary Abstract</th>
+                                <th style="text-align: right;">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="testimonials" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-comment-dots"></i> Inject Client Review / Testimonial</h2>
+                <form id="testimonialForm" onsubmit="handleAddTestimonial(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Client Identity / Corporate Name</label>
+                            <input type="text" id="testimonialName" class="form-control" placeholder="e.g., John Doe (CEO, Alpha Tech)" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Star Configuration Profile</label>
+                            <select id="testimonialRating" class="form-control" required>
+                                <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                                <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                                <option value="3">⭐⭐⭐ 3 Stars</option>
+                                <option value="2">⭐⭐ 2 Stars</option>
+                                <option value="1">⭐ 1 Star</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Review Summary Message Text</label>
+                        <textarea id="testimonialMessage" class="form-control" placeholder="Paste structural reference feedback received..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Ingest Verified Feedback</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-shield-halved"></i> Customer Review Verification Metrics</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table id="testimonialsTable">
+                        <thead>
+                            <tr>
+                                <th>Client Profile</th>
+                                <th>Rating Level</th>
+                                <th>Review Body Statement</th>
+                                <th>Approval Workflow Status</th>
+                                <th style="text-align: right;">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="newsletter" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-bullhorn"></i> Broadcast Newsletter Campaign Transmission</h2>
+                <form id="campaignForm" onsubmit="handleSendCampaign(event)">
+                    <div class="form-group">
+                        <label>Campaign Email Subject Line</label>
+                        <input type="text" id="campaignSubject" class="form-control" placeholder="e.g., Tech Alert: Essential Cybersecurity Tactics for 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Body Context</label>
+                        <textarea id="campaignBody" class="form-control" style="min-height: 200px;" placeholder="Compose digital content newsletter nodes..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Dispatch to Subscriber Cluster</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-users"></i> Synchronized Newsletter Audience Log</h3>
+                    <button class="btn-action btn-edit" onclick="exportSubscribers()"><i class="fas fa-file-export"></i> Export CSV Database</button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="subscribersTable">
+                        <thead>
+                            <tr>
+                                <th>Subscriber Email Address</th>
+                                <th>Verification Date Signature</th>
+                                <th style="text-align: right;">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="media" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-cloud-arrow-up"></i> Cloudinary Asset Management Pipeline</h2>
+                <form id="mediaLibraryForm" onsubmit="handleUploadMedia(event)">
+                    <div class="form-group">
+                        <label>File Reference Node Name</label>
+                        <input type="text" id="mediaTitle" class="form-control" placeholder="e.g., Dashboard Banner Asset" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Local Media Stream Bundle</label>
+                        <div class="file-upload">
+                            <input type="file" id="libraryFile" accept="image/*,video/*" required>
+                            <label for="libraryFile" id="libraryFileLabel"><i class="fas fa-file-lines"></i> Select Target System Element</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-cloud"></i> Push to Cloudinary Core</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-photo-film"></i> Cloud Storage Matrix Assets</h3>
+                </div>
+                <div class="media-grid" id="mediaGrid"></div>
+            </div>
+        </div>
+
+        <div id="consultations" class="tab-content">
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-calendar-days"></i> Scheduled Executive Consultation Matrix</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table id="consultationsTable">
+                        <thead>
+                            <tr>
+                                <th>Client Details</th>
+                                <th>Requested Core Expertise</th>
+                                <th>Target Date & Hour</th>
+                                <th>Conference Link Model</th>
+                                <th>Workflow Status</th>
                                 <th style="text-align: right;">Operations</th>
                             </tr>
                         </thead>
@@ -874,6 +1107,83 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="users" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-user-plus"></i> Create Admin Access Credential Node</h2>
+                <form id="userForm" onsubmit="handleAddUser(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>User Full Identity</label>
+                            <input type="text" id="userFullName" class="form-control" placeholder="e.g., David Mwangi" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Username Handle</label>
+                            <input type="text" id="userUsername" class="form-control" placeholder="e.g., dmwangi26" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Access Privilege Layer</label>
+                            <select id="userRole" class="form-control" required>
+                                <option value="Admin">Standard System Administrator</option>
+                                <option value="SuperAdmin">Root Super Administrator Node</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Login Secret Passcode</label>
+                            <input type="password" id="userPassword" class="form-control" placeholder="Assign system token..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fas fa-shield"></i> Grant Console Credentials</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-users-gear"></i> Provisioned Console Operators</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Operator Profile</th>
+                                <th>Username Handle</th>
+                                <th>Access Rights Rank</th>
+                                <th>System Vector State</th>
+                                <th style="text-align: right;">Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-chart-line"></i> Operational Business Intelligence Reports</h2>
+                <p style="color:var(--text-gray);">Live metrics calculation parsed from Neon PostgreSQL operational tables.</p>
+                
+                <div class="reports-grid">
+                    <div class="stat-card" style="border-left: 5px solid var(--primary-blue);">
+                        <h4>Gross Revenue Runrate</h4>
+                        <div class="number" id="reportRevenue">KSH 0.00</div>
+                        <p style="font-size:0.8rem; color:var(--text-gray); margin-top:5px;">Aggregated billing records status: PAID</p>
+                    </div>
+                    <div class="stat-card" style="border-left: 5px solid var(--accent-red);">
+                        <h4>Intake Conversion Density</h4>
+                        <div class="number" id="reportConversion">0.0%</div>
+                        <p style="font-size:0.8rem; color:var(--text-gray); margin-top:5px;">Order checkout ratio against incoming requests</p>
+                    </div>
+                    <div class="stat-card" style="border-left: 5px solid var(--accent-yellow);">
+                        <h4>Project Fulfillment Flow</h4>
+                        <div class="number" id="reportFulfillment">0/0</div>
+                        <p style="font-size:0.8rem; color:var(--text-gray); margin-top:5px;">Completed orders vs overall pipeline requests</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -970,22 +1280,30 @@
                 <input type="text" id="editPortfolioTitle" class="form-control" required>
             </div>
             <div class="form-group">
+                <label>Dynamic Category Association</label>
+                <select id="editPortfolioCategory" class="form-control" required></select>
+            </div>
+            <div class="form-group">
                 <label>Project Breakdown</label>
                 <textarea id="editPortfolioDesc" class="form-control" rows="3" required></textarea>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Real-Time Progress Metrics (%)</label>
-                    <input type="number" id="editPortfolioProgress" class="form-control" min="0" max="100" required>
+            <div class="form-group">
+                <label>Media Stream Configuration</label>
+                <select id="editPortfolioMediaType" class="form-control" onchange="togglePortfolioFields('edit')" required>
+                    <option value="image">Local Binary Upload (.JPG / .PNG)</option>
+                    <option value="video">External URL Route Path (YouTube / Vimeo)</option>
+                </select>
+            </div>
+            <div id="editImageUploadGroup" class="form-group" style="display:none;">
+                <label>Replace Uploaded Image Node (Optional)</label>
+                <div class="file-upload">
+                    <input type="file" id="editPortfolioImageFile" accept="image/*">
+                    <label for="editPortfolioImageFile" id="editFileLabel"><i class="fas fa-upload"></i> Change Showcase File</label>
                 </div>
-                <div class="form-group">
-                    <label>Current Status</label>
-                    <select id="editPortfolioStatus" class="form-control" required>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                        <option value="On Hold">On Hold</option>
-                    </select>
-                </div>
+            </div>
+            <div id="editVideoUrlGroup" class="form-group" style="display:none;">
+                <label>Resource Path Link / URL</label>
+                <input type="text" id="editPortfolioVideoUrl" class="form-control" placeholder="https://youtube.com/...">
             </div>
             <div class="btn-group">
                 <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Save System Entries</button>
@@ -1004,6 +1322,12 @@ let subServices = [];
 let portfolioItems = [];
 let databaseOrders = [];
 let databaseMessages = [];
+let blogPosts = [];
+let testimonials = [];
+let newsletterSubscribers = [];
+let mediaAssets = [];
+let consultationBookings = [];
+let consoleOperators = [];
 
 let editingServiceId = null;
 let editingPackageId = null;
@@ -1031,9 +1355,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const val = e.target.files[0]?.name || 'Choose Image Track';
         document.getElementById('fileLabel').innerHTML = `<i class="fas fa-file-image"></i> ${val}`;
     });
+    document.getElementById('editPortfolioImageFile')?.addEventListener('change', e => {
+        const val = e.target.files[0]?.name || 'Change Showcase File';
+        document.getElementById('editFileLabel').innerHTML = `<i class="fas fa-file-image"></i> ${val}`;
+    });
+    document.getElementById('libraryFile')?.addEventListener('change', e => {
+        const val = e.target.files[0]?.name || 'Select Target System Element';
+        document.getElementById('libraryFileLabel').innerHTML = `<i class="fas fa-photo-film"></i> ${val}`;
+    });
 });
 
-// ================= AUTH MANAGEMENT LAYER =================
+// ================= GLOBAL ROUTE COUPLER FETCH CLIENT =================
+async function safeFetch(url, options = {}) {
+    const res = await fetch(url, options);
+    let data;
+    try { data = await res.json(); } catch (e) { throw new Error("Invalid response format received from system endpoints"); }
+    if (!res.ok) throw new Error(data.error || "System logic fault handled within transaction route context");
+    return data;
+}
+
+// ================= AUTH ACCESS CONTROLLER LAYER =================
 function handleLogin(e) {
     e.preventDefault();
     if ((document.getElementById('passwordInput').value || '').trim() === 'dan74techadmin!') {
@@ -1085,15 +1426,6 @@ function togglePortfolioFields(prefix) {
     }
 }
 
-// Global Core Requester Engine
-async function safeFetch(url, options = {}) {
-    const res = await fetch(url, options);
-    let data;
-    try { data = await res.json(); } catch (e) { throw new Error("Invalid response format received from system endpoints"); }
-    if (!res.ok) throw new Error(data.error || "System logic fault handled within transaction route context");
-    return data;
-}
-
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
@@ -1102,24 +1434,23 @@ function closeModal(id) {
     if (id === 'editPortfolioModal') editingPortfolioId = null;
 }
 
-// ================= LOADING COORDINATOR MATRIX =================
+// ================= MASTER ASYNC TRANSACTION MANAGER =================
 async function loadAllData() {
     try {
         await loadMainServices();
         await loadPackages();
         await loadPortfolio();
         await loadOrdersAndMessages();
+        await loadBlogs();
+        await loadTestimonials();
+        await loadNewsletterSubscribers();
+        await loadMediaAssets();
+        await loadConsultationBookings();
+        await loadConsoleOperators();
+        
         populateCategoryDropdowns();
         updateDashboardMetrics();
     } catch (err) { showToast(err.message, 'error'); }
-}
-
-async function loadOrdersAndMessages() {
-    try {
-        databaseOrders = await safeFetch('/api/orders').catch(() => []);
-        databaseMessages = await safeFetch('/api/messages').catch(() => []);
-        renderOrdersAndMessagesUI();
-    } catch(e) { console.error("Optional reporting elements table logs context missing", e); }
 }
 
 function updateDashboardMetrics() {
@@ -1133,14 +1464,36 @@ function updateDashboardMetrics() {
     document.getElementById('dashPortfolioCount').textContent = portfolioItems.length;
     document.getElementById('dashOrdersCount').textContent = databaseOrders.length;
     document.getElementById('dashMessagesCount').textContent = databaseMessages.length;
+    document.getElementById('dashBlogCount').textContent = blogPosts.length;
+    document.getElementById('dashTestimonialCount').textContent = testimonials.length;
+    document.getElementById('dashSubscriberCount').textContent = newsletterSubscribers.length;
+    document.getElementById('dashConsultationCount').textContent = consultationBookings.length;
+
+    // Build metric report logic definitions
+    let computedRevenue = 0;
+    databaseOrders.forEach(o => {
+        if(o.payment_status === 'Paid') {
+            let numericVal = parseFloat((o.price || '').replace(/[^0-9.]/g, '')) || 0;
+            computedRevenue += numericVal;
+        }
+    });
+    document.getElementById('reportRevenue').textContent = 'KSH ' + computedRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
+    
+    let totalIntake = databaseOrders.length + databaseMessages.length;
+    let ratio = totalIntake > 0 ? ((databaseOrders.length / totalIntake) * 100).toFixed(1) : '0.0';
+    document.getElementById('reportConversion').textContent = ratio + '%';
+
+    let completed = databaseOrders.filter(o => o.status === 'Completed' || o.status === 'Delivered').length;
+    document.getElementById('reportFulfillment').textContent = `${completed}/${databaseOrders.length}`;
 }
 
 function populateCategoryDropdowns() {
     const pCat = document.getElementById('packageCategory');
     const epCat = document.getElementById('editPackageCategory');
     const pfCat = document.getElementById('portfolioCategory');
+    const epfCat = document.getElementById('editPortfolioCategory');
     
-    const elements = [pCat, epCat, pfCat];
+    const elements = [pCat, epCat, pfCat, epfCat];
     elements.forEach(el => {
         if (!el) return;
         el.innerHTML = (el === pCat || el === epCat)
@@ -1154,17 +1507,17 @@ function populateCategoryDropdowns() {
     });
 }
 
-// ================= SERVICE PILLARS CRUD RUNTIME =================
+// ================= MODULE PILLAR CRUD LOGICS =================
+
+// SERVICES
 async function loadMainServices() {
-    mainServices = await safeFetch('/api/services');
+    mainServices = await safeFetch('/api/services').catch(() => []);
     renderServicesUI();
 }
-
 function renderServicesUI() {
     const table1 = document.querySelector('#servicesTable tbody');
     const table2 = document.querySelector('#allServicesTable tbody');
     let htmlContent = '';
-    
     if (!mainServices.length) {
         htmlContent = `<tr><td colspan="4" style="text-align:center; color:var(--text-gray);">No service structural rows returned.</td></tr>`;
     } else {
@@ -1186,7 +1539,6 @@ function renderServicesUI() {
     if (table2) table2.innerHTML = htmlContent;
     document.getElementById('serviceCount').textContent = mainServices.length;
 }
-
 async function handleAddService(e) {
     e.preventDefault();
     try {
@@ -1200,7 +1552,6 @@ async function handleAddService(e) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function editService(id) {
     const matched = mainServices.find(s => s.id === id);
     if (!matched) return;
@@ -1210,7 +1561,6 @@ function editService(id) {
     document.getElementById('editServiceDesc').value = matched.description || '';
     openModal('editServiceModal');
 }
-
 async function handleUpdateService(e) {
     e.preventDefault();
     try {
@@ -1228,7 +1578,6 @@ async function handleUpdateService(e) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 async function deleteService(id) {
     if (!confirm('Execute cascade elimination? All mapped subservice options will be wiped!')) return;
     try {
@@ -1237,28 +1586,25 @@ async function deleteService(id) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function resetServiceForm() { serviceForm.reset(); }
 
-// ================= PACKAGES (SUB-SERVICES) CRUD RUNTIME =================
+// PACKAGES
 async function loadPackages() {
-    subServices = await safeFetch('/api/sub-services');
+    subServices = await safeFetch('/api/sub-services').catch(() => []);
     renderPackagesUI();
 }
-
 function renderPackagesUI() {
     const table1 = document.querySelector('#packagesTable tbody');
     const table2 = document.querySelector('#allPackagesTable tbody');
     let htmlContent = '';
-
     if (!subServices.length) {
         htmlContent = `<tr><td colspan="5" style="text-align:center; color:var(--text-gray);">No nested packages live.</td></tr>`;
     } else {
         subServices.forEach(p => {
             const parsedPrice = Number(p.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
             htmlContent += `<tr>
-                <td><span class="badge">${p.category_name || p.service_name || p.service_id || 'Pillar Link'}</span></td>
-                <td><b>${p.name || p.title}</b></td>
+                <td><span class="badge">${p.service_name || p.service_id || 'Pillar Link'}</span></td>
+                <td><b>${p.title}</b></td>
                 <td style="color:var(--primary-blue); font-weight:700;">KSH ${parsedPrice}</td>
                 <td>${p.description || ''}</td>
                 <td style="text-align:right;">
@@ -1274,7 +1620,6 @@ function renderPackagesUI() {
     if (table2) table2.innerHTML = htmlContent;
     document.getElementById('packageCount').textContent = subServices.length;
 }
-
 async function handleAddPackage(e) {
     e.preventDefault();
     try {
@@ -1283,7 +1628,7 @@ async function handleAddPackage(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: parseInt(packageCategory.value, 10),
-                name: packageName.value,
+                title: packageName.value,
                 description: packageDesc.value,
                 price: parseFloat(packagePrice.value)
             })
@@ -1293,28 +1638,25 @@ async function handleAddPackage(e) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function editPackage(id) {
     const matched = subServices.find(p => p.id === id);
     if (!matched) return;
     editingPackageId = id;
     document.getElementById('editPackageCategory').value = matched.service_id || '';
-    document.getElementById('editPackageName').value = matched.name || matched.title || '';
+    document.getElementById('editPackageName').value = matched.title || '';
     document.getElementById('editPackagePrice').value = matched.price || 0;
     document.getElementById('editPackageDesc').value = matched.description || '';
     openModal('editPackageModal');
 }
-
 async function handleUpdatePackage(e) {
     e.preventDefault();
     try {
-        // Fallback or explicit warning handling since PUT /api/sub-services route execution relies on schema structural controls
         await safeFetch(`/api/sub-services/${editingPackageId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: parseInt(document.getElementById('editPackageCategory').value, 10),
-                name: document.getElementById('editPackageName').value,
+                title: document.getElementById('editPackageName').value,
                 price: parseFloat(document.getElementById('editPackagePrice').value),
                 description: document.getElementById('editPackageDesc').value
             })
@@ -1322,11 +1664,8 @@ async function handleUpdatePackage(e) {
         showToast('✅ Sub-service structure corrections saved.', 'success');
         closeModal('editPackageModal');
         await loadAllData();
-    } catch (err) { 
-        showToast('Backend update logic sync failure: ' + err.message, 'error'); 
-    }
+    } catch (err) { showToast(err.message, 'error'); }
 }
-
 async function deletePackage(id) {
     if (!confirm('Delete selected sub-service contract package?')) return;
     try {
@@ -1335,76 +1674,53 @@ async function deletePackage(id) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function resetPackageForm() { packageForm.reset(); }
 
-// ================= PORTFOLIO SEAMLESS MANAGEMENT DRIVERS =================
+// PORTFOLIO
 async function loadPortfolio() {
-    portfolioItems = await safeFetch('/api/portfolio');
+    portfolioItems = await safeFetch('/api/portfolio').catch(() => []);
     renderPortfolioUI();
 }
-
 function renderPortfolioUI() {
     const table1 = document.querySelector('#portfolioTable tbody');
     const table2 = document.querySelector('#allPortfolioTable tbody');
     let htmlMain = '';
-    let htmlManage = '';
-
     if (!portfolioItems.length) {
-        const fallback = `<tr><td colspan="5" style="text-align:center; color:var(--text-gray);">No visual assets returned inside presentation layer logic.</td></tr>`;
-        htmlMain = fallback;
-        htmlManage = fallback;
+        htmlMain = `<tr><td colspan="5" style="text-align:center; color:var(--text-gray);">No visual assets returned inside presentation layer logic.</td></tr>`;
     } else {
         portfolioItems.forEach(p => {
             const truncDesc = (p.description || '').substring(0, 50) + ((p.description || '').length > 50 ? '...' : '');
-            
-            // Infer type safely from URL path string context properties
-            const isVideoUrl = p.link && (p.link.includes('youtube.com') || p.link.includes('youtu.be') || p.link.includes('vimeo.com') || !p.link.includes('/uploads/'));
-            const mediaLabel = isVideoUrl ? 'video' : 'image';
-            const badgeClass = isVideoUrl ? 'badge video' : 'badge image';
-            
-            const tableRowTemplate = `
-            <tr>
-                <td>
-                    <div><strong>${p.title}</strong><br>
-                    <small style="color:var(--text-gray);">${truncDesc}</small><br>
-                    <small class="badge" style="margin-top:4px;">Progress: ${p.progress || 0}% (${p.status || 'In Progress'})</small>
-                    </div>
-                </td>
+            const badgeClass = p.media_type === 'video' ? 'badge video' : 'badge image';
+            htmlMain += `<tr>
+                <td><div><strong>${p.title}</strong><br><small style="color:var(--text-gray);">${truncDesc}</small></div></td>
                 <td><span class="badge">${p.category}</span></td>
-                <td><span class="${badgeClass}">${mediaLabel}</span></td>
+                <td><span class="${badgeClass}">${p.media_type}</span></td>
                 <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     <a href="${p.link}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem;">${p.link || '#'}</a>
                 </td>
                 <td style="text-align:right;">
                     <div class="action-buttons" style="justify-content: flex-end;">
-                        <button class="btn-action btn-edit" onclick="editPortfolio(${p.id})"><i class="fas fa-edit"></i> Metrics</button>
+                        <button class="btn-action btn-edit" onclick="editPortfolio(${p.id})"><i class="fas fa-edit"></i> Edit</button>
                         <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </td>
             </tr>`;
-            htmlMain += tableRowTemplate;
-            htmlManage += tableRowTemplate;
         });
     }
-
     if (table1) table1.innerHTML = htmlMain;
-    if (table2) table2.innerHTML = htmlManage;
+    if (table2) table2.innerHTML = htmlMain;
     document.querySelectorAll('#portfolioCount').forEach(el => el.textContent = portfolioItems.length);
 }
-
 async function handleAddPortfolio(e) {
     e.preventDefault();
     try {
         const mType = document.getElementById('portfolioMediaType').value;
         if (!mType) { showToast('Please establish a valid media source model pathway.', 'error'); return; }
-
         const formData = new FormData();
         formData.append('title', document.getElementById('portfolioTitle').value);
         formData.append('category', document.getElementById('portfolioCategory').value);
         formData.append('description', document.getElementById('portfolioDesc').value);
-        formData.append('progress', 0);
-        formData.append('status', 'In Progress');
+        formData.append('media_type', mType);
 
         if (mType === 'image') {
             const fileField = document.getElementById('portfolioImageFile');
@@ -1417,47 +1733,53 @@ async function handleAddPortfolio(e) {
         const res = await fetch('/api/portfolio', { method: 'POST', body: formData });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'The binary multi-part upload bundle was rejected by the server.');
-
         showToast('🚀 Project sample securely uploaded and stored!', 'success');
         resetPortfolioForm();
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function editPortfolio(id) {
     const item = portfolioItems.find(p => p.id === id);
     if (!item) return;
     editingPortfolioId = id;
-
     document.getElementById('editPortfolioTitle').value = item.title || '';
+    document.getElementById('editPortfolioCategory').value = item.category || '';
     document.getElementById('editPortfolioDesc').value = item.description || '';
-    document.getElementById('editPortfolioProgress').value = item.progress || 0;
-    document.getElementById('editPortfolioStatus').value = item.status || 'In Progress';
-
+    document.getElementById('editPortfolioMediaType').value = item.media_type || 'image';
+    togglePortfolioFields('edit');
+    if (item.media_type === 'video') {
+        document.getElementById('editPortfolioVideoUrl').value = item.link || '';
+    } else {
+        document.getElementById('editPortfolioVideoUrl').value = '';
+        document.getElementById('editFileLabel').innerHTML = `<i class="fas fa-upload"></i> Change Showcase File`;
+    }
     openModal('editPortfolioModal');
 }
-
 async function handleUpdatePortfolio(e) {
     e.preventDefault();
     try {
-        // Server implementation expects explicit standard JSON data frames for numeric visual controls updating
-        await safeFetch(`/api/portfolio/${editingPortfolioId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: document.getElementById('editPortfolioTitle').value,
-                description: document.getElementById('editPortfolioDesc').value,
-                progress: parseInt(document.getElementById('editPortfolioProgress').value, 10),
-                status: document.getElementById('editPortfolioStatus').value
-            })
-        });
+        const mType = document.getElementById('editPortfolioMediaType').value;
+        const formData = new FormData();
+        formData.append('title', document.getElementById('editPortfolioTitle').value);
+        formData.append('category', document.getElementById('editPortfolioCategory').value);
+        formData.append('description', document.getElementById('editPortfolioDesc').value);
+        formData.append('media_type', mType);
 
-        showToast('✅ Portfolio presentation metrics completely synchronized.', 'success');
+        if (mType === 'image') {
+            const fileField = document.getElementById('editPortfolioImageFile');
+            if (fileField && fileField.files[0]) formData.append('image', fileField.files[0]);
+        } else {
+            formData.append('link', document.getElementById('editPortfolioVideoUrl').value);
+        }
+
+        const res = await fetch(`/api/portfolio/${editingPortfolioId}`, { method: 'PUT', body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Multi-part modifications stream rejected by backend router.');
+        showToast('✅ Portfolio presentation records completely updated.', 'success');
         closeModal('editPortfolioModal');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 async function deletePortfolio(id) {
     if (!confirm('Wipe selected design item sample from storage registers?')) return;
     try {
@@ -1466,14 +1788,264 @@ async function deletePortfolio(id) {
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
 }
-
 function resetPortfolioForm() {
     portfolioForm.reset();
     document.getElementById('fileLabel').innerHTML = `<i class="fas fa-image"></i> Choose Image Track`;
     togglePortfolioFields('add');
 }
 
-// ================= TRANSACTION ORDER LOGS & DATA FEED READERS =================
+// BLOG PLATFORM CORE LOGIC
+async function loadBlogs() {
+    blogPosts = await safeFetch('/api/blogs').catch(() => []);
+    const tbody = document.querySelector('#blogTable tbody');
+    if(!tbody) return;
+    if(!blogPosts.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-gray);">No dynamic blog records discovered.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    blogPosts.forEach(b => {
+        tbody.innerHTML += `<tr>
+            <td><strong>${b.title}</strong><br><small style="color:var(--text-gray);">By ${b.author || 'Admin'}</small></td>
+            <td><span class="badge">${b.category || 'General'}</span></td>
+            <td><p style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0;">${b.summary || ''}</p></td>
+            <td style="text-align:right;">
+                <button class="btn-action btn-delete" onclick="deleteBlog(${b.id})"><i class="fas fa-trash"></i> Drop</button>
+            </td>
+        </tr>`;
+    });
+}
+async function handleAddBlog(e) {
+    e.preventDefault();
+    try {
+        await safeFetch('/api/blogs', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                title: document.getElementById('blogTitle').value,
+                category: document.getElementById('blogCategoryInput').value,
+                author: document.getElementById('blogAuthor').value,
+                image_url: document.getElementById('blogImage').value,
+                summary: document.getElementById('blogSummary').value,
+                content: document.getElementById('blogContent').value
+            })
+        });
+        showToast('🚀 System Blog node posted and compiled.', 'success');
+        document.getElementById('blogForm').reset();
+        await loadAllData();
+    } catch(err) { showToast(err.message, 'error'); }
+}
+async function deleteBlog(id) {
+    if(!confirm('Permanently redact article record?')) return;
+    try {
+        await safeFetch(`/api/blogs/${id}`, {method: 'DELETE'});
+        showToast('🗑 Article dropped safely.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// TESTIMONIAL SYSTEM LOGIC
+async function loadTestimonials() {
+    testimonials = await safeFetch('/api/testimonials').catch(() => []);
+    const tbody = document.querySelector('#testimonialsTable tbody');
+    if(!tbody) return;
+    if(!testimonials.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-gray);">No reviews found.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    testimonials.forEach(t => {
+        const statusClass = t.approved ? 'approved' : 'pending';
+        const actionBtn = t.approved ? '' : `<button class="btn-action btn-edit" onclick="approveTestimonial(${t.id})"><i class="fas fa-check"></i> Approve</button>`;
+        tbody.innerHTML += `<tr>
+            <td><strong>${t.name}</strong></td>
+            <td style="color:var(--accent-yellow);"><b>${'⭐'.repeat(parseInt(t.rating || 5))}</b></td>
+            <td><p style="max-width:300px; font-size:0.85rem; margin:0;">${t.message || ''}</p></td>
+            <td><span class="badge ${statusClass}">${t.approved ? 'Live' : 'Awaiting Review'}</span></td>
+            <td style="text-align:right;">
+                <div class="action-buttons" style="justify-content: flex-end;">
+                    ${actionBtn}
+                    <button class="btn-action btn-delete" onclick="deleteTestimonial(${t.id})"><i class="fas fa-trash"></i> Wipe</button>
+                </div>
+            </td>
+        </tr>`;
+    });
+}
+async function handleAddTestimonial(e) {
+    e.preventDefault();
+    try {
+        await safeFetch('/api/testimonials', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: document.getElementById('testimonialName').value,
+                rating: parseInt(document.getElementById('testimonialRating').value, 10),
+                message: document.getElementById('testimonialMessage').value
+            })
+        });
+        showToast('✅ Feedback injected successfully.', 'success');
+        document.getElementById('testimonialForm').reset();
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+async function approveTestimonial(id) {
+    try {
+        await safeFetch(`/api/testimonials/${id}/approve`, { method: 'PUT' });
+        showToast('⚡ Testimonial verified live to layout layers.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+async function deleteTestimonial(id) {
+    if(!confirm('Drop feedback database logging?')) return;
+    try {
+        await safeFetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+        showToast('🗑 Testimonial index row deleted.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// NEWSLETTER ARCHITECTURE DRIVERS
+async function loadNewsletterSubscribers() {
+    newsletterSubscribers = await safeFetch('/api/subscribers').catch(() => []);
+    const tbody = document.querySelector('#subscribersTable tbody');
+    if(!tbody) return;
+    if(!newsletterSubscribers.length) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-gray);">No subscribers active.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    newsletterSubscribers.forEach(s => {
+        tbody.innerHTML += `<tr>
+            <td><b>${s.email}</b></td>
+            <td>${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'Active Session'}</td>
+            <td style="text-align:right;"><button class="btn-action btn-delete" onclick="deleteSubscriber(${s.id})"><i class="fas fa-user-minus"></i> Remove</button></td>
+        </tr>`;
+    });
+}
+async function handleSendCampaign(e) {
+    e.preventDefault();
+    try {
+        await safeFetch('/api/newsletter/broadcast', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                subject: document.getElementById('campaignSubject').value,
+                body: document.getElementById('campaignBody').value
+            })
+        });
+        showToast('📬 Campaign broadcast processed to all dynamic subnodes!', 'success');
+        document.getElementById('campaignForm').reset();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+function exportSubscribers() {
+    if(!newsletterSubscribers.length) { showToast('No targets available to download.', 'error'); return; }
+    let csvContent = "data:text/csv;charset=utf-8,ID,Email,DateJoined\n";
+    newsletterSubscribers.forEach(s => { csvContent += `${s.id},${s.email},${s.created_at || ''}\n`; });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "dan74tech_newsletter_subscribers.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('📥 Subscriber database exported cleanly.', 'success');
+}
+async function deleteSubscriber(id) {
+    if(!confirm('Unsubscribe selected email target?')) return;
+    try {
+        await safeFetch(`/api/subscribers/${id}`, { method: 'DELETE' });
+        showToast('🗑 Subscription record terminated.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// MEDIA LIBRARY CONTROLLER
+async function loadMediaAssets() {
+    mediaAssets = await safeFetch('/api/media').catch(() => []);
+    const grid = document.getElementById('mediaGrid');
+    if(!grid) return;
+    if(!mediaAssets.length) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:var(--text-gray); padding: 40px 0;">No assets uploaded to library system infrastructure.</p>`;
+        return;
+    }
+    grid.innerHTML = '';
+    mediaAssets.forEach(m => {
+        grid.innerHTML += `<div class="media-card">
+            <div class="media-preview">
+                ${m.url.match(/\.(jpeg|jpg|gif|png)$/i) ? `<img src="${m.url}">` : `<i class="fas fa-file-video"></i>`}
+            </div>
+            <div class="media-info">
+                <h5>${m.title || 'Storage Object'}</h5>
+                <div class="action-buttons" style="margin-top: 10px;">
+                    <button class="btn-action btn-edit" style="padding: 6px 8px;" onclick="navigator.clipboard.writeText('${m.url}'); showToast('📋 URL Link Copied!','success');"><i class="fas fa-copy"></i> Link</button>
+                    <button class="btn-action btn-delete" style="padding: 6px 8px;" onclick="deleteMedia(${m.id})"><i class="fas fa-trash"></i> Wipe</button>
+                </div>
+            </div>
+        </div>`;
+    });
+}
+async function handleUploadMedia(e) {
+    e.preventDefault();
+    try {
+        const fileField = document.getElementById('libraryFile');
+        if(!fileField.files[0]) return;
+        const formData = new FormData();
+        formData.append('title', document.getElementById('mediaTitle').value);
+        formData.append('media_file', fileField.files[0]);
+
+        const res = await fetch('/api/media', { method: 'POST', body: formData });
+        if(!res.ok) throw new Error('Cloudinary stream connection handshake failed.');
+        showToast('☁ Node cleanly allocated inside cloud database vectors.', 'success');
+        document.getElementById('mediaLibraryForm').reset();
+        document.getElementById('libraryFileLabel').innerHTML = `<i class="fas fa-file-lines"></i> Select Target System Element`;
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+async function deleteMedia(id) {
+    if(!confirm('Wipe asset record out of storage?')) return;
+    try {
+        await safeFetch(`/api/media/${id}`, { method: 'DELETE' });
+        showToast('🗑 Asset node erased.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// CONSULTATION BOOKINGS MANAGEMENT
+async function loadConsultationBookings() {
+    consultationBookings = await safeFetch('/api/consultations').catch(() => []);
+    const tbody = document.querySelector('#consultationsTable tbody');
+    if(!tbody) return;
+    if(!consultationBookings.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-gray);">No custom appointments recorded inside tracking metrics.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    consultationBookings.forEach(c => {
+        tbody.innerHTML += `<tr>
+            <td><b>${c.name}</b><br><small>${c.email}<br>${c.phone}</small></td>
+            <td><span class="badge">${c.service_tier || 'General Review'}</span></td>
+            <td><b>${c.date || ''}</b><br><small>${c.time || ''}</small></td>
+            <td><a href="${c.meeting_link || '#'}" target="_blank" style="color:var(--primary-blue); font-weight:600;"><i class="fas fa-video"></i> ${c.platform || 'Google Meet'}</a></td>
+            <td><span class="badge ${c.status === 'Confirmed' ? 'approved' : 'pending'}">${c.status || 'Pending Verification'}</span></td>
+            <td style="text-align:right;"><button class="btn-action btn-delete" onclick="deleteConsultation(${c.id})"><i class="fas fa-trash"></i> Drop</button></td>
+        </tr>`;
+    });
+}
+async function deleteConsultation(id) {
+    if(!confirm('Wipe calendar meeting log slot?')) return;
+    try {
+        await safeFetch(`/api/consultations/${id}`, { method: 'DELETE' });
+        showToast('🗑 Booking slot dropped successfully.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// INTAKE CHEKOUT FEED READERS
+async function loadOrdersAndMessages() {
+    databaseOrders = await safeFetch('/api/orders').catch(() => []);
+    databaseMessages = await safeFetch('/api/messages').catch(() => []);
+    renderOrdersAndMessagesUI();
+}
 function renderOrdersAndMessagesUI() {
     const oTbody = document.querySelector('#ordersTable tbody');
     const mTbody = document.querySelector('#messagesTable tbody');
@@ -1486,7 +2058,6 @@ function renderOrdersAndMessagesUI() {
             databaseOrders.forEach(o => {
                 const statusBadge = `<span class="badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'pending'}</span>`;
                 const payBadge = `<span class="badge payment-${(o.payment_status || 'unpaid').toLowerCase()}">${o.payment_status || 'unpaid'}</span>`;
-                
                 const contextDetails = [];
                 if (o.domain) contextDetails.push(`Domain: ${o.domain}`);
                 if (o.device_model) contextDetails.push(`Device: ${o.device_model}`);
@@ -1497,7 +2068,7 @@ function renderOrdersAndMessagesUI() {
                     <td><b>#${o.id}</b></td>
                     <td><b>${o.customer_name}</b><br><a href="https://wa.me/${o.phone}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem;"><i class="fab fa-whatsapp"></i> ${o.phone}</a></td>
                     <td><span class="badge">${o.service || 'General'}</span><br><small>${o.sub_service || ''}</small></td>
-                    <td style="font-weight:700; color:var(--primary-blue); white-space:nowrap;">KSH ${Number(o.price || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td style="font-weight:700; color:var(--primary-blue); white-space:nowrap;">${o.price || 'KSH 0.00'}</td>
                     <td><p style="max-width:280px; font-size:0.85rem; color:var(--text-gray); margin:0;">${parsedContext}</p></td>
                     <td><div style="display:flex; flex-direction:column; gap:4px;">${statusBadge}${payBadge}</div></td>
                     <td style="text-align:right;"><button class="btn-action btn-delete" onclick="deleteOrder(${o.id})"><i class="fas fa-trash"></i> Drop</button></td>
@@ -1525,7 +2096,6 @@ function renderOrdersAndMessagesUI() {
         }
     }
 }
-
 async function deleteOrder(id) {
     if (!confirm('Drop selected client transaction statement from internal admin views?')) return;
     try {
@@ -1534,7 +2104,6 @@ async function deleteOrder(id) {
         await loadAllData();
     } catch(e) { showToast(e.message, 'error'); }
 }
-
 async function deleteMessage(id) {
     if (!confirm('Wipe direct contact message line from logs?')) return;
     try {
@@ -1544,19 +2113,63 @@ async function deleteMessage(id) {
     } catch(e) { showToast(e.message, 'error'); }
 }
 
-// ================= TOAST SYSTEM MESSAGES ENGINE =================
+// USER MANAGMENT INTERFACES
+async function loadConsoleOperators() {
+    consoleOperators = await safeFetch('/api/users').catch(() => []);
+    const tbody = document.querySelector('#usersTable tbody');
+    if(!tbody) return;
+    if(!consoleOperators.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-gray);">No secondary operating admin credentials found.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = '';
+    consoleOperators.forEach(u => {
+        tbody.innerHTML += `<tr>
+            <td><strong>${u.fullname}</strong></td>
+            <td><code>${u.username}</code></td>
+            <td><span class="badge">${u.role || 'Admin'}</span></td>
+            <td><span class="badge approved">Active Node</span></td>
+            <td style="text-align:right;"><button class="btn-action btn-delete" onclick="deleteUser(${u.id})"><i class="fas fa-user-xmark"></i> Revoke</button></td>
+        </tr>`;
+    });
+}
+async function handleAddUser(e) {
+    e.preventDefault();
+    try {
+        await safeFetch('/api/users', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                fullname: document.getElementById('userFullName').value,
+                username: document.getElementById('userUsername').value,
+                role: document.getElementById('userRole').value,
+                secret_token: document.getElementById('userPassword').value
+            })
+        });
+        showToast('🔒 Operator access profile generated.', 'success');
+        document.getElementById('userForm').reset();
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+async function deleteUser(id) {
+    if(!confirm('Revoke credentials entry completely?')) return;
+    try {
+        await safeFetch(`/api/users/${id}`, { method: 'DELETE' });
+        showToast('🗑 Console access cleared.', 'success');
+        await loadAllData();
+    } catch(e) { showToast(e.message, 'error'); }
+}
+
+// ================= TOAST ALERTS IMPLEMENTATION ENGINE =================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
-
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     let icon = '<i class="fas fa-check-circle" style="color:#25D366;"></i>';
     if (type === 'error') icon = '<i class="fas fa-exclamation-triangle" style="color:#ff2a2a;"></i>';
-    
     toast.innerHTML = `${icon} <span>${message}</span>`;
     container.appendChild(toast);
-
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(400px)';
