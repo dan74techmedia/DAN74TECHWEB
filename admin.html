@@ -970,30 +970,22 @@
                 <input type="text" id="editPortfolioTitle" class="form-control" required>
             </div>
             <div class="form-group">
-                <label>Dynamic Category Association</label>
-                <select id="editPortfolioCategory" class="form-control" required></select>
-            </div>
-            <div class="form-group">
                 <label>Project Breakdown</label>
                 <textarea id="editPortfolioDesc" class="form-control" rows="3" required></textarea>
             </div>
-            <div class="form-group">
-                <label>Media Stream Configuration</label>
-                <select id="editPortfolioMediaType" class="form-control" onchange="togglePortfolioFields('edit')" required>
-                    <option value="image">Local Binary Upload (.JPG / .PNG)</option>
-                    <option value="video">External URL Route Path (YouTube / Vimeo)</option>
-                </select>
-            </div>
-            <div id="editImageUploadGroup" class="form-group" style="display:none;">
-                <label>Replace Uploaded Image Node (Optional)</label>
-                <div class="file-upload">
-                    <input type="file" id="editPortfolioImageFile" accept="image/*">
-                    <label for="editPortfolioImageFile" id="editFileLabel"><i class="fas fa-upload"></i> Change Showcase File</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Real-Time Progress Metrics (%)</label>
+                    <input type="number" id="editPortfolioProgress" class="form-control" min="0" max="100" required>
                 </div>
-            </div>
-            <div id="editVideoUrlGroup" class="form-group" style="display:none;">
-                <label>Resource Path Link / URL</label>
-                <input type="text" id="editPortfolioVideoUrl" class="form-control" placeholder="https://youtube.com/...">
+                <div class="form-group">
+                    <label>Current Status</label>
+                    <select id="editPortfolioStatus" class="form-control" required>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="On Hold">On Hold</option>
+                    </select>
+                </div>
             </div>
             <div class="btn-group">
                 <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Save System Entries</button>
@@ -1038,10 +1030,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('portfolioImageFile')?.addEventListener('change', e => {
         const val = e.target.files[0]?.name || 'Choose Image Track';
         document.getElementById('fileLabel').innerHTML = `<i class="fas fa-file-image"></i> ${val}`;
-    });
-    document.getElementById('editPortfolioImageFile')?.addEventListener('change', e => {
-        const val = e.target.files[0]?.name || 'Change Showcase File';
-        document.getElementById('editFileLabel').innerHTML = `<i class="fas fa-file-image"></i> ${val}`;
     });
 });
 
@@ -1093,7 +1081,7 @@ function togglePortfolioFields(prefix) {
         videoGroup.style.display = 'block';
     } else {
         imageGroup.style.display = 'none';
-        imageGroup.style.display = 'none';
+        videoGroup.style.display = 'none';
     }
 }
 
@@ -1151,9 +1139,8 @@ function populateCategoryDropdowns() {
     const pCat = document.getElementById('packageCategory');
     const epCat = document.getElementById('editPackageCategory');
     const pfCat = document.getElementById('portfolioCategory');
-    const epfCat = document.getElementById('editPortfolioCategory');
     
-    const elements = [pCat, epCat, pfCat, epfCat];
+    const elements = [pCat, epCat, pfCat];
     elements.forEach(el => {
         if (!el) return;
         el.innerHTML = (el === pCat || el === epCat)
@@ -1270,8 +1257,8 @@ function renderPackagesUI() {
         subServices.forEach(p => {
             const parsedPrice = Number(p.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
             htmlContent += `<tr>
-                <td><span class="badge">${p.service_name || p.service_id || 'Pillar Link'}</span></td>
-                <td><b>${p.title}</b></td>
+                <td><span class="badge">${p.category_name || p.service_name || p.service_id || 'Pillar Link'}</span></td>
+                <td><b>${p.name || p.title}</b></td>
                 <td style="color:var(--primary-blue); font-weight:700;">KSH ${parsedPrice}</td>
                 <td>${p.description || ''}</td>
                 <td style="text-align:right;">
@@ -1296,7 +1283,7 @@ async function handleAddPackage(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: parseInt(packageCategory.value, 10),
-                title: packageName.value,
+                name: packageName.value,
                 description: packageDesc.value,
                 price: parseFloat(packagePrice.value)
             })
@@ -1312,7 +1299,7 @@ function editPackage(id) {
     if (!matched) return;
     editingPackageId = id;
     document.getElementById('editPackageCategory').value = matched.service_id || '';
-    document.getElementById('editPackageName').value = matched.title || '';
+    document.getElementById('editPackageName').value = matched.name || matched.title || '';
     document.getElementById('editPackagePrice').value = matched.price || 0;
     document.getElementById('editPackageDesc').value = matched.description || '';
     openModal('editPackageModal');
@@ -1321,12 +1308,13 @@ function editPackage(id) {
 async function handleUpdatePackage(e) {
     e.preventDefault();
     try {
+        // Fallback or explicit warning handling since PUT /api/sub-services route execution relies on schema structural controls
         await safeFetch(`/api/sub-services/${editingPackageId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 service_id: parseInt(document.getElementById('editPackageCategory').value, 10),
-                title: document.getElementById('editPackageName').value,
+                name: document.getElementById('editPackageName').value,
                 price: parseFloat(document.getElementById('editPackagePrice').value),
                 description: document.getElementById('editPackageDesc').value
             })
@@ -1334,7 +1322,9 @@ async function handleUpdatePackage(e) {
         showToast('✅ Sub-service structure corrections saved.', 'success');
         closeModal('editPackageModal');
         await loadAllData();
-    } catch (err) { showToast(err.message, 'error'); }
+    } catch (err) { 
+        showToast('Backend update logic sync failure: ' + err.message, 'error'); 
+    }
 }
 
 async function deletePackage(id) {
@@ -1367,19 +1357,28 @@ function renderPortfolioUI() {
     } else {
         portfolioItems.forEach(p => {
             const truncDesc = (p.description || '').substring(0, 50) + ((p.description || '').length > 50 ? '...' : '');
-            const badgeClass = p.media_type === 'video' ? 'badge video' : 'badge image';
+            
+            // Infer type safely from URL path string context properties
+            const isVideoUrl = p.link && (p.link.includes('youtube.com') || p.link.includes('youtu.be') || p.link.includes('vimeo.com') || !p.link.includes('/uploads/'));
+            const mediaLabel = isVideoUrl ? 'video' : 'image';
+            const badgeClass = isVideoUrl ? 'badge video' : 'badge image';
             
             const tableRowTemplate = `
             <tr>
-                <td><div><strong>${p.title}</strong><br><small style="color:var(--text-gray);">${truncDesc}</small></div></td>
+                <td>
+                    <div><strong>${p.title}</strong><br>
+                    <small style="color:var(--text-gray);">${truncDesc}</small><br>
+                    <small class="badge" style="margin-top:4px;">Progress: ${p.progress || 0}% (${p.status || 'In Progress'})</small>
+                    </div>
+                </td>
                 <td><span class="badge">${p.category}</span></td>
-                <td><span class="${badgeClass}">${p.media_type}</span></td>
+                <td><span class="${badgeClass}">${mediaLabel}</span></td>
                 <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     <a href="${p.link}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem;">${p.link || '#'}</a>
                 </td>
                 <td style="text-align:right;">
                     <div class="action-buttons" style="justify-content: flex-end;">
-                        <button class="btn-action btn-edit" onclick="editPortfolio(${p.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn-action btn-edit" onclick="editPortfolio(${p.id})"><i class="fas fa-edit"></i> Metrics</button>
                         <button class="btn-action btn-delete" onclick="deletePortfolio(${p.id})"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </td>
@@ -1404,7 +1403,8 @@ async function handleAddPortfolio(e) {
         formData.append('title', document.getElementById('portfolioTitle').value);
         formData.append('category', document.getElementById('portfolioCategory').value);
         formData.append('description', document.getElementById('portfolioDesc').value);
-        formData.append('media_type', mType);
+        formData.append('progress', 0);
+        formData.append('status', 'In Progress');
 
         if (mType === 'image') {
             const fileField = document.getElementById('portfolioImageFile');
@@ -1430,47 +1430,29 @@ function editPortfolio(id) {
     editingPortfolioId = id;
 
     document.getElementById('editPortfolioTitle').value = item.title || '';
-    document.getElementById('editPortfolioCategory').value = item.category || '';
     document.getElementById('editPortfolioDesc').value = item.description || '';
-    document.getElementById('editPortfolioMediaType').value = item.media_type || 'image';
+    document.getElementById('editPortfolioProgress').value = item.progress || 0;
+    document.getElementById('editPortfolioStatus').value = item.status || 'In Progress';
 
-    togglePortfolioFields('edit');
-
-    if (item.media_type === 'video') {
-        document.getElementById('editPortfolioVideoUrl').value = item.link || '';
-    } else {
-        document.getElementById('editPortfolioVideoUrl').value = '';
-        document.getElementById('editFileLabel').innerHTML = `<i class="fas fa-upload"></i> Change Showcase File`;
-    }
     openModal('editPortfolioModal');
 }
 
 async function handleUpdatePortfolio(e) {
     e.preventDefault();
     try {
-        const mType = document.getElementById('editPortfolioMediaType').value;
-        const formData = new FormData();
-        
-        formData.append('title', document.getElementById('editPortfolioTitle').value);
-        formData.append('category', document.getElementById('editPortfolioCategory').value);
-        formData.append('description', document.getElementById('editPortfolioDesc').value);
-        formData.append('media_type', mType);
-
-        if (mType === 'image') {
-            const fileField = document.getElementById('editPortfolioImageFile');
-            if (fileField && fileField.files[0]) formData.append('image', fileField.files[0]);
-        } else {
-            formData.append('link', document.getElementById('editPortfolioVideoUrl').value);
-        }
-
-        const res = await fetch(`/api/portfolio/${editingPortfolioId}`, {
+        // Server implementation expects explicit standard JSON data frames for numeric visual controls updating
+        await safeFetch(`/api/portfolio/${editingPortfolioId}`, {
             method: 'PUT',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: document.getElementById('editPortfolioTitle').value,
+                description: document.getElementById('editPortfolioDesc').value,
+                progress: parseInt(document.getElementById('editPortfolioProgress').value, 10),
+                status: document.getElementById('editPortfolioStatus').value
+            })
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Multi-part modifications stream rejected by backend router.');
 
-        showToast('✅ Portfolio presentation records completely updated.', 'success');
+        showToast('✅ Portfolio presentation metrics completely synchronized.', 'success');
         closeModal('editPortfolioModal');
         await loadAllData();
     } catch (err) { showToast(err.message, 'error'); }
@@ -1505,7 +1487,6 @@ function renderOrdersAndMessagesUI() {
                 const statusBadge = `<span class="badge status-${(o.status || 'pending').toLowerCase()}">${o.status || 'pending'}</span>`;
                 const payBadge = `<span class="badge payment-${(o.payment_status || 'unpaid').toLowerCase()}">${o.payment_status || 'unpaid'}</span>`;
                 
-                // Parse optional values cleanly based on database structure
                 const contextDetails = [];
                 if (o.domain) contextDetails.push(`Domain: ${o.domain}`);
                 if (o.device_model) contextDetails.push(`Device: ${o.device_model}`);
@@ -1516,7 +1497,7 @@ function renderOrdersAndMessagesUI() {
                     <td><b>#${o.id}</b></td>
                     <td><b>${o.customer_name}</b><br><a href="https://wa.me/${o.phone}" target="_blank" style="color:var(--primary-blue); font-size:0.85rem;"><i class="fab fa-whatsapp"></i> ${o.phone}</a></td>
                     <td><span class="badge">${o.service || 'General'}</span><br><small>${o.sub_service || ''}</small></td>
-                    <td style="font-weight:700; color:var(--primary-blue); white-space:nowrap;">${o.price || 'KSH 0.00'}</td>
+                    <td style="font-weight:700; color:var(--primary-blue); white-space:nowrap;">KSH ${Number(o.price || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                     <td><p style="max-width:280px; font-size:0.85rem; color:var(--text-gray); margin:0;">${parsedContext}</p></td>
                     <td><div style="display:flex; flex-direction:column; gap:4px;">${statusBadge}${payBadge}</div></td>
                     <td style="text-align:right;"><button class="btn-action btn-delete" onclick="deleteOrder(${o.id})"><i class="fas fa-trash"></i> Drop</button></td>
