@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | OFFICIAL</title>
+    <title>DAN74TECH MEDIA | Official Unified Platform</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Official Theme Palette from Admin */
+            /* Official Unified Theme Palette Matching Administrative Infrastructure */
             --primary-blue: #0044ff;
             --deep-blue: #0022aa;
-            --accent-yellow: #ffd700;
+            --accent-yellow: #ffb700;
             --accent-red: #ff2a2a;
             
-            /* Backgrounds & Text */
-            --bg-light: #f5f7fa;
-            --text-dark: #1a1a1a;
-            --text-gray: #555555;
-            --card-bg: #ffffff;
-            --border-light: #e0e0e0;
+            /* High-Performance Screen Optimized Dark Theme Layout Architecture */
+            --bg-dark: #0b0f19;
+            --bg-card: #151c2c;
+            --border-color: #222f47;
+            --text-light: #f3f4f6;
+            --text-gray: #9ca3af;
         }
 
         * {
@@ -32,876 +32,1167 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.5;
-            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.4;
+            overflow-x: hidden;
         }
 
-        /* --- Header Section with Red Sparks --- */
-        header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
-            color: white;
-            padding: 50px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 4px solid var(--accent-yellow);
-        }
-
-        /* Red Sparks Animation */
-        .spark {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background-color: var(--accent-red);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-red), 0 0 15px var(--accent-red);
-            animation: floatUp 4s infinite ease-in;
-            bottom: -10px;
-            opacity: 0;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-160px) scale(0); opacity: 0; }
-        }
-
-        .spark:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 3.5s; }
-        .spark:nth-child(2) { left: 30%; animation-delay: 1.2s; animation-duration: 4s; }
-        .spark:nth-child(3) { left: 50%; animation-delay: 0.5s; animation-duration: 3s; }
-        .spark:nth-child(4) { left: 70%; animation-delay: 2.5s; animation-duration: 4.5s; }
-        .spark:nth-child(5) { left: 85%; animation-delay: 0.8s; animation-duration: 3.2s; }
-        .spark:nth-child(6) { left: 10%; animation-delay: 1.8s; animation-duration: 5s; }
-        .spark:nth-child(7) { left: 90%; animation-delay: 0.3s; animation-duration: 3.8s; }
-
-        .logo {
-            width: 95px;
-            height: auto;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-
-        header h1 {
-            font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;            
-            margin: 0;
-            font-size: 2.1rem;
-            letter-spacing: 1.5px;
-            position: relative;
-            z-index: 2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px;
-        }
-
-        header p.tagline {
-            margin: 8px 0 0;
-            font-weight: 300;
-            text-transform: capitalize;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .pro-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--accent-yellow);
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 15px;
-            position: relative;
-            z-index: 2;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
-        }
-
-        /* --- Navigation --- */
-        nav {
-            background: var(--deep-blue);
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 5px 15px;
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: color 0.3s, transform 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--accent-yellow);
-            transform: translateY(-1px);
-        }
-
-        /* --- Dynamic Grid Sections --- */
-        .services-section {
-            padding: 60px 20px;
+        /* Compact Screen Layout Optimization Utility Classes */
+        .container {
+            width: 100%;
             max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            padding: 2.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 1.75rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-header h2 span {
+            color: var(--primary-blue);
+        }
+
+        .section-header p {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            max-width: 500px;
             margin: 0 auto;
         }
 
-        .services-section h2 {
+        /* Header Navigation Matrix Layout */
+        header {
+            background-color: rgba(21, 28, 44, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.5rem 0;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
             font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;
-            text-align: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
             color: var(--primary-blue);
-            margin-bottom: 8px;
-            font-size: 1.8rem;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary-blue);
+        }
+
+        .btn-portal {
+            background: linear-gradient(135deg, var(--primary-blue), #002b99);
+            color: #ffffff;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            position: relative;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .section-desc {
-            text-align: center;
-            color: var(--text-gray);
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            font-size: 0.95rem;
+        .btn-portal:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 68, 255, 0.3);
+            color: #ffffff;
         }
 
-        .services-grid {
+        /* Hero Performance Viewport Frame */
+        .hero-viewport {
+            background: radial-gradient(circle at top right, rgba(0, 68, 255, 0.12), transparent), var(--bg-dark);
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .hero-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            align-items: center;
         }
 
-        /* Card Styling aligned to Design System Standards */
-        .service-card {
-            background: var(--card-bg);
-            padding: 30px 22px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 68, 255, 0.1);
-            border-left: 5px solid var(--primary-blue); /* Left Border Highlight Cards implementation */
-            text-align: left;
-            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            height: 100%;
+        .hero-content h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .hero-content h1 span {
+            color: var(--primary-blue);
+            background: linear-gradient(to right, #0044ff, #ffb700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            max-width: 580px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-prime {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            padding: 0.6rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-prime:hover {
+            background-color: #0033cc;
+            transform: translateY(-1px);
+        }
+
+        .btn-sec {
+            background-color: transparent;
+            color: var(--text-light);
+            padding: 0.6rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sec:hover {
+            background-color: var(--bg-card);
+            border-color: var(--primary-blue);
+        }
+
+        .hero-visual {
             position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-status-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .status-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-gray);
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: #25D366;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #25D366;
+            animation: pulseGrid 2s infinite;
+        }
+
+        @keyframes pulseGrid {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(37, 211, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-label { color: var(--text-gray); }
+        .status-value { font-weight: 600; color: var(--accent-yellow); }
+
+        /* Dynamic Engine Catalogs Component Grid Matrix */
+        .dynamic-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .catalog-node-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.25rem;
+            transition: all 0.25s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .catalog-node-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 6px 16px rgba(0, 68, 255, 0.15);
+        }
+
+        .node-icon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .node-icon-wrapper {
+            background-color: rgba(0, 44, 255, 0.1);
+            color: var(--primary-blue);
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .node-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            background-color: rgba(255, 183, 0, 0.1);
+            color: var(--accent-yellow);
+        }
+
+        .node-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--text-light);
+        }
+
+        .node-desc {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .node-footer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+            margin-top: auto;
+        }
+
+        .node-cost-label {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .node-cost-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .node-cost-value span {
+            font-size: 0.75rem;
+            color: var(--accent-yellow);
+            margin-right: 0.1rem;
+        }
+
+        .btn-node-action {
+            background-color: transparent;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-node-action:hover {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+        }
+
+        /* Portfolio Media Vault Matrix Layout */
+        .vault-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .vault-media-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             overflow: hidden;
-            box-sizing: border-box;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
         }
 
-        .service-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(255, 42, 42, 0.12);
-            border-color: var(--border-light);
-            border-left-color: var(--accent-red);
-        }
-
-        .icon-wrapper {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            transition: transform 0.3s;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
-        }
-
-        .service-card:hover .icon-wrapper {
-            transform: scale(1.1) rotate(-3deg);
-        }
-
-        .service-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;
-            color: var(--deep-blue);
-            font-size: 1.15rem;
-            margin-bottom: 10px;
-            letter-spacing: 0.3px;
-        }
-        
-        .service-card p {
-            font-size: 0.88rem;
-            color: var(--text-gray);
-            margin-bottom: 15px;
-            flex-grow: 1;
-        }
-
-        .pricing-link {
-            color: var(--primary-blue);
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: auto;
-        }
-
-        .service-card:hover .pricing-link {
-            color: var(--accent-red);
-        }
-
-        .card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        /* --- Business Statistics Section --- */
-        .stats-section {
-            background: linear-gradient(135deg, #001166 0%, var(--deep-blue) 100%);
-            color: white;
-            padding: 45px 20px;
-            text-align: center;
-        }
-
-        .stats-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-        }
-
-        .stat-item h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2rem;
-            color: var(--accent-yellow);
-            margin-bottom: 5px;
-        }
-
-        .stat-item p {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #ddd;
-        }
-
-        /* --- Video & Image Portfolio Overrides --- */
-        .portfolio-media {
+        .vault-media-frame {
             width: 100%;
-            height: 180px;
-            border-radius: 8px;
-            object-fit: cover;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        }
-
-        .portfolio-video-wrapper {
+            height: 160px;
+            background-color: #0b1320;
             position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
             overflow: hidden;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
         }
 
-        .portfolio-video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .vault-media-frame img {
             width: 100%;
             height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
 
-        /* --- Case Studies Layout --- */
-        .case-study-card {
-            border-left: 5px solid var(--accent-yellow);
-        }
-        .case-study-card:hover {
-            border-left-color: var(--primary-blue);
-        }
-        .case-meta {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--accent-red);
-            font-weight: 600;
-            margin-bottom: 5px;
+        .vault-media-card:hover .vault-media-frame img {
+            transform: scale(1.03);
         }
 
-        /* --- Testimonials Section --- */
-        .testimonial-card {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid var(--border-light);
-            position: relative;
-        }
-        .testimonial-text {
-            font-style: italic;
-            font-size: 0.9rem;
-            color: var(--text-gray);
-            margin-bottom: 15px;
-        }
-        .testimonial-author {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--deep-blue);
-        }
-        .testimonial-company {
-            font-size: 0.75rem;
-            color: #888;
-        }
-        .stars {
-            color: var(--accent-yellow);
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-        }
-
-        /* --- Newsletter Form Styling --- */
-        .newsletter-section {
-            background: #eef2f7;
-            padding: 50px 20px;
-            text-align: center;
-            border-top: 1px solid var(--border-light);
-            border-bottom: 1px solid var(--border-light);
-        }
-        .newsletter-form {
-            max-width: 500px;
-            margin: 20px auto 0 auto;
+        .vault-media-meta {
+            padding: 1rem;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 0.4rem;
         }
-        .newsletter-input {
-            flex-grow: 1;
-            padding: 12px 20px;
-            border: 1px solid #ccc;
-            border-radius: 50px;
-            font-family: inherit;
-            font-size: 0.9rem;
+
+        .vault-media-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .vault-media-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .vault-media-desc {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+        }
+
+        /* Consultation Engagement Terminal Workspace Block */
+        .engagement-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        .engagement-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .engagement-info p {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .operational-parameters-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .parameter-item-node {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .parameter-icon-node {
+            color: var(--accent-yellow);
+            font-size: 1rem;
+            margin-top: 0.15rem;
+        }
+
+        .parameter-text-node h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.1rem;
+        }
+
+        .parameter-text-node p {
+            font-size: 0.78rem;
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .terminal-form-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .terminal-form-group {
+            margin-bottom: 0.9rem;
+        }
+
+        .terminal-form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-form-control {
+            width: 100%;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .terminal-form-control:focus {
             outline: none;
-        }
-        .newsletter-input:focus {
             border-color: var(--primary-blue);
         }
-        .newsletter-submit {
-            background: var(--primary-blue);
-            color: white;
+
+        .btn-submit-terminal {
+            width: 100%;
+            background-color: var(--primary-blue);
+            color: #ffffff;
             border: none;
-            padding: 12px 28px;
-            border-radius: 50px;
+            border-radius: 4px;
+            padding: 0.6rem;
+            font-size: 0.85rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: background 0.3s;
-            font-size: 0.9rem;
-        }
-        .newsletter-submit:hover {
-            background: var(--deep-blue);
+            transition: background-color 0.2s ease;
+            margin-top: 0.4rem;
         }
 
-        /* --- Toast Notifications System --- */
+        .btn-submit-terminal:hover {
+            background-color: #0033cc;
+        }
+
+        /* Corporate Integrity Operational Footer Core */
+        footer {
+            background-color: #070a12;
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0 1rem 0;
+        }
+
+        .footer-grid-matrix {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-brand-summary h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .footer-brand-summary h4 span {
+            color: var(--primary-blue);
+        }
+
+        .footer-brand-summary p {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-socials a {
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .footer-socials a:hover {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .footer-links-column h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links-column ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .footer-links-column ul a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links-column ul a:hover {
+            color: var(--primary-blue);
+        }
+
+        .newsletter-embedded-form p {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .newsletter-input-group {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .newsletter-input {
+            flex-grow: 1;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .btn-newsletter {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-newsletter:hover {
+            background-color: #0033cc;
+        }
+
+        .footer-copyright-node {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        /* Global Toast Real-Time Engine Module Style Block */
         #toastContainer {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            z-index: 10000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .toast {
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+        .toast-node {
+            background-color: var(--bg-card);
+            border-left: 4px solid var(--primary-blue);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.65rem 1.25rem;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            gap: 0.6rem;
+            transform: translateX(400px);
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* --- Buttons --- */
-        .cta-btn {
-            background: var(--primary-blue);
-            color: white;
-            padding: 12px 32px;
-            text-decoration: none;
-            border-radius: 50px; /* Rounded CTA Buttons */
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 68, 255, 0.25);
-            font-size: 0.95rem;
-            border: none;
-            cursor: pointer;
+        .toast-node.show {
+            transform: translateX(0);
         }
 
-        .cta-btn:hover {
-            background: var(--accent-red);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 42, 42, 0.3);
-            color: white;
+        .toast-node.error {
+            border-left-color: var(--accent-red);
         }
 
-        /* --- Footer Layout Standards --- */
-        footer {
-            background: #111;
-            color: white;
-            padding: 50px 20px 25px;
-            border-top: 4px solid var(--accent-red);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
-            text-align: left;
-        }
-
-        .footer-col h3 {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--accent-yellow);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-        }
-
-        .footer-col p, .footer-col a {
-            color: #ccc;
-            font-size: 0.85rem;
-            text-decoration: none;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .footer-col a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-
-        .badge-icon {
-            width: 26px;
-            height: 26px;
-            fill: #0095f6;
-            display: inline-block;
-            vertical-align: middle;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .loader {
-            text-align: center;
-            color: #888;
-            font-size: 1rem;
-            padding: 30px;
-            grid-column: 1 / -1;
-        }
-
-        @media (max-width: 600px) {
-            .badge-icon { width: 20px; height: 20px; }
-            header h1 { font-size: 1.6rem; }
-            .services-section { padding: 40px 15px; }
-            .newsletter-form { flex-direction: column; border-radius: 10px; }
+        /* Screen Sizing Responsiveness Configuration Adjustments */
+        @media (max-width: 768px) {
+            .hero-grid, .engagement-layout-grid, .footer-grid-matrix {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            nav {
+                display: none;
+            }
+            .hero-content h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="spark"></div>
-    <div class="spark"></div>
-    <div class="spark"></div>
-    <div class="spark"></div>
-    <div class="spark"></div>
-    <div class="spark"></div>
-    <div class="spark"></div>
-
-    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/110x110/0044ff/FFF?text=D74'">    
-   
-    <h1>
-        DAN74TECH MEDIA 
-        <span class="verified-badge" title="Verified Professional">
-            <svg viewBox="0 0 24 24" aria-label="Verified" class="badge-icon">
-                <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.13-.44.18-.9.18-1.35 0-2.48-2.02-4.5-4.5-4.5-.45 0-.9.05-1.35.18-.7-1.3-2.07-2.18-3.65-2.18s-2.95.88-3.65 2.18c-.44-.13-.9-.18-1.35-.18-2.48 0-4.5 2.02-4.5 4.5 0 .45.05.9.18 1.35-1.3.7-2.18 2.07-2.18 3.65 0 1.58.88 2.95 2.18 3.65-.13.44-.18.9-.18 1.35 0 2.48 2.02 4.5 4.5 4.5.45 0 .9-.05 1.35-.18.7 1.3 2.07 2.18 3.65 2.18s2.95-.88 3.65-2.18c.44.13.9.18 1.35.18 2.48 0 4.5-2.02 4.5-4.5 0-.45-.05-.9-.18-1.35 1.3-.7 2.18-2.07 2.18-3.65zm-12.65 5.08l-3.42-3.41 1.41-1.41 2.01 2.01 5.13-5.12 1.41 1.41-6.54 6.52z"></path>
-            </svg>
-        </span>
-    </h1>
-   
-    <p class="tagline">Innovation • Creativity • Solutions</p>
-    <p class="tagline" style="font-weight: 400; color: var(--accent-yellow);">Your Ultimate Partner in Tech & Media Excellence</p>
-    
-    <div class="pro-badge">
-        <i class="fa-solid fa-laptop-code"></i> ICT Technician <i class="fa-solid fa-computer-mouse"></i>
+    <div class="container">
+        <a href="#" class="logo">
+            <i class="fa-solid fa-layer-group" style="color: var(--primary-blue);"></i>DAN74TECH<span>MEDIA</span>
+        </a>
+        <nav>
+            <a href="#services">Services</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#case-studies">Case Studies</a>
+            <a href="#blogs">Insights</a>
+            <a href="#consultation">Consultation</a>
+        </nav>
+        <a href="/admin" class="btn-portal"><i class="fa-solid fa-shield-halved"></i> Control Matrix</a>
     </div>
 </header>
 
-<nav>
-    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="#services"><i class="fa-solid fa-layer-group"></i> Services</a>
-    <a href="#portfolio"><i class="fa-solid fa-image"></i> Portfolio</a>
-    <a href="#case-studies"><i class="fa-solid fa-briefcase"></i> Case Studies</a>
-    <a href="#blogs"><i class="fa-solid fa-newspaper"></i> Tech Tips</a>
-    <a href="#testimonials"><i class="fa-solid fa-comment-dots"></i> Reviews</a>
-    <a href="#contact"><i class="fa-solid fa-envelope"></i> Contact</a>
-</nav>
-
-<section class="services-section" id="services">
-    <h2>Our Expertise</h2>
-    <p class="section-desc">We combine technical precision with creative vision to deliver scalable solutions for modern businesses.</p>
-    
-    <div class="services-grid" id="dynamic-services">
-        <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Services Categories...</div>
-    </div>
-</section>
-
-<section class="stats-section">
-    <div class="stats-container">
-        <div class="stat-item">
-            <h3 id="stat-projects">142+</h3>
-            <p>Projects Completed</p>
-        </div>
-        <div class="stat-item">
-            <h3 id="stat-clients">98%</h3>
-            <p>Happy Clients</p>
-        </div>
-        <div class="stat-item">
-            <h3 id="stat-hours">5+</h3>
-            <p>Years Experience</p>
-        </div>
-        <div class="stat-item">
-            <h3 id="stat-solutions">24/7</h3>
-            <p>Tech Support Availability</p>
-        </div>
-    </div>
-</section>
-
-<section id="portfolio" style="background: var(--card-bg); border-top: 1px solid var(--border-light);">
-    <div class="services-section">
-        <h2>Featured Work</h2>
-        <p class="section-desc">A glimpse into our recent successful digital deployments.</p>
-        
-        <div class="services-grid" id="dynamic-portfolio">
-            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Portfolio Items...</div>
+<section class="hero-viewport">
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1>Next-Gen <span>Digital Architecture</span> & ICT Solutions</h1>
+                <p>Enterprise full-stack web engineering, native Android package compilation, high-tier hardware diagnostics, and dynamic creative media architecture aligned for operational precision.</p>
+                <div class="hero-actions">
+                    <a href="#consultation" class="btn-prime">Request Strategy Session <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#services" class="btn-sec">Explore Offerings</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-status-card">
+                    <div class="status-header">
+                        <span class="status-title">System Execution Core</span>
+                        <div class="status-pulse"></div>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Operation Base:</span>
+                        <span class="status-value" style="color: var(--text-light);">Meru, Kenya</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Database Sync:</span>
+                        <span class="status-value" style="color: #25D366;"><i class="fa-solid fa-database"></i> Neon Live</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">Pipeline Storage:</span>
+                        <span class="status-value" style="color: #25D366;"><i class="fa-solid fa-cloud"></i> Cloudinary CDN</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="status-label">API Gateway Status:</span>
+                        <span class="status-value">Active v1.0.0</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section id="case-studies" style="background: var(--bg-light); border-top: 1px solid var(--border-light);">
-    <div class="services-section">
-        <h2>Case Studies</h2>
-        <p class="section-desc">Deep-dives into our structural engineering and high-performance digital rollouts.</p>
-        
-        <div class="services-grid" id="dynamic-case-studies">
-            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Architecture Frameworks...</div>
+<section id="services">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our <span>Service Matrix</span></h2>
+            <p>Dynamic service catalog modules connected instantly to real-time database queries and integrated WhatsApp dispatch operations.</p>
+        </div>
+        <div id="servicesContainer" class="dynamic-matrix-grid">
+            </div>
+    </div>
+</section>
+
+<section id="portfolio">
+    <div class="container">
+        <div class="section-header">
+            <h2>Creative <span>Media Vault</span></h2>
+            <p>Inspecting certified deployment modules, compiled Android binaries, and high-performance cross-functional creative strategy rollouts.</p>
+        </div>
+        <div id="portfolioContainer" class="vault-matrix-grid">
+            </div>
+    </div>
+</section>
+
+<section id="case-studies">
+    <div class="container">
+        <div class="section-header">
+            <h2>Operational <span>Case Studies</span></h2>
+            <p>Granular architectural analysis highlighting scaling, systemic deployment optimizations, and engineered system performance matrices.</p>
+        </div>
+        <div id="caseStudiesContainer" class="dynamic-matrix-grid">
+            </div>
+    </div>
+</section>
+
+<section id="blogs">
+    <div class="container">
+        <div class="section-header">
+            <h2>Technical <span>Logs & Insights</span></h2>
+            <p>Advanced full-stack system commentary, database structural paradigms, and ICT infrastructural diagnostics intelligence repositories.</p>
+        </div>
+        <div id="blogsContainer" class="dynamic-matrix-grid">
+            </div>
+    </div>
+</section>
+
+<section id="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <h2>Verified <span>Network Index</span></h2>
+            <p>Real-time corporate evaluations from enterprise network components and validated project stakeholder arrays.</p>
+        </div>
+        <div id="testimonialsContainer" class="dynamic-matrix-grid">
+            </div>
+    </div>
+</section>
+
+<section id="consultation">
+    <div class="container">
+        <div class="engagement-layout-grid">
+            <div class="engagement-info">
+                <h3>Initialize a <span>Corporate Consultation</span> Node</h3>
+                <p>Submit your infrastructural requirements directly to our core operations matrix. Our backend architecture processes parameters immediately for rapid diagnostic feedback.</p>
+                <div class="operational-parameters-list">
+                    <div class="parameter-item-node">
+                        <i class="fa-solid fa-bolt parameter-icon-node"></i>
+                        <div class="parameter-text-node">
+                            <h4>Automated Processing Pipeline</h4>
+                            <p>Data maps instantly into database schemas matching structural validation logic guidelines.</p>
+                        </div>
+                    </div>
+                    <div class="parameter-item-node">
+                        <i class="fa-solid fa-headset parameter-icon-node"></i>
+                        <div class="parameter-text-node">
+                            <h4>WhatsApp Dispatch Synchronization</h4>
+                            <p>Direct pipeline notification routes client intent to operations personnel instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="terminal-form-card">
+                <form id="consultationForm">
+                    <div class="terminal-form-group">
+                        <label for="clientName">Full Identity Matrix Name</label>
+                        <input type="text" id="clientName" class="terminal-form-control" required placeholder="e.g. John Doe">
+                    </div>
+                    <div class="terminal-form-group">
+                        <label for="clientEmail">Secure Communication Email</label>
+                        <input type="email" id="clientEmail" class="terminal-form-control" required placeholder="e.g. client@domain.com">
+                    </div>
+                    <div class="terminal-form-group">
+                        <label for="clientPhone">Operational Contact Phone (M-Pesa/WhatsApp)</label>
+                        <input type="text" id="clientPhone" class="terminal-form-control" required placeholder="e.g. +254...">
+                    </div>
+                    <div class="terminal-form-group">
+                        <label for="consultationDate">Target Deployment Schedule Window</label>
+                        <input type="date" id="consultationDate" class="terminal-form-control" required>
+                    </div>
+                    <div class="terminal-form-group">
+                        <label for="projectSpecs">Architectural Specifications / Project Scope Description</label>
+                        <textarea id="projectSpecs" class="terminal-form-control" rows="3" required placeholder="Outline core database tables, hardware diagnostics payload, or required media deployment strategies..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit-terminal">Submit Request Payload</button>
+                </form>
+            </div>
         </div>
     </div>
 </section>
-
-<section id="blogs" style="background: var(--card-bg); border-top: 1px solid var(--border-light);">
-    <div class="services-section">
-        <h2>Latest Tech Tips & Insights</h2>
-        <p class="section-desc">Stay ahead with recent articles, engineering strategies, and modern optimization updates.</p>
-        
-        <div class="services-grid" id="dynamic-blogs">
-            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Reading Media Database...</div>
-        </div>
-    </div>
-</section>
-
-<section id="testimonials" style="background: var(--bg-light); border-top: 1px solid var(--border-light);">
-    <div class="services-section">
-        <h2>Client Testimonials</h2>
-        <p class="section-desc">Real feedback from business partners and corporate organizations who trust our output.</p>
-        
-        <div class="services-grid" id="dynamic-testimonials">
-            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Compiling Verified Feedback...</div>
-        </div>
-    </div>
-</section>
-
-<section class="newsletter-section">
-    <h2 style="font-family: 'Montserrat'; font-size: 1.6rem; color: var(--deep-blue); text-transform: uppercase;">Join Our Newsletter</h2>
-    <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 5px;">Get high-value tech alerts, patch updates, and configuration strategies directly to your inbox.</p>
-    <form class="newsletter-form" id="newsletterForm">
-        <input type="email" id="subscriberEmail" placeholder="Enter your business email address" class="newsletter-input" required>
-        <button type="submit" class="newsletter-submit">Subscribe Now</button>
-    </form>
-</section>
-
-<section id="contact" style="text-align: center; padding: 60px 20px; background: var(--card-bg);">
-    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; font-size: 1.8rem; margin-bottom: 8px;">Get In Touch</h2>
-    <p style="font-size: 0.95rem; color: var(--text-gray); max-width: 500px; margin: 0 auto 35px auto;">Ready to start your next technical or creative project? Let's talk tech.</p>
-    
-    <div>
-        <a href="https://wa.me/254790435584" class="cta-btn" style="background: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);">
-            <i class="fa-brands fa-whatsapp fa-lg"></i> Message on WhatsApp
-        </a>
-    </div>
-
-    <div style="margin-top: 40px;">
-        <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 5px;">Or reach me directly via email:</p>
-        <a href="mailto:dan74techmedia@gmail.com" style="color: var(--primary-blue); font-weight: bold; text-decoration: none; font-size: 1.15rem; transition: color 0.3s;"><i class="fa-solid fa-envelope"></i> dan74techmedia@gmail.com</a>
-    </div>
-</section>
-
-<div id="toastContainer"></div>
 
 <footer>
-    <div class="footer-grid">
-        <div class="footer-col">
-            <h3><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
-            <p><i class="fa-solid fa-location-dot" style="width: 18px; color: var(--accent-red);"></i> Based in Meru, Kenya</p>
-            <p><i class="fa-solid fa-clock" style="width: 18px; color: var(--accent-yellow);"></i> Mon - Sat (8 AM - 6 PM)</p>
+    <div class="container">
+        <div class="footer-grid-matrix">
+            <div class="footer-brand-summary">
+                <h4>DAN74TECH<span>MEDIA</span></h4>
+                <p>Unified digital agency execution engine specializing in full-stack web paradigms, Level 6 hardware diagnostic repair nodes, and creative corporate strategy vectors.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-links-column">
+                <h5>Navigation Matrix</h5>
+                <ul>
+                    <li><a href="#services"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Services</a></li>
+                    <li><a href="#portfolio"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Portfolio</a></li>
+                    <li><a href="#case-studies"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Case Studies</a></li>
+                    <li><a href="#blogs"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Insights</a></li>
+                </ul>
+            </div>
+            <div class="footer-links-column">
+                <h5>Inbound Transmission System</h5>
+                <div class="newsletter-embedded-form">
+                    <p>Subscribe to our core architectural network feed for operational technology updates.</p>
+                    <form id="newsletterForm">
+                        <div class="newsletter-input-group">
+                            <input type="email" id="subscriberEmail" class="newsletter-input" placeholder="operator@network.com" required>
+                            <button type="submit" class="btn-newsletter">Join</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="footer-col">
-            <h3>Quick Links</h3>
-            <a href="#services">Our Services</a>
-            <a href="#portfolio">Project Showcases</a>
-            <a href="#case-studies">Case Studies Log</a>
-            <a href="#blogs">Tech Tips Blog</a>
+        <div class="footer-copyright-node">
+            <span>&copy; 2026 DAN74TECH MEDIA. All operational parameters secured.</span>
+            <span>Platform Core Status: <span style="color:#25D366; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Operational</span></span>
         </div>
-        <div class="footer-col" style="text-align: right;">
-            <h3>Development</h3>
-            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 10px 16px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: 0.3s; border: 1px solid #444; margin-top: 5px;">
-               <i class="fa-brands fa-github fa-lg"></i> Technical GitHub
-            </a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #222; padding-top: 20px; margin-top: 10px; text-align: center;">
-        <p style="color: #666; font-size: 0.8rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
 
+<div id="toastContainer"></div>
+
 <script>
-    // Universal Toast Generator Matching Admin System Pipeline
-    function triggerToast(message, isSuccess = true) {
+    // 1. Toast Real-Time Engine Module Implementation
+    function triggerToast(msg, isSuccess = true) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.style.borderLeft = `4px solid ${isSuccess ? 'var(--primary-blue)' : 'var(--accent-red)'}`;
-        toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="color: ${isSuccess ? '#25d366' : 'var(--accent-red)'}"></i> <span>${message}</span>`;
-        container.appendChild(toast);
+        const node = document.createElement('div');
+        node.className = `toast-node ${!isSuccess ? 'error' : ''}`;
+        
+        const icon = isSuccess ? 
+            '<i class="fa-solid fa-circle-check" style="color: #25D366;"></i>' : 
+            '<i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-red);"></i>';
+            
+        node.innerHTML = `${icon} <span>${msg}</span>`;
+        container.appendChild(node);
+        
+        setTimeout(() => node.classList.add('show'), 50);
+        
         setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(20px)';
-            toast.style.transition = 'all 0.4s ease';
-            setTimeout(() => toast.remove(), 400);
+            node.classList.remove('show');
+            setTimeout(() => node.remove(), 400);
         }, 3500);
     }
 
-    // Helper to convert standard YouTube links to Embed format securely
-    function extractYouTubeEmbedUrl(url) {
-        if (!url) return '';
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
+    // 2. Fetch API Matrix Generic Handler Node
+    async function executeSecureQueryFetch(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Query pipeline failure on endpoint connection context: ${url}`);
+        return await res.json();
     }
 
-    // 1. Fetch Main Services Categories Row
+    // 3. Automated Ingestion Modules for Dynamic Cards Generation
     async function loadServices() {
-        const container = document.getElementById('dynamic-services');
+        const container = document.getElementById('servicesContainer');
         if (!container) return;
-        
         try {
-            const res = await fetch('/api/services');
-            if (!res.ok) throw new Error('Network fault rendering service entities');
-            const mainCategories = await res.json();
-            
-            if (!mainCategories || mainCategories.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Services optimization in progress...</p>';
-                return;
-            }
-
-            container.innerHTML = mainCategories.map(cat => {
-                const generatedRoute = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                return `
-                    <a href="${generatedRoute}.html" class="card-link">
-                        <div class="service-card">
-                            <div class="icon-wrapper">${cat.icon || '💻'}</div>
-                            <h3>${cat.name}</h3>
-                            <p>${cat.description || 'Professional tech solutions tailored to your operational needs.'}</p>
-                            <div class="pricing-link">
-                                Explore Packages
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </div>
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        } catch (error) {
-            console.error('Error loading services:', error);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to connect to internal services pipeline.</p>';
-        }
-    }
-
-    // 2. Fetch Portfolio Showcase (Supports both images and streaming video components)
-    async function loadPortfolio() {
-        const container = document.getElementById('dynamic-portfolio');
-        if (!container) return;
-
-        try {
-            const res = await fetch('/api/portfolio');
-            if (!res.ok) throw new Error('Network fault loading portfolio index');
-            const portfolioItems = await res.json();
-
-            if (!portfolioItems || portfolioItems.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">New portfolio drops coming soon.</p>';
-                return;
-            }
-
-            container.innerHTML = portfolioItems.map(item => {
-                let mediaHTML = '';
-                let badgeHTML = '';
-                const targetLink = item.link || '#';
-                const isVideo = targetLink.includes('youtube.com') || targetLink.includes('youtu.be');
-
-                if (isVideo) {
-                    const embedUrl = extractYouTubeEmbedUrl(targetLink);
-                    mediaHTML = `
-                        <div class="portfolio-video-wrapper">
-                            <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
-                        </div>`;
-                    badgeHTML = `<span style="color: var(--accent-red); font-weight: 700; font-size: 0.8rem;"><i class="fa-brands fa-youtube"></i> Stream Project Presentation</span>`;
-                } else {
-                    mediaHTML = `<img src="${targetLink}" alt="${item.title || 'Showcase Image'}" class="portfolio-media" onerror="this.src='https://placehold.co/600x400?text=View+Deployment'">`;
-                    badgeHTML = `<span style="color: var(--primary-blue); font-weight: 700; font-size: 0.8rem;"><i class="fa-solid fa-image"></i> View Production Build</span>`;
-                }
-
-                return `
-                    <a href="${targetLink}" target="_blank" class="card-link">
-                        <div class="service-card" style="padding: 18px;">
-                            ${mediaHTML}
-                            <h3 style="font-size:1.05rem; margin-bottom: 5px;">${item.title || 'Untitled Architecture'}</h3>
-                            <p style="margin-bottom: 12px; font-size:0.85rem;">${item.description || 'Production environment deployment summary.'}</p>
-                            ${badgeHTML}
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        } catch (error) {
-            console.error('Error loading portfolio:', error);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to fetch showcase item ledger from server.</p>';
-        }
-    }
-
-    // 3. Fetch Case Studies Grid Data Log
-    async function loadCaseStudies() {
-        const container = document.getElementById('dynamic-case-studies');
-        if (!container) return;
-
-        try {
-            const res = await fetch('/api/case-studies');
-            if (!res.ok) throw new Error('Failed to parse case studies data pipeline');
-            const data = await res.json();
-
+            const data = await executeSecureQueryFetch('/api/subservices');
             if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Case studies are currently being logged by engineering crew.</p>';
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No active catalog subservice package structures compiled in database.</p>';
                 return;
             }
-
-            container.innerHTML = data.map(item => `
-                <div class="service-card case-study-card">
-                    <div class="case-meta"><i class="fa-solid fa-chart-line"></i> ${item.category || 'System Optimization'}</div>
-                    <h3>${item.title}</h3>
-                    <p style="font-size:0.85rem;">${item.metrics || 'Performance metrics and deployment scale overview.'}</p>
-                    <a href="case-studies.html?id=${item.id}" class="pricing-link" style="margin-top:auto;">
-                        Read Full Breakdown <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Error connecting to architecture telemetry database.</p>';
-        }
-    }
-
-    // 4. Fetch Tech Tips & Blog Roll Rows
-    async function loadBlogs() {
-        const container = document.getElementById('dynamic-blogs');
-        if (!container) return;
-
-        try {
-            const res = await fetch('/api/blogs');
-            if (!res.ok) throw new Error('Failed reading active blog matrix');
-            const blogs = await res.json();
-
-            if (!blogs || blogs.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Tech updates are queueing in documentation terminal.</p>';
-                return;
-            }
-
-            container.innerHTML = blogs.slice(0, 6).map(post => `
-                <div class="service-card">
-                    <p style="font-size:0.75rem; font-weight:600; color:var(--primary-blue); text-transform:uppercase; margin-bottom:5px;">
-                        <i class="fa-solid fa-calendar-days"></i> ${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recent'}
-                    </p>
-                    <h3>${post.title}</h3>
-                    <p style="font-size:0.85rem;">${post.summary || 'Click below to review implementation rules and code updates.'}</p>
-                    <a href="blog.html?id=${post.id}" class="pricing-link">
-                        Read Insights <i class="fa-solid fa-chevron-right"></i>
-                    </a>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to establish connection with storage partition.</p>';
-        }
-    }
-
-    // 5. Fetch Verified Client Testimonials Matrix
-    async function loadTestimonials() {
-        const container = document.getElementById('dynamic-testimonials');
-        if (!container) return;
-
-        try {
-            const res = await fetch('/api/testimonials');
-            if (!res.ok) throw new Error('Fault loading testimonials pool');
-            const items = await res.json();
-
-            if (!items || items.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Client authentication notes are currently being validated.</p>';
-                return;
-            }
-
-            container.innerHTML = items.map(item => {
-                let starElements = '';
-                const score = parseInt(item.rating) || 5;
-                for (let i = 0; i < score; i++) {
-                    starElements += '<i class="fa-solid fa-star"></i>';
-                }
-                return `
-                    <div class="testimonial-card">
-                        <div class="stars">${starElements}</div>
-                        <div class="testimonial-text">"${item.testimonial || 'Outstanding design output and flawless server-side configurations.'}"</div>
-                        <div class="testimonial-author">${item.name || 'Enterprise Partner'}</div>
-                        <div class="testimonial-company">${item.company || 'Verified Client'}</div>
+            container.innerHTML = data.map(s => `
+                <div class="catalog-node-card">
+                    <div>
+                        <div class="node-icon-header">
+                            <div class="node-icon-wrapper"><i class="fa-solid fa-cubes"></i></div>
+                            <span class="node-badge">Ready</span>
+                        </div>
+                        <h4 class="node-title">${s.name}</h4>
+                        <p class="node-desc">${s.description || 'No system definition metadata cataloged for this operational node row structure.'}</p>
                     </div>
-                `;
-            }).join('');
+                    <div class="node-footer-meta">
+                        <div>
+                            <div class="node-cost-label">Base Cost</div>
+                            <div class="node-cost-value"><span>KES</span>${parseFloat(s.price).toLocaleString()}</div>
+                        </div>
+                        <button onclick="dispatchWhatsAppOrder('${s.name}', ${s.price})" class="btn-node-action">
+                            <i class="fa-brands fa-whatsapp"></i> Book
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         } catch (e) {
             console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to fetch client rating indices from database.</p>';
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch active catalog nodes from infrastructure database context.</p>';
         }
     }
+
+    async function loadPortfolio() {
+        const container = document.getElementById('portfolioContainer');
+        if (!container) return;
+        try {
+            const data = await executeSecureQueryFetch('/api/portfolio');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No media vault matrix records synchronized.</p>';
+                return;
+            }
+            container.innerHTML = data.map(p => `
+                <div class="vault-media-card">
+                    <div class="vault-media-frame">
+                        <img src="${p.image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'}" alt="${p.title}">
+                    </div>
+                    <div class="vault-media-meta">
+                        <span class="vault-media-tag">${p.category || 'System Core'}</span>
+                        <h4 class="vault-media-title">${p.title}</h4>
+                        <p class="vault-media-desc">${p.description || 'No descriptive structural payload detailed for this specific media asset.'}</p>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to extract portfolio nodes from media storage repository.</p>';
+        }
+    }
+
+    async function loadCaseStudies() {
+        const container = document.getElementById('caseStudiesContainer');
+        if (!container) return;
+        try {
+            const data = await executeSecureQueryFetch('/api/case_studies');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No corporate case study structures cataloged.</p>';
+                return;
+            }
+            container.innerHTML = data.map(c => `
+                <div class="catalog-node-card" style="border-left: 3px solid var(--accent-yellow);">
+                    <div>
+                        <div class="node-icon-header">
+                            <div class="node-icon-wrapper" style="color: var(--accent-yellow); background: rgba(255,183,0,0.1);"><i class="fa-solid fa-chart-line"></i></div>
+                            <span class="node-badge" style="background: rgba(0,68,255,0.1); color: var(--primary-blue);">${c.client || 'Enterprise'}</span>
+                        </div>
+                        <h4 class="node-title">${c.title}</h4>
+                        <p class="node-desc">${c.description || 'Architectural performance summary details missing from central record schema.'}</p>
+                    </div>
+                    <div class="node-footer-meta" style="border-top:none; padding-top:0;">
+                        <span style="font-size:0.75rem; color: var(--accent-yellow); font-weight:600;"><i class="fa-solid fa-bolt"></i> Optimized</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to sync runtime case study metric indexes.</p>';
+        }
+    }
+
+    async function loadBlogs() {
+        const container = document.getElementById('blogsContainer');
+        if (!container) return;
+        try {
+            const data = await executeSecureQueryFetch('/api/blogs');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No operational logs updated in system repository feed.</p>';
+                return;
+            }
+            container.innerHTML = data.map(b => `
+                <div class="catalog-node-card">
+                    <div>
+                        <div class="node-icon-header">
+                            <div class="node-icon-wrapper"><i class="fa-solid fa-terminal"></i></div>
+                            <span style="font-size:0.65rem; color: var(--text-gray);">${b.author || 'Operator'}</span>
+                        </div>
+                        <h4 class="node-title" style="font-size:0.95rem;">${b.title}</h4>
+                        <p class="node-desc" style="font-size:0.75rem;">${b.content ? b.content.substring(0, 100) + '...' : 'Log payload body context is null.'}</p>
+                    </div>
+                    <div class="node-footer-meta">
+                        <span style="font-size:0.7rem; color: var(--text-gray);"><i class="fa-regular fa-calendar"></i> ${b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Active'}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch active structural intelligence log records.</p>';
+        }
+    }
+
+    async function loadTestimonials() {
+        const container = document.getElementById('testimonialsContainer');
+        if (!container) return;
+        try {
+            const data = await executeSecureQueryFetch('/api/testimonials');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No verification indexes logged.</p>';
+                return;
+            }
+            container.innerHTML = data.map(t => `
+                <div class="catalog-node-card" style="background-color: #1a2333;">
+                    <div>
+                        <div style="color: var(--accent-yellow); font-size:0.75rem; margin-bottom:0.4rem;">
+                            ${'<i class="fa-solid fa-star"></i>'.repeat(t.rating || 5)}
+                        </div>
+                        <p class="node-desc" style="font-style: italic; font-size:0.78rem;">"${t.content || 'System rating verification statement left blank.'}"</p>
+                    </div>
+                    <div class="node-footer-meta">
+                        <span style="font-size:0.75rem; font-weight:600; color:var(--text-light);">${t.name}</span>
+                        <span style="font-size:0.65rem; color: var(--primary-blue); text-transform:uppercase;">${t.company || 'Partner'}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch client rating indices from database.</p>';
+        }
+    }
+
+    // 4. WhatsApp Real-Time Direct Order Compilation Workflow Routing Node
+    function dispatchWhatsAppOrder(packageName, baseCost) {
+        const targetLine = "254740212181"; // Primary Operational Gateway Communication System Line
+        const formatPayloadText = `Hello DAN74TECH MEDIA, I want to initiate an order pipeline execution for the following catalog subservice module configuration:\n\n• Package Identity Node: ${packageName}\n• Verified Price Parameter: KES ${parseFloat(baseCost).toLocaleString()}\n\nPlease route this payload to processing queue.`;
+        window.open(`https://wa.me/${targetLine}?text=${encodeURIComponent(formatPayloadText)}`, '_blank');
+    }
+
+    // 5. Submit Event Handling Operations For Strategy Session Form Terminal
+    document.getElementById('consultationForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const payloadData = {
+            name: document.getElementById('clientName').value,
+            email: document.getElementById('clientEmail').value,
+            phone: document.getElementById('clientPhone').value,
+            date: document.getElementById('consultationDate').value,
+            notes: document.getElementById('projectSpecs').value
+        };
+
+        try {
+            const res = await fetch('/api/consultations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payloadData)
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Central operational API node rejected the execution payload parameters.');
+            }
+
+            triggerToast('🚀 Consultation payload processed successfully. Gateway synced.');
+            document.getElementById('consultationForm').reset();
+        } catch (error) {
+            triggerToast(error.message, false);
+        }
+    });
 
     // 6. Form Submission Operations For Newsletter Subscriptions System Module
     document.getElementById('newsletterForm')?.addEventListener('submit', async function(e) {
@@ -913,12 +1204,12 @@
             const res = await fetch('/api/subscribers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: emailInput.value })
+                body: JSON.stringify({ email: emailInput.value })\
             });
 
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'System failed to insert email record');
+                throw new Error(errData.error || 'System failed to insert email record into newsletter queue schema.');
             }
 
             triggerToast('🚀 Subscription record verified. Welcome to our network newsletter!');
