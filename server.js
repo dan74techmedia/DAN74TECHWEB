@@ -159,7 +159,7 @@ app.post('/api/auth/register', async (req, res) => {
         );
         
         const userNode = result.rows[0];
-        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userNode.role }, JWT_SECRET, { expiresIn: '24h' });
+        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userRole }, JWT_SECRET, { expiresIn: '24h' });
         
         res.json({ success: true, token: accessToken, user: userNode });
     } catch (err) {
@@ -213,7 +213,7 @@ app.get('/api/users', async (req, res) => {
 });
 
 // Admin endpoint to explicitly remove validation access lines
-app.delete('/api/users/:id', async (req, res) => {
+app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -235,7 +235,7 @@ app.get('/api/services', async (req, res) => {
 });
 
 // Add dynamic service nodes
-app.post('/api/services', async (req, res) => {
+app.post('/api/services', verifyAdminAccess, async (req, res) => {
     try {
         const { name, icon, description } = req.body;
         const result = await pool.query(
@@ -249,7 +249,7 @@ app.post('/api/services', async (req, res) => {
 });
 
 // Modify existing structural nodes
-app.put('/api/services/:id', async (req, res) => {
+app.put('/api/services/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { id } = req.params;
         const { name, icon, description } = req.body;
@@ -264,7 +264,7 @@ app.put('/api/services/:id', async (req, res) => {
 });
 
 // Wipe service catalog nodes completely
-app.delete('/api/services/:id', async (req, res) => {
+app.delete('/api/services/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM services WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -309,7 +309,7 @@ app.get('/api/sub-services/:serviceName', async (req, res) => {
 });
 
 // Commit dynamic pricing package variables to specified parent modules
-app.post('/api/sub-services', async (req, res) => {
+app.post('/api/sub-services', verifyAdminAccess, async (req, res) => {
     try {
         const { service_id, name, price, description } = req.body;
         const result = await pool.query(
@@ -323,7 +323,7 @@ app.post('/api/sub-services', async (req, res) => {
 });
 
 // Remove dynamic system subservice package tier
-app.delete('/api/sub-services/:id', async (req, res) => {
+app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM sub_services WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -335,7 +335,7 @@ app.delete('/api/sub-services/:id', async (req, res) => {
 // ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE =================
 
 // Fetch standard ledger records for the administration console
-app.get('/api/orders', async (req, res) => {
+app.get('/api/orders', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM orders ORDER BY id DESC');
         res.json(result.rows);
@@ -345,7 +345,7 @@ app.get('/api/orders', async (req, res) => {
 });
 
 // Isolate historical records for individual client views
-app.get('/api/orders/user/:userId', async (req, res) => {
+app.get('/api/orders/user/:userId', verifySystemToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM orders WHERE user_id = $1 ORDER BY id DESC', [req.params.userId]);
         res.json(result.rows);
@@ -395,7 +395,7 @@ app.post('/api/orders', async (req, res) => {
 });
 
 // Update pipeline operational matrices securely
-app.put('/api/orders/:id', async (req, res) => {
+app.put('/api/orders/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { id } = req.params;
         const { status, payment_status, price } = req.body;
@@ -410,7 +410,7 @@ app.put('/api/orders/:id', async (req, res) => {
 });
 
 // Wipe operational project transaction entries entirely
-app.delete('/api/orders/:id', async (req, res) => {
+app.delete('/api/orders/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -432,7 +432,7 @@ app.get('/api/portfolio', async (req, res) => {
 });
 
 // Save explicit data points matching structural metrics definitions
-app.post('/api/portfolio', uploadLocal.single('image'), async (req, res) => {
+app.post('/api/portfolio', verifyAdminAccess, uploadLocal.single('image'), async (req, res) => {
     try {
         const { title, category, description, order_id, progress, status } = req.body;
         let link = req.body.link || '';
@@ -451,7 +451,7 @@ app.post('/api/portfolio', uploadLocal.single('image'), async (req, res) => {
 });
 
 // Update numerical metrics (Real-Time Visual Progress Controls)
-app.put('/api/portfolio/:id', async (req, res) => {
+app.put('/api/portfolio/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { id } = req.params;
         const { progress, status, title, description } = req.body;
@@ -466,7 +466,7 @@ app.put('/api/portfolio/:id', async (req, res) => {
 });
 
 // Wipe display tracking metrics rows
-app.delete('/api/portfolio/:id', async (req, res) => {
+app.delete('/api/portfolio/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM portfolio WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -486,7 +486,7 @@ app.get('/api/case-studies', async (req, res) => {
     }
 });
 
-app.post('/api/case-studies', async (req, res) => {
+app.post('/api/case-studies', verifyAdminAccess, async (req, res) => {
     try {
         const { title, category, challenge, solution, result, image_url } = req.body;
         const out = await pool.query(
@@ -500,7 +500,7 @@ app.post('/api/case-studies', async (req, res) => {
 });
 
 // Admin deletion hook for case-studies system modules
-app.delete('/api/case-studies/:id', async (req, res) => {
+app.delete('/api/case-studies/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM case_studies WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -521,8 +521,8 @@ app.get('/api/testimonials/approved', async (req, res) => {
     }
 });
 
-// Management panel auditing evaluation query logs (Harmonized to double-support index routing variables seamlessly)
-app.get('/api/testimonials', async (req, res) => {
+// Management panel auditing evaluation query logs
+app.get('/api/testimonials', verifyAdminAccess, async (req, res) => {
     try {
         const { status } = req.query;
         let queryStr = 'SELECT * FROM testimonials ORDER BY id DESC';
@@ -554,7 +554,7 @@ app.post('/api/testimonials', async (req, res) => {
 });
 
 // Approve target review data structures
-app.put('/api/testimonials/:id/approve', async (req, res) => {
+app.put('/api/testimonials/:id/approve', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query(`UPDATE testimonials SET status = 'approved' WHERE id = $1 RETURNING *`, [req.params.id]);
         res.json({ success: true, data: result.rows[0] });
@@ -564,7 +564,7 @@ app.put('/api/testimonials/:id/approve', async (req, res) => {
 });
 
 // Erase review rows
-app.delete('/api/testimonials/:id', async (req, res) => {
+app.delete('/api/testimonials/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM testimonials WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -630,11 +630,11 @@ const createBlogPost = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-app.post('/api/blog', createBlogPost);
-app.post('/api/blogs', createBlogPost);
+app.post('/api/blog', verifyAdminAccess, createBlogPost);
+app.post('/api/blogs', verifyAdminAccess, createBlogPost);
 
 // Erase standard article layouts
-app.delete('/api/blog/:id', async (req, res) => {
+app.delete('/api/blog/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM blog_posts WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -658,7 +658,7 @@ app.post('/api/subscribers', async (req, res) => {
     }
 });
 
-app.get('/api/subscribers', async (req, res) => {
+app.get('/api/subscribers', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM subscribers ORDER BY id DESC');
         res.json(result.rows);
@@ -667,7 +667,7 @@ app.get('/api/subscribers', async (req, res) => {
     }
 });
 
-app.delete('/api/subscribers/:id', async (req, res) => {
+app.delete('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM subscribers WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -678,7 +678,7 @@ app.delete('/api/subscribers/:id', async (req, res) => {
 
 // ================= MODULE 10: MEDIA REPOSITORY PIPELINE =================
 
-app.get('/api/media', async (req, res) => {
+app.get('/api/media', verifyAdminAccess, async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM media_library ORDER BY id DESC');
         res.json(data.rows);
@@ -687,7 +687,7 @@ app.get('/api/media', async (req, res) => {
     }
 });
 
-app.post('/api/media/upload', uploadMemory.single('file'), async (req, res) => {
+app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: "Required file node absent" });
 
@@ -709,7 +709,7 @@ app.post('/api/media/upload', uploadMemory.single('file'), async (req, res) => {
     }
 });
 
-app.delete('/api/media/:id', async (req, res) => {
+app.delete('/api/media/:id', verifyAdminAccess, async (req, res) => {
     try {
         const target = await pool.query('SELECT * FROM media_library WHERE id = $1', [req.params.id]);
         if (target.rows.length === 0) return res.status(404).json({ error: "Target data row reference absent" });
@@ -726,7 +726,7 @@ app.delete('/api/media/:id', async (req, res) => {
 
 // ================= MODULE 11: FINANCIAL LOGISTICS & INVOICING =================
 
-app.get('/api/invoices', async (req, res) => {
+app.get('/api/invoices', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM invoices ORDER BY id DESC');
         res.json(result.rows);
@@ -735,7 +735,7 @@ app.get('/api/invoices', async (req, res) => {
     }
 });
 
-app.post('/api/invoices', async (req, res) => {
+app.post('/api/invoices', verifyAdminAccess, async (req, res) => {
     try {
         const { order_id, invoice_number, client_name, client_email, amount, pdf_url, status } = req.body;
         const result = await pool.query(
@@ -782,7 +782,7 @@ app.get('/api/invoices/:id/download', async (req, res) => {
 });
 
 // Wipe financial ledger log entry lines
-app.delete('/api/invoices/:id', async (req, res) => {
+app.delete('/api/invoices/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM invoices WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -793,7 +793,7 @@ app.delete('/api/invoices/:id', async (req, res) => {
 
 // ================= MODULE 12: REAL-TIME NOTIFICATION DISPATCH ENGINE =================
 
-app.get('/api/notifications/user/:userId', async (req, res) => {
+app.get('/api/notifications/user/:userId', verifySystemToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY id DESC', [req.params.userId]);
         res.json(result.rows);
@@ -802,7 +802,7 @@ app.get('/api/notifications/user/:userId', async (req, res) => {
     }
 });
 
-app.post('/api/notifications', async (req, res) => {
+app.post('/api/notifications', verifyAdminAccess, async (req, res) => {
     try {
         const { user_id, title, message, channel } = req.body;
         const result = await pool.query(
@@ -817,7 +817,7 @@ app.post('/api/notifications', async (req, res) => {
 
 // ================= MODULE 13: SUPPORT TICKETING ROUTER =================
 
-app.get('/api/tickets', async (req, res) => {
+app.get('/api/tickets', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM support_tickets ORDER BY id DESC');
         res.json(result.rows);
@@ -826,7 +826,7 @@ app.get('/api/tickets', async (req, res) => {
     }
 });
 
-app.post('/api/tickets', async (req, res) => {
+app.post('/api/tickets', verifySystemToken, async (req, res) => {
     try {
         const { user_id, subject, description, priority } = req.body;
         const result = await pool.query(
@@ -840,7 +840,7 @@ app.post('/api/tickets', async (req, res) => {
 });
 
 // Update pipeline operational matrices for tickets
-app.put('/api/tickets/:id', async (req, res) => {
+app.put('/api/tickets/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { id } = req.params;
         const { status, priority } = req.body;
@@ -855,7 +855,7 @@ app.put('/api/tickets/:id', async (req, res) => {
 });
 
 // Wipe operational tickets entirely
-app.delete('/api/tickets/:id', async (req, res) => {
+app.delete('/api/tickets/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM support_tickets WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -866,7 +866,7 @@ app.delete('/api/tickets/:id', async (req, res) => {
 
 // ================= MODULE 14: MESSAGES HUB (CONTACT FORM LOGISTICS) =================
 
-app.get('/api/messages', async (req, res) => {
+app.get('/api/messages', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM messages ORDER BY id DESC');
         res.json(result.rows);
@@ -888,7 +888,7 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
-app.delete('/api/messages/:id', async (req, res) => {
+app.delete('/api/messages/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM messages WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -899,7 +899,7 @@ app.delete('/api/messages/:id', async (req, res) => {
 
 // ================= MODULE 15: APPOINTMENTS & CONSULTATION OPERATIONS =================
 
-app.get('/api/consultations', async (req, res) => {
+app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM consultations ORDER BY id DESC');
         res.json(result.rows);
@@ -922,7 +922,7 @@ app.post('/api/consultations', async (req, res) => {
     }
 });
 
-app.put('/api/consultations/:id', async (req, res) => {
+app.put('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { status } = req.body;
         const result = await pool.query(
@@ -936,7 +936,7 @@ app.put('/api/consultations/:id', async (req, res) => {
 });
 
 // Remove calendar mapping indices completely
-app.delete('/api/consultations/:id', async (req, res) => {
+app.delete('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM consultations WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -947,7 +947,7 @@ app.delete('/api/consultations/:id', async (req, res) => {
 
 // ================= PROGRESSIVE UPDATE MODULE 16: FILE DELIVERY NETWORK LAYER =================
 
-app.get('/api/file-deliveries', async (req, res) => {
+app.get('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM file_deliveries ORDER BY id DESC');
         res.json(result.rows);
@@ -956,7 +956,7 @@ app.get('/api/file-deliveries', async (req, res) => {
     }
 });
 
-app.get('/api/file-deliveries/client/:clientId', async (req, res) => {
+app.get('/api/file-deliveries/client/:clientId', verifySystemToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM file_deliveries WHERE client_id = $1 ORDER BY id DESC', [req.params.clientId]);
         res.json(result.rows);
@@ -965,7 +965,7 @@ app.get('/api/file-deliveries/client/:clientId', async (req, res) => {
     }
 });
 
-app.post('/api/file-deliveries', uploadLocal.single('attachment'), async (req, res) => {
+app.post('/api/file-deliveries', verifyAdminAccess, uploadLocal.single('attachment'), async (req, res) => {
     try {
         const { order_id, client_id, file_name, file_url, expiry_date, status } = req.body;
         let finalUrl = file_url || '';
@@ -987,7 +987,7 @@ app.post('/api/file-deliveries', uploadLocal.single('attachment'), async (req, r
     }
 });
 
-app.delete('/api/file-deliveries/:id', async (req, res) => {
+app.delete('/api/file-deliveries/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('DELETE FROM file_deliveries WHERE id = $1', [req.params.id]);
         res.json({ success: true });
@@ -998,7 +998,7 @@ app.delete('/api/file-deliveries/:id', async (req, res) => {
 
 // ================= PROGRESSIVE UPDATE MODULE 17: ADMINISTRATIVE STATISTICS METRICS DASHBOARD ENGINE =================
 
-app.get('/api/admin/stats', async (req, res) => {
+app.get('/api/admin/stats', verifyAdminAccess, async (req, res) => {
     try {
         const userCount = await pool.query('SELECT COUNT(*) FROM users');
         const orderCount = await pool.query('SELECT COUNT(*) FROM orders');
