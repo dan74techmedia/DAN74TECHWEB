@@ -3,25 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Official Unified Platform</title>
+    <title>DAN74TECH MEDIA | Official Technology & Digital Agency Hub</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="description" content="DAN74TECH MEDIA is a premier technology development and digital agency hub specializing in full-stack web solutions, custom Android applications, ICT infrastructure diagnostics, and creative media strategy.">
+    <meta name="keywords" content="DAN74TECH, Daniel Ngumi, Tech Support, Web Development, Meru, Kenya, Node.js, Express, Postgres, Android Developer, ICT Technician, Creative Media, Level 6 Diagnostics">
+    <meta name="author" content="DAN74TECH MEDIA">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dan74techmedia.com/">
+    <meta property="og:title" content="DAN74TECH MEDIA | Official Technology & Digital Agency Hub">
+    <meta property="og:description" content="Empowering businesses with production-grade web systems, Android deployment matrix, advanced level 6 hardware diagnostics, and high-performance digital media campaigns.">
+    <meta property="og:image" content="https://placehold.co/1200x630/0044ff/ffffff?text=DAN74TECH+MEDIA">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
+        /* Corporate Color Identity & Premium Light Tech System Accents */
         :root {
-            /* Official Unified Theme Palette Matching Administrative Infrastructure */
             --primary-blue: #0044ff;
-            --deep-blue: #0022aa;
-            --accent-yellow: #ffb700;
+            --primary-blue-hover: #0033cc;
+            --accent-yellow: #ffd700;
             --accent-red: #ff2a2a;
             
-            /* High-Performance Screen Optimized Dark Theme Layout Architecture */
-            --bg-dark: #0b0f19;
-            --bg-card: #151c2c;
-            --border-color: #222f47;
-            --text-light: #f3f4f6;
-            --text-gray: #9ca3af;
+            --bg-light: #f8fafc;
+            --bg-pure: #ffffff;
+            --text-dark: #0f172a;
+            --text-gray: #475569;
+            --border-light: #e2e8f0;
+            --card-bg: #ffffff;
+            
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 20px 40px -15px rgba(0, 68, 255, 0.12);
         }
 
         * {
@@ -32,1202 +51,1011 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.4;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* Compact Screen Layout Optimization Utility Classes */
+        h1, h2, h3, .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 2rem;
         }
 
-        section {
-            padding: 2.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 1.75rem;
-        }
-
-        .section-header h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.75rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.25rem;
-        }
-
-        .section-header h2 span {
-            color: var(--primary-blue);
-        }
-
-        .section-header p {
-            color: var(--text-gray);
-            font-size: 0.85rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Header Navigation Matrix Layout */
-        header {
-            background-color: rgba(21, 28, 44, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
+        /* Top-Tier Polished Page Navigation Module */
+        .navbar-frame {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
             position: sticky;
             top: 0;
             z-index: 1000;
-            padding: 0.5rem 0;
+            box-shadow: var(--shadow-sm);
         }
 
-        header .container {
+        .navbar-container {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            height: 80px;
         }
 
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: var(--text-light);
-            text-decoration: none;
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--primary-blue);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .logo span {
-            color: var(--primary-blue);
+        .brand-logo span {
+            color: var(--text-dark);
         }
 
-        nav {
+        .brand-logo .dot {
+            color: var(--accent-red);
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .nav-links {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 2rem;
+            list-style: none;
         }
 
-        nav a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        nav a:hover {
-            color: var(--primary-blue);
-        }
-
-        .btn-portal {
-            background: linear-gradient(135deg, var(--primary-blue), #002b99);
-            color: #ffffff;
-            padding: 0.4rem 1rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
+        .nav-item-link {
+            font-size: 0.9rem;
             font-weight: 600;
+            color: var(--text-gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
         }
 
-        .btn-portal:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 68, 255, 0.3);
-            color: #ffffff;
+        .nav-item-link:hover, .nav-item-link.active {
+            color: var(--primary-blue);
         }
 
-        /* Hero Performance Viewport Frame */
-        .hero-viewport {
-            background: radial-gradient(circle at top right, rgba(0, 68, 255, 0.12), transparent), var(--bg-dark);
-            min-height: 60vh;
+        .nav-item-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-blue);
+            transition: var(--transition);
+        }
+
+        .nav-item-link:hover::after, .nav-item-link.active::after {
+            width: 100%;
+        }
+
+        .nav-actions {
             display: flex;
             align-items: center;
-            padding: 2rem 0;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1.6rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--bg-pure);
+            box-shadow: 0 4px 14px rgba(0, 68, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 68, 255, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-blue);
+            color: var(--bg-pure);
+            transform: translateY(-2px);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        /* Section Global Typography Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            color: var(--primary-blue);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            background-color: rgba(0, 68, 255, 0.06);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title span {
+            color: var(--primary-blue);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Premium Lively Hero Presentation Matrix */
+        .hero-section {
+            background: radial-gradient(circle at top right, rgba(0, 68, 255, 0.03), transparent), var(--bg-pure);
+            padding: 6rem 0 5rem 0;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .hero-grid {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 2rem;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 4rem;
             align-items: center;
         }
 
-        .hero-content h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 0.75rem;
-            color: var(--text-light);
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
-        .hero-content h1 span {
-            color: var(--primary-blue);
-            background: linear-gradient(to right, #0044ff, #ffb700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-content p {
-            color: var(--text-gray);
-            font-size: 0.95rem;
+        .hero-live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(255, 42, 42, 0.06);
+            border: 1px solid rgba(255, 42, 42, 0.15);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-red);
             margin-bottom: 1.5rem;
-            max-width: 580px;
         }
 
-        .hero-actions {
+        .hero-live-indicator .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            animation: corePulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes corePulse {
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.7); }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 0 6px rgba(255, 42, 42, 0); }
+            100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(255, 42, 42, 0); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+            color: var(--text-dark);
+        }
+
+        .hero-title highlight {
+            color: var(--primary-blue);
+            background: linear-gradient(120deg, rgba(0, 68, 255, 0.1) 0%, rgba(0, 68, 255, 0) 100%);
+            padding: 0 0.2rem;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            max-width: 620px;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            width: 100%;
+        }
+
+        .hero-graphic-display {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .graphic-card-backdrop {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #0022aa 100%);
+            width: 100%;
+            max-width: 460px;
+            height: 420px;
+            border-radius: var(--radius-lg);
+            position: relative;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 3rem;
+            overflow: hidden;
+        }
+
+        .graphic-card-backdrop::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 215, 0, 0.15);
+            border-radius: 50%;
+            filter: blur(30px);
+        }
+
+        .graphic-overlay-stats {
+            background-color: var(--bg-pure);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            position: absolute;
+            top: 10%;
+            left: -10%;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--accent-yellow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: floatWidget 4s infinite ease-in-out;
+        }
+
+        @keyframes floatWidget {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .graphic-overlay-stats i {
+            font-size: 1.8rem;
+            color: var(--accent-yellow);
+        }
+
+        .graphic-overlay-stats .stat-title {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .graphic-overlay-stats .stat-val {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .corporate-tagline {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .corporate-title-label {
+            color: var(--bg-pure);
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .corporate-title-label span {
+            color: var(--accent-yellow);
+        }
+
+        /* Metric Counts Statistics Bar Module */
+        .stats-bar-section {
+            background-color: var(--bg-pure);
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .stats-bar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-bar-node {
+            padding: 1rem;
+        }
+
+        .stat-bar-number {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-bar-number label {
+            color: var(--accent-yellow);
+            margin-left: 2px;
+        }
+
+        .stat-bar-caption {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        /* Page Content Structural Sections */
+        .page-content-section {
+            padding: 6rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .section-bg-white {
+            background-color: var(--bg-pure);
+        }
+
+        /* Short Optimized About Layout Configuration Matrix */
+        .about-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-capabilities-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .about-mini-card {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .about-mini-card:hover {
+            transform: translateX(5px);
+            border-color: var(--primary-blue);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .about-card-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 68, 255, 0.06);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            flex-shrink: 0;
+        }
+
+        .about-card-info h3 {
+            font-size: 1.15rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .about-card-info p {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        /* Dynamic Portfolio Implementation Components Preview Layout */
+        .portfolio-layout-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .portfolio-corporate-card {
+            background-color: var(--bg-pure);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .portfolio-corporate-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(0, 68, 255, 0.2);
+        }
+
+        .portfolio-image-wrapper {
+            position: relative;
+            height: 240px;
+            background-color: #f1f5f9;
+            overflow: hidden;
+        }
+
+        .portfolio-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .portfolio-corporate-card:hover .portfolio-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-category-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--bg-pure);
+            color: var(--text-dark);
+            padding: 0.35rem 0.85rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+            border-left: 3px solid var(--primary-blue);
+        }
+
+        .portfolio-body-frame {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .portfolio-card-title {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.3px;
+        }
+
+        .portfolio-card-desc {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .portfolio-navigation-anchor {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .section-footer-actions {
+            text-align: center;
+        }
+
+        /* Sticky Persistent WhatsApp Access Module System */
+        .whatsapp-fab {
+            position: fixed;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            text-decoration: none;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .whatsapp-fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            background-color: #20ba5a;
+        }
+
+        /* Structured Corporate Routing Ecosystem Footer */
+        .corporate-footer-frame {
+            background-color: var(--bg-pure);
+            border-top: 1px solid var(--border-light);
+            padding: 5rem 0 2.5rem 0;
+            color: var(--text-dark);
+        }
+
+        .footer-primary-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1.5fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand-summary .footer-desc {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-top: 1.25rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .footer-socials-row {
             display: flex;
             gap: 1rem;
         }
 
-        .btn-prime {
-            background-color: var(--primary-blue);
-            color: #ffffff;
-            padding: 0.6rem 1.25rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .btn-prime:hover {
-            background-color: #0033cc;
-            transform: translateY(-1px);
-        }
-
-        .btn-sec {
-            background-color: transparent;
-            color: var(--text-light);
-            padding: 0.6rem 1.25rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-sec:hover {
-            background-color: var(--bg-card);
-            border-color: var(--primary-blue);
-        }
-
-        .hero-visual {
-            position: relative;
-            display: flex;
-            justify-content: center;
-        }
-
-        .hero-status-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.25rem;
-            width: 100%;
-            max-width: 340px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        }
-
-        .status-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .status-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--text-gray);
-        }
-
-        .status-pulse {
-            width: 8px;
-            height: 8px;
-            background-color: #25D366;
+        .footer-social-circle-link {
+            width: 38px;
+            height: 38px;
+            background-color: var(--bg-light);
             border-radius: 50%;
-            box-shadow: 0 0 8px #25D366;
-            animation: pulseGrid 2s infinite;
-        }
-
-        @keyframes pulseGrid {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(37, 211, 102, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .status-label { color: var(--text-gray); }
-        .status-value { font-weight: 600; color: var(--accent-yellow); }
-
-        /* Dynamic Engine Catalogs Component Grid Matrix */
-        .dynamic-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.25rem;
-        }
-
-        .catalog-node-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.25rem;
-            transition: all 0.25s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .catalog-node-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--primary-blue);
-            box-shadow: 0 6px 16px rgba(0, 68, 255, 0.15);
-        }
-
-        .node-icon-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-        }
-
-        .node-icon-wrapper {
-            background-color: rgba(0, 44, 255, 0.1);
-            color: var(--primary-blue);
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            color: var(--text-gray);
+            font-size: 1rem;
+            border: 1px solid var(--border-light);
         }
 
-        .node-badge {
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            padding: 0.15rem 0.4rem;
-            border-radius: 3px;
-            background-color: rgba(255, 183, 0, 0.1);
-            color: var(--accent-yellow);
+        .footer-social-circle-link:hover {
+            background-color: var(--primary-blue);
+            color: var(--bg-pure);
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
         }
 
-        .node-title {
-            font-family: 'Montserrat', sans-serif;
+        .footer-column-header {
             font-size: 1.05rem;
             font-weight: 700;
-            margin-bottom: 0.4rem;
-            color: var(--text-light);
-        }
-
-        .node-desc {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-            margin-bottom: 1rem;
-            flex-grow: 1;
-        }
-
-        .node-footer-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border-color);
-            padding-top: 0.75rem;
-            margin-top: auto;
-        }
-
-        .node-cost-label {
-            font-size: 0.7rem;
-            color: var(--text-gray);
-            text-transform: uppercase;
-        }
-
-        .node-cost-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-light);
-        }
-
-        .node-cost-value span {
-            font-size: 0.75rem;
-            color: var(--accent-yellow);
-            margin-right: 0.1rem;
-        }
-
-        .btn-node-action {
-            background-color: transparent;
-            border: 1px solid var(--primary-blue);
-            color: var(--primary-blue);
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .btn-node-action:hover {
-            background-color: var(--primary-blue);
-            color: #ffffff;
-        }
-
-        /* Portfolio Media Vault Matrix Layout */
-        .vault-matrix-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.25rem;
-        }
-
-        .vault-media-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .vault-media-frame {
-            width: 100%;
-            height: 160px;
-            background-color: #0b1320;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .vault-media-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .vault-media-card:hover .vault-media-frame img {
-            transform: scale(1.03);
-        }
-
-        .vault-media-meta {
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .vault-media-tag {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .vault-media-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-light);
-        }
-
-        .vault-media-desc {
-            font-size: 0.78rem;
-            color: var(--text-gray);
-        }
-
-        /* Consultation Engagement Terminal Workspace Block */
-        .engagement-layout-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.1fr;
-            gap: 2.5rem;
-            align-items: start;
-        }
-
-        .engagement-info h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .engagement-info p {
-            color: var(--text-gray);
-            font-size: 0.85rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .operational-parameters-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .parameter-item-node {
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-start;
-        }
-
-        .parameter-icon-node {
-            color: var(--accent-yellow);
-            font-size: 1rem;
-            margin-top: 0.15rem;
-        }
-
-        .parameter-text-node h4 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 0.1rem;
-        }
-
-        .parameter-text-node p {
-            font-size: 0.78rem;
-            color: var(--text-gray);
-            margin: 0;
-        }
-
-        .terminal-form-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        .terminal-form-group {
-            margin-bottom: 0.9rem;
-        }
-
-        .terminal-form-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-gray);
-            margin-bottom: 0.3rem;
-            letter-spacing: 0.5px;
-        }
-
-        .terminal-form-control {
-            width: 100%;
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.5rem 0.75rem;
-            color: var(--text-light);
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
-            transition: border-color 0.2s ease;
-        }
-
-        .terminal-form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-
-        .btn-submit-terminal {
-            width: 100%;
-            background-color: var(--primary-blue);
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            padding: 0.6rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            margin-top: 0.4rem;
-        }
-
-        .btn-submit-terminal:hover {
-            background-color: #0033cc;
-        }
-
-        /* Corporate Integrity Operational Footer Core */
-        footer {
-            background-color: #070a12;
-            border-top: 1px solid var(--border-color);
-            padding: 2rem 0 1rem 0;
-        }
-
-        .footer-grid-matrix {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr 1fr;
-            gap: 2rem;
             margin-bottom: 1.5rem;
+            color: var(--text-dark);
         }
 
-        .footer-brand-summary h4 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .footer-brand-summary h4 span {
-            color: var(--primary-blue);
-        }
-
-        .footer-brand-summary p {
-            color: var(--text-gray);
-            font-size: 0.8rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-socials {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .footer-socials a {
-            background-color: var(--bg-card);
-            color: var(--text-light);
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            border: 1px solid var(--border-color);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .footer-socials a:hover {
-            background-color: var(--primary-blue);
-            border-color: var(--primary-blue);
-            transform: translateY(-1px);
-        }
-
-        .footer-links-column h5 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-light);
-            margin-bottom: 0.6rem;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-links-column ul {
+        .footer-links-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.85rem;
         }
 
-        .footer-links-column ul a {
+        .footer-anchor-item {
+            font-size: 0.9rem;
             color: var(--text-gray);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 0.2s ease;
+            font-weight: 500;
         }
 
-        .footer-links-column ul a:hover {
+        .footer-anchor-item:hover {
             color: var(--primary-blue);
+            padding-left: 4px;
         }
 
-        .newsletter-embedded-form p {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-            margin-bottom: 0.5rem;
-        }
-
-        .newsletter-input-group {
+        .footer-contact-details-list {
+            list-style: none;
             display: flex;
-            gap: 0.4rem;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .newsletter-input {
-            flex-grow: 1;
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.4rem 0.6rem;
-            color: var(--text-light);
-            font-size: 0.8rem;
+        .footer-contact-detail-node {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            font-size: 0.9rem;
+            color: var(--text-gray);
         }
 
-        .newsletter-input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
+        .footer-contact-detail-node i {
+            color: var(--primary-blue);
+            margin-top: 0.2rem;
+            font-size: 1rem;
         }
 
-        .btn-newsletter {
-            background-color: var(--primary-blue);
-            color: #ffffff;
-            border: none;
-            padding: 0.4rem 0.9rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .btn-newsletter:hover {
-            background-color: #0033cc;
-        }
-
-        .footer-copyright-node {
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
+        .footer-bottom-legal-bar {
+            border-top: 1px solid var(--border-light);
+            padding-top: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             color: var(--text-gray);
         }
 
-        /* Global Toast Real-Time Engine Module Style Block */
-        #toastContainer {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .footer-legal-credits span {
+            color: var(--accent-red);
+            font-weight: 600;
         }
 
-        .toast-node {
-            background-color: var(--bg-card);
-            border-left: 4px solid var(--primary-blue);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            color: var(--text-light);
-            padding: 0.65rem 1.25rem;
-            border-radius: 0 4px 4px 0;
-            font-size: 0.8rem;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            transform: translateX(400px);
-            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Adaptive Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+            .hero-content { align-items: center; }
+            .hero-cta-group { justify-content: center; }
+            .hero-graphic-display { display: none; }
+            .about-layout-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .portfolio-layout-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-primary-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .stats-bar-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
         }
 
-        .toast-node.show {
-            transform: translateX(0);
-        }
-
-        .toast-node.error {
-            border-left-color: var(--accent-red);
-        }
-
-        /* Screen Sizing Responsiveness Configuration Adjustments */
         @media (max-width: 768px) {
-            .hero-grid, .engagement-layout-grid, .footer-grid-matrix {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            nav {
-                display: none;
-            }
-            .hero-content h1 {
-                font-size: 2rem;
-            }
+            .nav-links, .nav-actions { display: none; }
+            .mobile-toggle { display: block; }
+            .portfolio-layout-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 2.5rem; }
+            .footer-bottom-legal-bar { flex-direction: column; gap: 1rem; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="container">
-        <a href="#" class="logo">
-            <i class="fa-solid fa-layer-group" style="color: var(--primary-blue);"></i>DAN74TECH<span>MEDIA</span>
-        </a>
-        <nav>
-            <a href="#services">Services</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#case-studies">Case Studies</a>
-            <a href="#blogs">Insights</a>
-            <a href="#consultation">Consultation</a>
-        </nav>
-        <a href="/admin" class="btn-portal"><i class="fa-solid fa-shield-halved"></i> Control Matrix</a>
-    </div>
-</header>
+    <!-- Unified Link-Routed Navigation System Bar -->
+    <header class="navbar-frame">
+        <div class="container navbar-container">
+            <a href="index.html" class="brand-logo">DAN74TECH<span>MEDIA</span><div class="dot">.</div></a>
+            
+            <nav>
+                <ul class="nav-links" id="navbarLinksList">
+                    <li><a href="index.html" class="nav-item-link active">Home</a></li>
+                    <li><a href="services.html" class="nav-item-link">Services</a></li>
+                    <li><a href="portfolio.html" class="nav-item-link">Portfolio</a></li>
+                    <li><a href="case-studies.html" class="nav-item-link">Case Studies</a></li>
+                    <li><a href="testimonials.html" class="nav-item-link">Testimonials</a></li>
+                    <li><a href="blog.html" class="nav-item-link">Blog</a></li>
+                    <li><a href="contact.html" class="nav-item-link">Contact</a></li>
+                </ul>
+            </nav>
 
-<section class="hero-viewport">
-    <div class="container">
-        <div class="hero-grid">
-            <div class="hero-content">
-                <h1>Next-Gen <span>Digital Architecture</span> & ICT Solutions</h1>
-                <p>Enterprise full-stack web engineering, native Android package compilation, high-tier hardware diagnostics, and dynamic creative media architecture aligned for operational precision.</p>
-                <div class="hero-actions">
-                    <a href="#consultation" class="btn-prime">Request Strategy Session <i class="fa-solid fa-arrow-right"></i></a>
-                    <a href="#services" class="btn-sec">Explore Offerings</a>
-                </div>
+            <div class="nav-actions">
+                <a href="contact.html" class="btn btn-primary">Get Connected</a>
+                <a href="admin.html" class="btn btn-outline" title="Administrative Control Node"><i class="fa-solid fa-gauge-high"></i> Console</a>
             </div>
-            <div class="hero-visual">
-                <div class="hero-status-card">
-                    <div class="status-header">
-                        <span class="status-title">System Execution Core</span>
-                        <div class="status-pulse"></div>
+            
+            <div class="mobile-toggle" id="mobileNavigationToggleTrigger"><i class="fa-solid fa-bars-staggered"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Premium Corporate Identity Hero Section -->
+        <section class="hero-section">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <div class="hero-live-indicator">
+                        <div class="pulse-dot"></div>
+                        <span>DAN74TECH METRICS MATRIX: OPERATIONS ACTIVE</span>
                     </div>
-                    <div class="status-row">
-                        <span class="status-label">Operation Base:</span>
-                        <span class="status-value" style="color: var(--text-light);">Meru, Kenya</span>
-                    </div>
-                    <div class="status-row">
-                        <span class="status-label">Database Sync:</span>
-                        <span class="status-value" style="color: #25D366;"><i class="fa-solid fa-database"></i> Neon Live</span>
-                    </div>
-                    <div class="status-row">
-                        <span class="status-label">Pipeline Storage:</span>
-                        <span class="status-value" style="color: #25D366;"><i class="fa-solid fa-cloud"></i> Cloudinary CDN</span>
-                    </div>
-                    <div class="status-row">
-                        <span class="status-label">API Gateway Status:</span>
-                        <span class="status-value">Active v1.0.0</span>
+                    <h1 class="hero-title">Engineering High-Performance <highlight>Digital Core</highlight> Systems.</h1>
+                    <p class="hero-description">We architect and deploy production-grade full-stack web platforms, optimized custom Android architectures, advanced level 6 hardware diagnostic integrations, and scalable digital media strategies built for absolute scale.</p>
+                    <div class="hero-cta-group">
+                        <a href="contact.html" class="btn btn-primary">Initialize Project <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="portfolio.html" class="btn btn-outline">Explore Repository</a>
                     </div>
                 </div>
+                
+                <div class="hero-graphic-display">
+                    <div class="graphic-card-backdrop">
+                        <div class="graphic-overlay-stats">
+                            <i class="fa-solid fa-microchip"></i>
+                            <div>
+                                <div class="stat-title">Hardware Infrastructure Scope</div>
+                                <div class="stat-val">Level 6 Diagnostics</div>
+                            </div>
+                        </div>
+                        <div class="corporate-tagline">Daniel Ngumi // Chief Architect</div>
+                        <div class="corporate-title-label">DAN74TECH Operational Matrix <span>v1.0.0</span></div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<section id="services">
-    <div class="container">
-        <div class="section-header">
-            <h2>Our <span>Service Matrix</span></h2>
-            <p>Dynamic service catalog modules connected instantly to real-time database queries and integrated WhatsApp dispatch operations.</p>
-        </div>
-        <div id="servicesContainer" class="dynamic-matrix-grid">
+        <!-- Metric Parameters Operational Stats Section -->
+        <section class="stats-bar-section">
+            <div class="container stats-bar-grid">
+                <div class="stat-bar-node">
+                    <div class="stat-bar-number">100<label>+</label></div>
+                    <div class="stat-bar-caption">Deployments Completed</div>
+                </div>
+                <div class="stat-bar-node">
+                    <div class="stat-bar-number">99<label>%</label></div>
+                    <div class="stat-bar-caption">Operational Accuracy</div>
+                </div>
+                <div class="stat-bar-node">
+                    <div class="stat-bar-number">24<label>/</label>7</div>
+                    <div class="stat-bar-caption">Ecosystem Infrastructure Monitoring</div>
+                </div>
+                <div class="stat-bar-node">
+                    <div class="stat-bar-number">Lvl<label>6</label></div>
+                    <div class="stat-bar-caption">Component Diagnostics Capability</div>
+                </div>
             </div>
-    </div>
-</section>
+        </section>
 
-<section id="portfolio">
-    <div class="container">
-        <div class="section-header">
-            <h2>Creative <span>Media Vault</span></h2>
-            <p>Inspecting certified deployment modules, compiled Android binaries, and high-performance cross-functional creative strategy rollouts.</p>
-        </div>
-        <div id="portfolioContainer" class="vault-matrix-grid">
-            </div>
-    </div>
-</section>
+        <!-- Dynamic Short Profile About Section Component -->
+        <section class="page-content-section section-bg-white">
+            <div class="container about-layout-grid">
+                <div class="about-text-content">
+                    <span class="section-tag">Ecosystem Blueprint</span>
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Who Is <span>DAN74TECH MEDIA</span>?</h2>
+                    <p class="hero-description" style="margin-bottom: 1.25rem;">Led by Daniel Ngumi, a professional ICT Technician, Android Developer, and Creative Media Strategist based in Meru, Kenya, DAN74TECH MEDIA is a premier technology development and engineering digital agency hub.</p>
+                    <p class="hero-description" style="margin-bottom: 2.25rem;">We serve enterprise architectures by designing production-ready systems, executing low-latency client application packages, and conducting meticulous micro-component level hardware testing. Our entire structural methodology is designed for absolute performance reliability and rapid asset deployment.</p>
+                    <div class="about-action-links">
+                        <a href="services.html" class="btn btn-primary">Inspect Services Subsystem <i class="fa-solid fa-layer-group"></i></a>
+                    </div>
+                </div>
 
-<section id="case-studies">
-    <div class="container">
-        <div class="section-header">
-            <h2>Operational <span>Case Studies</span></h2>
-            <p>Granular architectural analysis highlighting scaling, systemic deployment optimizations, and engineered system performance matrices.</p>
-        </div>
-        <div id="caseStudiesContainer" class="dynamic-matrix-grid">
-            </div>
-    </div>
-</section>
-
-<section id="blogs">
-    <div class="container">
-        <div class="section-header">
-            <h2>Technical <span>Logs & Insights</span></h2>
-            <p>Advanced full-stack system commentary, database structural paradigms, and ICT infrastructural diagnostics intelligence repositories.</p>
-        </div>
-        <div id="blogsContainer" class="dynamic-matrix-grid">
-            </div>
-    </div>
-</section>
-
-<section id="testimonials">
-    <div class="container">
-        <div class="section-header">
-            <h2>Verified <span>Network Index</span></h2>
-            <p>Real-time corporate evaluations from enterprise network components and validated project stakeholder arrays.</p>
-        </div>
-        <div id="testimonialsContainer" class="dynamic-matrix-grid">
-            </div>
-    </div>
-</section>
-
-<section id="consultation">
-    <div class="container">
-        <div class="engagement-layout-grid">
-            <div class="engagement-info">
-                <h3>Initialize a <span>Corporate Consultation</span> Node</h3>
-                <p>Submit your infrastructural requirements directly to our core operations matrix. Our backend architecture processes parameters immediately for rapid diagnostic feedback.</p>
-                <div class="operational-parameters-list">
-                    <div class="parameter-item-node">
-                        <i class="fa-solid fa-bolt parameter-icon-node"></i>
-                        <div class="parameter-text-node">
-                            <h4>Automated Processing Pipeline</h4>
-                            <p>Data maps instantly into database schemas matching structural validation logic guidelines.</p>
+                <div class="about-capabilities-stack">
+                    <div class="about-mini-card">
+                        <div class="about-card-icon"><i class="fa-solid fa-code"></i></div>
+                        <div class="about-card-info">
+                            <h3>Full-Stack Web Systems</h3>
+                            <p>High-efficiency Node.js, Express, and safe PostgreSQL engine structures.</p>
                         </div>
                     </div>
-                    <div class="parameter-item-node">
-                        <i class="fa-solid fa-headset parameter-icon-node"></i>
-                        <div class="parameter-text-node">
-                            <h4>WhatsApp Dispatch Synchronization</h4>
-                            <p>Direct pipeline notification routes client intent to operations personnel instantly.</p>
+                    <div class="about-mini-card">
+                        <div class="about-card-icon"><i class="fa-brands fa-android"></i></div>
+                        <div class="about-card-info">
+                            <h3>Android Custom Deployments</h3>
+                            <p>Native-level low-latency mobile platforms optimized for execution fluidity.</p>
                         </div>
                     </div>
+                    <div class="about-mini-card">
+                        <div class="about-card-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="about-card-info">
+                            <h3>Level 6 Hardware Diagnostics</h3>
+                            <p>Component tracing isolation, fault analytics, and technician restoration board repairs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Featured Portfolio Showcase Section Preview (Pulling from /api/portfolio) -->
+        <section class="page-content-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">Production Implementations</span>
+                    <h2 class="section-title">Featured <span>Ecosystem Showcase</span></h2>
+                    <p class="section-subtitle">Real-time live monitoring of our latest web deployments, mobile application pipelines, and core infrastructure parameters directly from our tables.</p>
+                </div>
+                
+                <!-- Dynamic Portfolio Injection Node Target Wrapper -->
+                <div class="portfolio-layout-grid" id="homepageDynamicPortfolioContainer">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-gray);">
+                        <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary-blue); margin-bottom: 1.25rem;"></i>
+                        <p style="font-weight: 500; letter-spacing: 0.5px;">Synchronizing structural assets with live system database tables...</p>
+                    </div>
+                </div>
+
+                <div class="section-footer-actions">
+                    <a href="portfolio.html" class="btn btn-primary">View Full Repositories Matrix <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sticky Persistent Support Floating Matrix Link Frame via WhatsApp -->
+    <a href="https://wa.me/254700000000" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Direct Link to Support Matrix Console via WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Unified Document Footer Element Layout -->
+    <footer class="corporate-footer-frame">
+        <div class="container footer-primary-grid">
+            <div class="footer-brand-summary">
+                <a href="index.html" class="brand-logo">DAN74TECH<span>MEDIA</span><div class="dot">.</div></a>
+                <p class="footer-desc">Unified production development agency hub specialized in full-stack backend platforms, Android deployment matrices, high-fidelity technology diagnostics and media automation.</p>
+                <div class="footer-socials-row">
+                    <a href="https://github.com" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://linkedin.com" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://wa.me/254700000000" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-whatsapp"></i></a>
                 </div>
             </div>
             
-            <div class="terminal-form-card">
-                <form id="consultationForm">
-                    <div class="terminal-form-group">
-                        <label for="clientName">Full Identity Matrix Name</label>
-                        <input type="text" id="clientName" class="terminal-form-control" required placeholder="e.g. John Doe">
-                    </div>
-                    <div class="terminal-form-group">
-                        <label for="clientEmail">Secure Communication Email</label>
-                        <input type="email" id="clientEmail" class="terminal-form-control" required placeholder="e.g. client@domain.com">
-                    </div>
-                    <div class="terminal-form-group">
-                        <label for="clientPhone">Operational Contact Phone (M-Pesa/WhatsApp)</label>
-                        <input type="text" id="clientPhone" class="terminal-form-control" required placeholder="e.g. +254...">
-                    </div>
-                    <div class="terminal-form-group">
-                        <label for="consultationDate">Target Deployment Schedule Window</label>
-                        <input type="date" id="consultationDate" class="terminal-form-control" required>
-                    </div>
-                    <div class="terminal-form-group">
-                        <label for="projectSpecs">Architectural Specifications / Project Scope Description</label>
-                        <textarea id="projectSpecs" class="terminal-form-control" rows="3" required placeholder="Outline core database tables, hardware diagnostics payload, or required media deployment strategies..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit-terminal">Submit Request Payload</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer>
-    <div class="container">
-        <div class="footer-grid-matrix">
-            <div class="footer-brand-summary">
-                <h4>DAN74TECH<span>MEDIA</span></h4>
-                <p>Unified digital agency execution engine specializing in full-stack web paradigms, Level 6 hardware diagnostic repair nodes, and creative corporate strategy vectors.</p>
-                <div class="footer-socials">
-                    <a href="#"><i class="fa-brands fa-github"></i></a>
-                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div class="footer-links-column">
-                <h5>Navigation Matrix</h5>
-                <ul>
-                    <li><a href="#services"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Services</a></li>
-                    <li><a href="#portfolio"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Portfolio</a></li>
-                    <li><a href="#case-studies"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Case Studies</a></li>
-                    <li><a href="#blogs"><i class="fa-solid fa-chevron-right" style="font-size:0.65rem; margin-right:0.3rem; color:var(--primary-blue);"></i> Insights</a></li>
+            <div>
+                <h4 class="footer-column-header">Ecosystem Links Matrix</h4>
+                <ul class="footer-links-list">
+                    <li><a href="index.html" class="footer-anchor-item">Home Console</a></li>
+                    <li><a href="services.html" class="footer-anchor-item">Services Subsystem</a></li>
+                    <li><a href="portfolio.html" class="footer-anchor-item">Portfolio Registries</a></li>
+                    <li><a href="case-studies.html" class="footer-anchor-item">Case Metrics Base</a></li>
+                    <li><a href="testimonials.html" class="footer-anchor-item">Validation Parameters</a></li>
+                    <li><a href="blog.html" class="footer-anchor-item">Knowledge Database</a></li>
+                    <li><a href="contact.html" class="footer-anchor-item">Contact Anchor</a></li>
                 </ul>
             </div>
-            <div class="footer-links-column">
-                <h5>Inbound Transmission System</h5>
-                <div class="newsletter-embedded-form">
-                    <p>Subscribe to our core architectural network feed for operational technology updates.</p>
-                    <form id="newsletterForm">
-                        <div class="newsletter-input-group">
-                            <input type="email" id="subscriberEmail" class="newsletter-input" placeholder="operator@network.com" required>
-                            <button type="submit" class="btn-newsletter">Join</button>
-                        </div>
-                    </form>
-                </div>
+
+            <div>
+                <h4 class="footer-column-header">Operator Command Anchor</h4>
+                <ul class="footer-contact-details-list">
+                    <li class="footer-contact-detail-node">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Meru, Meru County,<br>Republic of Kenya.</span>
+                    </li>
+                    <li class="footer-contact-detail-node">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>operations@dan74techmedia.com</span>
+                    </li>
+                    <li class="footer-contact-detail-node">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <span>M-Pesa Operator Support Infrastructure Active</span>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="footer-copyright-node">
-            <span>&copy; 2026 DAN74TECH MEDIA. All operational parameters secured.</span>
-            <span>Platform Core Status: <span style="color:#25D366; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Operational</span></span>
+
+        <div class="container footer-bottom-legal-bar">
+            <div>&copy; 2026 DAN74TECH MEDIA Unified Operations. All Operational Rights Reserved.</div>
+            <div class="footer-legal-credits">Architected & Maintained by Daniel Ngumi // <span>DAN74TECH Core Engine</span></div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-<div id="toastContainer"></div>
+    <!-- Core Dynamic Control JavaScript Engine Block -->
+    <script>
+        // Localized Complete Fallback Array Configuration to Guarantee Visual Performance on Empty Database State
+        const pristineLocalFallbackPortfolio = [
+            { id: 101, title: "E-Commerce Infrastructure Matrix", description: "Full-scale online retail backend system utilizing automated checkout flows, transactional M-Pesa configurations, secure session tracking, and high-speed relational database querying.", category: "Full-Stack Web", image_url: "https://images.unsplash.com/photo-1563013544-824ae1d704d3?auto=format&fit=crop&w=600&q=80" },
+            { id: 102, title: "Corporate Fleet Logistics Tracker", description: "Android mobile application optimized for real-time localization updates, route diagnostic logging, device encryption nodes, and thread background configurations.", category: "Android Systems", image_url: "https://images.unsplash.com/photo-1524514587686-8260d996d316?auto=format&fit=crop&w=600&q=80" },
+            { id: 103, title: "Enterprise Storage Network Console", description: "Comprehensive Level 6 technology installation mapping localized failover parameters, hardware performance analytics monitoring systems, and routing table optimizations.", category: "ICT Infrastructure", image_url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80" }
+        ];
 
-<script>
-    // 1. Toast Real-Time Engine Module Implementation
-    function triggerToast(msg, isSuccess = true) {
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-        const node = document.createElement('div');
-        node.className = `toast-node ${!isSuccess ? 'error' : ''}`;
-        
-        const icon = isSuccess ? 
-            '<i class="fa-solid fa-circle-check" style="color: #25D366;"></i>' : 
-            '<i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-red);"></i>';
-            
-        node.innerHTML = `${icon} <span>${msg}</span>`;
-        container.appendChild(node);
-        
-        setTimeout(() => node.classList.add('show'), 50);
-        
-        setTimeout(() => {
-            node.classList.remove('show');
-            setTimeout(() => node.remove(), 400);
-        }, 3500);
-    }
+        // Asynchronous Target Data Routine: Pulls from GET /api/portfolio
+        async function fetchFeaturedPortfolioPreview() {
+            const containerNodeElement = document.getElementById('homepageDynamicPortfolioContainer');
+            if (!containerNodeElement) return;
 
-    // 2. Fetch API Matrix Generic Handler Node
-    async function executeSecureQueryFetch(url) {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Query pipeline failure on endpoint connection context: ${url}`);
-        return await res.json();
-    }
+            try {
+                const structuralResponse = await fetch('/api/portfolio');
+                if (!structuralResponse.ok) throw new Error('Ecosystem infrastructure data stream faulted.');
+                
+                const arrayDataRecordsList = await structuralResponse.json();
+                if (!arrayDataRecordsList || arrayDataRecordsList.length === 0) {
+                    throw new Error('Database response table configuration is currently empty.');
+                }
 
-    // 3. Automated Ingestion Modules for Dynamic Cards Generation
-    async function loadServices() {
-        const container = document.getElementById('servicesContainer');
-        if (!container) return;
-        try {
-            const data = await executeSecureQueryFetch('/api/subservices');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No active catalog subservice package structures compiled in database.</p>';
-                return;
-            }
-            container.innerHTML = data.map(s => `
-                <div class="catalog-node-card">
-                    <div>
-                        <div class="node-icon-header">
-                            <div class="node-icon-wrapper"><i class="fa-solid fa-cubes"></i></div>
-                            <span class="node-badge">Ready</span>
+                // Slice precisely the first 3 items for a balanced homepage layout grid preview block
+                const featuredItemsList = arrayDataRecordsList.slice(0, 3);
+
+                containerNodeElement.innerHTML = featuredItemsList.map(record => `
+                    <article class="portfolio-corporate-card">
+                        <div class="portfolio-image-wrapper">
+                            <img src="${record.image_url || 'https://placehold.co/600x400/0044ff/ffffff?text=DAN74TECH+MEDIA'}" alt="${record.title || 'Deployment Asset Graphic'}">
+                            <span class="portfolio-category-badge">${record.category || 'Production Deployment'}</span>
                         </div>
-                        <h4 class="node-title">${s.name}</h4>
-                        <p class="node-desc">${s.description || 'No system definition metadata cataloged for this operational node row structure.'}</p>
-                    </div>
-                    <div class="node-footer-meta">
-                        <div>
-                            <div class="node-cost-label">Base Cost</div>
-                            <div class="node-cost-value"><span>KES</span>${parseFloat(s.price).toLocaleString()}</div>
+                        <div class="portfolio-body-frame">
+                            <h3 class="portfolio-card-title">${record.title || 'Corporate System Module'}</h3>
+                            <p class="portfolio-card-desc">${record.description || 'System specifications documentation parameter currently missing or unmapped in active data index fields.'}</p>
+                            <a href="portfolio.html" class="portfolio-navigation-anchor">
+                                View Full Specifications <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
+                            </a>
                         </div>
-                        <button onclick="dispatchWhatsAppOrder('${s.name}', ${s.price})" class="btn-node-action">
-                            <i class="fa-brands fa-whatsapp"></i> Book
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch active catalog nodes from infrastructure database context.</p>';
-        }
-    }
+                    </article>
+                `).join('');
 
-    async function loadPortfolio() {
-        const container = document.getElementById('portfolioContainer');
-        if (!container) return;
-        try {
-            const data = await executeSecureQueryFetch('/api/portfolio');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No media vault matrix records synchronized.</p>';
-                return;
-            }
-            container.innerHTML = data.map(p => `
-                <div class="vault-media-card">
-                    <div class="vault-media-frame">
-                        <img src="${p.image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'}" alt="${p.title}">
-                    </div>
-                    <div class="vault-media-meta">
-                        <span class="vault-media-tag">${p.category || 'System Core'}</span>
-                        <h4 class="vault-media-title">${p.title}</h4>
-                        <p class="vault-media-desc">${p.description || 'No descriptive structural payload detailed for this specific media asset.'}</p>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to extract portfolio nodes from media storage repository.</p>';
-        }
-    }
-
-    async function loadCaseStudies() {
-        const container = document.getElementById('caseStudiesContainer');
-        if (!container) return;
-        try {
-            const data = await executeSecureQueryFetch('/api/case_studies');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No corporate case study structures cataloged.</p>';
-                return;
-            }
-            container.innerHTML = data.map(c => `
-                <div class="catalog-node-card" style="border-left: 3px solid var(--accent-yellow);">
-                    <div>
-                        <div class="node-icon-header">
-                            <div class="node-icon-wrapper" style="color: var(--accent-yellow); background: rgba(255,183,0,0.1);"><i class="fa-solid fa-chart-line"></i></div>
-                            <span class="node-badge" style="background: rgba(0,68,255,0.1); color: var(--primary-blue);">${c.client || 'Enterprise'}</span>
+            } catch (runtimeFaultAnomalyError) {
+                console.warn('Portfolio Ingestion Module Exception Alert:', runtimeFaultAnomalyError.message);
+                
+                // Graceful execution fallback onto design-structured records layout
+                containerNodeElement.innerHTML = pristineLocalFallbackPortfolio.map(record => `
+                    <article class="portfolio-corporate-card">
+                        <div class="portfolio-image-wrapper">
+                            <img src="${record.image_url}" alt="${record.title}">
+                            <span class="portfolio-category-badge">${record.category}</span>
                         </div>
-                        <h4 class="node-title">${c.title}</h4>
-                        <p class="node-desc">${c.description || 'Architectural performance summary details missing from central record schema.'}</p>
-                    </div>
-                    <div class="node-footer-meta" style="border-top:none; padding-top:0;">
-                        <span style="font-size:0.75rem; color: var(--accent-yellow); font-weight:600;"><i class="fa-solid fa-bolt"></i> Optimized</span>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to sync runtime case study metric indexes.</p>';
-        }
-    }
-
-    async function loadBlogs() {
-        const container = document.getElementById('blogsContainer');
-        if (!container) return;
-        try {
-            const data = await executeSecureQueryFetch('/api/blogs');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No operational logs updated in system repository feed.</p>';
-                return;
-            }
-            container.innerHTML = data.map(b => `
-                <div class="catalog-node-card">
-                    <div>
-                        <div class="node-icon-header">
-                            <div class="node-icon-wrapper"><i class="fa-solid fa-terminal"></i></div>
-                            <span style="font-size:0.65rem; color: var(--text-gray);">${b.author || 'Operator'}</span>
+                        <div class="portfolio-body-frame">
+                            <h3 class="portfolio-card-title">${record.title}</h3>
+                            <p class="portfolio-card-desc">${record.description}</p>
+                            <a href="portfolio.html" class="portfolio-navigation-anchor">
+                                View Full Specifications <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
+                            </a>
                         </div>
-                        <h4 class="node-title" style="font-size:0.95rem;">${b.title}</h4>
-                        <p class="node-desc" style="font-size:0.75rem;">${b.content ? b.content.substring(0, 100) + '...' : 'Log payload body context is null.'}</p>
-                    </div>
-                    <div class="node-footer-meta">
-                        <span style="font-size:0.7rem; color: var(--text-gray);"><i class="fa-regular fa-calendar"></i> ${b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Active'}</span>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch active structural intelligence log records.</p>';
-        }
-    }
-
-    async function loadTestimonials() {
-        const container = document.getElementById('testimonialsContainer');
-        if (!container) return;
-        try {
-            const data = await executeSecureQueryFetch('/api/testimonials');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-gray); font-size:0.8rem;">No verification indexes logged.</p>';
-                return;
+                    </article>
+                `).join('');
             }
-            container.innerHTML = data.map(t => `
-                <div class="catalog-node-card" style="background-color: #1a2333;">
-                    <div>
-                        <div style="color: var(--accent-yellow); font-size:0.75rem; margin-bottom:0.4rem;">
-                            ${'<i class="fa-solid fa-star"></i>'.repeat(t.rating || 5)}
-                        </div>
-                        <p class="node-desc" style="font-style: italic; font-size:0.78rem;">"${t.content || 'System rating verification statement left blank.'}"</p>
-                    </div>
-                    <div class="node-footer-meta">
-                        <span style="font-size:0.75rem; font-weight:600; color:var(--text-light);">${t.name}</span>
-                        <span style="font-size:0.65rem; color: var(--primary-blue); text-transform:uppercase;">${t.company || 'Partner'}</span>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            console.error(e);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.8rem;">Failed to fetch client rating indices from database.</p>';
         }
-    }
 
-    // 4. WhatsApp Real-Time Direct Order Compilation Workflow Routing Node
-    function dispatchWhatsAppOrder(packageName, baseCost) {
-        const targetLine = "254740212181"; // Primary Operational Gateway Communication System Line
-        const formatPayloadText = `Hello DAN74TECH MEDIA, I want to initiate an order pipeline execution for the following catalog subservice module configuration:\n\n• Package Identity Node: ${packageName}\n• Verified Price Parameter: KES ${parseFloat(baseCost).toLocaleString()}\n\nPlease route this payload to processing queue.`;
-        window.open(`https://wa.me/${targetLine}?text=${encodeURIComponent(formatPayloadText)}`, '_blank');
-    }
-
-    // 5. Submit Event Handling Operations For Strategy Session Form Terminal
-    document.getElementById('consultationForm')?.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const payloadData = {
-            name: document.getElementById('clientName').value,
-            email: document.getElementById('clientEmail').value,
-            phone: document.getElementById('clientPhone').value,
-            date: document.getElementById('consultationDate').value,
-            notes: document.getElementById('projectSpecs').value
-        };
-
-        try {
-            const res = await fetch('/api/consultations', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payloadData)
-            });
-
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Central operational API node rejected the execution payload parameters.');
+        // Mobile Responsive Dropdown Navigation Console Logic Engine Handler
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const navigationLinksNodeList = document.getElementById('navbarLinksList');
+            if (navigationLinksNodeList) {
+                if (navigationLinksNodeList.style.display === 'flex') {
+                    navigationLinksNodeList.style.display = 'none';
+                } else {
+                    navigationLinksNodeList.style.display = 'flex';
+                    navigationLinksNodeList.style.flexDirection = 'column';
+                    navigationLinksNodeList.style.position = 'absolute';
+                    navigationLinksNodeList.style.top = '80px';
+                    navigationLinksNodeList.style.left = '0';
+                    navigationLinksNodeList.style.width = '100%';
+                    navigationLinksNodeList.style.backgroundColor = 'var(--bg-pure)';
+                    navigationLinksNodeList.style.padding = '2rem';
+                    navigationLinksNodeList.style.borderBottom = '1px solid var(--border-light)';
+                    navigationLinksNodeList.style.gap = '1.5rem';
+                    navigationLinksNodeList.style.boxShadow = 'var(--shadow-md)';
+                }
             }
+        });
 
-            triggerToast('🚀 Consultation payload processed successfully. Gateway synced.');
-            document.getElementById('consultationForm').reset();
-        } catch (error) {
-            triggerToast(error.message, false);
-        }
-    });
-
-    // 6. Form Submission Operations For Newsletter Subscriptions System Module
-    document.getElementById('newsletterForm')?.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const emailInput = document.getElementById('subscriberEmail');
-        if (!emailInput) return;
-
-        try {
-            const res = await fetch('/api/subscribers', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: emailInput.value })\
-            });
-
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'System failed to insert email record into newsletter queue schema.');
-            }
-
-            triggerToast('🚀 Subscription record verified. Welcome to our network newsletter!');
-            emailInput.value = '';
-        } catch (error) {
-            triggerToast(error.message, false);
-        }
-    });
-
-    // Fire Ingestion Hooks On DOM Frame Lock
-    document.addEventListener('DOMContentLoaded', () => {
-        loadServices();
-        loadPortfolio();
-        loadCaseStudies();
-        loadBlogs();
-        loadTestimonials();
-    });
-</script>
-
+        // Attach layout loading routines directly to document frame initialization hook
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchFeaturedPortfolioPreview();
+        });
+    </script>
 </body>
 </html>
