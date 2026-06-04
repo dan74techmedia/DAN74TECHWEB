@@ -3,310 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Services | DAN74TECH MEDIA</title>
+    <title>Our Services | DAN74TECH MEDIA - Production Core</title>
     
-    <!-- Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome 6 for Modern UI Icons -->
+    <meta name="description" content="Explore production-grade tech solutions engineered by DAN74TECH MEDIA. Full-stack web architectures, custom Android applications, advanced ICT diagnostics, and creative media strategies.">
+    <meta name="keywords" content="DAN74TECH, Daniel Ngumi, App Development, Web Development, Meru, Kenya, Node.js, Express, Postgres, Services, Tech Support">
+    <meta name="author" content="DAN74TECH MEDIA">
+    <meta name="robots" content="index, follow">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        brandBlue: '#0044ff',
+                        brandDeep: '#0022aa',
+                        brandYellow: '#ffb700',
+                        brandRed: '#ff2a2a',
+                        bgDark: '#0b0f19',
+                        bgCard: '#151c2c',
+                        borderLight: '#222f47'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            /* Official Theme Palette from Admin */
-            --primary-blue: #0044ff;
-            --deep-blue: #0022aa;
-            --accent-yellow: #ffd700;
-            --accent-red: #ff2a2a;
-            
-            /* Backgrounds & Text */
-            --bg-light: #f5f7fa;
-            --text-dark: #1e1e24;
-            --card-bg: #ffffff;
-        }
-
         body {
-            margin: 0;
-            padding: 0;
+            background-color: #0b0f19;
+            color: #f3f4f6;
             font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
-            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
-        
-        /* --- Header --- */
-        header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
-            color: white;
-            padding: 50px 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--accent-yellow);
+        .glowing-text-blue {
+            text-shadow: 0 0 20px rgba(0, 68, 255, 0.6);
         }
-
-        .logo {
-            width: 100px;
-            height: auto;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        .glowing-border-card {
+            border: 1px solid #222f47;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        header h1 {
-            font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;            
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .glowing-border-card:hover {
+            border-color: #0044ff;
+            box-shadow: 0 10px 30px -10px rgba(0, 68, 255, 0.3);
+            transform: translateY(-4px);
         }
-
-        /* --- Navigation --- */
-        nav {
-            background: var(--deep-blue);
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 5px 20px;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.3s, transform 0.3s;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f19;
         }
-
-        nav a:hover {
-            color: var(--accent-yellow);
-            transform: translateY(-2px);
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #222f47;
+            border-radius: 3px;
         }
-
-        /* --- Services Container --- */
-        .services-wrapper {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            min-height: 50vh;
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #0044ff;
         }
-
-        .details-section { 
-            background: var(--card-bg);
-            padding: 40px 30px; 
-            margin-bottom: 25px;
-            border-radius: 12px;
-            border-left: 5px solid var(--primary-blue); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .toast-notification {
+            animation: slideInRight 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-
-        .details-section:hover { 
-            transform: translateX(5px);
-            border-left: 5px solid var(--accent-red);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .details-section h2 { 
-            font-family: 'Montserrat', sans-serif; 
-            color: var(--deep-blue); 
-            text-transform: uppercase; 
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 0;
-            font-size: 1.8rem;
-        }
-
-        .details-section p.desc {
-            font-size: 1.05rem;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .price-tag { 
-            color: var(--accent-red); 
-            font-weight: 700; 
-            font-size: 1.1rem; 
-            background: #fff0f0;
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 42, 42, 0.2);
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        .btn-order {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--primary-blue);
-            color: white;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 68, 255, 0.2);
-        }
-
-        .btn-order:hover {
-            background: var(--accent-red);
-            transform: translateX(5px);
-            box-shadow: 0 6px 15px rgba(255, 42, 42, 0.3);
-            color: white;
-        }
-
-        /* --- Footer --- */
-        footer {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 60px 20px 30px;
-            border-top: 4px solid var(--accent-red);
-            margin-top: 50px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto 40px auto;
-            text-align: left;
-        }
-
-        .loader {
-            text-align: center;
-            color: var(--primary-blue);
-            font-size: 1.5rem;
-            padding: 60px;
-        }
-
-        @media (max-width: 600px) {
-            .details-section { padding: 25px 20px; }
-            header h1 { font-size: 2rem; }
+        @keyframes slideInRight {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
-<body>
+<body class="custom-scrollbar min-h-screen flex flex-col justify-between">
 
-<header>
-    <img src="images/logo.png" alt="DAN74TECH Logo" class="logo" onerror="this.src='https://placehold.co/100x100/0044ff/FFF?text=D74'">
-    <h1>OUR SERVICES</h1>
-</header>
-  
-<nav>
-    <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="about.html"><i class="fa-solid fa-user-tie"></i> About</a>
-    <a href="services.html" style="color: var(--accent-yellow);"><i class="fa-solid fa-layer-group"></i> Services</a>
-    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
-</nav>
-
-<!-- Dynamic Services List Container -->
-<div class="services-wrapper" id="services-container">
-    <div class="loader"><i class="fas fa-spinner fa-spin"></i> Fetching Services Menu...</div>
-</div>
-
-<footer>
-    <div class="footer-grid">
-        <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
-            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
-            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
-        </div>
-        <div style="text-align: right;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
-            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #444;">
-               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-bgDark/80 border-b border-borderLight transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-brandBlue flex items-center justify-center font-heading text-white font-extrabold text-xl shadow-lg shadow-brandBlue/30 group-hover:scale-105 transition-transform">
+                    D
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-heading font-extrabold text-lg tracking-wider text-white">DAN74TECH <span class="text-brandBlue">MEDIA</span></span>
+                    <span class="text-[10px] tracking-widest text-gray-400 font-medium uppercase -mt-1">Operational Ecosystem</span>
+                </div>
             </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="index.html" class="text-gray-300 hover:text-brandBlue transition-colors">Home</a>
+                <a href="services.html" class="text-brandBlue border-b-2 border-brandBlue pb-1 transition-colors">Services</a>
+                <a href="index.html#portfolio" class="text-gray-300 hover:text-brandBlue transition-colors">Portfolio</a>
+                <a href="index.html#contact" class="text-gray-300 hover:text-brandBlue transition-colors">Contact</a>
+                <a href="admin.html" class="bg-borderLight hover:bg-brandBlue text-white px-4 py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all duration-300 flex items-center gap-2 border border-gray-700/50">
+                    <i class="fa-solid fa-terminal text-brandYellow"></i> Console
+                </a>
+            </nav>
+
+            <button id="mobileNavigationToggleTrigger" class="md:hidden text-white hover:text-brandBlue focus:outline-none p-2 rounded-lg bg-bgCard border border-borderLight" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
         </div>
-    </div>
-    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
-        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
-    </div>
-</footer>
 
-<!-- ========================================== -->
-<!-- DYNAMIC DATABASE INJECTION SCRIPT -->
-<!-- ========================================== -->
-<script>
-    // Smart Call-To-Action generator based on the dynamic service slug keywords
-    function getCallToAction(route) {
-        const lowerRoute = route.toLowerCase();
-        if (lowerRoute.includes('graph')) return 'Order Graphics & Upload Files';
-        if (lowerRoute.includes('video') || lowerRoute.includes('film')) return 'Send Video Project';
-        if (lowerRoute.includes('web')) return 'Get a Web Quote';
-        if (lowerRoute.includes('app') || lowerRoute.includes('soft')) return 'Build Your App';
-        if (lowerRoute.includes('repair') || lowerRoute.includes('fix')) return 'Book Repair Slot';
-        if (lowerRoute.includes('consult') || lowerRoute.includes('advic') || lowerRoute.includes('ict')) return 'Book Consultation';
-        
-        return 'Explore Packages & Order';
-    }
+        <div id="navbarLinksList" class="hidden md:hidden bg-bgDark border-b border-borderLight px-4 py-6 space-y-4 absolute top-20 left-0 w-full shadow-2xl transition-all duration-300">
+            <a href="index.html" class="block text-gray-300 hover:text-brandBlue font-medium py-2">Home</a>
+            <a href="services.html" class="block text-brandBlue font-semibold py-2 border-l-4 border-brandBlue pl-2">Services</a>
+            <a href="index.html#portfolio" class="block text-gray-300 hover:text-brandBlue font-medium py-2">Portfolio</a>
+            <a href="index.html#contact" class="block text-gray-300 hover:text-brandBlue font-medium py-2">Contact</a>
+            <div class="pt-4 border-t border-borderLight">
+                <a href="admin.html" class="w-full text-center bg-brandBlue hover:bg-brandDeep text-white block py-3 rounded-xl text-sm font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-terminal mr-2"></i> Management Console
+                </a>
+            </div>
+        </div>
+    </header>
 
-    async function fetchDetailedServices() {
-        const container = document.getElementById('services-container');
-        if (!container) return;
+    <main class="flex-grow">
+        <section class="relative py-20 bg-gradient-to-b from-bgDark via-bgDark to-[#0f1626] overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,68,255,0.08),transparent_50%)]"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+                <span class="text-xs font-bold uppercase tracking-widest text-brandBlue bg-brandBlue/10 px-4 py-1.5 rounded-full border border-brandBlue/20 inline-block mb-4">
+                    Dynamic Database Registry
+                </span>
+                <h1 class="font-heading font-extrabold text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-tight">
+                    Engineered <span class="bg-gradient-to-r from-brandBlue to-cyan-400 bg-clip-text text-transparent glowing-text-blue">Tech Solutions</span>
+                </h1>
+                <p class="mt-6 text-gray-400 text-base md:text-lg max-w-2xl mx-auto font-light">
+                    Production-ready matrix of full-stack services, network infrastructure auditing, custom Android apps, and high-performance digital media assets.
+                </p>
+            </div>
+        </section>
 
-        try {
-            const res = await fetch('/api/services');
-            if (!res.ok) throw new Error('Failed to fetch services database');
+        <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div id="dynamicServicesWrapperContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-bgCard rounded-2xl p-8 border border-borderLight animate-pulse space-y-6">
+                    <div class="w-14 h-14 bg-borderLight rounded-xl"></div>
+                    <div class="h-6 bg-borderLight rounded w-3/4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-borderLight rounded w-full"></div>
+                        <div class="h-4 bg-borderLight rounded w-5/6"></div>
+                    </div>
+                    <div class="h-10 bg-borderLight rounded-xl w-full"></div>
+                </div>
+                <div class="bg-bgCard rounded-2xl p-8 border border-borderLight animate-pulse space-y-6 hidden md:block">
+                    <div class="w-14 h-14 bg-borderLight rounded-xl"></div>
+                    <div class="h-6 bg-borderLight rounded w-2/3"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-borderLight rounded w-full"></div>
+                        <div class="h-4 bg-borderLight rounded w-4/5"></div>
+                    </div>
+                    <div class="h-10 bg-borderLight rounded-xl w-full"></div>
+                </div>
+                <div class="bg-bgCard rounded-2xl p-8 border border-borderLight animate-pulse space-y-6 hidden lg:block">
+                    <div class="w-14 h-14 bg-borderLight rounded-xl"></div>
+                    <div class="h-6 bg-borderLight rounded w-1/2"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-borderLight rounded w-full"></div>
+                        <div class="h-4 bg-borderLight rounded w-full"></div>
+                    </div>
+                    <div class="h-10 bg-borderLight rounded-xl w-full"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#070a12] border-t border-borderLight pt-16 pb-8 text-sm text-gray-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 pb-12 border-b border-borderLight">
             
-            const mainServices = await res.json();
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-brandBlue flex items-center justify-center font-heading text-white font-extrabold text-base">D</div>
+                    <span class="font-heading font-extrabold text-base tracking-wider text-white">DAN74TECH <span class="text-brandBlue">MEDIA</span></span>
+                </div>
+                <p class="text-gray-400 font-light leading-relaxed">
+                    Production-grade software systems, infrastructure operations, Level 6 hardware diagnostics, and secure deployment architectures.
+                </p>
+                <div class="flex items-center gap-4 text-lg pt-2">
+                    <a href="https://wa.me/254700000000" target="_blank" class="hover:text-green-400 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-brandBlue transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="hover:text-cyan-400 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="hover:text-brandRed transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
 
-            if (mainServices.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #666;">
-                        <h3>Updating Services Menu...</h3>
-                        <p>Our database is currently syncing. Please check back shortly.</p>
-                    </div>`;
-                return;
-            }
+            <div class="space-y-4">
+                <h4 class="font-heading font-bold text-white uppercase tracking-wider text-xs">Platform Core Map</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="index.html" class="hover:text-brandBlue transition-colors flex items-center gap-1"><i class="fa-solid fa-chevron-right text-[10px] text-brandBlue"></i> Hub Root</a>
+                    <a href="services.html" class="text-brandBlue transition-colors flex items-center gap-1"><i class="fa-solid fa-chevron-right text-[10px]"></i> Matrix Services</a>
+                    <a href="index.html#portfolio" class="hover:text-brandBlue transition-colors flex items-center gap-1"><i class="fa-solid fa-chevron-right text-[10px] text-brandBlue"></i> Portfolio</a>
+                    <a href="index.html#contact" class="hover:text-brandBlue transition-colors flex items-center gap-1"><i class="fa-solid fa-chevron-right text-[10px] text-brandBlue"></i> Contact Pipeline</a>
+                    <a href="admin.html" class="hover:text-brandYellow transition-colors flex items-center gap-1"><i class="fa-solid fa-lock text-[10px] text-brandYellow"></i> Secured Panel</a>
+                </div>
+            </div>
 
-            container.innerHTML = mainServices.map(service => {
-                // Dynamically build safe URLs and IDs directly from the database name string
-                const generatedRoute = service.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                const ctaText = getCallToAction(generatedRoute);
-                
-                return `
-                    <section class="details-section" id="${generatedRoute}">
-                        <h2>${service.icon || '💼'} ${service.name}</h2>
-                        <p class="desc">${service.description || 'Professional tech solutions tailored to your project requirements.'}</p>
-                        <div class="price-tag"><i class="fa-solid fa-tags"></i> Custom Pricing & Packages Available</div>
-                        <br>
-                        <a href="${generatedRoute}.html" class="btn-order">
-                            ${ctaText} <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-                    </section>
-                `;
-            }).join('');
+            <div class="space-y-4">
+                <h4 class="font-heading font-bold text-white uppercase tracking-wider text-xs">Newsletter Database Feed</h4>
+                <p class="text-gray-400 font-light text-xs">Synchronize telemetry data and patch releases directly to your inbox.</p>
+                <form id="globalPlatformNewsletterFormPipeline" class="space-y-2">
+                    <div class="relative">
+                        <input type="email" id="newsletterEmailInputNode" placeholder="Enter production email..." required
+                               class="w-full bg-bgCard border border-borderLight rounded-xl px-4 py-3 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-brandBlue focus:ring-1 focus:ring-brandBlue transition-all">
+                        <button type="submit" class="absolute right-2 top-2 bg-brandBlue hover:bg-brandDeep text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                            Feed
+                        </button>
+                    </div>
+                </form>
+                <div class="text-[11px] text-gray-500 flex items-center gap-2">
+                    <i class="fa-solid fa-database text-brandBlue"></i> Connected Node: <span id="subscriberCounterNode" class="text-gray-300 font-mono">140+ Pool</span>
+                </div>
+            </div>
+        </div>
 
-        } catch (error) {
-            console.error('Error fetching services context rows:', error);
-            container.innerHTML = `
-                <div style="text-align: center; padding: 50px; color: var(--accent-red);">
-                    <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
-                    <h3>Unable to load services database</h3>
-                    <p>Please check your backend connection or database runtime server status.</p>
-                </div>`;
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+            <p>&copy; 2026 <span class="text-gray-300 font-medium">DAN74TECH MEDIA</span>. All architectural rights reserved globally.</p>
+            <p class="font-mono bg-bgCard px-3 py-1 rounded-md border border-borderLight">v2.4.0-prod-build</p>
+        </div>
+    </footer>
+
+    <div id="globalNotificationSystemToastStack" class="fixed bottom-6 right-6 z-50 space-y-3 pointer-events-none max-w-sm w-full"></div>
+
+    <script>
+        // API Interface Router Root Environment Endpoint Config
+        const API_BASE = window.location.origin === 'http://127.0.0.1:5500' || window.location.hostname === 'localhost' 
+            ? 'http://localhost:10000/api' 
+            : '/api';
+
+        // 1. Dynamic Notification Toast Vector Engine
+        function pushSystemOperationalToast(message, variantType = 'success') {
+            const stackContainer = document.getElementById('globalNotificationSystemToastStack');
+            if (!stackContainer) return;
+
+            const toastNode = document.createElement('div');
+            toastNode.className = `toast-notification pointer-events-auto w-full max-w-sm rounded-xl p-4 shadow-2xl flex items-start gap-3 border ${
+                variantType === 'success' 
+                    ? 'bg-[#0f241a] border-green-500/30 text-green-400' 
+                    : 'bg-[#2d1215] border-red-500/30 text-red-400'
+            }`;
+
+            const iconNode = variantType === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            toastNode.innerHTML = `
+                <i class="fa-solid ${iconNode} mt-0.5 text-base"></i>
+                <div class="flex-grow">
+                    <p class="text-xs font-medium leading-relaxed">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white transition-colors text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+            `;
+
+            stackContainer.appendChild(toastNode);
+            setTimeout(() => { if(toastNode) toastNode.remove(); }, 5000);
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', fetchDetailedServices);
-</script>
+        // 2. Responsive Hamburger Toggle Execution Vector
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const dropMatrix = document.getElementById('navbarLinksList');
+            if (dropMatrix) {
+                dropMatrix.classList.toggle('hidden');
+            }
+        });
 
+        // 3. Dynamic Service Layer Compilation and DOM Injection
+        async function runDynamicServicesEcosystemCompilation() {
+            const containerNode = document.getElementById('dynamicServicesWrapperContainer');
+            if (!containerNode) return;
+
+            try {
+                // Fetch targeting server.js route handler definition matching the database model schema
+                const requestPayloadStream = await fetch(`${API_BASE}/services`);
+                if (!requestPayloadStream.ok) throw new Error('Failed to draw operational payload from core system cluster API.');
+                
+                const responseDataVector = await requestPayloadStream.json();
+                
+                if (!responseDataVector || responseDataVector.length === 0) {
+                    containerNode.innerHTML = `
+                        <div class="col-span-full text-center py-12 border border-dashed border-borderLight rounded-2xl bg-bgCard">
+                            <i class="fa-solid fa-cubes text-gray-600 text-3xl mb-3"></i>
+                            <p class="text-sm text-gray-400">No active operational services cataloged in database cluster pipeline rows.</p>
+                        </div>`;
+                    return;
+                }
+
+                // Compile and map individual array objects securely into native DOM components
+                containerNode.innerHTML = responseDataVector.map(service => {
+                    const fallbackIcon = service.icon && service.icon.startsWith('fa-') ? service.icon : 'fa-laptop-code';
+                    const routeSlugString = service.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    
+                    // Unified Communication Payload Setup targeting Daniel Ngumi's workflow route
+                    const structuredWhatsAppString = encodeURIComponent(
+                        `🚀 DAN74TECH MEDIA Operations Hub Request:\n\n` +
+                        `Hello Daniel Ngumi, I am interested in initializing a project alignment under your production segment:\n` +
+                        `• Service Line: ${service.name}\n` +
+                        `• Reference Registry ID: #${service.id}\n\n` +
+                        `Please provide technical timeline estimates and structural diagnostics documentation schema configuration framework.`
+                    );
+
+                    return `
+                        <article class="glowing-border-card bg-bgCard rounded-2xl p-8 flex flex-col justify-between relative group overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-brandBlue to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                            <div>
+                                <div class="w-14 h-14 bg-brandBlue/10 border border-brandBlue/20 rounded-xl flex items-center justify-center text-brandBlue text-xl mb-6 group-hover:bg-brandBlue group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid ${fallbackIcon}"></i>
+                                </div>
+                                <h3 class="font-heading font-bold text-lg text-white mb-3 group-hover:text-brandBlue transition-colors">${service.name}</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed font-light mb-6">${service.description || 'Professional technology system deployment tailored to modern production standard specifications.'}</p>
+                            </div>
+                            <div class="pt-4 border-t border-borderLight/50 flex flex-col gap-3">
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-tags text-brandYellow"></i> Standard Plan</span>
+                                    <span class="font-mono bg-bgDark px-2 py-0.5 rounded text-gray-400 border border-borderLight">Dynamic Quote</span>
+                                </div>
+                                <a href="https://wa.me/254700000000?text=${structuredWhatsAppString}" target="_blank" 
+                                   class="w-full text-center bg-brandBlue/10 hover:bg-brandBlue text-brandBlue hover:text-white font-semibold text-xs py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mt-2">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i> Instantiate Pipeline Link
+                                </a>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+            } catch (runtimeFaultException) {
+                console.error('System Architecture Mapping Fault Triggered:', runtimeFaultException);
+                containerNode.innerHTML = `
+                    <div class="col-span-full text-center py-12 px-4 border border-brandRed/30 rounded-2xl bg-brandRed/5">
+                        <i class="fa-solid fa-triangle-exclamation text-brandRed text-3xl mb-3"></i>
+                        <h3 class="text-white font-bold text-sm mb-1">Database Communication Pipeline Down</h3>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto">Unable to establish a link to the services infrastructure. Verify that the server engine execution state is online.</p>
+                    </div>`;
+            }
+        }
+
+        // 4. Newsletter Verification & POST Transaction Loop Node Connection
+        document.getElementById('globalPlatformNewsletterFormPipeline')?.addEventListener('submit', async function(eventContext) {
+            eventContext.preventDefault();
+            const inputFieldElementNode = document.getElementById('newsletterEmailInputNode');
+            const counterNode = document.getElementById('subscriberCounterNode');
+            if (!inputFieldElementNode) return;
+
+            const structuredEmailPayloadString = inputFieldElementNode.value.trim();
+
+            try {
+                const queryTransactionStream = await fetch(`${API_BASE}/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: structuredEmailPayloadString })
+                });
+
+                if (queryTransactionStream.ok) {
+                    pushSystemOperationalToast('Email pipeline synchronization succeeded. Address bound securely to subscriber matrix.', 'success');
+                    inputFieldElementNode.value = '';
+                    if (counterNode) {
+                        const extractedNumericBaseInt = parseInt(counterNode.textContent) || 140;
+                        counterNode.textContent = `${extractedNumericBaseInt + 1}+ Pool`;
+                    }
+                } else {
+                    const errorDiagnosticsStreamBuffer = await queryTransactionStream.json();
+                    throw new Error(errorDiagnosticsStreamBuffer.error || 'Server rejected registration parameters.');
+                }
+            } catch (catchContextError) {
+                pushSystemOperationalToast(catchContextError.message || 'Pipeline interaction failure code executed.', 'error');
+            }
+        });
+
+        // 5. Native Automation Bootstrap Matrix Hooks
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load and execute data grid fetch pipelines
+            runDynamicServicesEcosystemCompilation();
+            
+            // Push active cluster verification notification system telemetry toast
+            setTimeout(() => {
+                pushSystemOperationalToast('DAN74TECH MEDIA Network Core Matrix operational.', 'success');
+            }, 600);
+        });
+    </script>
 </body>
 </html>
-
