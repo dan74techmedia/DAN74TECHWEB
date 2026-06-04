@@ -3,572 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Official Tech Hub</title>
+    <title>Contact | DAN74TECH MEDIA</title>
     
-    <meta name="description" content="DAN74TECH MEDIA is a premier technology development and digital agency hub specializing in full-stack web solutions, custom Android applications, ICT infrastructure diagnostics, and creative media strategy managed by Daniel Ngumi.">
-    <meta name="keywords" content="DAN74TECH, Daniel Ngumi, Tech Support, Web Development, Meru, Kenya, Node.js, Express, Postgres, Android Developer, ICT Technician, Creative Media, Level 6 Diagnostics">
-    <meta name="author" content="DAN74TECH MEDIA">
-    <meta name="robots" content="index, follow">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://dan74techmedia.com/">
-    <meta property="og:title" content="DAN74TECH MEDIA | Official Tech Hub">
-    <meta property="og:description" content="Empowering businesses with production-grade web systems, Android deployment matrices, advanced hardware diagnostics, and high-performance digital media campaigns.">
-    <meta property="og:image" content="https://placehold.co/1200x630/0044ff/ffffff?text=DAN74TECH+MEDIA">
-
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              fontFamily: {
-                sans: ['Poppins', 'sans-serif'],
-                heading: ['Montserrat', 'sans-serif'],
-              },
-              colors: {
-                brandBlue: '#0044ff',
-                deepBlue: '#0022aa',
-                accentYellow: '#ffd700',
-                accentRed: '#ff2a2a',
-                textDark: '#1e1e24',
-                bgLight: '#f5f7fa',
-                cardBg: '#ffffff'
-              },
-              boxShadow: {
-                customSm: '0 2px 8px rgba(0, 68, 255, 0.04)',
-                customMd: '0 8px 24px rgba(0, 68, 255, 0.08)'
-              }
-            }
-          }
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        html {
-            scroll-behavior: smooth;
+        :root {
+            --brand-blue: #0044ff;
+            --brand-red: #ff2a2a;
+            --brand-yellow: #ffd700;
+            --bg-light: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-light: #e2e8f0;
         }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fa;
-            color: #1e1e24;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
             overflow-x: hidden;
         }
-        .font-heading {
-            font-family: 'Montserrat', sans-serif;
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
         }
-        /* Custom Scrollbar Architecture */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+
+        /* Abstract Premium Geometric Background Elements */
+        .hero-mesh {
+            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.08), transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.05), transparent 45%);
         }
-        ::-webkit-scrollbar-track {
-            background: #f5f7fa;
+
+        /* Continuous Smooth Subtle Rotation Effect */
+        .subtle-pulse-glow {
+            box-shadow: 0 0 30px rgba(0, 68, 255, 0.15);
+            animation: pulseGlow 4s ease-in-out infinite alternate;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #0044ff;
-            border-radius: 4px;
+
+        @keyframes pulseGlow {
+            0% { transform: translateY(0px); box-shadow: 0 0 30px rgba(0, 68, 255, 0.1); }
+            100% { transform: translateY(-6px); box-shadow: 0 0 45px rgba(255, 42, 42, 0.15); }
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0022aa;
+
+        /* Toast Slide Animation Matrix */
+        .toast-notification {
+            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
-<body class="bg-bgLight text-textDark flex flex-col min-h-screen">
+<body class="antialiased selection:bg-[#0044ff] selection:text-white">
 
-    <div id="toastContainerMatrix" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full"></div>
+    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
 
-    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-customSm transition-all duration-300">
+    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <a href="index.html" class="flex items-center gap-2 group">
-                <div class="bg-brandBlue text-white p-2.5 rounded-xl shadow-md transition-transform group-hover:scale-105">
-                    <i class="fa-solid fa-microchip text-xl"></i>
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-heading font-black text-xl tracking-tight text-brandBlue leading-none">DAN74TECH</span>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">MEDIA HUB</span>
+                    <span class="text-lg font-extrabold tracking-tight text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Professional Tech & Creative Solutions</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="text-brandBlue font-bold text-sm transition-colors">Home</a>
-                <a href="services.html" class="text-gray-600 hover:text-brandBlue font-semibold text-sm transition-colors">Services</a>
-                <a href="portfolio.html" class="text-gray-600 hover:text-brandBlue font-semibold text-sm transition-colors">Portfolio</a>
-                <a href="about.html" class="text-gray-600 hover:text-brandBlue font-semibold text-sm transition-colors">About</a>
-                <a href="contact.html" class="text-gray-600 hover:text-brandBlue font-semibold text-sm transition-colors">Contact</a>
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold tracking-wide text-gray-600">
+                <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
+                <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
+                <a href="services.html" class="hover:text-[#0044ff] transition-colors">Services</a>
+                <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
+                <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
+                <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
+                <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
+                <a href="contact.html" class="px-4 py-2 rounded-lg bg-[#0044ff] text-white font-bold shadow-sm">Get In Touch</a>
             </nav>
 
-            <div class="hidden md:flex items-center gap-4">
-                <a href="https://wa.me/254743555542" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
-                    <i class="fa-brands fa-whatsapp text-lg"></i> Live Chat
-                </a>
-            </div>
-
-            <button id="mobileNavigationToggleTrigger" class="md:hidden flex items-center p-2 rounded-xl text-gray-600 hover:text-brandBlue hover:bg-gray-50 transition-colors">
-                <i class="fa-solid fa-bars-staggered text-2xl"></i>
+            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars-staggered text-xl"></i>
             </button>
         </div>
 
-        <div id="navbarLinksList" class="hidden md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-100 shadow-customMd flex flex-col p-6 gap-4 animate-fade-in">
-            <a href="index.html" class="text-brandBlue font-bold text-base border-l-4 border-brandBlue pl-3">Home</a>
-            <a href="services.html" class="text-gray-600 hover:text-brandBlue font-semibold text-base pl-3">Our Services</a>
-            <a href="portfolio.html" class="text-gray-600 hover:text-brandBlue font-semibold text-base pl-3">Featured Portfolio</a>
-            <a href="about.html" class="text-gray-600 hover:text-brandBlue font-semibold text-base pl-3">About Team</a>
-            <a href="contact.html" class="text-gray-600 hover:text-brandBlue font-semibold text-base pl-3">Get In Touch</a>
-            <div class="h-px bg-gray-100 my-2"></div>
-            <a href="https://wa.me/254743555542" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-center py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all">
-                <i class="fa-brands fa-whatsapp text-lg"></i> Engage on WhatsApp
-            </a>
+        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-6 flex flex-col gap-4 text-base font-semibold">
+            <a href="index.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Home Entry</a>
+            <a href="about.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">About Us</a>
+            <a href="services.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Services Portal</a>
+            <a href="portfolio.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
+            <a href="case-studies.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Case Studies</a>
+            <a href="blog.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Blog Platform</a>
+            <a href="testimonials.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Client Testimonials</a>
+            <a href="contact.html" class="mt-2 w-full text-center py-3 rounded-xl bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-md">Connect Directly</a>
         </div>
     </header>
 
-    <main class="flex-grow">
-        <section class="relative bg-gradient-to-br from-white via-[#fcfdfe] to-[#f0f4ff] pt-20 pb-24 overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-                
-                <div class="flex flex-col text-left">
-                    <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-brandBlue font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-full w-max mb-6">
-                        <i class="fa-solid fa-circle-check animate-pulse text-emerald-500"></i> Unified Digital Operations Platform Active
-                    </div>
-                    <h1 class="font-heading font-black text-4xl sm:text-5xl lg:text-6xl text-textDark tracking-tight leading-none mb-6">
-                        Bridging Technical Engineering & <span class="text-brandBlue bg-gradient-to-r from-brandBlue to-deepBlue bg-clip-text text-transparent">Creative Media</span>
-                    </h1>
-                    <p class="text-gray-600 text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
-                        Welcome to DAN74TECH MEDIA, your premier production hub for cutting-edge digital system development, full-stack website ecosystems, mobile Android deployments, and level-6 infrastructure hardware diagnostics managed by Daniel Ngumi.
-                    </p>
-                    <div class="flex flex-wrap items-center gap-4">
-                        <a href="#servicesAnchorNode" class="bg-brandBlue hover:bg-deepBlue text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1">
-                            Explore Ecosystem <i class="fa-solid fa-arrow-down ml-2"></i>
-                        </a>
-                        <a href="contact.html" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-bold text-base px-8 py-4 rounded-xl shadow-md transition-all transform hover:-translate-y-1">
-                            Request Diagnostic
-                        </a>
-                    </div>
-                </div>
-
-                <div class="relative flex justify-center items-center">
-                    <div class="absolute w-[450px] h-[450px] bg-brandBlue/5 rounded-full filter blur-3xl z-0"></div>
-                    <div class="bg-white p-8 rounded-3xl shadow-customMd border border-gray-100 w-full max-w-md relative z-10 grid grid-cols-2 gap-4">
-                        <div class="p-5 bg-blue-50/60 rounded-2xl border border-blue-100/50 flex flex-col items-start">
-                            <i class="fa-solid fa-code text-2xl text-brandBlue mb-3"></i>
-                            <span class="font-heading font-black text-xl text-textDark">Web & App</span>
-                            <span class="text-xs text-gray-500 mt-1">Full-Stack Deployment Matrix</span>
-                        </div>
-                        <div class="p-5 bg-amber-50/60 rounded-2xl border border-amber-100/50 flex flex-col items-start">
-                            <i class="fa-solid fa-screwdriver-wrench text-2xl text-amber-500 mb-3"></i>
-                            <span class="font-heading font-black text-xl text-textDark">Level 6</span>
-                            <span class="text-xs text-gray-500 mt-1">Advanced ICT Hardware Diagnosis</span>
-                        </div>
-                        <div class="p-5 bg-rose-50/60 rounded-2xl border border-rose-100/50 flex flex-col items-start">
-                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-rose-500 mb-3"></i>
-                            <span class="font-heading font-black text-xl text-textDark">Branding</span>
-                            <span class="text-xs text-gray-500 mt-1">High-Impact Media Strategies</span>
-                        </div>
-                        <div class="p-5 bg-emerald-50/60 rounded-2xl border border-emerald-100/50 flex flex-col items-start">
-                            <i class="fa-solid fa-shield-halved text-2xl text-emerald-500 mb-3"></i>
-                            <span class="font-heading font-black text-xl text-textDark">Database</span>
-                            <span class="text-xs text-gray-500 mt-1">Secure Registry Frameworks</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="servicesAnchorNode" class="py-20 bg-white border-y border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div class="max-w-3xl mx-auto mb-16">
-                    <span class="text-xs font-bold uppercase text-brandBlue tracking-widest bg-blue-50 px-4 py-1.5 rounded-full inline-block mb-3">Ecosystem Capabilities</span>
-                    <h2 class="font-heading font-black text-3xl sm:text-4xl text-textDark tracking-tight">Professional Technology & Creative Architecture</h2>
-                    <p class="text-gray-500 text-sm sm:text-base mt-4">Production-grade infrastructure components deployed directly into live server platforms.</p>
-                </div>
-
-                <div id="servicesDynamicGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <article class="bg-bgLight rounded-2xl p-8 border border-gray-100 hover:shadow-customMd hover:border-brandBlue/20 transition-all duration-300 flex flex-col justify-between text-left group">
-                        <div>
-                            <div class="bg-white text-brandBlue p-4 rounded-xl shadow-sm w-max mb-6 group-hover:bg-brandBlue group-hover:text-white transition-colors">
-                                <i class="fa-solid fa-layer-group text-2xl"></i>
-                            </div>
-                            <h3 class="font-heading font-bold text-xl text-textDark mb-3">Website Development</h3>
-                            <p class="text-gray-600 text-sm leading-relaxed mb-6">High-fidelity, responsive, and secure database-driven production websites built to scale and optimize presence.</p>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-200/60 pt-4 mt-4">
-                            <span class="text-xs font-mono font-bold tracking-wider text-brandBlue bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">From KSH 5,000</span>
-                            <a href="services.html#website-development" class="text-xs font-bold text-gray-500 hover:text-brandBlue flex items-center gap-1 transition-colors">Analyze <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
-                        </div>
-                    </article>
-
-                    <article class="bg-bgLight rounded-2xl p-8 border border-gray-100 hover:shadow-customMd hover:border-brandBlue/20 transition-all duration-300 flex flex-col justify-between text-left group">
-                        <div>
-                            <div class="bg-white text-brandBlue p-4 rounded-xl shadow-sm w-max mb-6 group-hover:bg-brandBlue group-hover:text-white transition-colors">
-                                <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
-                            </div>
-                            <h3 class="font-heading font-bold text-xl text-textDark mb-3">App Development</h3>
-                            <p class="text-gray-600 text-sm leading-relaxed mb-6">Custom robust mobile applications configured with automated registry engines and modern API sync compatibility.</p>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-200/60 pt-4 mt-4">
-                            <span class="text-xs font-mono font-bold tracking-wider text-brandBlue bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">From KSH 25,000</span>
-                            <a href="services.html#app-development" class="text-xs font-bold text-gray-500 hover:text-brandBlue flex items-center gap-1 transition-colors">Analyze <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
-                        </div>
-                    </article>
-
-                    <article class="bg-bgLight rounded-2xl p-8 border border-gray-100 hover:shadow-customMd hover:border-brandBlue/20 transition-all duration-300 flex flex-col justify-between text-left group">
-                        <div>
-                            <div class="bg-white text-brandBlue p-4 rounded-xl shadow-sm w-max mb-6 group-hover:bg-brandBlue group-hover:text-white transition-colors">
-                                <i class="fa-solid fa-microchip text-2xl"></i>
-                            </div>
-                            <h3 class="font-heading font-bold text-xl text-textDark mb-3">ICT Consultation & Repairs</h3>
-                            <p class="text-gray-600 text-sm leading-relaxed mb-6">Advanced level 6 hardware logic board diagnostics, server configurations, network audits, and optimization routines.</p>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-200/60 pt-4 mt-4">
-                            <span class="text-xs font-mono font-bold tracking-wider text-brandBlue bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100">Diagnostic: KSH 500</span>
-                            <a href="services.html#tech-repairs" class="text-xs font-bold text-gray-500 hover:text-brandBlue flex items-center gap-1 transition-colors">Analyze <i class="fa-solid fa-chevron-right text-[10px]"></i></a>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-20 bg-bgLight">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
-                    <div class="text-left max-w-2xl">
-                        <span class="text-xs font-bold uppercase text-brandBlue tracking-widest bg-blue-50 px-4 py-1.5 rounded-full inline-block mb-3">Live Telemetry Pipeline</span>
-                        <h2 class="font-heading font-black text-3xl sm:text-4xl text-textDark tracking-tight">Active Deployments & Portfolio Records</h2>
-                        <p class="text-gray-500 text-sm mt-3">Irreversible record matrices compiled from the PostgreSQL operational tables database rows.</p>
-                    </div>
-                    <a href="portfolio.html" class="bg-white text-brandBlue border border-brandBlue/20 hover:bg-brandBlue hover:text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-all mt-4 md:mt-0 inline-flex items-center gap-2">
-                        View Entire Matrix <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div id="portfolioGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="col-span-full text-center py-12 text-gray-400 font-medium">
-                        <i class="fa-solid fa-circle-notch animate-spin text-3xl text-brandBlue mb-3 block mx-auto"></i>
-                        Synchronizing portfolio registry database context blocks...
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-20 bg-white border-t border-gray-100">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-2xl mx-auto mb-12">
-                    <span class="text-xs font-bold uppercase text-brandBlue tracking-widest bg-blue-50 px-4 py-1.5 rounded-full inline-block mb-3">Secure Transmission</span>
-                    <h2 class="font-heading font-black text-3xl text-textDark tracking-tight">Initialize Project Architecture Request</h2>
-                    <p class="text-gray-500 text-sm mt-2">Submit parameters directly to the database messaging registry table logging pipeline.</p>
-                </div>
-
-                <form id="contactFormMatrix" class="bg-bgLight border border-gray-100 shadow-customSm rounded-3xl p-8 sm:p-10 space-y-6 text-left">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="flex flex-col">
-                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="contactName">Client Operator Name *</label>
-                            <input type="text" id="contactName" required placeholder="e.g. John Doe" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-textDark focus:outline-none focus:border-brandBlue font-medium transition-colors">
-                        </div>
-                        <div class="flex flex-col">
-                            <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="contactEmail">Secure Communication Pipeline Email *</label>
-                            <input type="email" id="contactEmail" required placeholder="e.g. operator@domain.com" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-textDark focus:outline-none focus:border-brandBlue font-medium transition-colors">
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="contactSubject">Operational Mission Subject</label>
-                        <input type="text" id="contactSubject" placeholder="e.g. Web Architecture Execution" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-textDark focus:outline-none focus:border-brandBlue font-medium transition-colors">
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="contactMessage">Core Comprehensive Project Details *</label>
-                        <textarea id="contactMessage" required rows="5" placeholder="Elaborate project requirements, parameters, or level 6 hardware malfunctions..." class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-textDark focus:outline-none focus:border-brandBlue font-medium transition-colors"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-brandBlue hover:bg-deepBlue text-white font-bold text-base py-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
-                        <i class="fa-solid fa-paper-plane"></i> Transmit Core Configuration Node
-                    </button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <section class="bg-brandBlue text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div class="flex flex-col">
-                <span id="subscriberCounterDisplay" class="font-heading font-black text-3xl sm:text-4xl text-accentYellow">140+ Pool</span>
-                <span class="text-xs font-bold uppercase tracking-widest text-blue-100 mt-1">Matrix Subscribers</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-heading font-black text-3xl sm:text-4xl text-white">420+</span>
-                <span class="text-xs font-bold uppercase tracking-widest text-blue-100 mt-1">Systems Configured</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-heading font-black text-3xl sm:text-4xl text-white">100%</span>
-                <span class="text-xs font-bold uppercase tracking-widest text-blue-100 mt-1">Diagnostic Accuracy</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-heading font-black text-3xl sm:text-4xl text-accentYellow">Active</span>
-                <span class="text-xs font-bold uppercase tracking-widest text-blue-100 mt-1">Operations Link</span>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-[#0b0f19] text-gray-300 pt-16 pb-8 border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-left mb-12">
+    <section class="relative hero-mesh pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             
-            <div class="flex flex-col space-y-4">
-                <h3 class="font-heading font-black text-xl text-accentYellow tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA
-                </h3>
-                <p class="text-sm text-gray-400 leading-relaxed">
-                    Production-grade engineering solutions bridging custom system compilation, high-fidelity responsive layout frameworks, and complex database administration.
-                </p>
-                <div class="flex items-center gap-4 pt-2">
-                    <a href="https://facebook.com/profile.php?id=61571415613827" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-brandBlue hover:text-white flex items-center justify-center rounded-xl transition-colors text-gray-400">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </a>
-                    <a href="https://github.com/ngumidaniel425-del/MYself" target="_blank" class="w-10 h-10 bg-gray-800 hover:bg-brandBlue hover:text-white flex items-center justify-center rounded-xl transition-colors text-gray-400">
-                        <i class="fa-brands fa-github"></i>
-                    </a>
-                </div>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-bold text-gray-700 tracking-wide mb-6">
+                <span class="text-[#0044ff] font-mono">📬</span> CONNECT WITH US TODAY
             </div>
 
-            <div class="flex flex-col space-y-4">
-                <h3 class="font-heading font-black text-sm uppercase tracking-widest text-white border-l-4 border-brandBlue pl-3">
-                    Corporate Coordinates
-                </h3>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-3 text-gray-400">
-                        <i class="fa-solid fa-location-dot text-brandBlue w-4"></i> Based in Meru, Kenya
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight mb-4 uppercase">
+                🖇️CONNECT WITH US🌐
+            </h1>
+            
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed font-normal mb-8">
+                Located in Meru, Kenya. Available for remote work worldwide.
+            </p>
+
+            <div class="mb-12">
+                <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="inline-block bg-[#25D366] text-white px-10 py-4 rounded-full font-bold text-lg tracking-wide shadow-lg shadow-emerald-500/30 hover:scale-105 transition-transform">
+                    WhatsApp Direct
+                </a>
+            </div>
+
+            <div class="bg-white border border-gray-100 rounded-3xl p-8 sm:p-12 shadow-xl max-w-2xl mx-auto text-left space-y-6 subtle-pulse-glow">
+                <ul class="space-y-4 text-base sm:text-lg">
+                    <li class="flex items-center gap-4 border-b border-gray-100 pb-4">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#0044ff] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">📧Email:</span>
+                            <a href="mailto:ngumidaniel425@gmail.com" class="font-semibold text-[#0044ff] hover:underline break-all">ngumidaniel425@gmail.com</a>
+                        </div>
                     </li>
-                    <li class="flex items-center gap-3 text-gray-400">
-                        <i class="fa-solid fa-clock text-brandBlue w-4"></i> Mon - Sat (8 AM - 6 PM)
+                    <li class="flex items-center gap-4 border-b border-gray-100 pb-4">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#0044ff] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-envelope-open"></i>
+                        </span>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">✉️Secondary:</span>
+                            <a href="mailto:dantyzmediatech@gmail.com" class="font-semibold text-[#0044ff] hover:underline break-all">dantyzmediatech@gmail.com</a>
+                        </div>
                     </li>
-                    <li class="flex items-center gap-3 text-gray-400">
-                        <i class="fa-solid fa-envelope text-brandBlue w-4"></i> communications@dan74techmedia.com
+                    <li class="flex items-center gap-4 border-b border-gray-100 pb-4">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#0044ff] flex items-center justify-center shrink-0">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </span>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">🔗LinkedIn:</span>
+                            <a href="https://www.linkedin.com/in/dantyzmediatech@gmail.com" target="_blank" class="font-semibold text-[#0044ff] hover:underline">Daniel Githinji</a>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-4 border-b border-gray-100 pb-4">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#0044ff] flex items-center justify-center shrink-0">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </span>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Facebook:</span>
+                            <a href="https://www.facebook.com/profile.php?id=61563839114232" target="_blank" class="font-semibold text-[#0044ff] hover:underline">Danstan Danty Miku</a>
+                        </div>
+                    </li>
+                    <li class="flex items-center gap-4">
+                        <span class="w-11 h-11 rounded-xl bg-blue-50 text-[#0044ff] flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-photo-film"></i>
+                        </span>
+                        <div>
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">🎞️Media Page:</span>
+                            <a href="https://www.facebook.com/profile.php?id=61571415613827" target="_blank" class="font-semibold text-[#0044ff] hover:underline">Dantyz Media Page</a>
+                        </div>
                     </li>
                 </ul>
             </div>
 
-            <div class="flex flex-col space-y-4">
-                <h3 class="font-heading font-black text-sm uppercase tracking-widest text-white border-l-4 border-brandBlue pl-3">
-                    Newsletter Pipeline
-                </h3>
-                <p class="text-xs text-gray-400 leading-relaxed">
-                    Subscribe your communications pipeline to get synchronized telemetry alerts, project tracking status modifications, and technical briefs.
+            <div class="mt-12 pt-6 border-t border-gray-200/60 max-w-xl mx-auto italic text-gray-500 font-medium">
+                <p>"Building the future, focusing on productivity."</p>
+            </div>
+            
+        </div>
+    </section>
+
+    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 text-xs font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
+    </a>
+
+    <footer class="bg-[#0b0f19] text-gray-400 pt-16 pb-8 border-t border-gray-900 font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-gray-800/60">
+            
+            <div class="md:col-span-5 space-y-5">
+                <div class="flex items-center gap-3">
+                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-9 h-9 object-cover rounded-lg bg-white p-0.5">
+                    <span class="text-md font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
+                    Production-grade tech systems deployment matrices. Fully reliable database monitoring networks and custom business execution channels based in Kenya.
                 </p>
-                <form id="newsletterSubscriptionForm" class="flex gap-2">
-                    <input type="email" id="newsletterEmailInput" required placeholder="operator@domain.com" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brandBlue font-medium">
-                    <button type="submit" class="bg-brandBlue hover:bg-deepBlue text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0">
-                        Link
-                    </button>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-lg border border-gray-800 text-xs font-mono">
+                    <i class="fa-solid fa-users text-[#ffd700]"></i>
+                    <span class="text-gray-300 font-bold" id="footerSubscriberCounter">140+</span> 
+                    <span class="text-gray-500 text-[10px]">Verified Clients Pool</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-3 space-y-4">
+                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">System Nodes</h4>
+                <ul class="space-y-2 text-xs font-medium">
+                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1.5">📂 Service Parameters</a></li>
+                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1.5">📁 Project Repository</a></li>
+                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1.5">📈 Performance Records</a></li>
+                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1.5">📑 Technical Logs</a></li>
+                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1.5">💬 Audit Appraisals</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-4 space-y-4">
+                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
+                <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
+                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-4 py-3 rounded-xl transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
                 </form>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-800/60 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-            <p>&copy; 2026 DAN74TECH MEDIA. All operational configurations reserved.</p>
-            <p>Architected by <a href="https://github.com/ngumidaniel425-del/MYself" target="_blank" class="hover:text-accentYellow underline font-mono">Daniel Ngumi</a></p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p class="text-[11px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
+            <div class="flex items-center gap-4 text-xs font-mono text-gray-500">
+                <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
+                <span id="telemetryPulseTimestamp">--:--:--</span>
+            </div>
         </div>
     </footer>
 
     <script>
-        // TELEMETRY OPERATION PULSE ENGINE
-        function triggerTelemetryClockPulse() {
-            console.log("🚀 Telemetry clock operational pulse active.");
+        // CONFIGURATION PARAMETER BASE URL
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+            ? 'http://localhost:10000/api' 
+            : '/api';
+
+        // GLOBAL APPLICATION NOTIFICATION ALERTS CONTROLLER
+        function pushSystemOperationalToast(messageContext, messageType = 'info') {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
+
+            const individualToastNode = document.createElement('div');
+            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
+            
+            // Adjust styles depending on the type of message context
+            if (messageType === 'success' || messageType === 'success-variant') {
+                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            } else if (messageType === 'error') {
+                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
+            } else {
+                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
+            }
+
+            toastCenter.appendChild(individualToastNode);
+
+            // Automatically clean up toast elements after display timer runs out
+            setTimeout(() => {
+                individualToastNode.style.opacity = '0';
+                individualToastNode.style.transform = 'translateY(10px)';
+                setTimeout(() => individualToastNode.remove(), 300);
+            }, 4000);
         }
 
-        // UNIFIED SYSTEM DATABASE TELEMETRY ENGINE SYNCHRONIZATION
+        // TELEMETRY LIVE DIGITAL CLOCK PULSE
+        function triggerTelemetryClockPulse() {
+            setInterval(() => {
+                const clockNode = document.getElementById('telemetryPulseTimestamp');
+                if (clockNode) {
+                    const currentSystemTime = new Date();
+                    clockNode.textContent = currentSystemTime.toTimeString().split(' ')[0];
+                }
+            }, 1000);
+        }
+
+        // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
-                // Hits analytics endpoint to sync operational matrices dynamically
-                const response = await fetch('/api/stats');
-                if (response.ok) {
-                    const dynamicStats = await response.json();
-                    const counterDisplay = document.getElementById('subscriberCounterDisplay');
-                    if (counterDisplay && dynamicStats.subscribers) {
-                        counterDisplay.textContent = `${dynamicStats.subscribers}+ Pool`;
-                    }
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
+                if (!response.ok) throw new Error("Telemetry matrix payload sync rejected.");
+                
+                const responseData = await response.json();
+                
+                // Bind retrieved numeric counters into landing page components
+                // If responseData.users exists, compute verified client base counts dynamically
+                const activeUsersCount = parseInt(responseData.users) || 28;
+                const activeOrdersCount = parseInt(responseData.orders) || 64;
+
+                const footerCounter = document.getElementById('footerSubscriberCounter');
+                if (footerCounter) {
+                    footerCounter.textContent = `${activeUsersCount + activeOrdersCount}+ Pool`;
                 }
-            } catch (err) {
-                console.warn("⚠️ System Telemetry syncing locally on standard network buffer context loop.");
-            }
-        }
 
-        // DYNAMIC FEATURED PORTFOLIO REGISTRY PIPELINE RETRIEVAL ENGINE
-        async function fetchFeaturedPortfolioPreview() {
-            const container = document.getElementById('portfolioGridContainer');
-            if (!container) return;
-
-            try {
-                const response = await fetch('/api/portfolio');
-                if (response.ok) {
-                    const portfolioData = await response.json();
-                    
-                    if (portfolioData && portfolioData.length > 0) {
-                        // Dynamically render row parameters mapping table models
-                        container.innerHTML = portfolioData.slice(0, 6).map(project => `
-                            <article class="bg-white rounded-2xl shadow-customSm border border-gray-100 overflow-hidden hover:shadow-customMd hover:border-brandBlue/10 transition-all duration-300 transform hover:-translate-y-1 text-left flex flex-col justify-between">
-                                <div class="p-6">
-                                    <div class="flex items-center justify-between gap-2 mb-4">
-                                        <span class="text-[10px] font-heading font-black tracking-widest text-brandBlue bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-md uppercase">${project.category}</span>
-                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded ${project.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'}">${project.status}</span>
-                                    </div>
-                                    <h3 class="font-heading font-bold text-lg text-textDark line-clamp-1">${project.title}</h3>
-                                    <p class="text-gray-500 text-xs mt-2 line-clamp-3 leading-relaxed">${project.description || 'No descriptive parameters established for this record element.'}</p>
-                                </div>
-                                <div class="p-6 pt-0 border-t border-gray-50 mt-4">
-                                    <div class="flex items-center justify-between text-[11px] font-bold text-gray-400 mb-2">
-                                        <span>Matrix Build Progress</span>
-                                        <span class="font-mono text-brandBlue">${project.progress || 0}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mb-4">
-                                        <div class="bg-brandBlue h-full rounded-full transition-all duration-500" style="width: ${project.progress || 0}%"></div>
-                                    </div>
-                                    ${project.link ? `
-                                        <a href="${project.link}" target="_blank" class="w-full text-center bg-gray-50 hover:bg-brandBlue hover:text-white border border-gray-200/60 font-bold text-xs py-2.5 rounded-xl transition-all inline-flex items-center justify-center gap-1.5">
-                                            Access Deployment <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                                        </a>
-                                    ` : ''}
-                                </div>
-                            </article>
-                        `).join('');
-                    } else {
-                        renderPortfolioFallbackMessage();
-                    }
-                } else {
-                    renderPortfolioFallbackMessage();
-                }
-            } catch (error) {
-                console.error("Portfolio retrieval context engine exception failure:", error);
-                renderPortfolioFallbackMessage();
-            }
-        }
-
-        function renderPortfolioFallbackMessage() {
-            const container = document.getElementById('portfolioGridContainer');
-            if (container) {
-                container.innerHTML = `
-                    <div class="col-span-full bg-white rounded-2xl p-8 border border-gray-100 shadow-customSm text-center text-gray-500 text-sm">
-                        <i class="fa-solid fa-folder-open text-gray-300 text-3xl mb-2 block mx-auto"></i>
-                        No active project deployment rows found in database registry tables.
-                    </div>`;
-            }
-        }
-
-        // GLOBAL OPERATIONAL TOAST ENGINE SYSTEM
-        function pushSystemOperationalToast(message, variantCode = "success") {
-            const toastContainer = document.getElementById('toastContainerMatrix');
-            if (!toastContainer) return;
-
-            const toastNode = document.createElement('div');
-            // Variant Styling Configurator Matrix
-            const isSuccess = variantCode === 'success' || variantCode === 'success-variant';
-            toastNode.className = `flex items-center p-4 rounded-xl shadow-customMd border text-xs font-bold tracking-wide transition-all duration-300 transform translate-y-4 opacity-0 ${
-                isSuccess 
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
-                    : 'bg-rose-50 text-rose-800 border-rose-200'
-            }`;
-
-            toastNode.innerHTML = `
-                <i class="fa-solid ${isSuccess ? 'fa-circle-check text-emerald-500' : 'fa-circle-exclamation text-rose-500'} mr-3 text-base"></i>
-                <span class="flex-grow">${message}</span>
-            `;
-
-            toastContainer.appendChild(toastNode);
-
-            // Trigger Animation Frame Setup
-            setTimeout(() => {
-                toastNode.classList.remove('translate-y-4', 'opacity-0');
-            }, 50);
-
-            // Removal Sequence Trigger Pipeline
-            setTimeout(() => {
-                toastNode.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toastNode.remove(), 300);
-            }, 4500);
-        }
-
-        // NEWSLETTER PIPELINE TRIGGER REGISTRY SUBMIT LISTENER
-        document.getElementById('newsletterSubscriptionForm')?.addEventListener('submit', async function(eventContext) {
-            eventContext.preventDefault();
-            const inputFieldNode = document.getElementById('newsletterEmailInput');
-            if (!inputFieldNode) return;
-
-            const inputEmailValue = inputFieldNode.value.trim();
-            if (!inputEmailValue) return;
-
-            try {
-                const response = await fetch('/api/subscribers', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: inputEmailValue })
-                });
-
-                if (response.ok) {
-                    pushSystemOperationalToast("Communication pipeline link registered successfully.", "success");
-                    inputFieldNode.value = '';
-                    
-                    const subscriberCounterNode = document.getElementById('subscriberCounterDisplay');
-                    if (subscriberCounterNode) {
-                        const parsedBaseInt = parseInt(subscriberCounterNode.textContent) || 140;
-                        subscriberCounterNode.textContent = `${parsedBaseInt + 1}+ Pool`;
-                    }
-                } else {
-                    const parsedErrorPayload = await response.json();
-                    throw new Error(parsedErrorPayload.error || "Subscription matrix configuration failed.");
-                }
             } catch (exceptionContextError) {
-                pushSystemOperationalToast(exceptionContextError.message || "Email pipeline failure code triggered.", "error");
+                console.error("Database counter synchronization offline:", exceptionContextError);
             }
-        });
+        }
 
-        // CONTACT MESSAGES ENGINE ROUTE TRANSIT FORM LISTENER
-        document.getElementById('contactFormMatrix')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('contactName')?.value.trim();
-            const email = document.getElementById('contactEmail')?.value.trim();
-            const subject = document.getElementById('contactSubject')?.value.trim() || 'General Inquiry';
-            const message = document.getElementById('contactMessage')?.value.trim();
-
-            if (!name || !email || !message) {
-                pushSystemOperationalToast("Core parameters required to link data structures.", "error");
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/messages', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, subject, message })
-                });
-
-                if (res.ok) {
-                    pushSystemOperationalToast("Operational message written successfully to table logging pipeline.", "success");
-                    document.getElementById('contactFormMatrix').reset();
-                } else {
-                    const errPayload = await res.json();
-                    throw new Error(errPayload.error || "Network pipeline rejection during message ingestion.");
-                }
-            } catch (err) {
-                pushSystemOperationalToast(err.message, "error");
-            }
-        });
-
-        // NAVBAR RESPONSIVE TOGGLE LOGIC MATRIX LINK PACKET
-        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
-            const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
-            if (dropdownLinksTargetMenu) {
-                dropdownLinksTargetMenu.classList.toggle('hidden');
-            }
-        });
-
-        // RE-INITIALIZE ENTRY CHANNELS ON WINDOW DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', () => {
-            triggerTelemetryClockPulse();
-            runSystemTelemetryDatabaseSynchronization();
-            fetchFeaturedPortfolioPreview();
-            
-            setTimeout(() => {
-                pushSystemOperationalToast("DAN74TECH MEDIA Hub fully operational.", "success");
-            }, 800);
-        });
-    </script>
-</body>
-</html>
+        // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListene
