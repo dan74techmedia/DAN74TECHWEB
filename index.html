@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAN74TECH MEDIA | Official Technology & Digital Agency Hub</title>
     
-    <meta name="description" content="DAN74TECH MEDIA is a premier technology development and digital agency hub specializing in full-stack web solutions, custom Android applications, ICT infrastructure diagnostics, and creative media strategy.">
+    <meta name="description" content="DAN74TECH MEDIA is a premier technology development and digital agency hub specializing in full-stack web solutions, custom Android applications, ICT infrastructure diagnostics, and creative media strategy managed by Daniel Ngumi.">
     <meta name="keywords" content="DAN74TECH, Daniel Ngumi, Tech Support, Web Development, Meru, Kenya, Node.js, Express, Postgres, Android Developer, ICT Technician, Creative Media, Level 6 Diagnostics">
     <meta name="author" content="DAN74TECH MEDIA">
     <meta name="robots" content="index, follow">
@@ -13,76 +13,77 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://dan74techmedia.com/">
     <meta property="og:title" content="DAN74TECH MEDIA | Official Technology & Digital Agency Hub">
-    <meta property="og:description" content="Empowering businesses with production-grade web systems, Android deployment matrix, advanced level 6 hardware diagnostics, and high-performance digital media campaigns.">
+    <meta property="og:description" content="Empowering businesses with production-grade web systems, Android deployment matrices, advanced level 6 hardware diagnostics, and high-performance digital media campaigns.">
     <meta property="og:image" content="https://placehold.co/1200x630/0044ff/ffffff?text=DAN74TECH+MEDIA">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Corporate Color Identity & Premium Light Tech System Accents */
+        /* CSS VARIABLE SYSTEM FOR CORPORATE RE-BRAND MATRIX */
         :root {
-            --primary-blue: #0044ff;
-            --primary-blue-hover: #0033cc;
-            --accent-yellow: #ffd700;
-            --accent-red: #ff2a2a;
+            --brand-blue: #0044ff;
+            --brand-red: #ff2a2a;
+            --brand-yellow: #ffd700;
+            --brand-blue-hover: #0036cc;
             
-            --bg-light: #f8fafc;
+            /* Light Theme Definition Constraints */
             --bg-pure: #ffffff;
-            --text-dark: #0f172a;
-            --text-gray: #475569;
+            --bg-surface: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
             --border-light: #e2e8f0;
-            --card-bg: #ffffff;
             
-            --radius-sm: 6px;
+            /* Dark Theme Footer Constraints Exclusively */
+            --bg-dark-footer: #0b0f19;
+            --border-dark: #1e293b;
+            --text-dark-muted: #94a3b8;
+
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', Menlo, monospace;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 44, 255, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
             --radius-md: 12px;
-            --radius-lg: 20px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.05);
-            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
-            --shadow-lg: 0 20px 40px -15px rgba(0, 68, 255, 0.12);
+            --radius-lg: 16px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* RESET SYSTEM STRATEGIES */
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            font-family: var(--font-sans);
             line-height: 1.6;
             overflow-x: hidden;
-        }
-
-        h1, h2, h3, .brand-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
+            -webkit-font-smoothing: antialiased;
         }
 
         a {
-            text-decoration: none;
             color: inherit;
-            transition: var(--transition);
+            text-decoration: none;
+            transition: var(--transition-smooth);
         }
 
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .container {
+        /* APP LAYOUT WRAPPER CONTAINMENT UNITS */
+        .container-node-width {
             width: 100%;
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        /* Top-Tier Polished Page Navigation Module */
-        .navbar-frame {
+        /* HEADER NAV FLOW IMPLEMENTATION */
+        .header-navigation-wrapper {
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-light);
@@ -92,969 +93,1470 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .navbar-container {
+        .navbar-internal-flex {
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 80px;
         }
 
-        .brand-logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            color: var(--primary-blue);
+        .corporate-branding-group {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
         }
 
-        .brand-logo span {
-            color: var(--text-dark);
+        .branding-icon-matrix {
+            background: linear-gradient(135deg, var(--brand-blue), #3b82f6);
+            color: var(--bg-pure);
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 68, 255, 0.25);
+            font-size: 1.2rem;
         }
 
-        .brand-logo .dot {
-            color: var(--accent-red);
-            font-size: 1.8rem;
-            line-height: 1;
+        .branding-icon-matrix span {
+            color: var(--brand-yellow);
         }
 
-        .nav-links {
+        .navbar-links-list {
             display: flex;
             align-items: center;
             gap: 2rem;
             list-style: none;
         }
 
-        .nav-item-link {
-            font-size: 0.9rem;
+        .navbar-anchor-node {
             font-weight: 600;
-            color: var(--text-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
+            font-size: 0.95rem;
+            color: var(--text-muted);
             padding: 0.5rem 0;
+            position: relative;
         }
 
-        .nav-item-link:hover, .nav-item-link.active {
-            color: var(--primary-blue);
+        .navbar-anchor-node:hover, .navbar-anchor-node.active-route {
+            color: var(--brand-blue);
         }
 
-        .nav-item-link::after {
+        .navbar-anchor-node::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 0;
             height: 2px;
-            background-color: var(--primary-blue);
-            transition: var(--transition);
+            background-color: var(--brand-blue);
+            transition: var(--transition-smooth);
         }
 
-        .nav-item-link:hover::after, .nav-item-link.active::after {
+        .navbar-anchor-node:hover::after, .navbar-anchor-node.active-route::after {
             width: 100%;
         }
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 0.8rem 1.6rem;
-            font-size: 0.85rem;
+        .action-button-booking-node {
+            background-color: var(--brand-blue);
+            color: var(--bg-pure) !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 14px rgba(0, 68, 255, 0.2);
         }
 
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: var(--bg-pure);
-            box-shadow: 0 4px 14px rgba(0, 68, 255, 0.3);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-blue-hover);
+        .action-button-booking-node:hover {
+            background-color: var(--brand-blue-hover);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 68, 255, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 68, 255, 0.3);
         }
 
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-blue);
-            color: var(--bg-pure);
-            transform: translateY(-2px);
-        }
-
-        .mobile-toggle {
+        .mobile-toggle-trigger-element {
             display: none;
+            background: none;
+            border: none;
             font-size: 1.5rem;
-            color: var(--text-dark);
+            color: var(--text-main);
             cursor: pointer;
         }
 
-        /* Section Global Typography Headers */
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-tag {
-            color: var(--primary-blue);
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: inline-block;
-            margin-bottom: 0.75rem;
-            background-color: rgba(0, 68, 255, 0.06);
-            padding: 0.3rem 1rem;
-            border-radius: 50px;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            letter-spacing: -0.5px;
-        }
-
-        .section-title span {
-            color: var(--primary-blue);
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Premium Lively Hero Presentation Matrix */
-        .hero-section {
-            background: radial-gradient(circle at top right, rgba(0, 68, 255, 0.03), transparent), var(--bg-pure);
+        /* HERO MATRIX WITH VISUAL GRID & MATCHING PICTURE INTERFACE */
+        .hero-section-block {
+            background-color: var(--bg-pure);
+            position: relative;
             padding: 6rem 0 5rem 0;
             border-bottom: 1px solid var(--border-light);
+            overflow: hidden;
         }
 
-        .hero-grid {
+        /* Embedded Abstract Visual Matrix Coding Mesh */
+        .hero-section-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.04;
+            background-image: linear-gradient(var(--brand-blue) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--brand-blue) 1.5px, transparent 1.5px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .hero-section-block::after {
+            content: '';
+            position: absolute;
+            right: -10%;
+            top: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0,68,255,0.06) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-split-grid-layout {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
             gap: 4rem;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
-        .hero-content {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .hero-live-indicator {
+        .hero-tagline-pill {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background-color: rgba(255, 42, 42, 0.06);
-            border: 1px solid rgba(255, 42, 42, 0.15);
-            padding: 0.4rem 1rem;
+            background-color: rgba(0, 68, 255, 0.06);
+            border: 1px solid rgba(0, 68, 255, 0.12);
+            color: var(--brand-blue);
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--accent-red);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 1.5rem;
         }
 
-        .hero-live-indicator .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-red);
-            border-radius: 50%;
-            animation: corePulse 1.8s infinite ease-in-out;
+        .hero-tagline-pill i {
+            color: var(--brand-red);
         }
 
-        @keyframes corePulse {
-            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.7); }
-            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 0 6px rgba(255, 42, 42, 0); }
-            100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(255, 42, 42, 0); }
-        }
-
-        .hero-title {
+        .hero-main-title-heading {
             font-size: 3.5rem;
+            font-weight: 800;
             line-height: 1.15;
-            margin-bottom: 1.5rem;
             letter-spacing: -1.5px;
-            color: var(--text-dark);
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
         }
 
-        .hero-title highlight {
-            color: var(--primary-blue);
-            background: linear-gradient(120deg, rgba(0, 68, 255, 0.1) 0%, rgba(0, 68, 255, 0) 100%);
-            padding: 0 0.2rem;
+        .hero-main-title-heading span {
+            color: var(--brand-blue);
+            position: relative;
         }
 
-        .hero-description {
+        .hero-paragraph-copy {
             font-size: 1.15rem;
-            color: var(--text-gray);
+            color: var(--text-muted);
             margin-bottom: 2.5rem;
-            max-width: 620px;
+            max-width: 580px;
         }
 
-        .hero-cta-group {
+        .hero-interactive-cta-group {
             display: flex;
             align-items: center;
             gap: 1.25rem;
-            width: 100%;
+            flex-wrap: wrap;
         }
 
-        .hero-graphic-display {
+        .cta-button-primary-node {
+            background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-hover) 100%);
+            color: var(--bg-pure);
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(0, 68, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cta-button-primary-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 68, 255, 0.4);
+        }
+
+        .cta-button-secondary-node {
+            background-color: var(--bg-pure);
+            border: 2px solid var(--border-light);
+            color: var(--text-main);
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cta-button-secondary-node:hover {
+            background-color: var(--bg-surface);
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+        }
+
+        /* PICTURE CANVAS LAYOUT FOR HEADER */
+        .hero-visual-canvas-container {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .graphic-card-backdrop {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, #0022aa 100%);
+        .hero-main-composition-frame {
+            position: relative;
             width: 100%;
             max-width: 460px;
-            height: 420px;
+            height: 480px;
+            background: linear-gradient(135deg, rgba(239,246,255,1) 0%, rgba(219,234,254,0.5) 100%);
+            border: 2px dashed rgba(0, 68, 255, 0.15);
             border-radius: var(--radius-lg);
-            position: relative;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 3rem;
-            overflow: hidden;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
         }
 
-        .graphic-card-backdrop::before {
+        /* Abstract Tech Vector Representation Layer */
+        .canvas-grid-backing-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            filter: grayscale(15%) contrast(105%);
+            position: relative;
+        }
+
+        .canvas-grid-backing-image::after {
             content: '';
             position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background-color: rgba(255, 215, 0, 0.15);
-            border-radius: 50%;
-            filter: blur(30px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 68, 255, 0.1), rgba(15, 23, 42, 0.4));
+            border-radius: var(--radius-md);
         }
 
-        .graphic-overlay-stats {
-            background-color: var(--bg-pure);
-            padding: 1.5rem;
-            border-radius: var(--radius-md);
+        /* Floating Absolute Stats Widgets Over the Header Backdrop Photo */
+        .floating-telemetry-badge-widget {
             position: absolute;
-            top: 10%;
-            left: -10%;
-            box-shadow: var(--shadow-md);
-            border-left: 4px solid var(--accent-yellow);
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
-            animation: floatWidget 4s infinite ease-in-out;
+            box-shadow: var(--shadow-lg);
+            animation: floatingWidgetMotion 4s ease-in-out infinite;
         }
 
-        @keyframes floatWidget {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .floating-telemetry-badge-widget.pos-top-left {
+            top: 40px;
+            left: -20px;
+            animation-delay: 0s;
         }
 
-        .graphic-overlay-stats i {
-            font-size: 1.8rem;
-            color: var(--accent-yellow);
+        .floating-telemetry-badge-widget.pos-bottom-right {
+            bottom: 40px;
+            right: -20px;
+            animation-delay: 2s;
         }
 
-        .graphic-overlay-stats .stat-title {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-            font-weight: 500;
-        }
-
-        .graphic-overlay-stats .stat-val {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .corporate-tagline {
-            color: rgba(255, 255, 255, 0.85);
+        .floating-widget-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.1rem;
-            margin-bottom: 0.5rem;
         }
 
-        .corporate-title-label {
-            color: var(--bg-pure);
-            font-size: 1.75rem;
+        .floating-widget-icon-box.blue-theme {
+            background-color: rgba(0, 68, 255, 0.1);
+            color: var(--brand-blue);
+        }
+
+        .floating-widget-icon-box.yellow-theme {
+            background-color: rgba(255, 215, 0, 0.15);
+            color: #d4af37;
+        }
+
+        .floating-widget-text-wrapper p {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .floating-widget-text-wrapper h4 {
+            font-size: 1.2rem;
             font-weight: 800;
-            line-height: 1.3;
+            color: var(--text-main);
+            font-family: var(--font-mono);
         }
 
-        .corporate-title-label span {
-            color: var(--accent-yellow);
-        }
-
-        /* Metric Counts Statistics Bar Module */
-        .stats-bar-section {
+        /* LIVE TELEMETRY COUNTER ROW BAR */
+        .live-telemetry-counter-bar {
             background-color: var(--bg-pure);
-            padding: 3rem 0;
             border-bottom: 1px solid var(--border-light);
+            padding: 3rem 0;
         }
 
-        .stats-bar-grid {
+        .telemetry-grid-quad-structure {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
+        }
+
+        .telemetry-node-card-item {
             text-align: center;
+            border-right: 1px solid var(--border-light);
+            padding: 0 1rem;
         }
 
-        .stat-bar-node {
-            padding: 1rem;
+        .telemetry-node-card-item:last-child {
+            border-right: none;
         }
 
-        .stat-bar-number {
+        .telemetry-metric-output-value {
             font-size: 2.75rem;
             font-weight: 800;
-            color: var(--primary-blue);
-            font-family: 'Montserrat', sans-serif;
-            margin-bottom: 0.25rem;
+            font-family: var(--font-mono);
+            color: var(--brand-blue);
+            line-height: 1;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 0.25rem;
         }
 
-        .stat-bar-number label {
-            color: var(--accent-yellow);
-            margin-left: 2px;
+        .telemetry-metric-output-value span {
+            color: var(--brand-red);
         }
 
-        .stat-bar-caption {
-            font-size: 0.95rem;
+        .telemetry-metric-descriptor-label {
+            font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text-gray);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Page Content Structural Sections */
-        .page-content-section {
-            padding: 6rem 0;
+        /* SHORT COMPACT ABOUT SECTION MATRIX */
+        .about-agency-profile-section {
+            background-color: var(--bg-surface);
+            padding: 5rem 0;
             border-bottom: 1px solid var(--border-light);
         }
 
-        .section-bg-white {
-            background-color: var(--bg-pure);
-        }
-
-        /* Short Optimized About Layout Configuration Matrix */
-        .about-layout-grid {
+        .about-split-flex-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 0.90fr 1.1fr;
             gap: 4rem;
-            align-items: center;
+            align-items: flex-start;
         }
 
-        .about-capabilities-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        .section-header-eyebrow-text {
+            color: var(--brand-blue);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.75rem;
+            display: block;
         }
 
-        .about-mini-card {
+        .section-headline-title-text {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.75px;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .agency-narrative-block-p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Dynamic inline newsletter subscriber segment inside about area */
+        .inline-subscription-box-widget {
             background-color: var(--bg-pure);
             border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
-            padding: 1.75rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .about-mini-card:hover {
-            transform: translateX(5px);
-            border-color: var(--primary-blue);
+            padding: 2rem;
+            margin-top: 2.5rem;
             box-shadow: var(--shadow-sm);
         }
 
-        .about-card-icon {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(0, 68, 255, 0.06);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            color: var(--primary-blue);
-            flex-shrink: 0;
+        .inline-subscription-box-widget h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
         }
 
-        .about-card-info h3 {
-            font-size: 1.15rem;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .about-card-info p {
+        .inline-subscription-box-widget p {
             font-size: 0.9rem;
-            color: var(--text-gray);
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
         }
 
-        /* Dynamic Portfolio Implementation Components Preview Layout */
-        .portfolio-layout-grid {
+        .inline-form-input-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .inline-input-text-node {
+            flex: 1;
+            padding: 0.85rem 1.25rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .inline-input-text-node:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px rgba(0, 68, 255, 0.1);
+        }
+
+        .inline-submit-action-button {
+            background-color: var(--text-main);
+            color: var(--bg-pure);
+            border: none;
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .inline-submit-action-button:hover {
+            background-color: var(--brand-blue);
+        }
+
+        /* FAST-LOADING FEATURED PORTFOLIO DISPLAY */
+        .featured-portfolio-section {
+            background-color: var(--bg-pure);
+            padding: 5rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .portfolio-section-top-flex-bar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+
+        .portfolio-grid-triple-layout-wrapper {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2.5rem;
+            gap: 2rem;
             margin-bottom: 3.5rem;
         }
 
-        .portfolio-corporate-card {
-            background-color: var(--bg-pure);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
+        /* Loading Skeleton Node Styles */
+        .portfolio-placeholder-skeleton-card {
+            background-color: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            height: 380px;
+            width: 100%;
+            animation: pulsingSkeletonEngine 1.5s infinite linear;
         }
 
-        .portfolio-corporate-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-md);
+        .portfolio-item-card-frame {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .portfolio-item-card-frame:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
             border-color: rgba(0, 68, 255, 0.2);
         }
 
-        .portfolio-image-wrapper {
-            position: relative;
-            height: 240px;
-            background-color: #f1f5f9;
-            overflow: hidden;
-        }
-
-        .portfolio-image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .portfolio-corporate-card:hover .portfolio-image-wrapper img {
-            transform: scale(1.05);
-        }
-
-        .portfolio-category-badge {
+        .portfolio-item-card-frame::before {
+            content: '';
             position: absolute;
-            top: 1rem;
-            left: 1rem;
-            background-color: var(--bg-pure);
-            color: var(--text-dark);
-            padding: 0.35rem 0.85rem;
-            border-radius: var(--radius-sm);
+            top: 0; left: 0; width: 4px; height: 100%;
+            background-color: var(--brand-blue);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .portfolio-item-card-frame:hover::before {
+            opacity: 1;
+        }
+
+        .card-project-category-badge {
+            display: inline-block;
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: var(--shadow-sm);
-            border-left: 3px solid var(--primary-blue);
+            color: var(--brand-blue);
+            margin-bottom: 1.25rem;
+            align-self: flex-start;
         }
 
-        .portfolio-body-frame {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .portfolio-card-title {
-            font-size: 1.25rem;
-            color: var(--text-dark);
+        .card-project-main-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-main);
             margin-bottom: 0.75rem;
-            letter-spacing: -0.3px;
+            line-height: 1.3;
         }
 
-        .portfolio-card-desc {
-            font-size: 0.9rem;
-            color: var(--text-gray);
+        .card-project-description-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
             margin-bottom: 1.5rem;
-            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .portfolio-navigation-anchor {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary-blue);
+        /* Progress Tracking Node Interface Elements */
+        .card-project-progress-container {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label-flex-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-outer-track {
+            background-color: var(--border-light);
+            height: 6px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner-fill {
+            background: linear-gradient(90deg, var(--brand-blue), #3b82f6);
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-project-footer-row-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .card-status-pill-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-top: auto;
+            gap: 0.35rem;
+            text-transform: uppercase;
         }
 
-        .section-footer-actions {
+        .card-status-pill-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .card-status-pill-badge.status-completed {
+            color: #10b981;
+        }
+        .card-status-pill-badge.status-completed::before {
+            background-color: #10b981;
+        }
+
+        .card-status-pill-badge.status-progress {
+            color: #f59e0b;
+        }
+        .card-status-pill-badge.status-progress::before {
+            background-color: #f59e0b;
+        }
+
+        .card-action-anchor-link {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--brand-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .card-action-anchor-link:hover {
+            color: var(--brand-blue-hover);
+            transform: translateX(3px);
+        }
+
+        .archive-button-centering-container {
             text-align: center;
         }
 
-        /* Sticky Persistent WhatsApp Access Module System */
-        .whatsapp-fab {
-            position: fixed;
-            bottom: 2.5rem;
-            right: 2.5rem;
-            background-color: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+        /* DIRECT NAVIGATION DIRECTORY MAP GRID BUTTONS */
+        .navigation-directory-grid-section {
+            background-color: var(--bg-surface);
+            padding: 5rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .directory-grid-layout-mesh {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .directory-navigation-card-button {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .directory-navigation-card-button:hover {
+            border-color: var(--brand-blue);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .directory-card-icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(0, 68, 255, 0.06);
+            color: var(--brand-blue);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-            text-decoration: none;
-            transition: var(--transition);
-            z-index: 999;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            transition: var(--transition-smooth);
         }
 
-        .whatsapp-fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            background-color: #20ba5a;
+        .directory-navigation-card-button:hover .directory-card-icon-box {
+            background-color: var(--brand-blue);
+            color: var(--bg-pure);
         }
 
-        /* Structured Corporate Routing Ecosystem Footer */
-        .corporate-footer-frame {
-            background-color: var(--bg-pure);
-            border-top: 1px solid var(--border-light);
-            padding: 5rem 0 2.5rem 0;
-            color: var(--text-dark);
+        .directory-card-text-node h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.35rem;
         }
 
-        .footer-primary-grid {
+        .directory-card-text-node p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .directory-card-action-trigger {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--brand-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* RE-ARCHITECTED SYSTEM TOAST NOTIFICATION STACK ENGINE */
+        #operationalSystemToastStackContainer {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-width: 380px;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .telemetry-toast-node-frame {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-left: 4px solid var(--brand-blue);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 16px -6px rgba(0,0,0,0.05);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            pointer-events: auto;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .telemetry-toast-node-frame.render-visible-active {
+            transform: translateX(0);
+        }
+
+        .telemetry-toast-node-frame.success-variant {
+            border-left-color: #10b981;
+        }
+        .telemetry-toast-node-frame.success-variant i {
+            color: #10b981;
+        }
+
+        .telemetry-toast-node-frame.error-variant {
+            border-left-color: var(--brand-red);
+        }
+        .telemetry-toast-node-frame.error-variant i {
+            color: var(--brand-red);
+        }
+
+        .telemetry-toast-node-frame p {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+        }
+
+        /* PREMIUM DENSE CORPORATE DARK FOOTER ELEMENT EXCLUSIVELY */
+        .footer-terminal-block-node {
+            background-color: var(--bg-dark-footer);
+            color: var(--bg-pure);
+            border-top: 1px solid var(--border-dark);
+            padding: 5rem 0 2rem 0;
+        }
+
+        .footer-primary-quad-layout {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1.5fr;
-            gap: 4rem;
+            grid-template-columns: 1.25fr 0.75fr 0.75fr 1.25fr;
+            gap: 3rem;
             margin-bottom: 4rem;
         }
 
-        .footer-brand-summary .footer-desc {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            margin-top: 1.25rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        .footer-socials-row {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .footer-social-circle-link {
-            width: 38px;
-            height: 38px;
-            background-color: var(--bg-light);
-            border-radius: 50%;
+        .footer-column-identity-widget h2 {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--text-gray);
-            font-size: 1rem;
-            border: 1px solid var(--border-light);
+            gap: 0.5rem;
         }
 
-        .footer-social-circle-link:hover {
-            background-color: var(--primary-blue);
-            color: var(--bg-pure);
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
+        .footer-column-identity-widget h2 span {
+            color: var(--brand-yellow);
         }
 
-        .footer-column-header {
-            font-size: 1.05rem;
-            font-weight: 700;
+        .footer-column-identity-widget p {
+            color: var(--text-dark-muted);
+            font-size: 0.9rem;
             margin-bottom: 1.5rem;
-            color: var(--text-dark);
+            max-width: 280px;
         }
 
-        .footer-links-list {
+        .footer-column-link-header {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.25rem;
+            color: var(--bg-pure);
+            position: relative;
+        }
+
+        .footer-column-links-ul {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 0.75rem;
         }
 
-        .footer-anchor-item {
+        .footer-column-links-ul a {
+            color: var(--text-dark-muted);
             font-size: 0.9rem;
-            color: var(--text-gray);
             font-weight: 500;
         }
 
-        .footer-anchor-item:hover {
-            color: var(--primary-blue);
+        .footer-column-links-ul a:hover {
+            color: var(--brand-blue);
             padding-left: 4px;
         }
 
-        .footer-contact-details-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .footer-contact-detail-node {
+        .footer-contact-item-row {
             display: flex;
             align-items: flex-start;
-            gap: 0.85rem;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
             font-size: 0.9rem;
-            color: var(--text-gray);
+            color: var(--text-dark-muted);
         }
 
-        .footer-contact-detail-node i {
-            color: var(--primary-blue);
+        .footer-contact-item-row i {
+            color: var(--brand-blue);
             margin-top: 0.2rem;
-            font-size: 1rem;
         }
 
-        .footer-bottom-legal-bar {
-            border-top: 1px solid var(--border-light);
+        .footer-whatsapp-integration-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #25d366;
+            color: var(--bg-pure);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.85rem 1.25rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+        }
+
+        .footer-whatsapp-integration-button:hover {
+            background-color: #20ba5a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+        }
+
+        .footer-bottom-copyright-bar {
+            border-top: 1px solid var(--border-dark);
             padding-top: 2rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             font-size: 0.85rem;
-            color: var(--text-gray);
+            color: var(--text-dark-muted);
         }
 
-        .footer-legal-credits span {
-            color: var(--accent-red);
-            font-weight: 600;
+        /* KEYFRAME ANIMATIONS MATRIX SYSTEM */
+        @keyframes floatingWidgetMotion {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
         }
 
-        /* Adaptive Responsive Breakpoints */
+        @keyframes pulsingSkeletonEngine {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* RESPONSIVE DESIGN BREAKPOINT CONSTRAINTS */
         @media (max-width: 1024px) {
-            .hero-grid { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
-            .hero-content { align-items: center; }
-            .hero-cta-group { justify-content: center; }
-            .hero-graphic-display { display: none; }
-            .about-layout-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .portfolio-layout-grid { grid-template-columns: repeat(2, 1fr); }
-            .footer-primary-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .stats-bar-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+            .hero-split-grid-layout { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+            .hero-main-title-heading { font-size: 2.75rem; }
+            .hero-paragraph-copy { margin-left: auto; margin-right: auto; }
+            .hero-interactive-cta-group { justify-content: center; }
+            .hero-visual-canvas-container { margin-top: 2rem; }
+            .telemetry-grid-quad-structure { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
+            .telemetry-node-card-item { border-right: none; }
+            .about-split-flex-container { grid-template-columns: 1fr; gap: 2.5rem; }
+            .portfolio-grid-triple-layout-wrapper { grid-template-columns: repeat(2, 1fr); }
+            .directory-grid-layout-mesh { grid-template-columns: repeat(2, 1fr); }
+            .footer-primary-quad-layout { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }
         }
 
         @media (max-width: 768px) {
-            .nav-links, .nav-actions { display: none; }
-            .mobile-toggle { display: block; }
-            .portfolio-layout-grid { grid-template-columns: 1fr; }
-            .hero-title { font-size: 2.5rem; }
-            .footer-bottom-legal-bar { flex-direction: column; gap: 1rem; text-align: center; }
+            .navbar-links-list { display: none; }
+            .mobile-toggle-trigger-element { display: block; }
+            .portfolio-grid-triple-layout-wrapper { grid-template-columns: 1fr; }
+            .directory-grid-layout-mesh { grid-template-columns: 1fr; }
+            .telemetry-grid-quad-structure { grid-template-columns: 1fr; }
+            .footer-primary-quad-layout { grid-template-columns: 1fr; }
+            .footer-bottom-copyright-bar { flex-direction: column; gap: 1rem; text-align: center; }
+            .inline-form-input-group { flex-direction: column; }
+            .inline-submit-action-button { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Unified Link-Routed Navigation System Bar -->
-    <header class="navbar-frame">
-        <div class="container navbar-container">
-            <a href="index.html" class="brand-logo">DAN74TECH<span>MEDIA</span><div class="dot">.</div></a>
+    <div id="operationalSystemToastStackContainer"></div>
+
+    <header class="header-navigation-wrapper">
+        <div class="container-node-width navbar-internal-flex">
+            <a href="index.html" class="corporate-branding-group">
+                <div class="branding-icon-matrix">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                DAN74TECH<span>MEDIA</span>
+            </a>
             
             <nav>
-                <ul class="nav-links" id="navbarLinksList">
-                    <li><a href="index.html" class="nav-item-link active">Home</a></li>
-                    <li><a href="services.html" class="nav-item-link">Services</a></li>
-                    <li><a href="portfolio.html" class="nav-item-link">Portfolio</a></li>
-                    <li><a href="case-studies.html" class="nav-item-link">Case Studies</a></li>
-                    <li><a href="testimonials.html" class="nav-item-link">Testimonials</a></li>
-                    <li><a href="blog.html" class="nav-item-link">Blog</a></li>
-                    <li><a href="contact.html" class="nav-item-link">Contact</a></li>
+                <ul class="navbar-links-list" id="navbarLinksList">
+                    <li><a href="index.html" class="navbar-anchor-node active-route">Home</a></li>
+                    <li><a href="services.html" class="navbar-anchor-node">Services</a></li>
+                    <li><a href="portfolio.html" class="navbar-anchor-node">Portfolio</a></li>
+                    <li><a href="case-studies.html" class="navbar-anchor-node">Case Studies</a></li>
+                    <li><a href="blog.html" class="navbar-anchor-node">Blog</a></li>
+                    <li><a href="testimonials.html" class="navbar-anchor-node">Testimonials</a></li>
+                    <li><a href="contact.html" class="navbar-anchor-node action-button-booking-node">Hire Daniel</a></li>
                 </ul>
             </nav>
 
-            <div class="nav-actions">
-                <a href="contact.html" class="btn btn-primary">Get Connected</a>
-                <a href="admin.html" class="btn btn-outline" title="Administrative Control Node"><i class="fa-solid fa-gauge-high"></i> Console</a>
-            </div>
-            
-            <div class="mobile-toggle" id="mobileNavigationToggleTrigger"><i class="fa-solid fa-bars-staggered"></i></div>
+            <button class="mobile-toggle-trigger-element" id="mobileNavigationToggleTrigger" aria-label="Toggle Navigation Control Plane">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
         </div>
     </header>
 
-    <main>
-        <!-- Premium Corporate Identity Hero Section -->
-        <section class="hero-section">
-            <div class="container hero-grid">
-                <div class="hero-content">
-                    <div class="hero-live-indicator">
-                        <div class="pulse-dot"></div>
-                        <span>DAN74TECH METRICS MATRIX: OPERATIONS ACTIVE</span>
-                    </div>
-                    <h1 class="hero-title">Engineering High-Performance <highlight>Digital Core</highlight> Systems.</h1>
-                    <p class="hero-description">We architect and deploy production-grade full-stack web platforms, optimized custom Android architectures, advanced level 6 hardware diagnostic integrations, and scalable digital media strategies built for absolute scale.</p>
-                    <div class="hero-cta-group">
-                        <a href="contact.html" class="btn btn-primary">Initialize Project <i class="fa-solid fa-arrow-right"></i></a>
-                        <a href="portfolio.html" class="btn btn-outline">Explore Repository</a>
-                    </div>
-                </div>
-                
-                <div class="hero-graphic-display">
-                    <div class="graphic-card-backdrop">
-                        <div class="graphic-overlay-stats">
-                            <i class="fa-solid fa-microchip"></i>
-                            <div>
-                                <div class="stat-title">Hardware Infrastructure Scope</div>
-                                <div class="stat-val">Level 6 Diagnostics</div>
-                            </div>
-                        </div>
-                        <div class="corporate-tagline">Daniel Ngumi // Chief Architect</div>
-                        <div class="corporate-title-label">DAN74TECH Operational Matrix <span>v1.0.0</span></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Metric Parameters Operational Stats Section -->
-        <section class="stats-bar-section">
-            <div class="container stats-bar-grid">
-                <div class="stat-bar-node">
-                    <div class="stat-bar-number">100<label>+</label></div>
-                    <div class="stat-bar-caption">Deployments Completed</div>
-                </div>
-                <div class="stat-bar-node">
-                    <div class="stat-bar-number">99<label>%</label></div>
-                    <div class="stat-bar-caption">Operational Accuracy</div>
-                </div>
-                <div class="stat-bar-node">
-                    <div class="stat-bar-number">24<label>/</label>7</div>
-                    <div class="stat-bar-caption">Ecosystem Infrastructure Monitoring</div>
-                </div>
-                <div class="stat-bar-node">
-                    <div class="stat-bar-number">Lvl<label>6</label></div>
-                    <div class="stat-bar-caption">Component Diagnostics Capability</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dynamic Short Profile About Section Component -->
-        <section class="page-content-section section-bg-white">
-            <div class="container about-layout-grid">
-                <div class="about-text-content">
-                    <span class="section-tag">Ecosystem Blueprint</span>
-                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Who Is <span>DAN74TECH MEDIA</span>?</h2>
-                    <p class="hero-description" style="margin-bottom: 1.25rem;">Led by Daniel Ngumi, a professional ICT Technician, Android Developer, and Creative Media Strategist based in Meru, Kenya, DAN74TECH MEDIA is a premier technology development and engineering digital agency hub.</p>
-                    <p class="hero-description" style="margin-bottom: 2.25rem;">We serve enterprise architectures by designing production-ready systems, executing low-latency client application packages, and conducting meticulous micro-component level hardware testing. Our entire structural methodology is designed for absolute performance reliability and rapid asset deployment.</p>
-                    <div class="about-action-links">
-                        <a href="services.html" class="btn btn-primary">Inspect Services Subsystem <i class="fa-solid fa-layer-group"></i></a>
-                    </div>
-                </div>
-
-                <div class="about-capabilities-stack">
-                    <div class="about-mini-card">
-                        <div class="about-card-icon"><i class="fa-solid fa-code"></i></div>
-                        <div class="about-card-info">
-                            <h3>Full-Stack Web Systems</h3>
-                            <p>High-efficiency Node.js, Express, and safe PostgreSQL engine structures.</p>
-                        </div>
-                    </div>
-                    <div class="about-mini-card">
-                        <div class="about-card-icon"><i class="fa-brands fa-android"></i></div>
-                        <div class="about-card-info">
-                            <h3>Android Custom Deployments</h3>
-                            <p>Native-level low-latency mobile platforms optimized for execution fluidity.</p>
-                        </div>
-                    </div>
-                    <div class="about-mini-card">
-                        <div class="about-card-icon"><i class="fa-solid fa-microchip"></i></div>
-                        <div class="about-card-info">
-                            <h3>Level 6 Hardware Diagnostics</h3>
-                            <p>Component tracing isolation, fault analytics, and technician restoration board repairs.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dynamic Featured Portfolio Showcase Section Preview (Pulling from /api/portfolio) -->
-        <section class="page-content-section">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-tag">Production Implementations</span>
-                    <h2 class="section-title">Featured <span>Ecosystem Showcase</span></h2>
-                    <p class="section-subtitle">Real-time live monitoring of our latest web deployments, mobile application pipelines, and core infrastructure parameters directly from our tables.</p>
-                </div>
-                
-                <!-- Dynamic Portfolio Injection Node Target Wrapper -->
-                <div class="portfolio-layout-grid" id="homepageDynamicPortfolioContainer">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-gray);">
-                        <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary-blue); margin-bottom: 1.25rem;"></i>
-                        <p style="font-weight: 500; letter-spacing: 0.5px;">Synchronizing structural assets with live system database tables...</p>
-                    </div>
-                </div>
-
-                <div class="section-footer-actions">
-                    <a href="portfolio.html" class="btn btn-primary">View Full Repositories Matrix <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Sticky Persistent Support Floating Matrix Link Frame via WhatsApp -->
-    <a href="https://wa.me/254700000000" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Direct Link to Support Matrix Console via WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-
-    <!-- Unified Document Footer Element Layout -->
-    <footer class="corporate-footer-frame">
-        <div class="container footer-primary-grid">
-            <div class="footer-brand-summary">
-                <a href="index.html" class="brand-logo">DAN74TECH<span>MEDIA</span><div class="dot">.</div></a>
-                <p class="footer-desc">Unified production development agency hub specialized in full-stack backend platforms, Android deployment matrices, high-fidelity technology diagnostics and media automation.</p>
-                <div class="footer-socials-row">
-                    <a href="https://github.com" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-github"></i></a>
-                    <a href="https://linkedin.com" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="https://wa.me/254700000000" class="footer-social-circle-link" target="_blank" rel="noreferrer"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-            
+    <section class="hero-section-block">
+        <div class="container-node-width hero-split-grid-layout">
             <div>
-                <h4 class="footer-column-header">Ecosystem Links Matrix</h4>
-                <ul class="footer-links-list">
-                    <li><a href="index.html" class="footer-anchor-item">Home Console</a></li>
-                    <li><a href="services.html" class="footer-anchor-item">Services Subsystem</a></li>
-                    <li><a href="portfolio.html" class="footer-anchor-item">Portfolio Registries</a></li>
-                    <li><a href="case-studies.html" class="footer-anchor-item">Case Metrics Base</a></li>
-                    <li><a href="testimonials.html" class="footer-anchor-item">Validation Parameters</a></li>
-                    <li><a href="blog.html" class="footer-anchor-item">Knowledge Database</a></li>
-                    <li><a href="contact.html" class="footer-anchor-item">Contact Anchor</a></li>
-                </ul>
+                <div class="hero-tagline-pill">
+                    <i class="fa-solid fa-circle-dot"></i> Operational Ecosystem Active
+                </div>
+                <h1 class="hero-main-title-heading">
+                    Next-Gen Technology Systems & <span>Digital Media</span> Solutions.
+                </h1>
+                <p class="hero-paragraph-copy">
+                    DAN74TECH MEDIA engineered architectures optimize operations with production-grade backend logic, high-performance custom Android matrices, expert Level 6 hardware component diagnostics, and targeted digital visibility workflows.
+                </p>
+                <div class="hero-interactive-cta-group">
+                    <a href="services.html" class="cta-button-primary-node">
+                        Explore Architecture Matrix <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="contact.html" class="cta-button-secondary-node">
+                        Get Free Consultation
+                    </a>
+                </div>
             </div>
 
-            <div>
-                <h4 class="footer-column-header">Operator Command Anchor</h4>
-                <ul class="footer-contact-details-list">
-                    <li class="footer-contact-detail-node">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>Meru, Meru County,<br>Republic of Kenya.</span>
-                    </li>
-                    <li class="footer-contact-detail-node">
-                        <i class="fa-solid fa-envelope"></i>
-                        <span>operations@dan74techmedia.com</span>
-                    </li>
-                    <li class="footer-contact-detail-node">
-                        <i class="fa-solid fa-phone-volume"></i>
-                        <span>M-Pesa Operator Support Infrastructure Active</span>
-                    </li>
-                </ul>
+            <div class="hero-visual-canvas-container">
+                <div class="hero-main-composition-frame">
+                    <div class="canvas-grid-backing-image"></div>
+                    
+                    <div class="floating-telemetry-badge-widget pos-top-left">
+                        <div class="floating-widget-icon-box yellow-theme">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="floating-widget-text-wrapper">
+                            <p>Client Rating</p>
+                            <h4 id="liveDynamicRatingMetricPlaceholder">5.0 / 5.0</h4>
+                        </div>
+                    </div>
+
+                    <div class="floating-telemetry-badge-widget pos-bottom-right">
+                        <div class="floating-widget-icon-box blue-theme">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="floating-widget-text-wrapper">
+                            <p>Subscribers</p>
+                            <h4 id="liveDynamicSubscribersMetricPlaceholder">Syncing</h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="container footer-bottom-legal-bar">
-            <div>&copy; 2026 DAN74TECH MEDIA Unified Operations. All Operational Rights Reserved.</div>
-            <div class="footer-legal-credits">Architected & Maintained by Daniel Ngumi // <span>DAN74TECH Core Engine</span></div>
+    <section class="live-telemetry-counter-bar">
+        <div class="container-node-width telemetry-grid-quad-structure">
+            <div class="telemetry-node-card-item">
+                <div class="telemetry-metric-output-value" id="telemetryValueOrders">0</div>
+                <div class="telemetry-metric-descriptor-label">Solutions Delivered</div>
+            </div>
+            <div class="telemetry-node-card-item">
+                <div class="telemetry-metric-output-value" id="telemetryValueWorkload">0</div>
+                <div class="telemetry-metric-descriptor-label">Active Workloads</div>
+            </div>
+            <div class="telemetry-node-card-item">
+                <div class="telemetry-metric-output-value" id="telemetryValueTickets">0</div>
+                <div class="telemetry-metric-descriptor-label">Support Operational</div>
+            </div>
+            <div class="telemetry-node-card-item">
+                <div class="telemetry-metric-output-value" id="telemetryValueRating">5.0</div>
+                <div class="telemetry-metric-descriptor-label">Average Satisfaction</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-agency-profile-section">
+        <div class="container-node-width about-split-flex-container">
+            <div>
+                <span class="section-header-eyebrow-text">Corporate Brief</span>
+                <h2 class="section-headline-title-text">High-Efficiency Architecture Driven by Daniel Ngumi.</h2>
+                <p class="agency-narrative-block-p">
+                    Based in Meru, Kenya, DAN74TECH MEDIA links physical computing with cloud software. We deploy Node.js/PostgreSQL backends and repair multi-layer circuits up to Level 6 hardware diagnostics.
+                </p>
+                <p class="agency-narrative-block-p">
+                    Every build uses rigorous engineering principles to guarantee high speeds, modern defensive code design patterns, and cross-platform mobile compatibility.
+                </p>
+            </div>
+
+            <div>
+                <div class="inline-subscription-box-widget">
+                    <h3>Synchronize Newsletter Stream</h3>
+                    <p>Receive technical change logs, server architecture alerts, and development reports directly from our console.</p>
+                    <form id="inlineNewsletterTransmissionPipelineForm" onsubmit="return false;">
+                        <div class="inline-form-input-group">
+                            <input type="email" id="newsletterPipelineEmailInput" class="inline-input-text-node" placeholder="secure-operator@domain.com" required>
+                            <button type="submit" class="inline-submit-action-button" id="newsletterSubmitBtnNode">
+                                Subscribe <i class="fa-solid fa-network-wired"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-portfolio-section">
+        <div class="container-node-width">
+            <div class="portfolio-section-top-flex-bar">
+                <div>
+                    <span class="section-header-eyebrow-text">Recent Deployments</span>
+                    <h2 class="section-headline-title-text">Dynamic Project Telemetry</h2>
+                </div>
+                <a href="portfolio.html" class="cta-button-secondary-node" style="padding: 0.75rem 1.5rem; font-size: 0.9rem;">
+                    Full Project Archive
+                </a>
+            </div>
+
+            <div class="portfolio-grid-triple-layout-wrapper" id="dynamicFeaturedPortfolioGridInsertionTarget">
+                <div class="portfolio-placeholder-skeleton-card"></div>
+                <div class="portfolio-placeholder-skeleton-card"></div>
+                <div class="portfolio-placeholder-skeleton-card"></div>
+            </div>
+
+            <div class="archive-button-centering-container">
+                <a href="portfolio.html" class="card-action-anchor-link" style="font-size: 1.05rem; font-weight: 700;">
+                    View Complete Systems Archive Matrix <i class="fa-solid fa-angles-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="navigation-directory-grid-section">
+        <div class="container-node-width">
+            <div style="text-align: center; max-width: 600px; margin: 0 auto 3.5rem auto;">
+                <span class="section-header-eyebrow-text" style="justify-content: center;">System Index Directory</span>
+                <h2 class="section-headline-title-text">Select Operational Directory Node</h2>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Skip searching through single-page sections. Use the link matrix below to navigate directly to each dedicated operational plane.</p>
+            </div>
+
+            <div class="directory-grid-layout-mesh">
+                <a href="services.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Services Catalog</h4>
+                        <p>Explore full-stack web solutions, custom Android environments, and Level 6 tech repairs.</p>
+                        <span class="directory-card-action-trigger">Open Matrix <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+
+                <a href="portfolio.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-diagram-project"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Project Vault</h4>
+                        <p>Review comprehensive system builds, live progress updates, and platform source links.</p>
+                        <span class="directory-card-action-trigger">View Projects <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+
+                <a href="case-studies.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Case Records</h4>
+                        <p>Examine challenges, optimized execution pipelines, and measurable engineering outcomes.</p>
+                        <span class="directory-card-action-trigger">Read Analytics <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+
+                <a href="blog.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Technical Blog</h4>
+                        <p>Read architecture logs, engineering journals, and software optimization techniques.</p>
+                        <span class="directory-card-action-trigger">Access Intel <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+
+                <a href="testimonials.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-comment-nodes"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Client Reviews</h4>
+                        <p>Read verified client feedback extracted from our PostgreSQL review logging tables.</p>
+                        <span class="directory-card-action-trigger">See Reviews <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+
+                <a href="contact.html" class="directory-navigation-card-button">
+                    <div class="directory-card-icon-box">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="directory-card-text-node">
+                        <h4>Contact Control</h4>
+                        <p>Submit engineering support tickets, book Google Meet slots, or request custom builds.</p>
+                        <span class="directory-card-action-trigger">Initialize Link <i class="fa-solid fa-arrow-right-long"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-terminal-block-node">
+        <div class="container-node-width">
+            <div class="footer-primary-quad-layout">
+                <div class="footer-column-identity-widget">
+                    <h2>DAN74TECH<span>MEDIA</span></h2>
+                    <p>High-reliability architecture engineering and digital media orchestration systems built for global performance parameters.</p>
+                    <p style="font-size: 0.8rem; font-family: var(--font-mono);">HQ Coordinate: Meru, Kenya</p>
+                </div>
+
+                <div>
+                    <h3 class="footer-column-link-header">Platform Links</h3>
+                    <ul class="footer-column-links-ul">
+                        <li><a href="index.html">Home Terminal</a></li>
+                        <li><a href="services.html">Services Catalog</a></li>
+                        <li><a href="portfolio.html">Project Vault</a></li>
+                        <li><a href="case-studies.html">Case Chronicles</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="footer-column-link-header">Resources</h3>
+                    <ul class="footer-column-links-ul">
+                        <li><a href="blog.html">Technical Blog</a></li>
+                        <li><a href="testimonials.html">Client Validation</a></li>
+                        <li><a href="contact.html">Ticket Dispatcher</a></li>
+                        <li><a href="/admin">Admin Console</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="footer-column-link-header">Direct Command Interface</h3>
+                    <div class="footer-contact-item-row">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>support@dan74techmedia.com</span>
+                    </div>
+                    <div class="footer-contact-item-row">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Mon - Fri: 0800Hrs - 1700Hrs EAT</span>
+                    </div>
+                    
+                    <a href="https://wa.me/254712345678?text=DAN74TECH%20MEDIA%20System%20Booking%20Initialization" target="_blank" class="footer-whatsapp-integration-button">
+                        <i class="fa-brands fa-whatsapp"></i> Instant WhatsApp Dispatcher
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-bottom-copyright-bar">
+                <p>&copy; 2026 DAN74TECH MEDIA. All rights reserved. Engineering Core by Daniel Ngumi.</p>
+                <p style="font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.5px;">SYSTEM STATUS: FULLY OPERATIONAL // SECURE SSL ACTIVE</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Core Dynamic Control JavaScript Engine Block -->
     <script>
-        // Localized Complete Fallback Array Configuration to Guarantee Visual Performance on Empty Database State
-        const pristineLocalFallbackPortfolio = [
-            { id: 101, title: "E-Commerce Infrastructure Matrix", description: "Full-scale online retail backend system utilizing automated checkout flows, transactional M-Pesa configurations, secure session tracking, and high-speed relational database querying.", category: "Full-Stack Web", image_url: "https://images.unsplash.com/photo-1563013544-824ae1d704d3?auto=format&fit=crop&w=600&q=80" },
-            { id: 102, title: "Corporate Fleet Logistics Tracker", description: "Android mobile application optimized for real-time localization updates, route diagnostic logging, device encryption nodes, and thread background configurations.", category: "Android Systems", image_url: "https://images.unsplash.com/photo-1524514587686-8260d996d316?auto=format&fit=crop&w=600&q=80" },
-            { id: 103, title: "Enterprise Storage Network Console", description: "Comprehensive Level 6 technology installation mapping localized failover parameters, hardware performance analytics monitoring systems, and routing table optimizations.", category: "ICT Infrastructure", image_url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80" }
-        ];
+        const API_BASE_MATRIX = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+            ? 'http://localhost:10000/api'
+            : '/api';
 
-        // Asynchronous Target Data Routine: Pulls from GET /api/portfolio
-        async function fetchFeaturedPortfolioPreview() {
-            const containerNodeElement = document.getElementById('homepageDynamicPortfolioContainer');
-            if (!containerNodeElement) return;
+        // REAL-TIME GRAPHICAL OPERATIONAL TOAST ENGINE
+        function pushSystemOperationalToast(messagePayload, alertVariantClass = 'success-variant') {
+            const containerNode = document.getElementById('operationalSystemToastStackContainer');
+            if (!containerNode) return;
 
+            const toastFrame = document.createElement('div');
+            toastFrame.className = `telemetry-toast-node-frame ${alertVariantClass}`;
+            
+            const iconMarkup = alertVariantClass === 'success-variant' 
+                ? '<i class="fa-solid fa-circle-check"></i>' 
+                : '<i class="fa-solid fa-triangle-exclamation"></i>';
+
+            toastFrame.innerHTML = `
+                ${iconMarkup}
+                <p>${escapeHtmlOutput(messagePayload)}</p>
+            `;
+
+            containerNode.appendChild(toastFrame);
+            
+            // Render entrance motion
+            setTimeout(() => { toastFrame.classList.add('render-visible-active'); }, 50);
+
+            // Evacuation sequence
+            setTimeout(() => {
+                toastFrame.classList.remove('render-visible-active');
+                setTimeout(() => { toastFrame.remove(); }, 400);
+            }, 4000);
+        }
+
+        // ASYNC DB CORE PIPELINE POPULATION MATRIX
+        async function runSystemTelemetryDatabaseSynchronization() {
             try {
-                const structuralResponse = await fetch('/api/portfolio');
-                if (!structuralResponse.ok) throw new Error('Ecosystem infrastructure data stream faulted.');
+                // Fetch stats from dashboard endpoint
+                const statsResponse = await fetch(`${API_BASE_MATRIX}/dashboard/stats`);
+                if (!statsResponse.ok) throw new Error('System diagnostic stream returned failure status code.');
+                const coreStatsData = await statsResponse.json();
+
+                // Inject metrics into DOM
+                document.getElementById('telemetryValueOrders').textContent = coreStatsData.orders || '0';
+                document.getElementById('telemetryValueWorkload').textContent = coreStatsData.pending_orders || '0';
+                document.getElementById('telemetryValueTickets').textContent = coreStatsData.open_tickets || '0';
                 
-                const arrayDataRecordsList = await structuralResponse.json();
-                if (!arrayDataRecordsList || arrayDataRecordsList.length === 0) {
-                    throw new Error('Database response table configuration is currently empty.');
+                // Fetch dynamic subscriber metric from counts
+                if (coreStatsData.users) {
+                    document.getElementById('liveDynamicSubscribersMetricPlaceholder').textContent = parseInt(coreStatsData.users);
                 }
 
-                // Slice precisely the first 3 items for a balanced homepage layout grid preview block
-                const featuredItemsList = arrayDataRecordsList.slice(0, 3);
+                // Query testimonials database to calculate precise dynamic satisfaction average
+                const reviewStreamResponse = await fetch(`${API_BASE_MATRIX}/testimonials`);
+                if (reviewStreamResponse.ok) {
+                    const reviewData = await reviewStreamResponse.json();
+                    const activeReviews = Array.isArray(reviewData) ? reviewData : [];
+                    
+                    if (activeReviews.length > 0) {
+                        const scoreSum = activeReviews.reduce((acc, row) => acc + (parseInt(row.rating) || 5), 0);
+                        const calculatedAverage = (scoreSum / activeReviews.length).toFixed(1);
+                        document.getElementById('telemetryValueRating').textContent = `${calculatedAverage} / 5.0`;
+                        document.getElementById('liveDynamicRatingMetricPlaceholder').textContent = `${calculatedAverage} / 5.0`;
+                    }
+                }
 
-                containerNodeElement.innerHTML = featuredItemsList.map(record => `
-                    <article class="portfolio-corporate-card">
-                        <div class="portfolio-image-wrapper">
-                            <img src="${record.image_url || 'https://placehold.co/600x400/0044ff/ffffff?text=DAN74TECH+MEDIA'}" alt="${record.title || 'Deployment Asset Graphic'}">
-                            <span class="portfolio-category-badge">${record.category || 'Production Deployment'}</span>
-                        </div>
-                        <div class="portfolio-body-frame">
-                            <h3 class="portfolio-card-title">${record.title || 'Corporate System Module'}</h3>
-                            <p class="portfolio-card-desc">${record.description || 'System specifications documentation parameter currently missing or unmapped in active data index fields.'}</p>
-                            <a href="portfolio.html" class="portfolio-navigation-anchor">
-                                View Full Specifications <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
-                            </a>
-                        </div>
-                    </article>
-                `).join('');
-
-            } catch (runtimeFaultAnomalyError) {
-                console.warn('Portfolio Ingestion Module Exception Alert:', runtimeFaultAnomalyError.message);
-                
-                // Graceful execution fallback onto design-structured records layout
-                containerNodeElement.innerHTML = pristineLocalFallbackPortfolio.map(record => `
-                    <article class="portfolio-corporate-card">
-                        <div class="portfolio-image-wrapper">
-                            <img src="${record.image_url}" alt="${record.title}">
-                            <span class="portfolio-category-badge">${record.category}</span>
-                        </div>
-                        <div class="portfolio-body-frame">
-                            <h3 class="portfolio-card-title">${record.title}</h3>
-                            <p class="portfolio-card-desc">${record.description}</p>
-                            <a href="portfolio.html" class="portfolio-navigation-anchor">
-                                View Full Specifications <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
-                            </a>
-                        </div>
-                    </article>
-                `).join('');
+            } catch (err) {
+                console.error('Telemetry Synchronization Intercept Fault:', err);
+                // Fail-safe fallbacks
+                document.getElementById('telemetryValueOrders').textContent = '24+';
+                document.getElementById('telemetryValueWorkload').textContent = '3';
+                document.getElementById('telemetryValueTickets').textContent = '0';
+                document.getElementById('liveDynamicSubscribersMetricPlaceholder').textContent = 'Active';
             }
         }
 
-        // Mobile Responsive Dropdown Navigation Console Logic Engine Handler
-        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
-            const navigationLinksNodeList = document.getElementById('navbarLinksList');
-            if (navigationLinksNodeList) {
-                if (navigationLinksNodeList.style.display === 'flex') {
-                    navigationLinksNodeList.style.display = 'none';
+        // ASYNC DYNAMIC PORTFOLIO MATRICES RENDERING CORE
+        async function fetchFeaturedPortfolioPreview() {
+            const gridWrapper = document.getElementById('dynamicFeaturedPortfolioGridInsertionTarget');
+            if (!gridWrapper) return;
+
+            try {
+                const response = await fetch(`${API_BASE_MATRIX}/portfolio`);
+                if (!response.ok) throw new Error('Database communications fault during portfolio query.');
+                
+                const completePortfolioRecords = await response.json();
+                const cleanRecordSet = Array.isArray(completePortfolioRecords) ? completePortfolioRecords : [];
+                
+                // Filter down to a clean feature subset of 3 records
+                const featuredSubset = cleanRecordSet.slice(0, 3);
+
+                if (featuredSubset.length === 0) {
+                    gridWrapper.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background-color: var(--bg-surface); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">
+                            <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--brand-blue); margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p style="font-weight: 600; color: var(--text-muted);">No items currently loaded in the database portfolio view.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Map entries directly to structural components
+                gridWrapper.innerHTML = featuredSubset.map(project => {
+                    const progressMetric = Math.min(Math.max(parseInt(project.progress) || 0, 0), 100);
+                    const isFullyCompleted = project.status?.toLowerCase() === 'completed' || progressMetric === 100;
+                    
+                    return `
+                        <div class="portfolio-item-card-frame">
+                            <div>
+                                <span class="card-project-category-badge">${escapeHtmlOutput(project.category)}</span>
+                                <h3 class="card-project-main-title">${escapeHtmlOutput(project.title)}</h3>
+                                <p class="card-project-description-text">${escapeHtmlOutput(project.description || 'No descriptive technical logs specified.')}</p>
+                            </div>
+                            
+                            <div>
+                                <div class="card-project-progress-container">
+                                    <div class="progress-label-flex-row">
+                                        <span>System Progress</span>
+                                        <span style="font-family: var(--font-mono); color: var(--brand-blue);">${progressMetric}%</span>
+                                    </div>
+                                    <div class="progress-bar-outer-track">
+                                        <div class="progress-bar-inner-fill" style="width: ${progressMetric}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="card-project-footer-row-flex">
+                                    <span class="card-status-pill-badge ${isFullyCompleted ? 'status-completed' : 'status-progress'}">
+                                        ${escapeHtmlOutput(project.status || 'Active')}
+                                    </span>
+                                    ${project.link ? `
+                                        <a href="${escapeHtmlOutput(project.link)}" target="_blank" class="card-action-anchor-link">
+                                            Launch System <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </a>
+                                    ` : `
+                                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); font-family: var(--font-mono);">INTERNAL NODE</span>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Portfolio rendering failure exception:', err);
+                gridWrapper.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background-color: rgba(255, 42, 42, 0.04); border-radius: var(--radius-md); border: 1px dashed rgba(255, 42, 42, 0.2);">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: var(--brand-red); margin-bottom: 1rem;"></i>
+                        <p style="font-weight: 700; color: var(--text-main);">Failed to synchronize with portfolio database matrix.</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Error parameters: ${escapeHtmlOutput(err.message)}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // INLINE NEWSLETTER PIPELINE INTERACTION LOGIC
+        document.getElementById('inlineNewsletterTransmissionPipelineForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInputElement = document.getElementById('newsletterPipelineEmailInput');
+            const submitButtonElement = document.getElementById('newsletterSubmitBtnNode');
+            
+            if (!emailInputElement || !emailInputElement.value) return;
+            
+            try {
+                if (submitButtonElement) {
+                    submitButtonElement.disabled = true;
+                    submitButtonElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Syncing...';
+                }
+
+                const postResponse = await fetch(`${API_BASE_MATRIX}/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailInputElement.value.trim() })
+                });
+
+                const dynamicResultData = await postResponse.json();
+
+                if (postResponse.ok) {
+                    pushSystemOperationalToast('Telemetry Matrix Synchronized Successfully!', 'success-variant');
+                    emailInputElement.value = '';
+                    
+                    // Increment the subscriber counter badge visually on success
+                    const currentBadgeValue = document.getElementById('liveDynamicSubscribersMetricPlaceholder');
+                    if (currentBadgeValue && !isNaN(parseInt(currentBadgeValue.textContent))) {
+                        currentBadgeValue.textContent = parseInt(currentBadgeValue.textContent) + 1;
+                    }
                 } else {
-                    navigationLinksNodeList.style.display = 'flex';
-                    navigationLinksNodeList.style.flexDirection = 'column';
-                    navigationLinksNodeList.style.position = 'absolute';
-                    navigationLinksNodeList.style.top = '80px';
-                    navigationLinksNodeList.style.left = '0';
-                    navigationLinksNodeList.style.width = '100%';
-                    navigationLinksNodeList.style.backgroundColor = 'var(--bg-pure)';
-                    navigationLinksNodeList.style.padding = '2rem';
-                    navigationLinksNodeList.style.borderBottom = '1px solid var(--border-light)';
-                    navigationLinksNodeList.style.gap = '1.5rem';
-                    navigationLinksNodeList.style.boxShadow = 'var(--shadow-md)';
+                    throw new Error(dynamicResultData.error || 'Server rejected operational database insert command.');
+                }
+            } catch (err) {
+                console.error('Newsletter Core Pipeline Failure Exception:', err);
+                pushSystemOperationalToast(err.message || 'Transmission Exception Intercepted.', 'error-variant');
+            } finally {
+                if (submitButtonElement) {
+                    submitButtonElement.disabled = false;
+                    submitButtonElement.innerHTML = 'Subscribe <i class="fa-solid fa-network-wired"></i>';
                 }
             }
         });
 
-        // Attach layout loading routines directly to document frame initialization hook
+        // HTML Escape Utility to Protect Output Render Pipelines
+        function escapeHtmlOutput(unsafeTextString) {
+            if (!unsafeTextString) return '';
+            return unsafeTextString
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // RESPONSIVE MOBILE NAVIGATION TOGGLE PIPELINE HOOK
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const navLinks = document.getElementById('navbarLinksList');
+            if (navLinks) {
+                if (navLinks.style.display === 'flex') {
+                    navLinks.style.display = 'none';
+                } else {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '80px';
+                    navLinks.style.left = '0';
+                    navLinks.style.width = '100%';
+                    navLinks.style.backgroundColor = 'var(--bg-pure)';
+                    navLinks.style.padding = '2rem';
+                    navLinks.style.borderBottom = '1px solid var(--border-light)';
+                    navLinks.style.gap = '1.5rem';
+                    navLinks.style.boxShadow = 'var(--shadow-md)';
+                }
+            }
+        });
+
+        // GLOBAL APPLICATION INITIALIZATION CONTEXT ENGINE
         document.addEventListener('DOMContentLoaded', () => {
+            runSystemTelemetryDatabaseSynchronization();
             fetchFeaturedPortfolioPreview();
+            
+            setTimeout(() => {
+                pushSystemOperationalToast('DAN74TECH MEDIA Hub fully operational.', 'success-variant');
+            }, 800);
         });
     </script>
 </body>
