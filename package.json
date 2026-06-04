@@ -1,25 +1,43 @@
 {
-  "name": "dan74techweb",
+  "name": "dan74tech-media-platform",
   "version": "1.0.0",
-  "description": "DAN74TECH MEDIA Professional Portal",
+  "description": "Unified Production Backend Server & Digital Agency Management Platform for DAN74TECH MEDIA",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "pg": "^8.11.3",
-    "axios": "^1.6.2",
-    "cors": "^2.8.5",
-    "cloudinary": "^1.41.0",
-    "multer": "^1.4.5-lts.1",
-    "streamifier": "^0.1.1",
-    "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
-    "nodemailer": "^6.9.7",
-    "pdfkit": "^0.14.0",
-    "dotenv": "^16.3.1",
+    "cloudinary": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
-  }
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.13",
+    "pdfkit": "^0.15.0",
+    "pg": "^8.11.5",
+    "streamifier": "^0.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [
+    "dan74tech",
+    "agency",
+    "portal",
+    "express",
+    "postgres",
+    "neon"
+  ],
+  "author": "DAN74TECH MEDIA",
+  "license": "ISC",
+  "private": true
 }
