@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAN74TECH MEDIA | OFFICIAL</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -19,17 +18,23 @@
             
             /* Backgrounds & Text */
             --bg-light: #f5f7fa;
-            --text-dark: #1e1e24;
+            --text-dark: #1a1a1a;
+            --text-gray: #555555;
             --card-bg: #ffffff;
+            --border-light: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
-            line-height: 1.6;
+            line-height: 1.5;
             scroll-behavior: smooth;
         }
 
@@ -37,7 +42,7 @@
         header {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--deep-blue) 100%);
             color: white;
-            padding: 60px 20px;
+            padding: 50px 20px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -47,11 +52,11 @@
         /* Red Sparks Animation */
         .spark {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background-color: var(--accent-red);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-red), 0 0 20px var(--accent-red), 0 0 30px #ff8888;
+            box-shadow: 0 0 8px var(--accent-red), 0 0 15px var(--accent-red);
             animation: floatUp 4s infinite ease-in;
             bottom: -10px;
             opacity: 0;
@@ -59,7 +64,7 @@
 
         @keyframes floatUp {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-150px) scale(0); opacity: 0; }
+            100% { transform: translateY(-160px) scale(0); opacity: 0; }
         }
 
         .spark:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 3.5s; }
@@ -71,9 +76,9 @@
         .spark:nth-child(7) { left: 90%; animation-delay: 0.3s; animation-duration: 3.8s; }
 
         .logo {
-            width: 110px;
+            width: 95px;
             height: auto;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             position: relative;
             z-index: 2;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
@@ -83,8 +88,8 @@
             font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;            
             margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+            font-size: 2.1rem;
+            letter-spacing: 1.5px;
             position: relative;
             z-index: 2;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
@@ -95,11 +100,11 @@
         }
 
         header p.tagline {
-            margin: 10px 0 0;
+            margin: 8px 0 0;
             font-weight: 300;
             text-transform: capitalize;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
             position: relative;
             z-index: 2;
         }
@@ -107,24 +112,24 @@
         .pro-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--accent-yellow);
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 50px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-top: 20px;
+            margin-top: 15px;
             position: relative;
             z-index: 2;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
         }
 
         /* --- Navigation --- */
         nav {
             background: var(--deep-blue);
-            padding: 15px;
+            padding: 12px;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -137,22 +142,22 @@
         nav a {
             color: white;
             text-decoration: none;
-            margin: 5px 20px;
+            margin: 5px 15px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             transition: color 0.3s, transform 0.3s;
         }
 
         nav a:hover {
             color: var(--accent-yellow);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         /* --- Dynamic Grid Sections --- */
         .services-section {
-            padding: 80px 20px;
+            padding: 60px 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -162,91 +167,92 @@
             text-transform: uppercase;
             text-align: center;
             color: var(--primary-blue);
-            margin-bottom: 10px;
-            font-size: 2.2rem;
-            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            letter-spacing: 0.5px;
+            position: relative;
         }
 
         .section-desc {
             text-align: center;
-            color: #555;
+            color: var(--text-gray);
             max-width: 600px;
-            margin: 0 auto 50px auto;
-            font-size: 1.1rem;
+            margin: 0 auto 40px auto;
+            font-size: 0.95rem;
         }
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
         }
 
-        /* Card Styling aligned to Admin UI */
+        /* Card Styling aligned to Design System Standards */
         .service-card {
             background: var(--card-bg);
-            padding: 35px 25px;
-            border-radius: 15px;
+            padding: 30px 22px;
+            border-radius: 12px;
             border: 1px solid rgba(0, 68, 255, 0.1);
-            border-bottom: 4px solid var(--primary-blue);
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 5px solid var(--primary-blue); /* Left Border Highlight Cards implementation */
+            text-align: left;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             height: 100%;
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
         }
 
         .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(255, 42, 42, 0.15);
-            border-color: var(--accent-red);
-            border-bottom: 4px solid var(--accent-red);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(255, 42, 42, 0.12);
+            border-color: var(--border-light);
+            border-left-color: var(--accent-red);
         }
 
         .icon-wrapper {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            height: 80px;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            height: 60px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             transition: transform 0.3s;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
         }
 
         .service-card:hover .icon-wrapper {
-            transform: scale(1.15) rotate(-5deg);
+            transform: scale(1.1) rotate(-3deg);
         }
 
         .service-card h3 {
             font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;
             color: var(--deep-blue);
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
         }
         
         .service-card p {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 0.88rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
             flex-grow: 1;
         }
 
         .pricing-link {
             color: var(--primary-blue);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             transition: 0.3s;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 6px;
             margin-top: auto;
         }
 
@@ -260,14 +266,44 @@
             display: block;
         }
 
+        /* --- Business Statistics Section --- */
+        .stats-section {
+            background: linear-gradient(135deg, #001166 0%, var(--deep-blue) 100%);
+            color: white;
+            padding: 45px 20px;
+            text-align: center;
+        }
+
+        .stats-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .stat-item h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            color: var(--accent-yellow);
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ddd;
+        }
+
         /* --- Video & Image Portfolio Overrides --- */
         .portfolio-media {
             width: 100%;
-            height: 220px;
-            border-radius: 10px;
+            height: 180px;
+            border-radius: 8px;
             object-fit: cover;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
         }
 
         .portfolio-video-wrapper {
@@ -275,9 +311,9 @@
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
         }
 
         .portfolio-video-wrapper iframe {
@@ -288,50 +324,183 @@
             height: 100%;
         }
 
+        /* --- Case Studies Layout --- */
+        .case-study-card {
+            border-left: 5px solid var(--accent-yellow);
+        }
+        .case-study-card:hover {
+            border-left-color: var(--primary-blue);
+        }
+        .case-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* --- Testimonials Section --- */
+        .testimonial-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-light);
+            position: relative;
+        }
+        .testimonial-text {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+        .testimonial-author {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--deep-blue);
+        }
+        .testimonial-company {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        .stars {
+            color: var(--accent-yellow);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        /* --- Newsletter Form Styling --- */
+        .newsletter-section {
+            background: #eef2f7;
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .newsletter-form {
+            max-width: 500px;
+            margin: 20px auto 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+        .newsletter-input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .newsletter-input:focus {
+            border-color: var(--primary-blue);
+        }
+        .newsletter-submit {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .newsletter-submit:hover {
+            background: var(--deep-blue);
+        }
+
+        /* --- Toast Notifications System --- */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .toast {
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
         /* --- Buttons --- */
         .cta-btn {
             background: var(--primary-blue);
             color: white;
-            padding: 16px 40px;
+            padding: 12px 32px;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: 50px; /* Rounded CTA Buttons */
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
-            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(0, 68, 255, 0.25);
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
         }
 
         .cta-btn:hover {
             background: var(--accent-red);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 42, 42, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 42, 42, 0.3);
             color: white;
         }
 
-        /* --- Footer --- */
+        /* --- Footer Layout Standards --- */
         footer {
             background: #111;
             color: white;
-            text-align: center;
-            padding: 60px 20px 30px;
+            padding: 50px 20px 25px;
             border-top: 4px solid var(--accent-red);
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 30px;
-            max-width: 1000px;
-            margin: 0 auto 40px auto;
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
             text-align: left;
         }
 
+        .footer-col h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .footer-col p, .footer-col a {
+            color: #ccc;
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .footer-col a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
         .badge-icon {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             fill: #0095f6;
             display: inline-block;
             vertical-align: middle;
@@ -340,16 +509,17 @@
 
         .loader {
             text-align: center;
-            color: var(--text-gray);
-            font-size: 1.2rem;
-            padding: 40px;
+            color: #888;
+            font-size: 1rem;
+            padding: 30px;
             grid-column: 1 / -1;
         }
 
         @media (max-width: 600px) {
-            .badge-icon { width: 24px; height: 24px; }
-            header h1 { font-size: 1.8rem !important; }
-            .services-section { padding: 50px 15px; }
+            .badge-icon { width: 20px; height: 20px; }
+            header h1 { font-size: 1.6rem; }
+            .services-section { padding: 40px 15px; }
+            .newsletter-form { flex-direction: column; border-radius: 10px; }
         }
     </style>
 </head>
@@ -385,9 +555,12 @@
 
 <nav>
     <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="about.html"><i class="fa-solid fa-user-tie"></i> About</a>
-    <a href="services.html"><i class="fa-solid fa-layer-group"></i> Services</a>
-    <a href="contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+    <a href="#services"><i class="fa-solid fa-layer-group"></i> Services</a>
+    <a href="#portfolio"><i class="fa-solid fa-image"></i> Portfolio</a>
+    <a href="#case-studies"><i class="fa-solid fa-briefcase"></i> Case Studies</a>
+    <a href="#blogs"><i class="fa-solid fa-newspaper"></i> Tech Tips</a>
+    <a href="#testimonials"><i class="fa-solid fa-comment-dots"></i> Reviews</a>
+    <a href="#contact"><i class="fa-solid fa-envelope"></i> Contact</a>
 </nav>
 
 <section class="services-section" id="services">
@@ -395,57 +568,146 @@
     <p class="section-desc">We combine technical precision with creative vision to deliver scalable solutions for modern businesses.</p>
     
     <div class="services-grid" id="dynamic-services">
-        <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Services...</div>
+        <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Services Categories...</div>
     </div>
 </section>
 
-<section id="portfolio" style="background: var(--card-bg); border-top: 1px solid #eaeaea;">
-    <div class="services-section">
-        <h2>Featured Work</h2>
-        <p class="section-desc" style="margin-bottom: 50px;">A glimpse into our recent successful digital deployments.</p>
-        
-        <div class="services-grid" id="dynamic-portfolio">
-            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Portfolio...</div>
+<section class="stats-section">
+    <div class="stats-container">
+        <div class="stat-item">
+            <h3 id="stat-projects">142+</h3>
+            <p>Projects Completed</p>
+        </div>
+        <div class="stat-item">
+            <h3 id="stat-clients">98%</h3>
+            <p>Happy Clients</p>
+        </div>
+        <div class="stat-item">
+            <h3 id="stat-hours">5+</h3>
+            <p>Years Experience</p>
+        </div>
+        <div class="stat-item">
+            <h3 id="stat-solutions">24/7</h3>
+            <p>Tech Support Availability</p>
         </div>
     </div>
 </section>
 
-<section id="contact" style="text-align: center; padding: 80px 20px; background: var(--bg-light);">
-    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; font-size: 2.2rem; margin-bottom: 10px;">Get In Touch</h2>
-    <p style="font-size: 1.15rem; color: #555; max-width: 500px; margin: 0 auto 40px auto;">Ready to start your next technical or creative project? Let's talk tech.</p>
+<section id="portfolio" style="background: var(--card-bg); border-top: 1px solid var(--border-light);">
+    <div class="services-section">
+        <h2>Featured Work</h2>
+        <p class="section-desc">A glimpse into our recent successful digital deployments.</p>
+        
+        <div class="services-grid" id="dynamic-portfolio">
+            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Portfolio Items...</div>
+        </div>
+    </div>
+</section>
+
+<section id="case-studies" style="background: var(--bg-light); border-top: 1px solid var(--border-light);">
+    <div class="services-section">
+        <h2>Case Studies</h2>
+        <p class="section-desc">Deep-dives into our structural engineering and high-performance digital rollouts.</p>
+        
+        <div class="services-grid" id="dynamic-case-studies">
+            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Loading Architecture Frameworks...</div>
+        </div>
+    </div>
+</section>
+
+<section id="blogs" style="background: var(--card-bg); border-top: 1px solid var(--border-light);">
+    <div class="services-section">
+        <h2>Latest Tech Tips & Insights</h2>
+        <p class="section-desc">Stay ahead with recent articles, engineering strategies, and modern optimization updates.</p>
+        
+        <div class="services-grid" id="dynamic-blogs">
+            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Reading Media Database...</div>
+        </div>
+    </div>
+</section>
+
+<section id="testimonials" style="background: var(--bg-light); border-top: 1px solid var(--border-light);">
+    <div class="services-section">
+        <h2>Client Testimonials</h2>
+        <p class="section-desc">Real feedback from business partners and corporate organizations who trust our output.</p>
+        
+        <div class="services-grid" id="dynamic-testimonials">
+            <div class="loader"><i class="fas fa-spinner fa-spin"></i> Compiling Verified Feedback...</div>
+        </div>
+    </div>
+</section>
+
+<section class="newsletter-section">
+    <h2 style="font-family: 'Montserrat'; font-size: 1.6rem; color: var(--deep-blue); text-transform: uppercase;">Join Our Newsletter</h2>
+    <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 5px;">Get high-value tech alerts, patch updates, and configuration strategies directly to your inbox.</p>
+    <form class="newsletter-form" id="newsletterForm">
+        <input type="email" id="subscriberEmail" placeholder="Enter your business email address" class="newsletter-input" required>
+        <button type="submit" class="newsletter-submit">Subscribe Now</button>
+    </form>
+</section>
+
+<section id="contact" style="text-align: center; padding: 60px 20px; background: var(--card-bg);">
+    <h2 style="font-family: 'Montserrat'; color: var(--primary-blue); text-transform: uppercase; font-size: 1.8rem; margin-bottom: 8px;">Get In Touch</h2>
+    <p style="font-size: 0.95rem; color: var(--text-gray); max-width: 500px; margin: 0 auto 35px auto;">Ready to start your next technical or creative project? Let's talk tech.</p>
     
     <div>
-        <a href="https://wa.me/254790435584" class="cta-btn" style="background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+        <a href="https://wa.me/254790435584" class="cta-btn" style="background: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);">
             <i class="fa-brands fa-whatsapp fa-lg"></i> Message on WhatsApp
         </a>
     </div>
 
-    <div style="margin-top: 50px;">
-        <p style="color: #666; font-size: 1rem;">Or reach me directly via email:</p>
-        <a href="mailto:dan74techmedia@gmail.com" style="color: var(--primary-blue); font-weight: bold; text-decoration: none; font-size: 1.3rem; transition: color 0.3s;"><i class="fa-solid fa-envelope"></i> dan74techmedia@gmail.com</a>
+    <div style="margin-top: 40px;">
+        <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 5px;">Or reach me directly via email:</p>
+        <a href="mailto:dan74techmedia@gmail.com" style="color: var(--primary-blue); font-weight: bold; text-decoration: none; font-size: 1.15rem; transition: color 0.3s;"><i class="fa-solid fa-envelope"></i> dan74techmedia@gmail.com</a>
     </div>
 </section>
 
+<div id="toastContainer"></div>
+
 <footer>
     <div class="footer-grid">
-        <div>
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
-            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-location-dot" style="width: 20px;"></i> Based in Meru, Kenya</p>
-            <p style="margin: 8px 0; color: #ccc;"><i class="fa-solid fa-clock" style="width: 20px;"></i> Mon - Sat (8 AM - 6 PM)</p>
+        <div class="footer-col">
+            <h3><i class="fa-solid fa-microchip"></i> DAN74TECH MEDIA</h3>
+            <p><i class="fa-solid fa-location-dot" style="width: 18px; color: var(--accent-red);"></i> Based in Meru, Kenya</p>
+            <p><i class="fa-solid fa-clock" style="width: 18px; color: var(--accent-yellow);"></i> Mon - Sat (8 AM - 6 PM)</p>
         </div>
-        <div style="text-align: right;">
-            <h3 style="font-family: 'Montserrat'; color: var(--accent-yellow); margin-bottom: 15px;">DEVELOPMENT</h3>
-            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 12px 20px; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; border: 1px solid #444;">
-               <i class="fa-brands fa-github fa-lg"></i> View Technical GitHub
+        <div class="footer-col">
+            <h3>Quick Links</h3>
+            <a href="#services">Our Services</a>
+            <a href="#portfolio">Project Showcases</a>
+            <a href="#case-studies">Case Studies Log</a>
+            <a href="#blogs">Tech Tips Blog</a>
+        </div>
+        <div class="footer-col" style="text-align: right;">
+            <h3>Development</h3>
+            <a href="https://github.com/ngumidaniel425-del/MYself/blob/main/README.md" target="_blank" style="color: #fff; text-decoration: none; font-weight: 600; background: #222; padding: 10px 16px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; transition: 0.3s; border: 1px solid #444; margin-top: 5px;">
+               <i class="fa-brands fa-github fa-lg"></i> Technical GitHub
             </a>
         </div>
     </div>
-    <div style="border-top: 1px solid #222; padding-top: 25px; margin-top: 10px;">
-        <p style="color: #777; font-size: 0.9rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
+    <div style="border-top: 1px solid #222; padding-top: 20px; margin-top: 10px; text-align: center;">
+        <p style="color: #666; font-size: 0.8rem;">&copy; 2026 DAN74TECH MEDIA | Dedicated to Excellence</p>
     </div>
 </footer>
 
 <script>
+    // Universal Toast Generator Matching Admin System Pipeline
+    function triggerToast(message, isSuccess = true) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.borderLeft = `4px solid ${isSuccess ? 'var(--primary-blue)' : 'var(--accent-red)'}`;
+        toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="color: ${isSuccess ? '#25d366' : 'var(--accent-red)'}"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.transition = 'all 0.4s ease';
+            setTimeout(() => toast.remove(), 400);
+        }, 3500);
+    }
+
     // Helper to convert standard YouTube links to Embed format securely
     function extractYouTubeEmbedUrl(url) {
         if (!url) return '';
@@ -454,60 +716,55 @@
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
     }
 
-    // 1. Fetch Main Services Category
+    // 1. Fetch Main Services Categories Row
     async function loadServices() {
         const container = document.getElementById('dynamic-services');
         if (!container) return;
         
         try {
             const res = await fetch('/api/services');
-            if (!res.ok) throw new Error('Network response was not ok');
+            if (!res.ok) throw new Error('Network fault rendering service entities');
             const mainCategories = await res.json();
             
-            if (mainCategories.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Services update in progress...</p>';
+            if (!mainCategories || mainCategories.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Services optimization in progress...</p>';
                 return;
             }
 
-container.innerHTML = mainCategories.map(cat => {
-    const generatedRoute = cat.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-');
-
-    return `
-        <a href="${generatedRoute}.html" class="card-link">
-            <div class="service-card">
-                <div class="icon-wrapper">${cat.icon || '💻'}</div>
-                <h3>${cat.name}</h3>
-                <p>${cat.description || 'Professional tech solutions tailored to your needs.'}</p>
-                <div class="pricing-link">
-                    Explore Packages
-                    <i class="fa-solid fa-arrow-right"></i>
-                </div>
-            </div>
-        </a>
-    `;
-}).join('');
-            
-            
+            container.innerHTML = mainCategories.map(cat => {
+                const generatedRoute = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                return `
+                    <a href="${generatedRoute}.html" class="card-link">
+                        <div class="service-card">
+                            <div class="icon-wrapper">${cat.icon || '💻'}</div>
+                            <h3>${cat.name}</h3>
+                            <p>${cat.description || 'Professional tech solutions tailored to your operational needs.'}</p>
+                            <div class="pricing-link">
+                                Explore Packages
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
         } catch (error) {
             console.error('Error loading services:', error);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load server data.</p>';
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to connect to internal services pipeline.</p>';
         }
     }
 
-    // 2. Fetch Portfolio Showcase (Supports both uploads and stream video links)
+    // 2. Fetch Portfolio Showcase (Supports both images and streaming video components)
     async function loadPortfolio() {
         const container = document.getElementById('dynamic-portfolio');
         if (!container) return;
 
         try {
             const res = await fetch('/api/portfolio');
-            if (!res.ok) throw new Error('Network response was not ok');
+            if (!res.ok) throw new Error('Network fault loading portfolio index');
             const portfolioItems = await res.json();
 
-            if (portfolioItems.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">New portfolio items dropping soon...</p>';
+            if (!portfolioItems || portfolioItems.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">New portfolio drops coming soon.</p>';
                 return;
             }
 
@@ -515,8 +772,6 @@ container.innerHTML = mainCategories.map(cat => {
                 let mediaHTML = '';
                 let badgeHTML = '';
                 const targetLink = item.link || '#';
-
-                // Intelligent format detection by parsing the target link value
                 const isVideo = targetLink.includes('youtube.com') || targetLink.includes('youtu.be');
 
                 if (isVideo) {
@@ -525,35 +780,161 @@ container.innerHTML = mainCategories.map(cat => {
                         <div class="portfolio-video-wrapper">
                             <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
                         </div>`;
-                    badgeHTML = `<span style="color: var(--accent-red); font-weight: 700; font-size: 0.9rem;"><i class="fa-brands fa-youtube"></i> Watch Project</span>`;
+                    badgeHTML = `<span style="color: var(--accent-red); font-weight: 700; font-size: 0.8rem;"><i class="fa-brands fa-youtube"></i> Stream Project Presentation</span>`;
                 } else {
-                    // Displays uploaded file path structures seamlessly
-                    mediaHTML = `<img src="${targetLink}" alt="${item.title || 'Showcase Image'}" class="portfolio-media" onerror="this.src='https://placehold.co/600x400?text=View+Project'">`;
-                    badgeHTML = `<span style="color: var(--primary-blue); font-weight: 700; font-size: 0.9rem;"><i class="fa-solid fa-image"></i> View Detail</span>`;
+                    mediaHTML = `<img src="${targetLink}" alt="${item.title || 'Showcase Image'}" class="portfolio-media" onerror="this.src='https://placehold.co/600x400?text=View+Deployment'">`;
+                    badgeHTML = `<span style="color: var(--primary-blue); font-weight: 700; font-size: 0.8rem;"><i class="fa-solid fa-image"></i> View Production Build</span>`;
                 }
 
                 return `
                     <a href="${targetLink}" target="_blank" class="card-link">
-                        <div class="service-card" style="padding: 20px;">
+                        <div class="service-card" style="padding: 18px;">
                             ${mediaHTML}
-                            <h3 style="margin-top: 10px; margin-bottom: 5px;">${item.title || 'Untitled Project'}</h3>
-                            <p style="margin-bottom: 15px;">${item.description || 'No description provided.'}</p>
+                            <h3 style="font-size:1.05rem; margin-bottom: 5px;">${item.title || 'Untitled Architecture'}</h3>
+                            <p style="margin-bottom: 12px; font-size:0.85rem;">${item.description || 'Production environment deployment summary.'}</p>
                             ${badgeHTML}
                         </div>
                     </a>
                 `;
             }).join('');
-
         } catch (error) {
             console.error('Error loading portfolio:', error);
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load portfolio item showcase.</p>';
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to fetch showcase item ledger from server.</p>';
         }
     }
 
-    // Initialize Page Fetches
+    // 3. Fetch Case Studies Grid Data Log
+    async function loadCaseStudies() {
+        const container = document.getElementById('dynamic-case-studies');
+        if (!container) return;
+
+        try {
+            const res = await fetch('/api/case-studies');
+            if (!res.ok) throw new Error('Failed to parse case studies data pipeline');
+            const data = await res.json();
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Case studies are currently being logged by engineering crew.</p>';
+                return;
+            }
+
+            container.innerHTML = data.map(item => `
+                <div class="service-card case-study-card">
+                    <div class="case-meta"><i class="fa-solid fa-chart-line"></i> ${item.category || 'System Optimization'}</div>
+                    <h3>${item.title}</h3>
+                    <p style="font-size:0.85rem;">${item.metrics || 'Performance metrics and deployment scale overview.'}</p>
+                    <a href="case-studies.html?id=${item.id}" class="pricing-link" style="margin-top:auto;">
+                        Read Full Breakdown <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Error connecting to architecture telemetry database.</p>';
+        }
+    }
+
+    // 4. Fetch Tech Tips & Blog Roll Rows
+    async function loadBlogs() {
+        const container = document.getElementById('dynamic-blogs');
+        if (!container) return;
+
+        try {
+            const res = await fetch('/api/blogs');
+            if (!res.ok) throw new Error('Failed reading active blog matrix');
+            const blogs = await res.json();
+
+            if (!blogs || blogs.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Tech updates are queueing in documentation terminal.</p>';
+                return;
+            }
+
+            container.innerHTML = blogs.slice(0, 6).map(post => `
+                <div class="service-card">
+                    <p style="font-size:0.75rem; font-weight:600; color:var(--primary-blue); text-transform:uppercase; margin-bottom:5px;">
+                        <i class="fa-solid fa-calendar-days"></i> ${post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recent'}
+                    </p>
+                    <h3>${post.title}</h3>
+                    <p style="font-size:0.85rem;">${post.summary || 'Click below to review implementation rules and code updates.'}</p>
+                    <a href="blog.html?id=${post.id}" class="pricing-link">
+                        Read Insights <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to establish connection with storage partition.</p>';
+        }
+    }
+
+    // 5. Fetch Verified Client Testimonials Matrix
+    async function loadTestimonials() {
+        const container = document.getElementById('dynamic-testimonials');
+        if (!container) return;
+
+        try {
+            const res = await fetch('/api/testimonials');
+            if (!res.ok) throw new Error('Fault loading testimonials pool');
+            const items = await res.json();
+
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; font-size:0.9rem;">Client authentication notes are currently being validated.</p>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                let starElements = '';
+                const score = parseInt(item.rating) || 5;
+                for (let i = 0; i < score; i++) {
+                    starElements += '<i class="fa-solid fa-star"></i>';
+                }
+                return `
+                    <div class="testimonial-card">
+                        <div class="stars">${starElements}</div>
+                        <div class="testimonial-text">"${item.testimonial || 'Outstanding design output and flawless server-side configurations.'}"</div>
+                        <div class="testimonial-author">${item.name || 'Enterprise Partner'}</div>
+                        <div class="testimonial-company">${item.company || 'Verified Client'}</div>
+                    </div>
+                `;
+            }).join('');
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--accent-red); font-size:0.9rem;">Failed to fetch client rating indices from database.</p>';
+        }
+    }
+
+    // 6. Form Submission Operations For Newsletter Subscriptions System Module
+    document.getElementById('newsletterForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('subscriberEmail');
+        if (!emailInput) return;
+
+        try {
+            const res = await fetch('/api/subscribers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput.value })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'System failed to insert email record');
+            }
+
+            triggerToast('🚀 Subscription record verified. Welcome to our network newsletter!');
+            emailInput.value = '';
+        } catch (error) {
+            triggerToast(error.message, false);
+        }
+    });
+
+    // Fire Ingestion Hooks On DOM Frame Lock
     document.addEventListener('DOMContentLoaded', () => {
         loadServices();
         loadPortfolio();
+        loadCaseStudies();
+        loadBlogs();
+        loadTestimonials();
     });
 </script>
 
