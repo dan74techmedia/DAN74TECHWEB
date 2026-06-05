@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Testimonials | DAN74TECH MEDIA</title>
+    
+    <meta name="description" content="Read verified client feedback and project appraisals for DAN74TECH MEDIA's digital engineering and creative services.">
+    <meta name="keywords" content="DAN74TECH, Testimonials, Client Reviews, Web Development Meru, Tech Support Feedback, Daniel Ngumi">
+    <meta name="author" content="DAN74TECH MEDIA">
+    <meta name="robots" content="index, follow">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Exact color mappings and UI variables reused from index.html & graphic-design.html */
+        :root {
+            --brand-blue: #0044ff;
+            --brand-red: #ff2a2a;
+            --brand-yellow: #ffd700;
+            --bg-light: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Premium Geometric Background Elements */
+        .hero-mesh {
+            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.08), transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.05), transparent 45%);
+        }
+
+        /* Toast Slide Animation Matrix */
+        .toast-notification {
+            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Custom scrollbar to match clean aesthetic */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--brand-blue);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#0044ff] selection:text-white custom-scrollbar">
+
+    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-extrabold tracking-tight text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Professional Tech Solutions</span>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold tracking-wide text-gray-600">
+                <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
+                <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
+                <a href="services.html" class="hover:text-[#0044ff] transition-colors">Services</a>
+                <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
+                <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
+                <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
+                <a href="testimonials.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-1 font-bold">Testimonials</a>
+                <a href="contact.html" class="px-4 py-2 rounded-lg bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Get In Touch</a>
+            </nav>
+
+            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars-staggered text-xl"></i>
+            </button>
+        </div>
+
+        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-6 flex flex-col gap-4 text-base font-semibold">
+            <a href="index.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Home </a>
+            <a href="about.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">About Us</a>
+            <a href="services.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Services </a>
+            <a href="portfolio.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
+            <a href="case-studies.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Case Studies</a>
+            <a href="blog.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Blog Platform</a>
+            <a href="testimonials.html" class="text-[#0044ff] bg-blue-50/50 p-2.5 rounded-lg">Client Testimonials</a>
+            <a href="contact.html" class="mt-2 w-full text-center py-3 rounded-xl bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-md">Connect Directly</a>
+        </div>
+    </header>
+
+    <header class="relative hero-mesh py-20 lg:py-28 border-b border-gray-100 overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center px-4 relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-bold text-gray-700 tracking-wide mb-6">
+                <span class="flex h-2 w-2 rounded-full bg-[#ffd700] animate-ping"></span>
+                <span class="text-gray-400 font-mono font-normal"><i class="fa-solid fa-comments"></i></span> CLIENT AUDITS
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6">
+                Verified System <span class="text-[#0044ff]">Appraisals.</span>
+            </h1>
+            
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed font-normal">
+                Discover how DAN74TECH MEDIA transforms operational requirements into production-grade digital realities through the experiences of our partners.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        
+        <div class="mb-24">
+            <div class="text-center mb-12 flex flex-col items-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Feedback Matrix Repository</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] rounded-full"></div>
+            </div>
+
+            <div id="testimonialsLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="h-64 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse p-6 flex flex-col gap-4">
+                    <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+                    <div class="h-4 bg-gray-100 rounded w-1/4"></div>
+                    <div class="h-full bg-gray-50 rounded mt-4"></div>
+                </div>
+                <div class="h-64 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse p-6 flex flex-col gap-4">
+                    <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+                    <div class="h-4 bg-gray-100 rounded w-1/4"></div>
+                    <div class="h-full bg-gray-50 rounded mt-4"></div>
+                </div>
+                <div class="h-64 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse p-6 flex flex-col gap-4">
+                    <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+                    <div class="h-4 bg-gray-100 rounded w-1/4"></div>
+                    <div class="h-full bg-gray-50 rounded mt-4"></div>
+                </div>
+            </div>
+
+            <div id="dynamicTestimonialsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch hidden">
+                </div>
+        </div>
+
+        <section id="submission-form-node" class="max-w-3xl mx-auto">
+            <div class="rounded-3xl border border-gray-100 bg-white p-6 sm:p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none text-9xl">
+                    <i class="fa-solid fa-quote-right"></i>
+                </div>
+                
+                <div class="mb-8 relative z-10 text-center sm:text-left">
+                    <span class="text-xs font-extrabold tracking-widest text-[#0044ff] uppercase font-mono">SUBMITTING PANE</span>
+                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-1 mb-2">Share Your Experience</h2>
+                    <p class="text-gray-500 text-sm">Commit your project appraisal to our database. All submissions are verified prior to index mapping.</p>
+                </div>
+
+                <form id="testimonialSubmissionForm" class="space-y-6 relative z-10">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="clientName" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Name *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                                    <i class="fa-regular fa-user text-sm"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="clientName" 
+                                    required
+                                    placeholder="e.g. John Doe"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="clientCompany" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Email *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                                    <i class="fa-regular fa-building text-sm"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="clientCompany" 
+                                    placeholder="e.g. dan74techmedia@gmail.com"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="clientRating" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Performance Rating *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-[#ffd700]">
+                                <i class="fa-solid fa-star text-sm"></i>
+                            </span>
+                            <select 
+                                id="clientRating" 
+                                required
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 appearance-none focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white cursor-pointer font-medium font-mono"
+                            >
+                                <option value="" disabled selected>-- Select Rating --</option>
+                                <option value="5">5 Stars - Exceptional Execution</option>
+                                <option value="4">4 Stars - Highly Satisfactory</option>
+                                <option value="3">3 Stars - Standard Fulfillment</option>
+                                <option value="2">2 Stars - Below Expectations</option>
+                                <option value="1">1 Star - Unsatisfactory</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="clientReview" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Detailed Appraisal *</label>
+                        <div class="relative">
+                            <textarea 
+                                id="clientReview" 
+                                rows="5" 
+                                required
+                                placeholder="Tell us how you feel about our services, client handling and what you liked/disliked most..."
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white custom-scrollbar font-medium"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
+                        <button 
+                            type="submit"
+                            id="submitTestimonialBtn"
+                            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl text-sm font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
+                        >
+                            <span class="flex items-center gap-2 tracking-wide font-mono">
+                                <i class="fa-solid fa-database transition-transform group-hover:-translate-y-0.5"></i>
+                                COMMIT FEEDBACK
+                            </span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </main>
+	
+	<a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 text-xs font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
+    </a>
+
+    <footer class="bg-[#0b0f19] text-gray-400 pt-16 pb-8 border-t border-gray-900 font-sans mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-gray-800/60">
+            
+            <div class="md:col-span-5 space-y-5">
+                <div class="flex items-center gap-3">
+                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-9 h-9 object-cover rounded-lg bg-white p-0.5" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    <span class="text-md font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
+                    Production-grade tech systems deployment matrices. Fully reliable database monitoring networks and custom business execution channels based in Kenya.
+                </p>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-lg border border-gray-800 text-xs font-mono">
+                    <i class="fa-solid fa-users text-[#ffd700]"></i>
+                    <span class="text-gray-300 font-bold" id="footerSubscriberCounter">140+</span> 
+                    <span class="text-gray-500 text-[10px]">Verified Clients Pool</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-3 space-y-4">
+                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">System Nodes</h4>
+                <ul class="space-y-2 text-xs font-medium">
+                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1.5">📂 Service Parameters</a></li>
+                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1.5">📁 Project Repository</a></li>
+                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1.5">📈 Performance Records</a></li>
+                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1.5">📑 Technical Logs</a></li>
+                    <li><a href="testimonials.html" class="text-white transition-colors flex items-center gap-1.5 font-bold">💬 Audit Appraisals</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-4 space-y-4">
+                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
+                <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
+                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-4 py-3 rounded-xl transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p class="text-[11px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
+            <div class="flex items-center gap-4 text-xs font-mono text-gray-500">
+                <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
+                <span id="telemetryPulseTimestamp">--:--:--</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * DAN74TECH MEDIA - DATABASE-DRIVEN TESTIMONIALS SCRIPT
+         * 1. Architecture matched perfectly to graphic-design.html and index.html UI templates.
+         * 2. API interactions aligned precisely with existing PostgreSQL configurations in server.js.
+         * 3. Completely removes hardcoded mock data in favor of dynamic rendering.
+         */
+
+        // 1. BASE SYSTEM ROUTING
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+            ? 'http://localhost:10000/api' 
+            : '/api';
+
+        // 2. GLOBAL NOTIFICATION SYSTEM
+        function pushSystemOperationalToast(messageContext, messageType = 'info') {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
+
+            const individualToastNode = document.createElement('div');
+            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
+            
+            if (messageType === 'success' || messageType === 'success-variant') {
+                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            } else if (messageType === 'error') {
+                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
+            } else {
+                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
+            }
+
+            toastCenter.appendChild(individualToastNode);
+
+            setTimeout(() => {
+                individualToastNode.style.opacity = '0';
+                individualToastNode.style.transform = 'translateY(10px)';
+                setTimeout(() => individualToastNode.remove(), 300);
+            }, 4000);
+        }
+
+        // 3. TELEMETRY CLOCK & STATS SYNCHRONIZATION
+        function triggerTelemetryClockPulse() {
+            setInterval(() => {
+                const clockNode = document.getElementById('telemetryPulseTimestamp');
+                if (clockNode) {
+                    const currentSystemTime = new Date();
+                    clockNode.textContent = currentSystemTime.toTimeString().split(' ')[0];
+                }
+            }, 1000);
+        }
+
+        async function runSystemTelemetryDatabaseSynchronization() {
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
+                if (!response.ok) throw new Error("Telemetry matrix payload sync rejected.");
+                
+                const data = await response.json();
+                const footerCounter = document.getElementById('footerSubscriberCounter');
+                if (footerCounter) footerCounter.textContent = `${(parseInt(data.users)||0) + (parseInt(data.orders)||0)}+ Pool`;
+
+            } catch (error) {
+                console.error("Telemetry sync error:", error);
+            }
+        }
+
+        // 4. DATABASE-DRIVEN TESTIMONIAL DISCOVERY
+        async function fetchApprovedTestimonials() {
+            const gridContainer = document.getElementById('dynamicTestimonialsGrid');
+            const skeletonLoader = document.getElementById('testimonialsLoaderSkeleton');
+            
+            try {
+                // Hits 'app.get('/api/testimonials/approved')' from server.js
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/testimonials/approved`);
+                if (!response.ok) throw new Error("Failed to map approved testimonials architecture.");
+                
+                const testimonialsData = await response.json();
+                
+                skeletonLoader.classList.add('hidden');
+                gridContainer.classList.remove('hidden');
+                gridContainer.innerHTML = '';
+                
+                if (!testimonialsData || testimonialsData.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="col-span-full p-8 bg-white border border-gray-100 rounded-2xl text-center text-sm font-mono text-gray-500 shadow-sm">
+                            <i class="fa-solid fa-comment-slash block text-2xl mb-2 text-gray-300"></i>
+                            No operational appraisals have been verified in the database schema yet.
+                        </div>`;
+                    return;
+                }
+
+                // Render dynamic card matrices mirroring graphic-design.html logic
+                testimonialsData.forEach(testimony => {
+                    // Logic to build Star representation
+                    let starIconsHtml = '';
+                    const ratingValue = parseInt(testimony.rating) || 5;
+                    
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= ratingValue) {
+                            starIconsHtml += `<i class="fa-solid fa-star text-[#ffd700]"></i>`;
+                        } else {
+                            starIconsHtml += `<i class="fa-regular fa-star text-gray-300"></i>`;
+                        }
+                    }
+
+                    const cardHtmlMarkup = `
+                        <div class="group bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:border-[#0044ff]/40 transition-all duration-300 flex flex-col h-full relative">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-shield-check text-4xl text-[#0044ff]"></i>
+                            </div>
+
+                            <div class="flex justify-between items-start mb-6 relative z-10">
+                                <div>
+                                    <h3 class="font-extrabold text-gray-900 text-lg group-hover:text-[#0044ff] transition-colors">${testimony.client_name}</h3>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest font-mono mt-0.5 block">${testimony.company || 'Independent Contractor'}</span>
+                                </div>
+                                <div class="text-sm flex gap-0.5">
+                                    ${starIconsHtml}
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 leading-relaxed italic flex-grow relative z-10 font-medium">
+                                "${testimony.review}"
+                            </p>
+                            
+                            <div class="mt-6 pt-5 border-t border-gray-50 text-[10px] text-gray-400 font-mono tracking-wider flex items-center justify-between relative z-10">
+                                <span>SYSTEM VALIDATED RECORD</span>
+                                <i class="fa-solid fa-check-double text-emerald-500 text-xs"></i>
+                            </div>
+                        </div>
+                    `;
+                    gridContainer.insertAdjacentHTML('beforeend', cardHtmlMarkup);
+                });
+                
+            } catch (err) {
+                console.error("Testimonials Fetch Error:", err);
+                skeletonLoader.classList.add('hidden');
+                gridContainer.classList.remove('hidden');
+                gridContainer.innerHTML = `
+                    <div class="col-span-full p-8 bg-white border border-rose-100 rounded-2xl text-center text-sm font-mono text-rose-500 bg-rose-50/20 shadow-sm">
+                        <i class="fa-solid fa-triangle-exclamation block text-2xl mb-2 text-rose-400"></i>
+                        Failed to establish synchronization with the testimonials database matrix.
+                    </div>`;
+                pushSystemOperationalToast(err.message, 'error');
+            }
+        }
+
+        // 5. UNIFIED WORKFLOW: DATABASE FORM SUBMISSION
+        document.getElementById('testimonialSubmissionForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitTestimonialBtn');
+            const originalBtnHtml = submitBtn.innerHTML;
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="flex items-center gap-2 tracking-wide font-mono"><i class="fa-solid fa-spinner animate-spin"></i> TRANSMITTING...</span>`;
+                
+                // Construct payload mapping to PostgreSQL schema requirements
+                const reviewPayloadData = {
+                    client_name: document.getElementById('clientName').value.trim(),
+                    company: document.getElementById('clientCompany').value.trim(),
+                    rating: parseInt(document.getElementById('clientRating').value),
+                    review: document.getElementById('clientReview').value.trim()
+                };
+
+                // STEP A: Fire Request to PostgreSQL Ledger (`POST /api/testimonials` defaults to 'pending')
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/testimonials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reviewPayloadData)
+                });
+
+                if (!response.ok) {
+                    const errorJson = await response.json();
+                    throw new Error(errorJson.error || "System rejected the data entry parameters.");
+                }
+
+                pushSystemOperationalToast("Appraisal committed to database matrix successfully. Awaiting admin clearance.", "success");
+                
+                // Clear UI Matrix
+                e.target.reset();
+
+            } catch (err) {
+                console.error("Pipeline Feedback Failure:", err);
+                pushSystemOperationalToast(err.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        });
+
+        // 6. GLOBAL SUBSCRIBER WORKFLOW
+        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInputNode = document.getElementById('subscriberInputEmailNode');
+            if (!emailInputNode) return;
+
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailInputNode.value.trim() })
+                });
+
+                if (response.ok) {
+                    pushSystemOperationalToast("Corporate pipeline synchronization complete.", "success-variant");
+                    emailInputNode.value = '';
+                    const counterUi = document.getElementById('footerSubscriberCounter');
+                    if (counterUi) {
+                        const numericBase = parseInt(counterUi.textContent) || 140;
+                        counterUi.textContent = `${numericBase + 1}+ Pool`;
+                    }
+                } else {
+                    const parsedErrorData = await response.json();
+                    throw new Error(parsedErrorData.error || "Subscription registration error failure.");
+                }
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            }
+        });
+
+        // 7. RESPONSIVE MOBILE NAVIGATION
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const responsiveMenu = document.getElementById('navbarLinksList');
+            if (responsiveMenu) responsiveMenu.classList.toggle('hidden');
+        });
+
+        // 8. INITIALIZATION BOOTSTRAP
+        document.addEventListener('DOMContentLoaded', () => {
+            triggerTelemetryClockPulse();
+            runSystemTelemetryDatabaseSynchronization();
+            fetchApprovedTestimonials();
+            
+            setTimeout(() => {
+                pushSystemOperationalToast("Testimonials Verification interface fully synchronized.", "success");
+            }, 800);
+        });
+    </script>
+</body>
+</html>
