@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphic Design Services | DAN74TECH MEDIA</title>
+    
+    <meta name="description" content="Professional branding assets, high-impact marketing posters, and clean, modern visual identities by DAN74TECH MEDIA.">
+    <meta name="keywords" content="DAN74TECH, Graphic Design, Branding, Logos, Meru, Kenya, Daniel Ngumi">
+    <meta name="author" content="DAN74TECH MEDIA">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0F19',
+                            card: '#161F30',
+                            accent: '#3B82F6',
+                            accentHover: '#2563EB',
+                            muted: '#94A3B8',
+                            border: '#1E293B',
+                            success: '#10B981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B0F19;
+            color: #F8FAFC;
+        }
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #3B82F6;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden selection:bg-blue-500 selection:text-white" x-data="graphicDesignApp()">
+
+    <div id="systemToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full"></div>
+
+    <nav class="sticky top-0 z-40 bg-brand-dark/80 backdrop-blur-md border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <span class="font-display font-bold text-2xl tracking-tight bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent">DAN74TECH</span>
+                        <span class="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">MEDIA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="index.html" class="text-sm font-medium text-brand-muted hover:text-white transition-colors duration-200">Home</a>
+                    <a href="index.html#services-section" class="text-sm font-medium text-white transition-colors duration-200 border-b-2 border-blue-500 pb-1">Services</a>
+                    <a href="index.html#stats-section" class="text-sm font-medium text-brand-muted hover:text-white transition-colors duration-200">Metrics</a>
+                    <a href="index.html#portfolio-section" class="text-sm font-medium text-brand-muted hover:text-white transition-colors duration-200">Portfolio</a>
+                    <a href="index.html#contact-section" class="text-sm font-medium text-brand-muted hover:text-white transition-colors duration-200">Contact Hub</a>
+                </div>
+                <div class="hidden md:block">
+                    <a href="#order-form-section" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all duration-200 shadow-lg shadow-blue-600/10 hover:shadow-blue-600/20 border border-blue-500/20">
+                        <i class="fa-solid fa-bolt mr-2 text-xs"></i> Order Design
+                    </a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileNavigationToggleTrigger" class="inline-flex items-center justify-center p-2 rounded-lg text-brand-muted hover:text-white hover:bg-brand-card focus:outline-none border border-brand-border transition-colors">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="navbarLinksList" class="hidden md:hidden bg-brand-dark border-b border-brand-border px-4 pt-2 pb-4 space-y-1">
+            <a href="index.html" class="block px-3 py-2.5 rounded-lg text-base font-medium text-brand-muted hover:text-white hover:bg-brand-card transition-all">Home</a>
+            <a href="index.html#services-section" class="block px-3 py-2.5 rounded-lg text-base font-medium text-white bg-brand-card transition-all">Services</a>
+            <a href="index.html#stats-section" class="block px-3 py-2.5 rounded-lg text-base font-medium text-brand-muted hover:text-white hover:bg-brand-card transition-all">Metrics</a>
+            <a href="index.html#portfolio-section" class="block px-3 py-2.5 rounded-lg text-base font-medium text-brand-muted hover:text-white hover:bg-brand-card transition-all">Portfolio</a>
+            <a href="index.html#contact-section" class="block px-3 py-2.5 rounded-lg text-base font-medium text-brand-muted hover:text-white hover:bg-brand-card transition-all">Contact Hub</a>
+        </div>
+    </nav>
+
+    <header class="relative overflow-hidden py-20 lg:py-28 border-b border-brand-border bg-gradient-to-b from-brand-dark via-brand-dark to-brand-card/30">
+        <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none"></div>
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto text-center px-4 relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-6 tracking-wide uppercase">
+                <i class="fa-solid fa-palette text-[10px]"></i> Creative Infrastructure
+            </div>
+            <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white mb-6 leading-tight" x-text="serviceInfo.name || 'Graphic Design Services'">
+                Graphic Design Services
+            </h1>
+            <p class="text-base sm:text-lg lg:text-xl text-brand-muted max-w-2xl mx-auto leading-relaxed" x-text="serviceInfo.description || 'Professional branding assets, high-impact marketing posters, and clean, modern visual identities tailored to scale your brand footprint.'">
+                Professional branding assets, high-impact marketing posters, and clean, modern visual identities tailored to scale your brand footprint.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        
+        <template x-if="isLoading">
+            <div class="space-y-12 animate-pulse">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="h-64 bg-brand-card rounded-2xl border border-brand-border"></div>
+                    <div class="h-64 bg-brand-card rounded-2xl border border-brand-border"></div>
+                    <div class="h-64 bg-brand-card rounded-2xl border border-brand-border"></div>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="!isLoading">
+            <div>
+                <div class="text-center mb-12">
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-white mb-3">Choose Your Design Package</h2>
+                    <p class="text-brand-muted text-sm sm:text-base max-w-md mx-auto">Select a dynamic operations configuration bundle built to accommodate your technical requirements.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    <template x-for="pkg in packages" :key="pkg.id">
+                        <div 
+                            @click="selectPackage(pkg)"
+                            class="group relative flex flex-col p-6 sm:p-8 rounded-2xl bg-brand-card border transition-all duration-300 cursor-pointer"
+                            :class="selectedPackage && selectedPackage.id === pkg.id ? 'border-blue-500 ring-2 ring-blue-500/20 translate-y-[-4px]' : 'border-brand-border hover:border-slate-700 hover:translate-y-[-2px]'"
+                        >
+                            <div class="absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full border transition-colors"
+                                 :class="selectedPackage && selectedPackage.id === pkg.id ? 'border-blue-500 bg-blue-500 text-white' : 'border-brand-border bg-brand-dark/50 text-transparent'">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </div>
+
+                            <div class="mb-5">
+                                <h3 class="font-display font-bold text-xl text-white group-hover:text-blue-400 transition-colors" x-text="pkg.title">Package Title</h3>
+                                <p class="text-xs text-brand-muted mt-1 min-h-[32px]" x-text="pkg.description">Package description</p>
+                            </div>
+
+                            <div class="mb-6 pb-6 border-b border-brand-border">
+                                <div class="flex items-baseline text-white">
+                                    <span class="text-sm font-semibold tracking-wide text-brand-muted">KSH</span>
+                                    <span class="text-3xl sm:text-4xl font-extrabold font-display ml-1" x-text="formatPrice(pkg.price)">0</span>
+                                </div>
+                            </div>
+
+                            <ul class="space-y-3 mb-8 flex-grow text-sm">
+                                <template x-for="feature in parseFeatures(pkg.features)" :key="feature">
+                                    <li class="flex items-start gap-2.5 text-slate-300">
+                                        <i class="fa-solid fa-circle-check text-blue-500 text-xs mt-1 flex-shrink-0"></i>
+                                        <span x-text="feature">Feature string payload item</span>
+                                    </li>
+                                </template>
+                            </ul>
+
+                            <button 
+                                type="button"
+                                class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                                :class="selectedPackage && selectedPackage.id === pkg.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/10' : 'bg-brand-dark/60 hover:bg-brand-dark text-slate-300 border border-brand-border'"
+                                x-text="selectedPackage && selectedPackage.id === pkg.id ? 'Selected Package' : 'Select Package'"
+                            >
+                                Select Package
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <section id="order-form-section" class="mt-24 max-w-3xl mx-auto">
+            <div class="rounded-2xl border border-brand-border bg-gradient-to-b from-brand-card to-brand-dark/40 p-6 sm:p-10 relative">
+                
+                <div class="mb-8">
+                    <h2 class="font-display font-bold text-2xl text-white mb-2">Initialize Design Order</h2>
+                    <p class="text-brand-muted text-sm">Complete your contextual details below. Submission triggers both a local database request node and syncs instantly to WhatsApp.</p>
+                </div>
+
+                <form @submit.prevent="submitOrderForm" class="space-y-6">
+                    
+                    <div>
+                        <label for="userName" class="block text-xs font-semibold uppercase tracking-wider text-brand-muted mb-2">Your Name *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-muted">
+                                <i class="fa-regular fa-user text-sm"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                id="userName" 
+                                x-model="formData.name" 
+                                required
+                                placeholder="e.g. John Doe"
+                                class="w-full bg-brand-dark/80 border border-brand-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="userPhone" class="block text-xs font-semibold uppercase tracking-wider text-brand-muted mb-2">Phone Number (M-Pesa Node) *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-muted">
+                                <i class="fa-solid fa-phone text-sm"></i>
+                            </span>
+                            <input 
+                                type="tel" 
+                                id="userPhone" 
+                                x-model="formData.phone" 
+                                required
+                                placeholder="e.g. 0790435584"
+                                class="w-full bg-brand-dark/80 border border-brand-border rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="serviceType" class="block text-xs font-semibold uppercase tracking-wider text-brand-muted mb-2">Selected Configuration Target Bundle</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-muted">
+                                <i class="fa-solid fa-layer-group text-sm"></i>
+                            </span>
+                            <select 
+                                id="serviceType" 
+                                x-model="formData.packageTitle" 
+                                @change="onDropdownSelectChange($event)"
+                                class="w-full bg-brand-dark/80 border border-brand-border rounded-xl pl-11 pr-4 py-3 text-sm text-white appearance-none focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
+                            >
+                                <option value="">-- Please choose or highlight an interactive item --</option>
+                                <template x-for="pkg in packages" :key="'opt-'+pkg.id">
+                                    <option :value="pkg.title" x-text="`${pkg.title} - KSH ${formatPrice(pkg.price)}`"></option>
+                                </template>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-brand-muted">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="desc" class="block text-xs font-semibold uppercase tracking-wider text-brand-muted mb-2">Operational Scope Requirements & Design Instructions</label>
+                        <div class="relative">
+                            <textarea 
+                                id="desc" 
+                                x-model="formData.description" 
+                                rows="4" 
+                                placeholder="Describe color schemas, identity themes, layout requirements, text contents, formatting guidelines..."
+                                class="w-full bg-brand-dark/80 border border-brand-border rounded-xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all custom-scrollbar"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-brand-dark/60 border border-brand-border flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="h-9 w-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                <i class="fa-solid fa-coins text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] uppercase tracking-wider font-semibold text-brand-muted">Total Computed Ledger</span>
+                                <span class="block font-medium text-xs text-slate-300" x-text="formData.packageTitle ? formData.packageTitle : 'No Package Evaluated'">No Package Evaluated</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="displayPrice" class="font-display font-extrabold text-2xl text-white" x-text="'KSH ' + formatPrice(formData.price)">KSH 0</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex flex-col sm:flex-row gap-4 items-center">
+                        <button 
+                            type="submit" 
+                            :disabled="isSubmitting"
+                            class="w-full sm:flex-1 inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-blue-600/10 border border-blue-500/20"
+                        >
+                            <span x-show="!isSubmitting" class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-arrow-up text-xs"></i> Register Core Transaction
+                            </span>
+                       <span x-show="isSubmitting" class="flex items-center gap-2">
+                                <i class="fa-solid fa-spinner animate-spin text-xs"></i> Processing Matrix...
+                            </span>
+                        </button>
+                        
+                        <button 
+                            type="button"
+                            @click="sendToWhatsApp()"
+                            class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-all duration-200 shadow-lg shadow-emerald-600/10 border border-emerald-500/20"
+                        >
+                            <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Open in WhatsApp
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <section class="border-t border-brand-border bg-brand-card/20 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center" id="systemGlobalTelemetryStatsNode">
+                <div>
+                    <span class="block font-display font-bold text-2xl sm:text-3xl text-white" id="telemetryStatUsers">--</span>
+                    <span class="block text-xs text-brand-muted mt-1 uppercase tracking-wider font-medium">Verified Profiles</span>
+                </div>
+                <div>
+                    <span class="block font-display font-bold text-2xl sm:text-3xl text-white" id="telemetryStatOrders">--</span>
+                    <span class="block text-xs text-brand-muted mt-1 uppercase tracking-wider font-medium">Executed Pipelines</span>
+                </div>
+                <div>
+                    <span class="block font-display font-bold text-2xl sm:text-3xl text-white" id="telemetryStatEarnings">--</span>
+                    <span class="block text-xs text-brand-muted mt-1 uppercase tracking-wider font-medium">Processed KSH</span>
+                </div>
+                <div>
+                    <span class="block font-display font-bold text-2xl sm:text-3xl text-white" id="telemetryStatConsultations">--</span>
+                    <span class="block text-xs text-brand-muted mt-1 uppercase tracking-wider font-medium">Pending Nodes</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-dark border-t border-brand-border text-sm text-brand-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 pb-12 border-b border-brand-border">
+                
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent">DAN74TECH</span>
+                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">MEDIA</span>
+                    </div>
+                    <p class="text-xs text-brand-muted leading-relaxed max-w-sm">
+                        Unified tech architecture and custom visual engineering operations matrix. Built to scale digital infrastructures seamlessly.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Navigation Vectors</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <a href="index.html" class="hover:text-white transition-colors">Home Dashboard</a>
+                        <a href="index.html#services-section" class="hover:text-white transition-colors">Services Array</a>
+                        <a href="index.html#stats-section" class="hover:text-white transition-colors">Metrics Ledger</a>
+                        <a href="index.html#portfolio-section" class="hover:text-white transition-colors">Portfolio Node</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Newsletter Pipeline</h4>
+                    <p class="text-xs text-brand-muted mb-4">Subscribe to synchronize performance logs and optimization deployment updates.</p>
+                    <form id="subscriberNewsletterCoreForm" class="flex gap-2">
+                        <input 
+                            type="email" 
+                            id="newsletterEmailInputNode" 
+                            required 
+                            placeholder="operator@domain.com" 
+                            class="flex-1 min-w-0 bg-brand-card border border-brand-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                        >
+                        <button 
+                            type="submit" 
+                            class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shrink-0"
+                        >
+                            Connect
+                        </button>
+                    </form>
+                    <p class="text-[11px] text-slate-500 mt-2"><i class="fa-solid fa-users text-[10px] mr-1"></i> Joining <span id="subscriberCounterValueDisplayNode">140</span>+ Active Operators</p>
+                </div>
+
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                <p>&copy; 2026 DAN74TECH MEDIA. All operational parameters reserved.</p>
+                <p class="flex items-center gap-1.5 text-slate-500">
+                    <span>Engineered by Daniel Ngumi</span>
+                    <span class="inline-block w-1 h-1 bg-slate-600 rounded-full"></span>
+                    <span>Meru, Kenya</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // SYSTEM UNIVERSAL TOAST ENGINE PIPELINE
+        function pushSystemOperationalToast(textMessageString, styleContextType = 'info') {
+            const containerNode = document.getElementById('systemToastContainer');
+            if (!containerNode) return;
+
+            const toastBlockElement = document.createElement('div');
+            toastBlockElement.className = `flex items-center gap-3 p-4 rounded-xl text-xs font-medium border text-white transition-all duration-300 shadow-xl translate-y-2 opacity-0 transform`;
+            
+            let decorativeIconCode = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+            if (styleContextType === 'success') {
+                toastBlockElement.className += ' bg-emerald-950/90 border-emerald-500/30';
+                decorativeIconCode = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+            } else if (styleContextType === 'error') {
+                toastBlockElement.className += ' bg-rose-950/90 border-rose-500/30';
+                decorativeIconCode = '<i class="fa-solid fa-circle-exclamation text-rose-400"></i>';
+            } else {
+                toastBlockElement.className += ' bg-slate-900/90 border-slate-700/50';
+            }
+
+            toastBlockElement.innerHTML = `
+                <div class="text-base flex-shrink-0">${decorativeIconCode}</div>
+                <div class="flex-1">${textMessageString}</div>
+            `;
+
+            containerNode.appendChild(toastBlockElement);
+
+            setTimeout(() => {
+                toastBlockElement.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toastBlockElement.classList.add('translate-y-[-10px]', 'opacity-0');
+                setTimeout(() => {
+                    toastBlockElement.remove();
+                }, 300);
+            }, 4000);
+        }
+
+        // TELEMETRY RE-SYNC EXECUTION NODES
+        async function runSystemTelemetryDatabaseSynchronization() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    const userNode = document.getElementById('telemetryStatUsers');
+                    const orderNode = document.getElementById('telemetryStatOrders');
+                    const earningNode = document.getElementById('telemetryStatEarnings');
+                    const consultationNode = document.getElementById('telemetryStatConsultations');
+
+                    if(userNode) userNode.textContent = data.users || 0;
+                    if(orderNode) orderNode.textContent = data.orders || 0;
+                    if(earningNode) earningNode.textContent = `KSH ${parseFloat(data.total_earnings || 0).toLocaleString()}`;
+                    if(consultationNode) consultationNode.textContent = data.pending_consultations || 0;
+                }
+            } catch (err) {
+                console.error("Telemetry channel connection dropped:", err);
+            }
+        }
+
+        // ALPINE JS APP COMPONENT LAYER
+        function graphicDesignApp() {
+            return {
+                isLoading: true,
+                isSubmitting: false,
+                serviceInfo: { id: null, name: '', description: '', slug: 'graphic-design' },
+                packages: [],
+                selectedPackage: null,
+                formData: {
+                    name: '',
+                    phone: '',
+                    packageTitle: '',
+                    description: '',
+                    price: 0
+                },
+
+                async init() {
+                    try {
+                        // Discover service list array node context mapping logic matches server.js structure
+                        const servicesResponse = await fetch('/api/services');
+                        if (!servicesResponse.ok) throw new Error("Could not parse functional core service registry parameters.");
+                        const serviceArray = await servicesResponse.json();
+                        
+                        // Parse matching slug node logic
+                        const matchingItem = serviceArray.find(s => s.slug === 'graphic-design' || s.name.toLowerCase().includes('graphic'));
+                        if (matchingItem) {
+                            this.serviceInfo.id = matchingItem.id;
+                            this.serviceInfo.name = matchingItem.name;
+                            this.serviceInfo.description = matchingItem.description;
+                        }
+
+                        // Query subservices route
+                        const subservicesResponse = await fetch('/api/sub-services');
+                        if (!subservicesResponse.ok) throw new Error("Could not map functional database package arrays matrix.");
+                        const allSubServices = await subservicesResponse.json();
+
+                        // Filter by mapped entity link mapping identifier node sequence
+                        if (this.serviceInfo.id) {
+                            this.packages = allSubServices.filter(item => item.service_id === this.serviceInfo.id);
+                        } else {
+                            // Secondary safety pattern matching logic
+                            this.packages = allSubServices.filter(item => item.category === 'graphic-design' || item.service_id === 4);
+                        }
+
+                        // Select initial first option index safely
+                        if (this.packages.length > 0) {
+                            this.selectPackage(this.packages[0]);
+                        }
+
+                    } catch (err) {
+                        console.error(err);
+                        pushSystemOperationalToast(err.message || "Pipeline handshake synchronization error.", "error");
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                selectPackage(pkg) {
+                    this.selectedPackage = pkg;
+                    this.formData.packageTitle = pkg.title;
+                    this.formData.price = pkg.price;
+                },
+
+                onDropdownSelectChange(event) {
+                    const matchedTitle = event.target.value;
+                    if (!matchedTitle) {
+                        this.selectedPackage = null;
+                        this.formData.price = 0;
+                        return;
+                    }
+                    const foundPkg = this.packages.find(p => p.title === matchedTitle);
+                    if (foundPkg) {
+                        this.selectPackage(foundPkg);
+                    }
+                },
+
+                parseFeatures(featuresInput) {
+                    if (!featuresInput) return [];
+                    if (Array.isArray(featuresInput)) return featuresInput;
+                    if (typeof featuresInput === 'string') {
+                        if (featuresInput.startsWith('[') && featuresInput.endsWith(']')) {
+                            try { return JSON.parse(featuresInput); } catch(e) {}
+                        }
+                        return featuresInput.split(',').map(f => f.trim()).filter(Boolean);
+                    }
+                    return [];
+                },
+
+                formatPrice(priceVal) {
+                    return parseFloat(priceVal || 0).toLocaleString();
+                },
+
+                // BUILD DYNAMIC WHATSAPP PAYLOAD ROUTE STRING LINK PACKETS
+                generateWhatsAppMessage() {
+                    const clientName = this.formData.name || 'Unspecified Operator';
+                    const targetServiceStr = this.formData.packageTitle ? `${this.serviceInfo.name || 'Graphic Design'} - ${this.formData.packageTitle}` : (this.serviceInfo.name || 'Graphic Design Services');
+                    const computedPriceStr = `KSH ${this.formatPrice(this.formData.price)}`;
+                    const userInstructions = this.formData.description || 'No special requirements listed.';
+
+                    return `*GRAPHIC DESIGN ORDER*\n\n` +
+                           `*Customer:* ${clientName}\n` +
+                           `*Service Package:* ${targetServiceStr}\n` +
+                           `*Price:* ${computedPriceStr}\n` +
+                           `*Phone Link:* ${this.formData.phone || 'None'}\n\n` +
+                           `*Instructions/Scope:* \n${userInstructions}`;
+                },
+
+                sendToWhatsApp() {
+                    if (!this.formData.name) {
+                        alert("Please input your name context before tracking dispatch paths.");
+                        pushSystemOperationalToast("Customer identity variable payload mismatch.", "error");
+                        return;
+                    }
+                    const textStringContentMessage = this.generateWhatsAppMessage();
+                    window.open(`https://wa.me/254790435584?text=${encodeURIComponent(textStringContentMessage)}`, "_blank");
+                },
+
+                // DIRECT SYSTEM SUBMISSION TO THE POSTGRES VIA REST BACKEND PIPELINE
+                async submitOrderForm() {
+                    if (!this.formData.name || !this.formData.phone) {
+                        pushSystemOperationalToast("Required system tracking parameters missing.", "error");
+                        return;
+                    }
+
+                    this.isSubmitting = true;
+                    try {
+                        const compiledPayload = {
+                            name: this.formData.name,
+                            email: `${this.formData.phone}@dan74tech.local`, // Structural data-fallback formatting matrix node
+                            service: this.formData.packageTitle ? `${this.serviceInfo.name || 'Graphic Design'} - ${this.formData.packageTitle}` : (this.serviceInfo.name || 'Graphic Design Package'),
+                            price: parseFloat(this.formData.price || 0),
+                            description: `Phone: ${this.formData.phone} | Scope Details: ${this.formData.description || 'None provided'}`
+                        };
+
+                        const response = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(compiledPayload)
+                        });
+
+                        if (response.ok) {
+                            pushSystemOperationalToast("Order pipeline structured successfully in local ledger database cluster node.", "success");
+                            runSystemTelemetryDatabaseSynchronization();
+                            
+                            // Instantly dispatch secondary flow sequence to WhatsApp logic interface gateway
+                            this.sendToWhatsApp();
+                            
+                            // Reset tracking indices
+                            this.formData.description = '';
+                        } else {
+                            const errorPayloadData = await response.json();
+                            throw new Error(errorPayloadData.error || "Order validation ingestion interface logic anomaly.");
+                        }
+                    } catch (exceptionErr) {
+                        console.error(exceptionErr);
+                        pushSystemOperationalToast(exceptionErr.message || "Failed to commit order execution block.", "error");
+                    } finally {
+                        this.isSubmitting = false;
+                    }
+                }
+            };
+        }
+
+        // ATTACH GLOBAL NEWSLETTER CONTROL HOOKS CONTEXT FROM SOURCE SINGLE TRUTH MATRIX
+        document.getElementById('subscriberNewsletterCoreForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInputNode = document.getElementById('newsletterEmailInputNode');
+            const subscriberCounterNode = document.getElementById('subscriberCounterValueDisplayNode');
+            if (!emailInputNode) return;
+
+            try {
+                const response = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailInputNode.value.trim() })
+                });
+
+                if (response.ok) {
+                    pushSystemOperationalToast("Subscription matrix synchronized successfully.", "success");
+                    emailInputNode.value = '';
+                    if (subscriberCounterNode) {
+                        const parsedBaseInt = parseInt(subscriberCounterNode.textContent) || 140;
+                        subscriberCounterNode.textContent = `${parsedBaseInt + 1}`;
+                    }
+                } else {
+                    const parsedErrorPayload = await response.json();
+                    throw new Error(parsedErrorPayload.error || "Subscription registration error failure.");
+                }
+            } catch (exceptionContextError) {
+                pushSystemOperationalToast(exceptionContextError.message || "Email pipeline failure code triggered.", "error");
+            }
+        });
+
+        // NAVBAR RESPONSIVE TOGGLE LOGIC MATRIX LINK PACKET
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
+            if (dropdownLinksTargetMenu) {
+                dropdownLinksTargetMenu.classList.toggle('hidden');
+            }
+        });
+
+       // GLOBAL APPLICATION INITIALIZATION CONTEXT ENGINE
+        document.addEventListener('DOMContentLoaded', () => {
+            runSystemTelemetryDatabaseSynchronization();
+            setTimeout(() => {
+                pushSystemOperationalToast("DAN74TECH MEDIA Graphic Design module integrated dynamically.", "success");
+            }, 600);
+        });
+    </script>
+</body>
+</html>
+                          
