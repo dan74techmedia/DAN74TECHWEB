@@ -212,6 +212,8 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+
+
 // Admin endpoint to explicitly remove validation access lines
 app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
     try {
@@ -221,6 +223,70 @@ app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// ================= MODULE 2: USERS MANAGEMENT INTERFACE =================
+
+
+// Get single user
+app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1',
+            [req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update user
+app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { name, email, role, phone, password } = req.body;
+
+        let query;
+        let values;
+
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            query = `
+                UPDATE users
+                SET name=$1,email=$2,role=$3,phone=$4,password=$5
+                WHERE id=$6
+                RETURNING id,name,email,role,phone
+            `;
+
+            values = [name, email, role, phone, hashedPassword, req.params.id];
+        } else {
+            query = `
+                UPDATE users
+                SET name=$1,email=$2,role=$3,phone=$4
+                WHERE id=$5
+                RETURNING id,name,email,role,phone
+            `;
+
+            values = [name, email, role, phone, req.params.id];
+        }
+
+        const result = await pool.query(query, values);
+
+        res.json({
+            success: true,
+            data: result.rows[0]
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 // ================= MODULE 2: SERVICES MANAGEMENT INTERFACE =================
 
@@ -507,6 +573,69 @@ app.get('/api/case-studies', async (req, res) => {
     }
 });
 
+// Get single case study
+app.get('/api/case-studies/:id', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM case_studies WHERE id = $1',
+            [req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Case study not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update case study
+app.put('/api/case-studies/:id', verifyAdminAccess, async (req, res) => {
+    try {
+
+        const {
+            title,
+            category,
+            challenge,
+            solution,
+            result,
+            image_url
+        } = req.body;
+
+        const updated = await pool.query(
+            `UPDATE case_studies
+             SET
+                title=$1,
+                category=$2,
+                challenge=$3,
+                solution=$4,
+                result=$5,
+                image_url=$6
+             WHERE id=$7
+             RETURNING *`,
+            [
+                title,
+                category,
+                challenge,
+                solution,
+                result,
+                image_url,
+                req.params.id
+            ]
+        );
+
+        res.json({
+            success: true,
+            data: updated.rows[0]
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/api/case-studies', verifyAdminAccess, async (req, res) => {
     try {
         const { title, category, challenge, solution, result, image_url } = req.body;
@@ -607,6 +736,80 @@ const getBlogPosts = async (req, res) => {
 };
 app.get('/api/blog', getBlogPosts);
 app.get('/api/blogs', getBlogPosts);
+
+// Get blog by id
+app.get('/api/blog/id/:id', async (req, res) => {
+    try {
+
+        const result = await pool.query(
+            'SELECT * FROM blog_posts WHERE id = $1',
+            [req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        res.json(result.rows[0]);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update blog
+const updateBlogPost = async (req, res) => {
+    try {
+
+        const {
+            title,
+            category,
+            content,
+            summary,
+            image_url,
+            slug,
+            seo_title,
+            seo_description
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE blog_posts
+             SET
+                title=$1,
+                category=$2,
+                content=$3,
+                summary=$4,
+                image_url=$5,
+                slug=$6,
+                seo_title=$7,
+                seo_description=$8
+             WHERE id=$9
+             RETURNING *`,
+            [
+                title,
+                category,
+                content,
+                summary,
+                image_url,
+                slug,
+                seo_title,
+                seo_description,
+                req.params.id
+            ]
+        );
+
+        res.json({
+            success: true,
+            data: result.rows[0]
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+app.put('/api/blog/:id', verifyAdminAccess, updateBlogPost);
+app.put('/api/blogs/:id', verifyAdminAccess, updateBlogPost);
 
 // Dynamic query text evaluation engine
 app.get('/api/blog/search', async (req, res) => {
