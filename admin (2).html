@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH — Unified Administrative Operations Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #070913;
+            --bg-surface: #0f1225;
+            --bg-card: #151a36;
+            --border-glow: #222a53;
+            --accent-purple: #7c3aed;
+            --accent-blue: #2563eb;
+            --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --status-success: #10b981;
+            --status-warning: #f59e0b;
+            --status-danger: #ef4444;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --sidebar-width: 280px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-glow) var(--bg-base);
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        *::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        *::-webkit-scrollbar-thumb {
+            background-color: var(--border-glow);
+            border-radius: 10px;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- AUTHENTICATION OVERLAY LAYER --- */
+        #auth-guard-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #111532 0%, #05070f 100%);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: var(--transition-smooth);
+        }
+
+        #auth-guard-layer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .auth-container {
+            background: rgba(15, 18, 37, 0.7);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 450px;
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(124, 58, 237, 0.1);
+            text-align: center;
+        }
+
+        .auth-brand {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+
+        /* --- STYLED INTERACTIVE UTILITIES --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .btn-core {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            background: var(--accent-gradient);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-core:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-glow);
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: var(--status-danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* --- MAIN SYSTEM LAYOUT ARCHITECTURE --- */
+        #app-viewport {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR PANEL NAVIGATION --- */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-glow);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar-brand-node {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .sidebar-brand-node h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-brand-node p {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .sidebar-nav-container {
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 10px;
+            margin-bottom: 0.35rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item-link i {
+            width: 20px;
+            font-size: 1.05rem;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item-link:hover, .nav-item-link.active {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item-link.active {
+            background: var(--accent-gradient);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
+        }
+
+        .nav-item-link.active i {
+            color: white;
+        }
+
+        .sidebar-user-footer {
+            padding: 1.25rem;
+            border-top: 1px solid var(--border-glow);
+            background: rgba(7, 9, 19, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-footer-details {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-right: 0.5rem;
+        }
+
+        .user-footer-details h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-footer-details p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .logout-trigger-node {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .logout-trigger-node:hover {
+            color: var(--status-danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* --- CONTENT WRAPPER CANVAS --- */
+        .workspace-wrapper {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 2rem;
+            min-height: 100vh;
+            transition: var(--transition-smooth);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .workspace-title-area h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .workspace-title-area p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* --- METRICS DASHBOARD CARDS --- */
+        .metrics-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-widget-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            padding: 1.5rem;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric-widget-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-gradient);
+        }
+
+        .metric-data-block h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-data-block .metric-numeric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .metric-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        /* --- WORKSPACE MODULE PANELS --- */
+        .module-content-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .module-content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- STANDARD REUSABLE UI CARDS --- */
+        .panel-card-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .panel-card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* --- DATA TABLES --- */
+        .table-responsive-box {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-glow);
+        }
+
+        .corporate-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .corporate-data-table th {
+            background: rgba(7, 9, 19, 0.5);
+            padding: 1rem 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .corporate-data-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(34, 42, 83, 0.4);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+
+        .corporate-data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .corporate-data-table tr:hover td {
+            background: rgba(21, 26, 54, 0.5);
+        }
+
+        /* --- OPERATION TAGS AND BADGES --- */
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-tag.success { background: rgba(16, 185, 129, 0.1); color: var(--status-success); }
+        .badge-tag.warning { background: rgba(245, 158, 11, 0.1); color: var(--status-warning); }
+        .badge-tag.danger { background: rgba(239, 68, 68, 0.1); color: var(--status-danger); }
+        .badge-tag.info { background: rgba(37, 99, 235, 0.1); color: var(--accent-blue); }
+
+        /* --- PROGRESS CONTROL BARS --- */
+        .progress-track-wrapper {
+            width: 100%;
+            max-width: 150px;
+        }
+
+        .progress-percentage-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-base);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* --- CONTROL UTILITIES GROUP --- */
+        .action-icon-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-icon-btn {
+            background: var(--bg-base);
+            border: 1px solid var(--border-glow);
+            color: var(--text-secondary);
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .action-icon-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-purple);
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .action-icon-btn.delete-btn:hover {
+            color: white;
+            border-color: var(--status-danger);
+            background: var(--status-danger);
+        }
+
+        /* --- MODAL DIALOG CONTROLS --- */
+        .modal-overlay-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 7, 15, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-overlay-container.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-window-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-glow);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            transform: scale(0.95);
+            transition: var(--transition-smooth);
+        }
+
+        .modal-overlay-container.open .modal-window-box {
+            transform: scale(1);
+        }
+
+        .modal-window-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-glow);
+            background: rgba(7, 9, 19, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-window-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .modal-close-trigger {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close-trigger:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-window-body {
+            padding: 1.5rem;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+
+        .modal-form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .modal-window-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-glow);
+            background: rgba(7, 9, 19, 0.3);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* --- LIVE TOAST SYSTEM --- */
+        #toast-notification-hub {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast-banner {
+            background: var(--bg-surface);
+            border-left: 4px solid var(--accent-blue);
+            border-top: 1px solid var(--border-glow);
+            border-right: 1px solid var(--border-glow);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: var(--text-primary);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            min-width: 300px;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* --- RESPONSIVE WORKFLOW MEDIA QUERIES --- */
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .workspace-wrapper {
+                margin-left: 0;
+            }
+            .modal-form-grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-notification-hub"></div>
+
+    <div id="auth-guard-layer">
+        <div class="auth-container">
+            <div class="auth-brand">DAN74TECH</div>
+            <div class="auth-subtitle">Unified Administrative Security Access Verification Portal</div>
+            <form id="auth-shield-form" onsubmit="executeAdminSystemLogin(event)">
+                <div class="input-group">
+                    <label>Corporate Identity Email</label>
+                    <input type="email" id="auth-email-field" class="input-field" required placeholder="admin@dan74tech.com" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>Cryptographic Access Key</label>
+                    <input type="password" id="auth-pass-field" class="input-field" required placeholder="••••••••••••" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-core" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-shield-halved"></i> Validate Administrative Authority
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-viewport">
+        <aside class="admin-sidebar" id="sidebar-drawer">
+            <div class="sidebar-brand-node">
+                <h2>DAN74TECH</h2>
+                <p>Operations Console</p>
+            </div>
+            <nav class="sidebar-nav-container">
+                <a class="nav-item-link active" onclick="switchActiveOperationalTab('tab-dashboard', this)">
+                    <i class="fa-solid fa-chart-pie"></i> Executive Overview
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-orders', this)">
+                    <i class="fa-solid fa-folder-tree"></i> Deployment Pipelines
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-portfolio', this)">
+                    <i class="fa-solid fa-photo-film"></i> Portfolio & Progress
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-invoices', this)">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Financial Logistics
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-tickets', this)">
+                    <i class="fa-solid fa-headset"></i> Support Workspace
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-file-deliveries', this)">
+                    <i class="fa-solid fa-circle-nodes"></i> FDN File Deliveries
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-services', this)">
+                    <i class="fa-solid fa-cubes"></i> Core Services Catalog
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-subservices', this)">
+                    <i class="fa-solid fa-tags"></i> Pricing Tiers Matrix
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-blog', this)">
+                    <i class="fa-solid fa-pen-nib"></i> Blog Management
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-case-studies', this)">
+                    <i class="fa-solid fa-graduation-cap"></i> Case Studies Hub
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-testimonials', this)">
+                    <i class="fa-solid fa-comment-dots"></i> Review Feedback
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-media', this)">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Media Cloud Pipeline
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-consultations', this)">
+                    <i class="fa-solid fa-calendar-check"></i> Calendar Bookings
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-messages', this)">
+                    <i class="fa-solid fa-envelope-open-text"></i> Intercepted Leads
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-users', this)">
+                    <i class="fa-solid fa-users-gear"></i> Corporate Accounts
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-subscribers', this)">
+                    <i class="fa-solid fa-mail-bulk"></i> Audience Lists
+                </a>
+                <a class="nav-item-link" onclick="switchActiveOperationalTab('tab-notifications', this)">
+                    <i class="fa-solid fa-bullhorn"></i> Broadcast Pipeline
+                </a>
+            </nav>
+            <div class="sidebar-user-footer">
+                <div class="user-footer-details">
+                    <h4 id="user-footer-display-name">System Admin</h4>
+                    <p id="user-footer-display-email">admin@dan74tech.com</p>
+                </div>
+                <button class="logout-trigger-node" onclick="executeSystemSecurityLogout()" title="Terminate Corporate Session Token">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="workspace-wrapper">
+            <header class="workspace-header">
+                <div class="workspace-title-area">
+                    <h1 id="dynamic-workspace-title-header">Executive Overview</h1>
+                    <p id="dynamic-workspace-description-header">Real-time status analysis matrices for corporate operational controls.</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span class="badge-tag success" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-circle-check"></i> Connected Matrix Node</span>
+                </div>
+            </header>
+
+            <div id="tab-dashboard" class="module-content-panel active">
+                <div class="metrics-grid-layout" id="dashboard-metrics-row">
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Corporate Accounts</h3>
+                            <div class="metric-numeric-value" id="stat-users">0</div>
+                        </div>
+                        <div class="metric-icon-box"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Total Deployments</h3>
+                            <div class="metric-numeric-value" id="stat-orders">0</div>
+                        </div>
+                        <div class="metric-icon-box"><i class="fa-solid fa-box"></i></div>
+                    </div>
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Pending Pipeline</h3>
+                            <div class="metric-numeric-value" id="stat-pending-orders">0</div>
+                        </div>
+                        <div class="metric-icon-box" style="color: var(--status-warning); background: rgba(245,158,11,0.1);"><i class="fa-solid fa-clock"></i></div>
+                    </div>
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Open Support Tickets</h3>
+                            <div class="metric-numeric-value" id="stat-open-tickets">0</div>
+                        </div>
+                        <div class="metric-icon-box" style="color: var(--status-danger); background: rgba(239,68,68,0.1);"><i class="fa-solid fa-ticket"></i></div>
+                    </div>
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Pending Bookings</h3>
+                            <div class="metric-numeric-value" id="stat-pending-consultations">0</div>
+                        </div>
+                        <div class="metric-icon-box" style="color: var(--accent-purple); background: rgba(124,58,237,0.1);"><i class="fa-solid fa-calendar"></i></div>
+                    </div>
+                    <div class="metric-widget-card">
+                        <div class="metric-data-block">
+                            <h3>Gross Revenue Ledger</h3>
+                            <div class="metric-numeric-value" id="stat-earnings">$0.00</div>
+                        </div>
+                        <div class="metric-icon-box" style="color: var(--status-success); background: rgba(16,185,129,0.1);"><i class="fa-solid fa-dollar-sign"></i></div>
+                    </div>
+                </div>
+
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Administrative Matrix Quick-Links</h2>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn-core btn-secondary" onclick="document.querySelector('[onclick*=\'tab-orders\']').click()"><i class="fa-solid fa-folder-tree"></i> View Pipelines</button>
+                        <button class="btn-core btn-secondary" onclick="document.querySelector('[onclick*=\'tab-invoices\']').click()"><i class="fa-solid fa-file-invoice-dollar"></i> Issue Invoices</button>
+                        <button class="btn-core btn-secondary" onclick="document.querySelector('[onclick*=\'tab-file-deliveries\']').click()"><i class="fa-solid fa-circle-nodes"></i> Deploy Assets (FDN)</button>
+                        <button class="btn-core btn-secondary" onclick="document.querySelector('[onclick*=\'tab-media\']').click()"><i class="fa-solid fa-cloud-arrow-up"></i> Media Storage</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-orders" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Live Production Order Ledger Matrix</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-order-creation')">
+                            <i class="fa-solid fa-plus"></i> Manual Order Insertion
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client Details</th>
+                                    <th>Service Module</th>
+                                    <th>Price Map</th>
+                                    <th>Pipeline State</th>
+                                    <th>Payment State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-orders-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-portfolio" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Visual Portfolio Metrics Asset Ingestion Panel</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-portfolio-creation')">
+                            <i class="fa-solid fa-plus"></i> Ingest New Portfolio Asset Node
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Asset Title / Module</th>
+                                    <th>Link Path Mapping</th>
+                                    <th>Visual Milestone Progress</th>
+                                    <th>Display State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-portfolio-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-invoices" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Financial Ledger Invoicing Index</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-invoice-creation')">
+                            <i class="fa-solid fa-file-circle-plus"></i> Generate Commercial Invoice Statement
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Client Target Name</th>
+                                    <th>Email Destination</th>
+                                    <th>Gross Amount Billed</th>
+                                    <th>Manifest State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-invoices-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-tickets" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Technical Issue Escalation Tickets Workspace</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client Key</th>
+                                    <th>Subject Line</th>
+                                    <th>Technical Priority</th>
+                                    <th>Operational State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-tickets-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-file-deliveries" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Secure Deliverables Distribution Hub (FDN Engine)</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-fdn-creation')">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Deploy Digital Delivery Asset
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Order Bind Index</th>
+                                    <th>Filename Manifest</th>
+                                    <th>Asset Link Routing</th>
+                                    <th>Lifecycle Expiry Time</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-fdn-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-services" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Structural Service Offerings Catalog Directory</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-service-creation')">
+                            <i class="fa-solid fa-plus"></i> Ingest New Catalog Offering Node
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Icon Vector Mapping</th>
+                                    <th>Structural Service Name</th>
+                                    <th>Scope Matrix Narrative Description</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-services-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-subservices" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Granular Commercial Subservices Package Matrix</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-subservice-creation')">
+                            <i class="fa-solid fa-plus"></i> Create Pricing Tier Module Entry
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Parent Service Offering</th>
+                                    <th>Tier Package Name</th>
+                                    <th>Baseline Fee Structure</th>
+                                    <th>Features Baseline Narrative Log</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-subservices-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-blog" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Blog Content Editorial Engine & Content Deployment Matrix</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-blog-creation')">
+                            <i class="fa-solid fa-feather"></i> Compose & Index Editorial Article Node
+                        </button>
+                    </div>
+                    <div class="input-group" style="max-width: 400px; margin-bottom: 1.5rem;">
+                        <input type="text" id="blog-search-query-field" class="input-field" placeholder="Query tracking matrix title keys..." onkeyup="executeLiveBlogIndexSearch()">
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Visual Accent Mapping</th>
+                                    <th>Article Title / Headline</th>
+                                    <th>Categorization Tag</th>
+                                    <th>Slug Engine Path String</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-blog-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-case-studies" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Success Data Ingestion & Case Studies Metrics Matrix</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-case-creation')">
+                            <i class="fa-solid fa-plus"></i> Ingest New Client Case Document Node
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Case Title / Document Heading</th>
+                                    <th>Categorization Tag</th>
+                                    <th>Challenge Statement Narrative</th>
+                                    <th>Solution Deployment Narrative</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-case-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-testimonials" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Client Reputation Auditing Review Matrix Queue</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client Origin Identifier</th>
+                                    <th>Corporate Entity Context</th>
+                                    <th>Metric Rating Score</th>
+                                    <th>Narrative Content Statement Evaluation</th>
+                                    <th>Auditing Manifest Verification State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-testimonials-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-media" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Cloudinary Storage Direct Pipeline Stream Panel</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-media-upload')">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i> Route External Binary To Cloud Asset Pool
+                        </button>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Filename Tracking Log</th>
+                                    <th>Format Manifest</th>
+                                    <th>Allocation Weight (Bytes)</th>
+                                    <th>Secure URL Redirection Mapping</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-media-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-consultations" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Calendar Booking Allocation Evaluations Center</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client Name Label</th>
+                                    <th>Contact Key Email</th>
+                                    <th>Allocated Calendar Date</th>
+                                    <th>Target Time Slot Alignment</th>
+                                    <th>Platform Pipeline Mapping</th>
+                                    <th>Booking Operational State</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-consultations-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-messages" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Intercepted Prospective Sales Leads Inbox</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Lead Contact Origin</th>
+                                    <th>Email Destination Address</th>
+                                    <th>Subject Reference Inquiries Line</th>
+                                    <th>Message Payload Statement String Text</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-messages-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-users" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Corporate Accounts Matrix Registry Directory</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Account Name Label</th>
+                                    <th>Corporate Identity Email</th>
+                                    <th>Role Clearance Mask</th>
+                                    <th>Phone Routing Line</th>
+                                    <th>System Ingestion Date</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-users-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-subscribers" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Audience Subscription Records Database Matrix</h2>
+                    </div>
+                    <div class="table-responsive-box">
+                        <table class="corporate-data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Subscriber Email Reference Index</th>
+                                    <th>Communication State Manifest</th>
+                                    <th>Execution Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dynamic-render-subscribers-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-notifications" class="module-content-panel">
+                <div class="panel-card-container">
+                    <div class="panel-card-header">
+                        <h2>Client Notifications Tracker Dispatch Engine Portal</h2>
+                        <button class="btn-core" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.85rem;" onclick="openSystemDataModal('modal-notification-dispatch')">
+                            <i class="fa-solid fa-bullhorn"></i> Dispatch Broadcaster System Notification Row
+                        </button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Select specific corporate account entities to deploy persistent in-dashboard user tracking message updates to target terminals.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-order-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Manual Production Order Insertion Node</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-order-creation')">&times;</button>
+            </div>
+            <form id="form-order-creation" onsubmit="executeOrderCreationPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Account Bind (User ID - Optional)</label><input type="number" id="order-field-uid" class="input-field"></div>
+                        <div class="input-group"><label>Customer Name Label</label><input type="text" id="order-field-name" class="input-field" required></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Contact Phone Number</label><input type="text" id="order-field-phone" class="input-field" required></div>
+                        <div class="input-group"><label>Target Service Offering Block</label><input type="text" id="order-field-service" class="input-field" required placeholder="e.g. Web Development"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Granular Subservice Package</label><input type="text" id="order-field-subservice" class="input-field" required placeholder="e.g. Premium E-Commerce Tier"></div>
+                        <div class="input-group"><label>Domain Link Mapping (Optional)</label><input type="text" id="order-field-domain" class="input-field" placeholder="N/A"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Client Hardware Context Platform</label><input type="text" id="order-field-device" class="input-field" placeholder="Web Client"></div>
+                        <div class="input-group"><label>Fee Structure Price Allocation</label><input type="number" step="0.01" id="order-field-price" class="input-field" required></div>
+                    </div>
+                    <div class="input-group"><label>Project Technical Narrative Specifications</label><textarea id="order-field-details" class="input-field" style="height: 80px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-order-creation')">Abort Indexing</button>
+                    <button type="submit" class="btn-core">Commit Transaction Records</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-order-mutation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Modify Operational Deployment Pipeline Status</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-order-mutation')">&times;</button>
+            </div>
+            <form id="form-order-mutation" onsubmit="executeOrderMutationPipeline(event)">
+                <input type="hidden" id="mutation-order-target-id">
+                <div class="modal-window-body">
+                    <div class="input-group">
+                        <label>Pipeline Status Tier Flow</label>
+                        <select id="mutation-order-field-status" class="input-field">
+                            <option value="pending">Pending Operational Queue</option>
+                            <option value="In Progress">In Progress Production Pipeline</option>
+                            <option value="Completed">Completed Verification Loop</option>
+                            <option value="Cancelled">Cancelled Operational Termination</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Financial Settlement Manifest State</label>
+                        <select id="mutation-order-field-payment" class="input-field">
+                            <option value="unpaid">Unpaid Open Account Liability</option>
+                            <option value="paid">Paid Settled Ledger Entry</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Adjust Allocated Pricing Value Matrix</label>
+                        <input type="number" step="0.01" id="mutation-order-field-price" class="input-field" required>
+                    </div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-order-mutation')">Abort Changes</button>
+                    <button type="submit" class="btn-core">Deploy State Adjustments</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-portfolio-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Ingest Portfolio Visual Track Node</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-portfolio-creation')">&times;</button>
+            </div>
+            <form id="form-portfolio-creation" onsubmit="executePortfolioUploadPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Asset Title Identifier</label><input type="text" id="port-field-title" class="input-field" required></div>
+                        <div class="input-group"><label>Categorization Segment Mapping</label><input type="text" id="port-field-category" class="input-field" required placeholder="e.g. Graphic Design"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Associated Order Row ID Reference (Optional)</label><input type="number" id="port-field-order" class="input-field"></div>
+                        <div class="input-group"><label>Numerical Milestone Metric Value (%)</label><input type="number" min="0" max="100" id="port-field-progress" class="input-field" required value="0"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Status State Display Tag</label><input type="text" id="port-field-status" class="input-field" required value="In Progress"></div>
+                        <div class="input-group"><label>Static Target Fallback Link URL</label><input type="text" id="port-field-link" class="input-field" placeholder="https://"></div>
+                    </div>
+                    <div class="input-group"><label>Upload Media Representation Asset File Binary</label><input type="file" id="port-field-file" class="input-field" accept="image/*"></div>
+                    <div class="input-group"><label>Project Context Brief Description Text Log</label><textarea id="port-field-desc" class="input-field" style="height: 70px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-portfolio-creation')">Abort Ingestion</button>
+                    <button type="submit" class="btn-core">Ingest Asset & Compile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-portfolio-mutation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Modify Active Visual Metrics Parameters</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-portfolio-mutation')">&times;</button>
+            </div>
+            <form id="form-portfolio-mutation" onsubmit="executePortfolioMutationPipeline(event)">
+                <input type="hidden" id="mutation-portfolio-target-id">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Numerical Milestone Metric Value (%)</label><input type="number" min="0" max="100" id="mutation-port-field-progress" class="input-field" required></div>
+                        <div class="input-group"><label>Status Display String Value</label><input type="text" id="mutation-port-field-status" class="input-field" required></div>
+                    </div>
+                    <div class="input-group"><label>Modify Asset Reference Title</label><input type="text" id="mutation-port-field-title" class="input-field" required></div>
+                    <div class="input-group"><label>Modify Project Context Description Text</label><textarea id="mutation-port-field-desc" class="input-field" style="height: 70px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-portfolio-mutation')">Abort Mapping</button>
+                    <button type="submit" class="btn-core">Commit Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-invoice-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Generate Commercial Invoice Ledger Row Statement</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-invoice-creation')">&times;</button>
+            </div>
+            <form id="form-invoice-creation" onsubmit="executeInvoiceGenerationPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Associated Pipeline Order ID Reference</label><input type="number" id="inv-field-order" class="input-field" required></div>
+                        <div class="input-group"><label>Unique Invoicing Sequence Number Mapping</label><input type="text" id="inv-field-number" class="input-field" required placeholder="INV-2026-001"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Client Corporate Identity Label</label><input type="text" id="inv-field-name" class="input-field" required></div>
+                        <div class="input-group"><label>Client Destination Target Email Address</label><input type="email" id="inv-field-email" class="input-field" required></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Gross Billed Financial Liability Volume ($)</label><input type="number" step="0.01" id="inv-field-amount" class="input-field" required></div>
+                        <div class="input-group">
+                            <label>Settlement Verification State Manifest</label>
+                            <select id="inv-field-status" class="input-field">
+                                <option value="unpaid">Unpaid Open Account Liability</option>
+                                <option value="paid">Paid Settled Financial Ledger Entry</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group"><label>External Ledger Hosted Backup Document URL Path (Optional)</label><input type="text" id="inv-field-pdf" class="input-field" placeholder="https://"></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-invoice-creation')">Abort Invoicing</button>
+                    <button type="submit" class="btn-core">Generate Statement & Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-fdn-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Deploy Digital Assets Deliverables Row Node via FDN</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-fdn-creation')">&times;</button>
+            </div>
+            <form id="form-fdn-creation" onsubmit="executeFDNAssetDeploymentPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Associated Deployment Order ID Index</label><input type="number" id="fdn-field-order" class="input-field"></div>
+                        <div class="input-group"><label>Target Recipient Client Account ID Index</label><input type="number" id="fdn-field-client" class="input-field"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Fallback Static Asset File Name Label</label><input type="text" id="fdn-field-name" class="input-field" placeholder="System Delivery Asset Archive"></div>
+                        <div class="input-group"><label>Lifecycle Expiry Boundary Timeline Limit</label><input type="date" id="fdn-field-expiry" class="input-field"></div>
+                    </div>
+                    <div class="input-group"><label>Fallback Hosted Location Data URL Path Link</label><input type="text" id="fdn-field-url" class="input-field" placeholder="https://"></div>
+                    <div class="input-group"><label>Upload Target Production Asset Package File Binary</label><input type="file" id="fdn-field-file" class="input-field" required></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-fdn-creation')">Abort Deployment</button>
+                    <button type="submit" class="btn-core">Broadcast Production Release Asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-service-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Ingest Dynamic Offering Node into Core Catalog Structure</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-service-creation')">&times;</button>
+            </div>
+            <form id="form-service-creation" onsubmit="executeServiceCatalogIngestionPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Core Catalog Module Service Name Identifier</label><input type="text" id="srv-field-name" class="input-field" required placeholder="e.g. Cybersecurity Audit"></div>
+                        <div class="input-group"><label>FontAwesome Icon Vector Mapping Tag Class String</label><input type="text" id="srv-field-icon" class="input-field" required placeholder="fa-shield-halved"></div>
+                    </div>
+                    <div class="input-group"><label>Comprehensive Operational Boundary & Capabilities Narrative Log</label><textarea id="srv-field-desc" class="input-field" style="height: 100px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-service-creation')">Abort Configuration</button>
+                    <button type="submit" class="btn-core">Commit Catalog Vector Node</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-subservice-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Commit Granular Pricing Package Variables Tier Module Entry</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-subservice-creation')">&times;</button>
+            </div>
+            <form id="form-subservice-creation" onsubmit="executePricingTierCreationPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Parent Catalog Service Identifier Reference ID</label><input type="number" id="sub-field-parent" class="input-field" required></div>
+                        <div class="input-group"><label>Commercial Tier Package Brand Identifier Title</label><input type="text" id="sub-field-name" class="input-field" required placeholder="e.g. Enterprise Shield Core"></div>
+                    </div>
+                    <div class="input-group"><label>Baseline Processing Fee Financial Scale Value ($)</label><input type="number" step="0.01" id="sub-field-price" class="input-field" required></div>
+                    <div class="input-group"><label>Package Scope Features List Vector Narrative Log</label><textarea id="sub-field-desc" class="input-field" style="height: 80px;" required placeholder="Feature points separated by commas..."></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-subservice-creation')">Abort Tier Ingestion</button>
+                    <button type="submit" class="btn-core">Commit Dynamic Package Core</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-blog-creation" class="modal-overlay-container">
+        <div class="modal-window-box" style="max-width: 800px;">
+            <div class="modal-window-header">
+                <h3>Compose & Ingest Article Layout Node into Search Indexes</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-blog-creation')">&times;</button>
+            </div>
+            <form id="form-blog-creation" onsubmit="executeBlogPublishingPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Editorial Core Article Headline Title</label><input type="text" id="blog-field-title" class="input-field" required></div>
+                        <div class="input-group"><label>Categorization Filter Classification Tag</label><input type="text" id="blog-field-category" class="input-field" required placeholder="Technology"></div>
+                    </div>
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>SEO Title Header Log Meta Line</label><input type="text" id="blog-field-seotitle" class="input-field"></div>
+                        <div class="input-group"><label>Content Dynamic Engine Routing Slug String Key</label><input type="text" id="blog-field-slug" class="input-field" required placeholder="advanced-network-penetration-testing"></div>
+                    </div>
+                    <div class="input-group"><label>Display Asset Accent Media Presentation Image URL Path</label><input type="text" id="blog-field-image" class="input-field" placeholder="https://"></div>
+                    <div class="input-group"><label>Brief Strategic Content Abstract Narrative Summary Line</label><input type="text" id="blog-field-summary" class="input-field" required></div>
+                    <div class="input-group"><label>SEO Descriptions Narrative Meta Segment Copy</label><input type="text" id="blog-field-seodesc" class="input-field"></div>
+                    <div class="input-group"><label>Rich Markup Text String Body Payload Ingestion Box</label><textarea id="blog-field-content" class="input-field" style="height: 150px;" required placeholder="HTML or Plain Copy String Content Ingestion Blocks..."></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-blog-creation')">Abort Composing</button>
+                    <button type="submit" class="btn-core">Inject Document Into Web Indices</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-case-creation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Ingest Strategic Client Case Document Node</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-case-creation')">&times;</button>
+            </div>
+            <form id="form-case-creation" onsubmit="executeCaseStudyPublishingPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Document Headline Case Title</label><input type="text" id="case-field-title" class="input-field" required></div>
+                        <div class="input-group"><label>Classification Category Parameter Tag</label><input type="text" id="case-field-category" class="input-field" required placeholder="Web Client"></div>
+                    </div>
+                    <div class="input-group"><label>Media Illustration URL Path Location</label><input type="text" id="case-field-image" class="input-field" placeholder="https://"></div>
+                    <div class="input-group"><label>Historical Operational Challenge Statement Narrative</label><textarea id="case-field-challenge" class="input-field" style="height: 60px;" required></textarea></div>
+                    <div class="input-group"><label>Technical Solution Strategy Architecture Narrative</label><textarea id="case-field-solution" class="input-field" style="height: 60px;" required></textarea></div>
+                    <div class="input-group"><label>Resulting Performance Growth Metrics Ingestion Narrative</label><textarea id="case-field-result" class="input-field" style="height: 60px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-case-creation')">Abort Analysis</button>
+                    <button type="submit" class="btn-core">Commit Case Study Node</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-media-upload" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Direct Upload Stream Loop to Cloudinary Media Repository</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-media-upload')">&times;</button>
+            </div>
+            <form id="form-media-upload" onsubmit="executeCloudMediaUploadPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="input-group"><label>Select Target System File Binary Asset for Cloud Pipeline</label><input type="file" id="media-field-file" class="input-field" required></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-media-upload')">Cancel Routing</button>
+                    <button type="submit" class="btn-core">Fire Asset Streams Pipeline</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-ticket-mutation" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Update Technical Issues Priority / Operational State Matrix</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-ticket-mutation')">&times;</button>
+            </div>
+            <form id="form-ticket-mutation" onsubmit="executeTicketMutationPipeline(event)">
+                <input type="hidden" id="mutation-ticket-target-id">
+                <div class="modal-window-body">
+                    <div class="input-group">
+                        <label>Issue Tracking Operational State</label>
+                        <select id="mutation-ticket-field-status" class="input-field">
+                            <option value="open">Open Verification Line</option>
+                            <option value="resolved">Resolved Successful Patch</option>
+                            <option value="closed">Closed Archive Indices</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Technical Escalation Priority Rating Level</label>
+                        <select id="mutation-ticket-field-priority" class="input-field">
+                            <option value="low">Low General Maintenance</option>
+                            <option value="medium">Medium Production Priority</option>
+                            <option value="high">High Mission-Critical Escalation</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-ticket-mutation')">Abort Adjustments</button>
+                    <button type="submit" class="btn-core">Commit Ticket State</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-notification-dispatch" class="modal-overlay-container">
+        <div class="modal-window-box">
+            <div class="modal-window-header">
+                <h3>Dispatch Broadcaster Client Tracking System Notification Row</h3>
+                <button class="modal-close-trigger" onclick="closeSystemDataModal('modal-notification-dispatch')">&times;</button>
+            </div>
+            <form id="form-notification-dispatch" onsubmit="executeNotificationDispatchPipeline(event)">
+                <div class="modal-window-body">
+                    <div class="modal-form-grid-2">
+                        <div class="input-group"><label>Target Recipient Account ID Index</label><input type="number" id="notif-field-uid" class="input-field" required></div>
+                        <div class="input-group"><label>Target Tracking Display Channel System Matrix</label><input type="text" id="notif-field-channel" class="input-field" required value="dashboard"></div>
+                    </div>
+                    <div class="input-group"><label>Notification Header Title Headline</label><input type="text" id="notif-field-title" class="input-field" required placeholder="System Alert Manifest"></div>
+                    <div class="input-group"><label>Broadcaster Messaging Copy Payload Context Data String</label><textarea id="notif-field-message" class="input-field" style="height: 80px;" required></textarea></div>
+                </div>
+                <div class="modal-window-footer">
+                    <button type="button" class="btn-core btn-secondary" onclick="closeSystemDataModal('modal-notification-dispatch')">Abort Broadcast</button>
+                    <button type="submit" class="btn-core">Inject Notification Vector</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const BASE_API_URI = '/api';
+        let PLATFORM_CRYPTO_TOKEN = localStorage.getItem('dan74tech_admin_token') || '';
+
+        // --- CORE ASYNC API PIPELINE CALL HANDLER INTERCEPTOR ---
+        async function invokeSecurePlatformAPI(endpoint, method = 'GET', payload = null, involvesMultipartFormData = false) {
+            const headersConfigurationNode = {};
+            if (PLATFORM_CRYPTO_TOKEN) {
+                headersConfigurationNode['Authorization'] = `Bearer ${PLATFORM_CRYPTO_TOKEN}`;
+            }
+            if (!involvesMultipartFormData) {
+                headersConfigurationNode['Content-Type'] = 'application/json';
+            }
+
+            const options = {
+                method,
+                headers: headersConfigurationNode
+            };
+
+            if (payload) {
+                options.body = involvesMultipartFormData ? payload : JSON.stringify(payload);
+            }
+
+            try {
+                const response = await fetch(`${BASE_API_URI}${endpoint}`, options);
+                const data = await response.json();
+                
+                if (response.status === 401 || response.status === 403) {
+                    executeSystemSecurityLogout();
+                    throw new Error(data.error || 'Cryptographic authentication clearance compromise detected.');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `System API operation anomaly raised with signature code: ${response.status}`);
+                }
+                
+                return data;
+            } catch (err) {
+                dispatchLiveToastNotification(err.message, true);
+                throw err;
+            }
+        }
+
+        // --- ENGINE UI APPLICATION INITIALIZATION LAYER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (PLATFORM_CRYPTO_TOKEN) {
+                const preservedUserContext = JSON.parse(localStorage.getItem('dan74tech_admin_user') || '{}');
+                if (preservedUserContext.role === 'admin') {
+                    document.getElementById('auth-guard-layer').classList.add('hidden');
+                    initializeDashboardStatisticsMetrics();
+                    executeSystemDataRefreshPipelines();
+                } else {
+                    executeSystemSecurityLogout();
+                }
+            }
+        });
+
+        function dispatchLiveToastNotification(messageTextCopy, isErrorEventSignature = false) {
+            const hub = document.getElementById('toast-notification-hub');
+            const toast = document.createElement('div');
+            toast.className = 'toast-banner';
+            toast.style.borderLeftColor = isErrorEventSignature ? 'var(--status-danger)' : 'var(--status-success)';
+            toast.innerHTML = `
+                <i class="fa-solid ${isErrorEventSignature ? 'fa-triangle-exclamation' : 'fa-circle-check'}" style="color: ${isErrorEventSignature ? 'var(--status-danger)' : 'var(--status-success)'}"></i>
+                <span>${messageTextCopy}</span>
+            `;
+            hub.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'var(--transition-smooth)';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function openSystemDataModal(modalElementIdTarget) {
+            document.getElementById(modalElementIdTarget).classList.add('open');
+        }
+
+        function closeSystemDataModal(modalElementIdTarget) {
+            document.getElementById(modalElementIdTarget).classList.remove('open');
+        }
+
+        function switchActiveOperationalTab(targetPanelElementId, navItemContextNodeLink) {
+            document.querySelectorAll('.module-content-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.nav-item-link').forEach(link => link.classList.remove('active'));
+            
+            document.getElementById(targetPanelElementId).classList.add('active');
+            navItemContextNodeLink.classList.add('active');
+
+            const headerTitle = document.getElementById('dynamic-workspace-title-header');
+            const headerDesc = document.getElementById('dynamic-workspace-description-header');
+            const panelName = navItemContextNodeLink.innerText.trim();
+            
+            headerTitle.innerText = panelName;
+            headerDesc.innerText = `Comprehensive enterprise processing sub-system array for tracking ${panelName.toLowerCase()} logs.`;
+            
+            executeSystemDataRefreshPipelines();
+        }
+
+        // --- AUTHENTICATION ENTRY POINT CONTROLLER ---
+        async function executeAdminSystemLogin(eventSubmitObj) {
+            eventSubmitObj.preventDefault();
+            const email = document.getElementById('auth-email-field').value;
+            const password = document.getElementById('auth-pass-field').value;
+
+            try {
+                const responseData = await invokeSecurePlatformAPI('/auth/login', 'POST', { email, password });
+                if (responseData.success && responseData.user.role === 'admin') {
+                    PLATFORM_CRYPTO_TOKEN = responseData.token;
+                    localStorage.setItem('dan74tech_admin_token', responseData.token);
+                    localStorage.setItem('dan74tech_admin_user', JSON.stringify(responseData.user));
+                    
+                    document.getElementById('user-footer-display-name').innerText = responseData.user.name;
+                    document.getElementById('user-footer-display-email').innerText = responseData.user.email;
+                    
+                    document.getElementById('auth-guard-layer').classList.add('hidden');
+                    dispatchLiveToastNotification('Administrative security cryptographic evaluation successful. Connected.');
+                    initializeDashboardStatisticsMetrics();
+                    executeSystemDataRefreshPipelines();
+                } else {
+                    dispatchLiveToastNotification('Access denied. Insufficient role credentials.', true);
+                }
+            } catch (err) { /* Intercepted via central wrapper */ }
+        }
+
+        function executeSystemSecurityLogout() {
+            localStorage.removeItem('dan74tech_admin_token');
+            localStorage.removeItem('dan74tech_admin_user');
+            PLATFORM_CRYPTO_TOKEN = '';
+            document.getElementById('auth-guard-layer').classList.remove('hidden');
+            dispatchLiveToastNotification('Administrative verification session token destroyed safely.');
+        }
+
+        // --- DATA INTERFACE MAPPING REFRESH DISPATCH PIPELINE MATRIX ---
+        function executeSystemDataRefreshPipelines() {
+            initializeDashboardStatisticsMetrics();
+            fetchAndMapOrdersLedger();
+            fetchAndMapPortfolioVisualAssets();
+            fetchAndMapInvoicesLedger();
+            fetchAndMapSupportTicketsWorkspace();
+            fetchAndMapFDNNetworkAssets();
+            fetchAndMapServicesCatalogMatrix();
+            fetchAndMapPricingTiersMatrix();
+            fetchAndMapBlogPostsIndex();
+            fetchAndMapCaseStudiesIndex();
+            fetchAndMapTestimonialsAuditingQueue();
+            fetchAndMapCloudMediaLibrary();
+            fetchAndMapCalendarConsultations();
+            fetchAndMapInterceptedLeadsInbox();
+            fetchAndMapCorporateAccountsDirectory();
+            fetchAndMapAudienceLists();
+        }
+
+        // --- MODULE 17: EXECUTIVE METRICS ENGINE ---
+        async function initializeDashboardStatisticsMetrics() {
+            if (!PLATFORM_CRYPTO_TOKEN) return;
+            try {
+                const metrics = await invokeSecurePlatformAPI('/admin/stats');
+                document.getElementById('stat-users').innerText = metrics.users;
+                document.getElementById('stat-orders').innerText = metrics.orders;
+                document.getElementById('stat-pending-orders').innerText = metrics.pending_orders;
+                document.getElementById('stat-open-tickets').innerText = metrics.open_tickets;
+                document.getElementById('stat-pending-consultations').innerText = metrics.pending_consultations;
+                document.getElementById('stat-earnings').innerText = `$${metrics.total_earnings.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            } catch (err) { }
+        }
+
+        // --- MODULE 4: PIPELINES OPERATIONS CONTROL ---
+        async function fetchAndMapOrdersLedger() {
+            if (!document.getElementById('tab-orders').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/orders');
+                const tbody = document.getElementById('dynamic-render-orders-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td>${row.customer_name}<br><small style="color:var(--text-secondary);">${row.phone}</small></td>
+                        <td><span class="badge-tag info">${row.service}</span><br><small style="color:var(--text-muted);">${row.sub_service}</small></td>
+                        <td><strong>$${parseFloat(row.price).toFixed(2)}</strong></td>
+                        <td><span class="badge-tag ${row.status.toLowerCase() === 'completed' ? 'success' : 'warning'}">${row.status}</span></td>
+                        <td><span class="badge-tag ${row.payment_status.toLowerCase() === 'paid' ? 'success' : 'danger'}">${row.payment_status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn" onclick="triggerOrderMutationWorkflow(${row.id}, '${row.status}', '${row.payment_status}', ${row.price})" title="Modify State"><i class="fa-solid fa-sliders"></i></button>
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/orders/${row.id}')" title="Wipe Matrix Line"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeOrderCreationPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                user_id: document.getElementById('order-field-uid').value || null,
+                customer_name: document.getElementById('order-field-name').value,
+                phone: document.getElementById('order-field-phone').value,
+                service: document.getElementById('order-field-service').value,
+                sub_service: document.getElementById('order-field-subservice').value,
+                domain: document.getElementById('order-field-domain').value || 'N/A',
+                device_model: document.getElementById('order-field-device').value || 'Web Client',
+                project_details: document.getElementById('order-field-details').value,
+                price: document.getElementById('order-field-price').value
+            };
+            try {
+                await invokeSecurePlatformAPI('/orders', 'POST', payload);
+                dispatchLiveToastNotification('Production deployment transaction logged successfully.');
+                closeSystemDataModal('modal-order-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        function triggerOrderMutationWorkflow(id, currentStatus, currentPayment, currentPrice) {
+            document.getElementById('mutation-order-target-id').value = id;
+            document.getElementById('mutation-order-field-status').value = currentStatus;
+            document.getElementById('mutation-order-field-payment').value = currentPayment;
+            document.getElementById('mutation-order-field-price').value = currentPrice;
+            openSystemDataModal('modal-order-mutation');
+        }
+
+        async function executeOrderMutationPipeline(ev) {
+            ev.preventDefault();
+            const id = document.getElementById('mutation-order-target-id').value;
+            const payload = {
+                status: document.getElementById('mutation-order-field-status').value,
+                payment_status: document.getElementById('mutation-order-field-payment').value,
+                price: document.getElementById('mutation-order-field-price').value
+            };
+            try {
+                await invokeSecurePlatformAPI(`/orders/${id}`, 'PUT', payload);
+                dispatchLiveToastNotification(`Pipeline entry node #${id} state shifted successfully.`);
+                closeSystemDataModal('modal-order-mutation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 5: PORTFOLIO VISUAL METRICS ---
+        async function fetchAndMapPortfolioVisualAssets() {
+            if (!document.getElementById('tab-portfolio').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/portfolio');
+                const tbody = document.getElementById('dynamic-render-portfolio-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.title}</strong><br><small style="color:var(--text-secondary);">${row.category}</small></td>
+                        <td><a href="${row.link}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-size:0.8rem;">${row.link}</a></td>
+                        <td>
+                            <div class="progress-track-wrapper">
+                                <span class="progress-percentage-label">${row.progress}% Milestone</span>
+                                <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${row.progress}%;"></div></div>
+                            </div>
+                        </td>
+                        <td><span class="badge-tag warning">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn" onclick="triggerPortfolioMutationWorkflow(${row.id}, ${row.progress}, '${row.status}', '${row.title}', \`${row.description}\`)" title="Shift Metrics"><i class="fa-solid fa-gauge-high"></i></button>
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/portfolio/${row.id}')" title="Purge Record"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executePortfolioUploadPipeline(ev) {
+            ev.preventDefault();
+            const formNode = document.getElementById('form-portfolio-creation');
+            const formData = new FormData();
+            formData.append('title', document.getElementById('port-field-title').value);
+            formData.append('category', document.getElementById('port-field-category').value);
+            formData.append('description', document.getElementById('port-field-desc').value);
+            formData.append('order_id', document.getElementById('port-field-order').value || '');
+            formData.append('progress', document.getElementById('port-field-progress').value);
+            formData.append('status', document.getElementById('port-field-status').value);
+            formData.append('link', document.getElementById('port-field-link').value);
+            
+            const fileField = document.getElementById('port-field-file');
+            if (fileField.files.length > 0) {
+                formData.append('image', fileField.files[0]);
+            }
+
+            try {
+                await invokeSecurePlatformAPI('/portfolio', 'POST', formData, true);
+                dispatchLiveToastNotification('Portfolio asset entry pipeline synchronized successfully.');
+                closeSystemDataModal('modal-portfolio-creation');
+                formNode.reset();
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        function triggerPortfolioMutationWorkflow(id, progress, status, title, description) {
+            document.getElementById('mutation-portfolio-target-id').value = id;
+            document.getElementById('mutation-port-field-progress').value = progress;
+            document.getElementById('mutation-port-field-status').value = status;
+            document.getElementById('mutation-port-field-title').value = title;
+            document.getElementById('mutation-port-field-desc').value = description;
+            openSystemDataModal('modal-portfolio-mutation');
+        }
+
+        async function executePortfolioMutationPipeline(ev) {
+            ev.preventDefault();
+            const id = document.getElementById('mutation-portfolio-target-id').value;
+            const payload = {
+                progress: document.getElementById('mutation-port-field-progress').value,
+                status: document.getElementById('mutation-port-field-status').value,
+                title: document.getElementById('mutation-port-field-title').value,
+                description: document.getElementById('mutation-port-field-desc').value
+            };
+            try {
+                await invokeSecurePlatformAPI(`/portfolio/${id}`, 'PUT', payload);
+                dispatchLiveToastNotification('Visual milestone configuration updated.');
+                closeSystemDataModal('modal-portfolio-mutation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 11: FINANCIAL LOGISTICS ---
+        async function fetchAndMapInvoicesLedger() {
+            if (!document.getElementById('tab-invoices').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/invoices');
+                const tbody = document.getElementById('dynamic-render-invoices-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${row.invoice_number}</strong></td>
+                        <td>${row.client_name}</td>
+                        <td>${row.client_email}</td>
+                        <td><strong>$${parseFloat(row.amount).toFixed(2)}</strong></td>
+                        <td><span class="badge-tag ${row.status === 'paid' ? 'success' : 'danger'}">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <a class="action-icon-btn" href="${BASE_API_URI}/invoices/${row.id}/download" target="_blank" title="Stream Binary PDF Statement"><i class="fa-solid fa-file-pdf" style="color:var(--status-danger);"></i></a>
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/invoices/${row.id}')" title="Erase Line"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeInvoiceGenerationPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                order_id: document.getElementById('inv-field-order').value,
+                invoice_number: document.getElementById('inv-field-number').value,
+                client_name: document.getElementById('inv-field-name').value,
+                client_email: document.getElementById('inv-field-email').value,
+                amount: document.getElementById('inv-field-amount').value,
+                status: document.getElementById('inv-field-status').value,
+                pdf_url: document.getElementById('inv-field-pdf').value || ''
+            };
+            try {
+                await invokeSecurePlatformAPI('/invoices', 'POST', payload);
+                dispatchLiveToastNotification('Commercial invoicing matrix item posted.');
+                closeSystemDataModal('modal-invoice-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 13: SUPPORT TICKETS WORKSPACE ---
+        async function fetchAndMapSupportTicketsWorkspace() {
+            if (!document.getElementById('tab-tickets').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/tickets');
+                const tbody = document.getElementById('dynamic-render-tickets-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td>Account key: ${row.user_id}</td>
+                        <td><strong>${row.subject}</strong><br><small style="color:var(--text-secondary);">${row.description}</small></td>
+                        <td><span class="badge-tag danger">${row.priority}</span></td>
+                        <td><span class="badge-tag warning">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn" onclick="triggerTicketMutationWorkflow(${row.id}, '${row.status}', '${row.priority}')" title="Shift Priority"><i class="fa-solid fa-wrench"></i></button>
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/tickets/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        function triggerTicketMutationWorkflow(id, status, priority) {
+            document.getElementById('mutation-ticket-target-id').value = id;
+            document.getElementById('mutation-ticket-field-status').value = status;
+            document.getElementById('mutation-ticket-field-priority').value = priority;
+            openSystemDataModal('modal-ticket-mutation');
+        }
+
+        async function executeTicketMutationPipeline(ev) {
+            ev.preventDefault();
+            const id = document.getElementById('mutation-ticket-target-id').value;
+            const payload = {
+                status: document.getElementById('mutation-ticket-field-status').value,
+                priority: document.getElementById('mutation-ticket-field-priority').value
+            };
+            try {
+                await invokeSecurePlatformAPI(`/tickets/${id}`, 'PUT', payload);
+                dispatchLiveToastNotification('Technical problem ticket vectors shifted.');
+                closeSystemDataModal('modal-ticket-mutation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 16: FILE DELIVERY NETWORK ---
+        async function fetchAndMapFDNNetworkAssets() {
+            if (!document.getElementById('tab-file-deliveries').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/file-deliveries');
+                const tbody = document.getElementById('dynamic-render-fdn-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td>Pipeline Ref: #${row.order_id || 'N/A'}</td>
+                        <td>${row.file_name}</td>
+                        <td><a href="${row.file_url}" target="_blank" style="color:var(--accent-blue); text-decoration:none;">${row.file_url}</a></td>
+                        <td><small>${row.expiry_date ? new Date(row.expiry_date).toLocaleDateString() : 'Infinite boundary'}</small></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/file-deliveries/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeFDNAssetDeploymentPipeline(ev) {
+            ev.preventDefault();
+            const formData = new FormData();
+            formData.append('order_id', document.getElementById('fdn-field-order').value);
+            formData.append('client_id', document.getElementById('fdn-field-client').value);
+            formData.append('file_name', document.getElementById('fdn-field-name').value);
+            formData.append('file_url', document.getElementById('fdn-field-url').value);
+            formData.append('expiry_date', document.getElementById('fdn-field-expiry').value);
+            
+            const fileField = document.getElementById('fdn-field-file');
+            if (fileField.files.length > 0) {
+                formData.append('attachment', fileField.files[0]);
+            }
+
+            try {
+                await invokeSecurePlatformAPI('/file-deliveries', 'POST', formData, true);
+                dispatchLiveToastNotification('Digital package deployed over FDN matrix loops successfully.');
+                closeSystemDataModal('modal-fdn-creation');
+                document.getElementById('form-fdn-creation').reset();
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 2: SERVICE OFFERINGS INTERFACE ---
+        async function fetchAndMapServicesCatalogMatrix() {
+            if (!document.getElementById('tab-services').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/services');
+                const tbody = document.getElementById('dynamic-render-services-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><i class="fa-solid ${row.icon}" style="font-size:1.2rem; color:var(--accent-blue);"></i> <small style="color:var(--text-muted);">(${row.icon})</small></td>
+                        <td><strong>${row.name}</strong></td>
+                        <td><small style="color:var(--text-secondary);">${row.description}</small></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/services/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeServiceCatalogIngestionPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                name: document.getElementById('srv-field-name').value,
+                icon: document.getElementById('srv-field-icon').value,
+                description: document.getElementById('srv-field-desc').value
+            };
+            try {
+                await invokeSecurePlatformAPI('/services', 'POST', payload);
+                dispatchLiveToastNotification('Offering item ingested into core architectural matrix.');
+                closeSystemDataModal('modal-service-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 3: SUB-SERVICES & PRICING ---
+        async function fetchAndMapPricingTiersMatrix() {
+            if (!document.getElementById('tab-subservices').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/sub-services');
+                const tbody = document.getElementById('dynamic-render-subservices-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><span class="badge-tag info">${row.category_name || 'Parent node: ' + row.service_id}</span></td>
+                        <td><strong>${row.name}</strong></td>
+                        <td><strong>$${parseFloat(row.price).toFixed(2)}</strong></td>
+                        <td><small style="color:var(--text-secondary);">${row.description}</small></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/sub-services/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executePricingTierCreationPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                service_id: document.getElementById('sub-field-parent').value,
+                name: document.getElementById('sub-field-name').value,
+                price: document.getElementById('sub-field-price').value,
+                description: document.getElementById('sub-field-desc').value
+            };
+            try {
+                await invokeSecurePlatformAPI('/sub-services', 'POST', payload);
+                dispatchLiveToastNotification('Granular fee structures pricing tier established.');
+                closeSystemDataModal('modal-subservice-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 8: BLOG CONSOLE ENGINE ---
+        async function fetchAndMapBlogPostsIndex() {
+            if (!document.getElementById('tab-blog').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/blog');
+                renderBlogRows(data);
+            } catch (err) {}
+        }
+
+        function renderBlogRows(array) {
+            const tbody = document.getElementById('dynamic-render-blog-table');
+            tbody.innerHTML = '';
+            array.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${row.id}</strong></td>
+                    <td><img src="${row.image_url}" style="width:45px; height:30px; border-radius:4px; object-fit:cover;" onerror="this.src='https://placehold.co/45x30/151a36/f3f4f6?text=DAN74'"></td>
+                    <td><strong>${row.title}</strong><br><small style="color:var(--text-muted);">${row.summary}</small></td>
+                    <td><span class="badge-tag warning">${row.category}</span></td>
+                    <td><small style="color:var(--accent-blue);">${row.slug}</small></td>
+                    <td>
+                        <div class="action-icon-group">
+                            <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/blog/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function executeLiveBlogIndexSearch() {
+            const q = document.getElementById('blog-search-query-field').value;
+            try {
+                const data = await invokeSecurePlatformAPI(`/blog/search?q=${encodeURIComponent(q)}`);
+                renderBlogRows(data);
+            } catch (err) {}
+        }
+
+        async function executeBlogPublishingPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                title: document.getElementById('blog-field-title').value,
+                category: document.getElementById('blog-field-category').value,
+                content: document.getElementById('blog-field-content').value,
+                summary: document.getElementById('blog-field-summary').value,
+                image_url: document.getElementById('blog-field-image').value || 'https://placehold.co/600x400',
+                slug: document.getElementById('blog-field-slug').value,
+                seo_title: document.getElementById('blog-field-seotitle').value || '',
+                seo_description: document.getElementById('blog-field-seodesc').value || ''
+            };
+            try {
+                await invokeSecurePlatformAPI('/blog', 'POST', payload);
+                dispatchLiveToastNotification('Editorial material structured and published.');
+                closeSystemDataModal('modal-blog-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 6: CASE STUDIES HUB ---
+        async function fetchAndMapCaseStudiesIndex() {
+            if (!document.getElementById('tab-case-studies').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/case-studies');
+                const tbody = document.getElementById('dynamic-render-case-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.title}</strong></td>
+                        <td><span class="badge-tag info">${row.category}</span></td>
+                        <td><small style="display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.challenge}</small></td>
+                        <td><small style="display:block; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.solution}</small></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/case-studies/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeCaseStudyPublishingPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                title: document.getElementById('case-field-title').value,
+                category: document.getElementById('case-field-category').value,
+                challenge: document.getElementById('case-field-challenge').value,
+                solution: document.getElementById('case-field-solution').value,
+                result: document.getElementById('case-field-result').value,
+                image_url: document.getElementById('case-field-image').value || 'https://placehold.co/600x400'
+            };
+            try {
+                await invokeSecurePlatformAPI('/case-studies', 'POST', payload);
+                dispatchLiveToastNotification('Corporate success criteria study case file ingested.');
+                closeSystemDataModal('modal-case-creation');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 7: TESTIMONIAL AUDITING ---
+        async function fetchAndMapTestimonialsAuditingQueue() {
+            if (!document.getElementById('tab-testimonials').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/testimonials');
+                const tbody = document.getElementById('dynamic-render-testimonials-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.client_name}</strong></td>
+                        <td>${row.company}</td>
+                        <td><span style="color:var(--status-warning); font-weight:700;"><i class="fa-solid fa-star"></i> ${row.rating}.0</span></td>
+                        <td><small style="color:var(--text-secondary); italic;">"${row.review}"</small></td>
+                        <td><span class="badge-tag ${row.status === 'approved' ? 'success' : 'warning'}">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                ${row.status !== 'approved' ? `<button class="action-icon-btn" style="color:var(--status-success);" onclick="executeReviewApproveOperation(${row.id})" title="Verify & Release"><i class="fa-solid fa-square-check"></i></button>` : ''}
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/testimonials/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeReviewApproveOperation(id) {
+            try {
+                await invokeSecurePlatformAPI(`/testimonials/${id}/approve', 'PUT`);
+                dispatchLiveToastNotification(`Feedback document item #${id} approved to public space.`);
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 10: MEDIA REPOSITORY ---
+        async function fetchAndMapCloudMediaLibrary() {
+            if (!document.getElementById('tab-media').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/media');
+                const tbody = document.getElementById('dynamic-render-media-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><small>${row.filename}</small></td>
+                        <td><span class="badge-tag tag-secondary">${row.format}</span></td>
+                        <td>${row.bytes.toLocaleString()} B</td>
+                        <td><a href="${row.url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; font-size:0.8rem;">View secure file asset connection</a></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/media/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeCloudMediaUploadPipeline(ev) {
+            ev.preventDefault();
+            const formData = new FormData();
+            const fileField = document.getElementById('media-field-file');
+            if (fileField.files.length === 0) return;
+            formData.append('file', fileField.files[0]);
+
+            try {
+                await invokeSecurePlatformAPI('/media/upload', 'POST', formData, true);
+                dispatchLiveToastNotification('Cloudinary target assets stream fully committed.');
+                closeSystemDataModal('modal-media-upload');
+                document.getElementById('form-media-upload').reset();
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 15: CALENDAR BOOKINGS ---
+        async function fetchAndMapCalendarConsultations() {
+            if (!document.getElementById('tab-consultations').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/consultations');
+                const tbody = document.getElementById('dynamic-render-consultations-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.client_name}</strong></td>
+                        <td>${row.client_email}</td>
+                        <td>${new Date(row.booking_date).toLocaleDateString()}</td>
+                        <td><span class="badge-tag info">${row.booking_time}</span></td>
+                        <td><small style="color:var(--text-muted);">${row.platform}</small></td>
+                        <td><span class="badge-tag ${row.status === 'approved' ? 'success' : 'warning'}">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                ${row.status !== 'approved' ? `<button class="action-icon-btn" onclick="executeConsultationApproveOperation(${row.id})" style="color:var(--status-success);"><i class="fa-solid fa-calendar-check"></i></button>` : ''}
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/consultations/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function executeConsultationApproveOperation(id) {
+            try {
+                await invokeSecurePlatformAPI(`/consultations/${id}`, 'PUT', { status: 'approved' });
+                dispatchLiveToastNotification(`Consultation sequence #${id} verified on timetable loops.`);
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+
+        // --- MODULE 14: INTERCEPTED LEADS INBOX ---
+        async function fetchAndMapInterceptedLeadsInbox() {
+            if (!document.getElementById('tab-messages').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/messages');
+                const tbody = document.getElementById('dynamic-render-messages-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.name}</strong></td>
+                        <td>${row.email}</td>
+                        <td><span class="badge-tag tag-secondary">${row.subject}</span></td>
+                        <td><p style="font-size:0.8rem; color:var(--text-secondary); max-width:300px;">${row.message}</p></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/messages/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        // --- MODULE 1: ACCOUNT DIRECTORY OPERATIONS ---
+        async function fetchAndMapCorporateAccountsDirectory() {
+            if (!document.getElementById('tab-users').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/users');
+                const tbody = document.getElementById('dynamic-render-users-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.name}</strong></td>
+                        <td>${row.email}</td>
+                        <td><span class="badge-tag ${row.role === 'admin' ? 'danger' : 'info'}">${row.role}</span></td>
+                        <td><small>${row.phone || 'N/A'}</small></td>
+                        <td><small>${new Date(row.created_at).toLocaleDateString()}</small></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/users/${row.id}')" ${row.role === 'admin' ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}><i class="fa-solid fa-user-slash"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        // --- MODULE 9: NEWSLETTER AUDIENCE SUBSCRIPTIONS ---
+        async function fetchAndMapAudienceLists() {
+            if (!document.getElementById('tab-subscribers').classList.contains('active')) return;
+            try {
+                const data = await invokeSecurePlatformAPI('/subscribers');
+                const tbody = document.getElementById('dynamic-render-subscribers-table');
+                tbody.innerHTML = '';
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td><strong>${row.email}</strong></td>
+                        <td><span class="badge-tag success">${row.status}</span></td>
+                        <td>
+                            <div class="action-icon-group">
+                                <button class="action-icon-btn delete-btn" onclick="executeDestructivePurgePipeline('/subscribers/${row.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        // --- MODULE 12: USER REAL-TIME NOTIFICATIONS INJECTION ---
+        async function executeNotificationDispatchPipeline(ev) {
+            ev.preventDefault();
+            const payload = {
+                user_id: document.getElementById('notif-field-uid').value,
+                title: document.getElementById('notif-field-title').value,
+                message: document.getElementById('notif-field-message').value,
+                channel: document.getElementById('notif-field-channel').value
+            };
+            try {
+                await invokeSecurePlatformAPI('/notifications', 'POST', payload);
+                dispatchLiveToastNotification('Broadcast parameter injected into systemic operational flow matrices.');
+                closeSystemDataModal('modal-notification-dispatch');
+                document.getElementById('form-notification-dispatch').reset();
+            } catch (err) {}
+        }
+
+        // --- GLOBAL CENTRALIZED MUTATION DESTRUCTIVE CLEANER EXECUTOR ---
+        async function executeDestructivePurgePipeline(targetApiRouteEndpoint) {
+            if (!confirm('CRITICAL ACTION WARNING:\nAre you sure you want to permanently erase this database element instance reference completely? This action is irreversible.')) return;
+            try {
+                await invokeSecurePlatformAPI(targetApiRouteEndpoint, 'DELETE');
+                dispatchLiveToastNotification('Target elements dropped successfully from backend registry data sheets.');
+                executeSystemDataRefreshPipelines();
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>
