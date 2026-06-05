@@ -862,7 +862,7 @@
             const res = await apiCall('subscribers/broadcast', 'POST', payload);
             showToast(`Broadcast Complete. Sent: ${res.sent}, Failed: ${res.failed}`, 'success');
             e.target.reset();
-        } catch(err) { showToast(err.message, 'error'); }
+        } catch(err) { showToast(err.message, 'Error'); }
     }
 
     async function broadcastBlog(id) {
