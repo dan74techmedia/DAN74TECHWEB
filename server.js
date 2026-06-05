@@ -362,12 +362,33 @@ app.post('/api/orders', async (req, res) => {
             domain, device_model, project_details, price, status, payment_status
         } = req.body;
 
+        // Executing query with a perfectly matched 11-parameter array mapping
         const result = await pool.query(
             `INSERT INTO orders (
                 user_id, customer_name, phone, service, sub_service, domain, 
                 device_model, project_details, price, status, payment_status
-            ) VALUES ($1, $2, $3, $4, $5, COALESCE($6, 'N/A'), COALESCE($7, 'Web Client'), $8, COALESCE($9, 0.00), COALESCE($10, 'pending'), COALESCE($11, 'unpaid')) RETURNING *`,
-            [user_id || null, customer_name, phone, service, sub_service, domain, device_model, project_details, price]
+            ) VALUES (
+                $1, $2, $3, $4, $5, 
+                COALESCE($6, 'N/A'), 
+                COALESCE($7, 'Web Client'), 
+                $8, 
+                COALESCE($9, 0.00), 
+                COALESCE($10, 'pending'), 
+                COALESCE($11, 'unpaid')
+            ) RETURNING *`,
+            [
+                user_id || null,          // $1
+                customer_name,            // $2
+                phone,                    // $3
+                service,                  // $4
+                sub_service || null,      // $5
+                domain || null,           // $6 -> Falls back to 'N/A' via COALESCE if missing
+                device_model || null,     // $7 -> Falls back to 'Web Client' via COALESCE if missing
+                project_details || null,  // $8
+                price || null,            // $9 -> Falls back to 0.00 via COALESCE if missing
+                status || null,           // $10 -> Falls back to 'pending' via COALESCE if missing
+                payment_status || null    // $11 -> Falls back to 'unpaid' via COALESCE if missing
+            ]
         );
         
         const orderData = result.rows[0];
@@ -382,7 +403,7 @@ app.post('/api/orders', async (req, res) => {
         
         // Fire transaction notification emails to management team routing rules
         await sendSystemNotificationEmail(
-            process.env.ADMIN_EMAIL || 'management@dan74tech.com',
+            process.env.ADMIN_EMAIL || 'dan74techmedia@gmail.com',
             `🚨 NEW SERVICE ORDER: ${service}`,
             `A new deployment sequence has been raised by ${customer_name}. Phone: ${phone}. Package details: ${sub_service}.`,
             `<h3>New Production Order Raised</h3><p><strong>Client:</strong> ${customer_name}</p><p><strong>Module:</strong> ${service} (${sub_service})</p><p><strong>Scope:</strong> ${project_details || 'None specified'}</p>`
