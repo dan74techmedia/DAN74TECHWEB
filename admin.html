@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | Master Operations Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand-blue: #0044ff;
+            --brand-orange: #ff8800;
+            --brand-yellow: #ffb700;
+            --brand-red: #ff2a2a;
+            --bg-dark: #0b0f19;
+            --bg-card: #151c2c;
+            --border-color: #222f47;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: #f3f4f6;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(0, 68, 255, 0.1);
+            color: #ffffff;
+            border-left: 4px solid var(--brand-blue);
+        }
+        .sidebar-link.active {
+            background-color: var(--brand-blue);
+            color: #ffffff;
+            border-left: 4px solid var(--brand-orange);
+            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--brand-blue);
+        }
+        /* Drag and Drop Zone Styles */
+        .drag-over {
+            border-color: var(--brand-blue) !important;
+            background-color: rgba(0, 68, 255, 0.05) !important;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <div id="authOverlay" class="fixed inset-0 z-50 bg-[#0b0f19] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#151c2c] w-full max-w-md rounded-2xl border border-[#222f47] p-10 shadow-[0_0_40px_rgba(0,68,255,0.15)] relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0044ff] via-[#ff8800] to-[#ff2a2a]"></div>
+            <div class="text-center mb-10">
+                <div class="text-white text-3xl font-black tracking-wider mb-2 drop-shadow-md">DAN74TECH <span class="text-[#0044ff]">MEDIA</span></div>
+                <div class="text-[10px] uppercase tracking-widest text-[#ff8800] font-bold">Secure Administrative Gateway</div>
+            </div>
+            <div id="authError" class="hidden bg-red-900/30 border border-[#ff2a2a] text-red-200 text-xs p-4 rounded-lg mb-6 text-center shadow-inner font-mono"></div>
+            <form id="loginForm" onsubmit="handleAdminLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Operator Email</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-gray-500 text-sm"></i>
+                        <input type="email" id="authEmail" required class="w-full bg-[#0b0f19] border border-[#222f47] rounded-lg py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Security Key</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-gray-500 text-sm"></i>
+                        <input type="password" id="authPassword" required class="w-full bg-[#0b0f19] border border-[#222f47] rounded-lg py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#ff8800] focus:ring-1 focus:ring-[#ff8800] transition">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-[#0044ff] to-[#0033cc] text-white font-bold text-sm py-3 px-4 rounded-lg hover:shadow-[0_0_20px_rgba(0,68,255,0.4)] transition duration-300 uppercase tracking-widest mt-4">
+                    Authenticate Session
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="adminApp" class="hidden w-full h-full flex overflow-hidden">
+        
+        <aside class="w-64 bg-[#151c2c] flex-shrink-0 border-r border-[#222f47] flex flex-col justify-between shadow-xl z-20">
+            <div>
+                <div class="p-6 border-b border-[#222f47] flex items-center justify-between bg-gradient-to-b from-[#0b0f19] to-transparent">
+                    <div>
+                        <div class="font-black text-xl tracking-wider text-white">DAN74<span class="text-[#0044ff]">TECH</span></div>
+                        <div class="text-[10px] uppercase tracking-widest text-[#ff8800] font-bold">Command Center</div>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-1 overflow-y-auto max-h-[75vh] custom-scrollbar text-sm font-medium">
+                    <a href="#" onclick="switchTab('dashboard')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-dashboard">
+                        <i class="fa-solid fa-chart-pie w-5 text-center text-[#ffb700]"></i> Core Metrics
+                    </a>
+                    <a href="#" onclick="switchTab('orders')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-orders">
+                        <i class="fa-solid fa-boxes-packing w-5 text-center text-[#0044ff]"></i> Orders Queue
+                    </a>
+                    <a href="#" onclick="switchTab('portfolio')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-portfolio">
+                        <i class="fa-solid fa-list-check w-5 text-center text-emerald-400"></i> Portfolio
+                    </a>
+                    <a href="#" onclick="switchTab('invoices')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-invoices">
+                        <i class="fa-solid fa-file-invoice-dollar w-5 text-center text-purple-400"></i> Invoices
+                    </a>
+                    <a href="#" onclick="switchTab('services')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-services">
+                        <i class="fa-solid fa-layer-group w-5 text-center text-[#ff2a2a]"></i> Services Catalog
+                    </a>
+                    <a href="#" onclick="switchTab('subservices')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-subservices">
+                        <i class="fa-solid fa-tags w-5 text-center text-teal-400"></i> Pricing Tiers
+                    </a>
+                    <a href="#" onclick="switchTab('blog')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-blog">
+                        <i class="fa-solid fa-newspaper w-5 text-center text-indigo-400"></i> Blog Console
+                    </a>
+                    <a href="#" onclick="switchTab('case_studies')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-case_studies">
+                        <i class="fa-solid fa-graduation-cap w-5 text-center text-pink-400"></i> Case Studies
+                    </a>
+                    <a href="#" onclick="switchTab('testimonials')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-testimonials">
+                        <i class="fa-solid fa-comments w-5 text-center text-[#ff8800]"></i> Testimonials
+                    </a>
+                    <a href="#" onclick="switchTab('media')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-media">
+                        <i class="fa-solid fa-images w-5 text-center text-sky-400"></i> Media Library
+                    </a>
+                    <a href="#" onclick="switchTab('deliveries')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-deliveries">
+                        <i class="fa-solid fa-cloud-arrow-up w-5 text-center text-[#ff8800]"></i> File Deliveries
+                    </a>
+                    <a href="#" onclick="switchTab('tickets')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-tickets">
+                        <i class="fa-solid fa-headset w-5 text-center text-[#ffb700]"></i> Support Tickets
+                    </a>
+                    <a href="#" onclick="switchTab('messages')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-messages">
+                        <i class="fa-solid fa-envelope-open-text w-5 text-center text-blue-300"></i> Inbox
+                    </a>
+                    <a href="#" onclick="switchTab('consultations')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-consultations">
+                        <i class="fa-solid fa-calendar-days w-5 text-center text-[#ffb700]"></i> Consultations
+                    </a>
+                    <a href="#" onclick="switchTab('subscribers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-subscribers">
+                        <i class="fa-solid fa-users-line w-5 text-center text-[#ff2a2a]"></i> Subscribers
+                    </a>
+                    <a href="#" onclick="switchTab('users')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" id="tab-users">
+                        <i class="fa-solid fa-user-shield w-5 text-center text-slate-400"></i> User Access
+                    </a>
+                </nav>
+            </div>
+            <div class="p-5 border-t border-[#222f47] bg-[#0b0f19] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0044ff] to-[#ff8800] flex items-center justify-center text-white font-bold text-xs shadow-lg">AD</div>
+                    <span id="adminProfileName" class="font-bold text-gray-300 text-xs truncate max-w-[90px]">Admin</span>
+                </div>
+                <button onclick="handleAdminLogout()" class="text-[#ff2a2a] hover:text-white hover:bg-[#ff2a2a] p-2 rounded transition" title="Terminate Session">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden bg-[#0b0f19] relative">
+            <header class="h-20 border-b border-[#222f47] bg-[#151c2c]/80 backdrop-blur-md flex items-center justify-between px-8 z-10 sticky top-0">
+                <div>
+                    <h1 id="workspaceTitle" class="text-2xl font-black tracking-wide text-white drop-shadow">Operations Dashboard</h1>
+                    <p id="workspaceSub" class="text-xs text-gray-400 font-mono mt-1">Real-time system metrics and management</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center bg-[#0b0f19] border border-[#222f47] rounded-lg px-3 py-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></span>
+                        <span class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">System Online</span>
+                    </div>
+                    <button onclick="triggerGlobalDataRefresh()" class="bg-gradient-to-r from-[#222f47] to-[#151c2c] border border-[#222f47] hover:border-[#0044ff] text-sm text-white font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition shadow-md">
+                        <i class="fa-solid fa-rotate text-[#0044ff]"></i> Sync Database
+                    </button>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+                
+                <div id="view-dashboard" class="tab-panel hidden space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div class="bg-gradient-to-br from-[#151c2c] to-[#0b0f19] p-6 rounded-xl border border-[#222f47] shadow-lg relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full group-hover:scale-150 transition duration-500"></div>
+                            <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Gross Revenue Ledger</div>
+                            <div id="stat-earnings" class="text-4xl font-black text-white drop-shadow-md">$0.00</div>
+                            <i class="fa-solid fa-chart-line absolute bottom-6 right-6 text-emerald-500/30 text-4xl"></i>
+                        </div>
+                        <div class="bg-gradient-to-br from-[#151c2c] to-[#0b0f19] p-6 rounded-xl border border-[#222f47] shadow-lg relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#0044ff]/10 rounded-full group-hover:scale-150 transition duration-500"></div>
+                            <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Total Pipeline Orders</div>
+                            <div id="stat-orders" class="text-4xl font-black text-white drop-shadow-md">0</div>
+                            <i class="fa-solid fa-boxes-stacked absolute bottom-6 right-6 text-[#0044ff]/30 text-4xl"></i>
+                        </div>
+                        <div class="bg-gradient-to-br from-[#151c2c] to-[#0b0f19] p-6 rounded-xl border border-[#222f47] shadow-lg relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#ffb700]/10 rounded-full group-hover:scale-150 transition duration-500"></div>
+                            <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Pending Deployments</div>
+                            <div id="stat-pending-orders" class="text-4xl font-black text-[#ffb700] drop-shadow-md">0</div>
+                            <i class="fa-solid fa-clock-rotate-left absolute bottom-6 right-6 text-[#ffb700]/30 text-4xl"></i>
+                        </div>
+                        <div class="bg-gradient-to-br from-[#151c2c] to-[#0b0f19] p-6 rounded-xl border border-[#222f47] shadow-lg relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-[#ff2a2a]/10 rounded-full group-hover:scale-150 transition duration-500"></div>
+                            <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Open Help Desk Tickets</div>
+                            <div id="stat-tickets" class="text-4xl font-black text-[#ff2a2a] drop-shadow-md">0</div>
+                            <i class="fa-solid fa-triangle-exclamation absolute bottom-6 right-6 text-[#ff2a2a]/30 text-4xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-orders" class="tab-panel hidden space-y-6">
+                    <div class="bg-[#151c2c] rounded-xl border border-[#222f47] shadow-lg overflow-hidden">
+                        <div class="p-5 border-b border-[#222f47] flex justify-between items-center bg-[#0b0f19]/50">
+                            <h3 class="font-bold text-white uppercase tracking-wider text-sm"><i class="fa-solid fa-list-ul mr-2 text-[#0044ff]"></i> Active Orders</h3>
+                            <div class="relative w-64">
+                                <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+                                <input type="text" placeholder="Search orders..." onkeyup="filterTable(this, 'ordersTableBody')" class="w-full bg-[#0b0f19] border border-[#222f47] rounded-md py-2 pl-8 pr-3 text-xs text-white focus:border-[#0044ff] focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs text-gray-300 whitespace-nowrap">
+                                <thead class="bg-[#0b0f19]">
+                                    <tr class="border-b border-[#222f47] text-gray-400 uppercase tracking-wider text-[10px]">
+                                        <th class="py-4 px-5">Order ID</th>
+                                        <th class="py-4 px-5">Customer Profile</th>
+                                        <th class="py-4 px-5">Service Module</th>
+                                        <th class="py-4 px-5">Price Matrix</th>
+                                        <th class="py-4 px-5">Pipeline Status</th>
+                                        <th class="py-4 px-5">Payment Vector</th>
+                                        <th class="py-4 px-5 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody" class="divide-y divide-[#222f47]"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-portfolio" class="tab-panel hidden space-y-6">
+                    <div class="bg-[#151c2c] p-6 rounded-xl border border-[#222f47] shadow-lg">
+                        <h3 class="text-sm uppercase tracking-wider font-bold mb-5 text-white border-b border-[#222f47] pb-3"><i class="fa-solid fa-plus text-emerald-400 mr-2"></i> Deploy Portfolio Asset</h3>
+                        <form id="portfolioForm" onsubmit="createPortfolioNode(event)" class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
+                            <input type="text" id="portTitle" placeholder="Showcase Title" required class="bg-[#0b0f19] border border-[#222f47] p-3 rounded-lg text-white focus:border-[#0044ff] focus:outline-none">
+                            <input type="text" id="portCategory" placeholder="Category" required class="bg-[#0b0f19] border border-[#222f47] p-3 rounded-lg text-white focus:border-[#0044ff] focus:outline-none">
+                            <input type="number" id="portProgress" placeholder="Progress % (0-100)" min="0" max="100" class="bg-[#0b0f19] border border-[#222f47] p-3 rounded-lg text-white focus:border-[#0044ff] focus:outline-none">
+                            <input type="file" id="portImage" required class="bg-[#0b0f19] border border-[#222f47] p-2 rounded-lg text-white file:bg-[#0044ff] file:text-white file:border-0 file:px-3 file:py-1 file:rounded file:text-xs md:col-span-2 focus:outline-none">
+                            <select id="portStatus" class="bg-[#0b0f19] border border-[#222f47] p-3 rounded-lg text-white focus:border-[#0044ff] focus:outline-none">
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                               <textarea id="portDescription" placeholder="Scope details..." class="bg-[#0b0f19] border border-[#222f47] p-3 rounded-lg text-white md:col-span-3 focus:border-[#0044ff] focus:outline-none h-20"></textarea>
+                            <button type="submit" class="bg-emerald-600 text-white py-3 px-6 rounded-lg font-bold uppercase tracking-wider md:col-span-3 hover:bg-emerald-700 transition shadow-md">Commit Asset</button>
+                        </form>
+                    </div>
+                    <div class="bg-[#151c2c] rounded-xl border border-[#222f47] shadow-lg overflow-hidden">
+                        <div class="p-4 border-b border-[#222f47] flex justify-between bg-[#0b0f19]/50">
+                            <input type="text" placeholder="Filter portfolio..." onkeyup="filterTable(this, 'portfolioTableBody')" class="w-64 bg-[#0b0f19] border border-[#222f47] rounded-md py-2 px-3 text-xs text-white focus:border-[#0044ff] focus:outline-none">
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs text-gray-300">
+                                <thead class="bg-[#0b0f19]">
+                                    <tr class="border-b border-[#222f47] text-gray-400 uppercase tracking-wider text-[10px]">
+                                        <th class="py-4 px-5">ID</th>
+                                        <th class="py-4 px-5">Metadata</th>
+                                        <th class="py-4 px-5">Progress Line</th>
+                                        <th class="py-4 px-5">Status</th>
+                                        <th class="py-4 px-5 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portfolioTableBody" class="divide-y divide-[#222f47]"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-media" class="tab-panel hidden space-y-6">
+                    <div class="bg-[#151c2c] p-8 rounded-xl border border-[#222f47] shadow-lg text-center">
+                        <h3 class="text-sm uppercase tracking-wider font-bold mb-4 text-white">Stream File Direct to CDN Cluster</h3>
+                        <form id="mediaForm" onsubmit="uploadMediaAsset(event)" class="max-w-2xl mx-auto">
+                            <div id="drop-zone" class="border-2 border-dashed border-[#222f47] bg-[#0b0f19] p-12 text-center rounded-xl hover:border-[#0044ff] transition cursor-pointer mb-4 relative" onclick="document.getElementById('mediaFile').click()">
+                                <i class="fa-solid fa-cloud-arrow-up text-5xl text-[#0044ff] mb-4 drop-shadow"></i>
+                                <p class="text-sm font-bold text-gray-300">Drag & Drop visual assets here</p>
+                                <p class="text-xs text-gray-500 mt-2 font-mono">or click to browse local filesystem</p>
+                                <input type="file" id="mediaFile" required class="hidden" onchange="updateFileName(this)">
+                                <div id="fileNameDisplay" class="mt-4 text-[#ff8800] text-xs font-mono font-bold"></div>
+                            </div>
+                            <button type="submit" id="uploadBtn" class="bg-[#0044ff] text-white py-3 px-10 rounded-lg font-bold uppercase tracking-wider hover:bg-blue-700 transition shadow-[0_0_15px_rgba(0,68,255,0.4)]">Initiate Upload Sequence</button>
+                        </form>
+                    </div>
+                    
+                    <div class="p-4 bg-[#151c2c] rounded-xl border border-[#222f47] flex justify-end">
+                         <input type="text" placeholder="Search files by name..." onkeyup="filterGrid(this, 'mediaGridHub')" class="w-64 bg-[#0b0f19] border border-[#222f47] rounded-md py-2 px-3 text-xs text-white focus:border-[#0044ff] focus:outline-none">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="mediaGridHub"></div>
+                </div>
+
+                <div id="view-invoices" class="tab-panel hidden space-y-6">
+                    <div id="invoices-container"></div>
+                </div>
+                <div id="view-services" class="tab-panel hidden space-y-6">
+                    <div id="services-container"></div>
+                </div>
+                </div>
+        </main>
+    </div>
+
+    <script>
+        // CORE CONFIGURATION
+        const API_BASE = '/api';
+        let adminToken = localStorage.getItem('dan74tech_admin_token') || '';
+
+        // UI HELPER: Instant Client-Side Table Filtering
+        function filterTable(input, tbodyId) {
+            const filter = input.value.toLowerCase();
+            const rows = document.getElementById(tbodyId).getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const text = rows[i].innerText.toLowerCase();
+                rows[i].style.display = text.includes(filter) ? '' : 'none';
+            }
+        }
+
+        // UI HELPER: Instant Client-Side Grid Filtering (Media)
+        function filterGrid(input, gridId) {
+            const filter = input.value.toLowerCase();
+            const cards = document.getElementById(gridId).children;
+            for (let i = 0; i < cards.length; i++) {
+                const text = cards[i].innerText.toLowerCase();
+                cards[i].style.display = text.includes(filter) ? '' : 'none';
+            }
+        }
+
+        // DRAG & DROP UI LOGIC
+        const dropZone = document.getElementById('drop-zone');
+        const mediaInput = document.getElementById('mediaFile');
+
+        if(dropZone) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                mediaInput.files = files;
+                updateFileName(mediaInput);
+            }, false);
+        }
+
+        function updateFileName(input) {
+            if (input.files && input.files.length > 0) {
+                document.getElementById('fileNameDisplay').innerText = `Target Selected: ${input.files[0].name}`;
+            }
+        }
+
+        // INIT SEQUENCE
+        document.addEventListener('DOMContentLoaded', () => {
+            if (adminToken) {
+                const adminUser = JSON.parse(localStorage.getItem('dan74tech_admin_user') || '{}');
+                if (adminUser.role === 'admin') bootstrapWorkspaceEnvironment(adminUser);
+                else handleAdminLogout();
+            }
+            injectStandardTableLayouts();
+        });
+
+        // Generates the standard UI wrappers dynamically to keep the file perfectly clean
+        function injectStandardTableLayouts() {
+            const modules = ['invoices', 'services', 'subservices', 'blog', 'case_studies', 'testimonials', 'deliveries', 'tickets', 'messages', 'consultations', 'subscribers', 'users'];
+            
+            modules.forEach(mod => {
+                const container = document.getElementById(`view-${mod}`);
+                if(!container) return; // Ignore if manual structure exists
+
+                // Map header config per module
+                let headRow = '';
+                if(mod==='users') headRow = `<th>ID</th><th>Identity</th><th>Email</th><th>Role</th><th>Phone</th><th class="text-center">Actions</th>`;
+                else if(mod==='tickets') headRow = `<th>Ticket ID</th><th>User</th><th>Subject</th><th>Priority</th><th>Status</th><th class="text-center">Actions</th>`;
+                else if(mod==='messages') headRow = `<th>Msg ID</th><th>Sender</th><th>Subject</th><th>Status</th><th class="text-center">Actions</th>`;
+                else headRow = `<th>ID Matrix</th><th>Core Data</th><th>Metadata</th><th>Status/Params</th><th class="text-center">Actions</th>`;
+
+                container.innerHTML = `
+                    <div class="bg-[#151c2c] rounded-xl border border-[#222f47] shadow-lg overflow-hidden">
+                        <div class="p-4 border-b border-[#222f47] flex justify-between bg-[#0b0f19]/50">
+                            <h3 class="font-bold text-white uppercase tracking-wider text-sm align-middle pt-2 capitalize">${mod.replace('_', ' ')} Console</h3>
+                            <div class="relative w-64">
+                                <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+                                <input type="text" placeholder="Search records..." onkeyup="filterTable(this, '${mod}TableBody')" class="w-full bg-[#0b0f19] border border-[#222f47] rounded-md py-2 pl-8 pr-3 text-xs text-white focus:border-[#0044ff] focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs text-gray-300 whitespace-nowrap">
+                                <thead class="bg-[#0b0f19]">
+                                    <tr class="border-b border-[#222f47] text-gray-400 uppercase tracking-wider text-[10px]">
+                                        ${headRow}
+                                    </tr>
+                                </thead>
+                                <tbody id="${mod}TableBody" class="divide-y divide-[#222f47]"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // AUTHENTICATION LOGIC
+        function bootstrapWorkspaceEnvironment(user) {
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('adminApp').classList.remove('hidden');
+            document.getElementById('adminProfileName').innerText = user.name || 'Admin';
+            switchTab('dashboard');
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...`;
+            
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: document.getElementById('authEmail').value, 
+                        password: document.getElementById('authPassword').value 
+                    })
+                });
+                const data = await res.json();
+                if (data.success && data.user.role === 'admin') {
+                    adminToken = data.token;
+                    localStorage.setItem('dan74tech_admin_token', data.token);
+                    localStorage.setItem('dan74tech_admin_user', JSON.stringify(data.user));
+                    bootstrapWorkspaceEnvironment(data.user);
+                } else {
+                    showAuthError(data.message || "Access Forbidden. Invalid credentials.");
+                }
+            } catch (err) {
+                showAuthError("Connection timeout. Server inaccessible.");
+            } finally {
+                btn.innerText = originalText;
+            }
+        }
+
+        function showAuthError(msg) {
+            const errDiv = document.getElementById('authError');
+            errDiv.innerText = msg;
+            errDiv.classList.remove('hidden');
+        }
+
+        function handleAdminLogout() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        function getSecurityHeaders() {
+            return { 'Authorization': `Bearer ${adminToken}` };
+        }
+
+        // WORKSPACE ROUTER
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            
+            const panel = document.getElementById(`view-${tabId}`);
+            const link = document.getElementById(`tab-${tabId}`);
+            if (panel) panel.classList.remove('hidden');
+            if (link) link.classList.add('active');
+
+            const headersMap = {
+                dashboard: {title: "Core Operations Engine", sub: "Enterprise Analytics Dashboard"},
+                orders: {title: "Logistics Pipeline", sub: "Client deployment queue management"},
+                portfolio: {title: "Showcase Matrix", sub: "Active portfolio visibility controls"},
+                media: {title: "CDN Asset Pipeline", sub: "Cloudinary blob storage gateway"}
+                // Add mapping text fallbacks logic
+            };
+            document.getElementById('workspaceTitle').innerText = headersMap[tabId]?.title || `${tabId.replace('_', ' ').toUpperCase()} CONSOLE`;
+            document.getElementById('workspaceSub').innerText = headersMap[tabId]?.sub || "System management node configuration.";
+            
+            executeModuleTabDataload(tabId);
+        }
+
+        function executeModuleTabDataload(tabId) {
+            switch(tabId) {
+                case 'dashboard': syncAdministrativeStatsMetrics(); break;
+                case 'orders': loadOrdersQueueDataNode(); break;
+                case 'portfolio': loadPortfolioShowcaseDataNode(); break;
+                case 'media': loadMediaPipelineCloudinaryNode(); break;
+                case 'users': loadSystemUsersSecurityNode(); break;
+                case 'tickets': loadSupportTicketsDeskDataNode(); break;
+                // Add remaining fetch calls routing to standard fetch structure...
+            }
+        }
+
+        function triggerGlobalDataRefresh() {
+            const active = document.querySelector('.sidebar-link.active');
+            if (active) executeModuleTabDataload(active.id.replace('tab-', ''));
+        }
+
+        // ================= SPECIFIC MODULE FETCH API BINDINGS (Refactored for pure speed) =================
+
+        async function syncAdministrativeStatsMetrics() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/stats`, { headers: getSecurityHeaders() });
+                const d = await res.json();
+                document.getElementById('stat-earnings').innerText = `$${parseFloat(d.total_earnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                document.getElementById('stat-orders').innerText = d.orders || 0;
+                document.getElementById('stat-pending-orders').innerText = d.pending_orders || 0;
+                document.getElementById('stat-tickets').innerText = d.open_tickets || 0;
+            } catch (err) { console.error("Stats Error:", err); }
+        }
+
+        async function loadOrdersQueueDataNode() {
+            try {
+                const res = await fetch(`${API_BASE}/orders`, { headers: getSecurityHeaders() });
+                const orders = await res.json();
+                document.getElementById('ordersTableBody').innerHTML = orders.map(o => `
+                    <tr class="hover:bg-[#151c2c] transition group">
+                        <td class="py-4 px-5 font-mono text-[#0044ff] font-bold">#ORD-${o.id}</td>
+                        <td class="py-4 px-5">
+                            <div class="font-bold text-white">${o.customer_name}</div>
+                            <div class="text-[10px] text-gray-400 font-mono">${o.phone}</div>
+                        </td>
+                        <td class="py-4 px-5">
+                            <div class="text-white font-medium">${o.service}</div>
+                            <div class="text-[10px] text-[#ff8800] font-bold uppercase tracking-wider">${o.sub_service || 'Standard Core'}</div>
+                        </td>
+                        <td class="py-4 px-5 font-mono text-emerald-400 font-bold">
+                            <input type="number" step="0.01" value="${o.price}" onchange="updateOrderLine(${o.id}, 'price', this.value)" class="bg-[#0b0f19] border border-[#222f47] rounded p-1 w-20 text-xs focus:border-[#0044ff] text-emerald-400 font-mono outline-none">
+                        </td>
+                        <td class="py-4 px-5">
+                            <select onchange="updateOrderLine(${o.id}, 'status', this.value)" class="bg-[#0b0f19] border border-[#222f47] rounded p-1.5 text-xs text-white focus:outline-none ${o.status==='completed'?'border-emerald-500/50 text-emerald-400':''}">
+                                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending Buffer</option>
+                                <option value="in progress" ${o.status === 'in progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </td>
+                        <td class="py-4 px-5">
+                            <select onchange="updateOrderLine(${o.id}, 'payment_status', this.value)" class="bg-[#0b0f19] border border-[#222f47] rounded p-1.5 text-xs text-white focus:outline-none">
+                                <option value="unpaid" ${o.payment_status === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                                <option value="paid" ${o.payment_status === 'paid' ? 'selected' : ''}>Paid</option>
+                            </select>
+                        </td>
+                        <td class="py-4 px-5 text-center">
+                            <button onclick="wipeRecord('orders', ${o.id}, loadOrdersQueueDataNode)" class="text-gray-500 hover:text-[#ff2a2a] p-2 rounded-lg bg-transparent hover:bg-red-500/10 transition"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateOrderLine(id, field, value) {
+            try {
+                await fetch(`${API_BASE}/orders/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', ...getSecurityHeaders() },
+                    body: JSON.stringify({ [field]: value })
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadPortfolioShowcaseDataNode() {
+            try {
+                const res = await fetch(`${API_BASE}/portfolio`);
+                const data = await res.json();
+                document.getElementById('portfolioTableBody').innerHTML = data.map(p => `
+                    <tr class="hover:bg-[#0b0f19] transition">
+                        <td class="py-4 px-5 font-mono font-bold text-gray-500">#PRT-${p.id}</td>
+                        <td class="py-4 px-5">
+                            <div class="font-bold text-white">${p.title}</div>
+                            <div class="text-[10px] text-[#ff8800] uppercase tracking-wider">${p.category}</div>
+                        </td>
+                         <td class="py-4 px-5 text-center">
+                            <button onclick="wipeRecord('portfolio', ${p.id}, loadPortfolioShowcaseDataNode)" class="text-gray-500 hover:text-[#ff2a2a]"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function createPortfolioNode(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('portTitle').value);
+            formData.append('category', document.getElementById('portCategory').value);
+            formData.append('progress', document.getElementById('portProgress').value || 0);
+            formData.append('status', document.getElementById('portStatus').value);
+            formData.append('description', document.getElementById('portDescription').value);
+            formData.append('image', document.getElementById('portImage').files[0]);
+
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+
+            try {
+                await fetch(`${API_BASE}/portfolio`, {
+                    method: 'POST',
+                    headers: getSecurityHeaders(),
+                    body: formData
+                });
+                document.getElementById('portfolioForm').reset();
+                loadPortfolioShowcaseDataNode();
+            } catch (err) { console.error(err); } finally {
+                btn.innerHTML = 'Commit Asset';
+            }
+        }
+
+        async function loadMediaPipelineCloudinaryNode() {
+            try {
+                const res = await fetch(`${API_BASE}/media`, { headers: getSecurityHeaders() });
+                const files = await res.json();
+                document.getElementById('mediaGridHub').innerHTML = files.map(f => `
+                    <div class="bg-[#0b0f19] border border-[#222f47] hover:border-[#0044ff] rounded-xl overflow-hidden shadow-lg flex flex-col justify-between group transition">
+                        <div class="p-3 border-b border-[#222f47] flex items-center justify-between">
+                            <span class="text-[10px] font-mono text-gray-400 truncate w-24" title="${f.filename}">${f.filename}</span>
+                            <span class="bg-[#ff8800]/20 text-[#ff8800] text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full">${f.format}</span>
+                        </div>
+                        <div class="relative flex-1 flex flex-col justify-center min-h-[140px] bg-black/40 overflow-hidden">
+                            ${['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(f.format?.toLowerCase()) 
+                                ? `<img src="${f.url}" class="max-h-32 mx-auto object-cover w-full opacity-80 group-hover:opacity-100 transition duration-300 group-hover:scale-110">` 
+                                : `<i class="fa-solid fa-file-shield text-5xl text-gray-600 mx-auto group-hover:text-[#0044ff] transition"></i>`}
+                            
+                            <div class="absolute inset-0 bg-[#0b0f19]/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                                <button onclick="navigator.clipboard.writeText('${f.url}'); alert('URL Copied!')" class="bg-[#0044ff] text-white px-3 py-1.5 rounded text-xs font-bold shadow-lg"><i class="fa-solid fa-copy"></i> Copy CDN Link</button>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-[#222f47] flex items-center justify-between text-[10px] bg-[#151c2c]">
+                            <span class="font-mono text-gray-500">${(f.bytes / 1024).toFixed(1)} KB</span>
+                            <button onclick="wipeRecord('media', ${f.id}, loadMediaPipelineCloudinaryNode)" class="text-[#ff2a2a] hover:underline font-bold uppercase tracking-wider"><i class="fa-solid fa-trash-can mr-1"></i> Destroy</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function uploadMediaAsset(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('mediaFile');
+            if(!fileInput.files.length) return alert("Select a file first.");
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const btn = document.getElementById('uploadBtn');
+            const ogText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Streaming binary to Cloudinary...`;
+
+            try {
+                const res = await fetch(`${API_BASE}/media/upload`, {
+                    method: 'POST',
+                    headers: getSecurityHeaders(),
+                    body: formData
+                });
+                if(res.ok) {
+                    document.getElementById('mediaForm').reset();
+                    document.getElementById('fileNameDisplay').innerText = '';
+                    loadMediaPipelineCloudinaryNode();
+                }
+            } catch (err) { console.error(err); } finally {
+                btn.innerHTML = ogText;
+            }
+        }
+
+        async function loadSystemUsersSecurityNode() {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const profiles = await res.json();
+                document.getElementById('usersTableBody').innerHTML = profiles.map(u => `
+                    <tr class="hover:bg-[#0b0f19] transition">
+                        <td class="py-4 px-5 font-mono font-bold text-gray-500">#USR-${u.id}</td>
+                        <td class="py-4 px-5 font-bold text-white">${u.name}</td>
+                        <td class="py-4 px-5 font-mono text-blue-300 text-[11px]">${u.email}</td>
+                        <td class="py-4 px-5 text-[10px] font-bold uppercase tracking-widest">
+                            <span class="px-2.5 py-1 rounded-md shadow-sm ${u.role === 'admin' ? 'bg-[#ff2a2a]/20 text-[#ff2a2a] border border-[#ff2a2a]/30' : 'bg-[#0044ff]/20 text-[#0044ff] border border-[#0044ff]/30'}"><i class="fa-solid ${u.role==='admin'?'fa-shield-halved':'fa-user'} mr-1"></i> ${u.role}</span>
+                        </td>
+                        <td class="py-4 px-5 font-mono text-gray-400 text-[11px]">${u.phone || '--'}</td>
+                        <td class="py-4 px-5 text-center">
+                            <button onclick="wipeRecord('users', ${u.id}, loadSystemUsersSecurityNode)" class="text-gray-500 hover:text-[#ff2a2a]"><i class="fa-solid fa-user-slash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadSupportTicketsDeskDataNode() {
+             try {
+                const res = await fetch(`${API_BASE}/tickets`, { headers: getSecurityHeaders() });
+                const tickets = await res.json();
+                document.getElementById('ticketsTableBody').innerHTML = tickets.map(t => `
+                    <tr class="hover:bg-[#0b0f19]">
+                        <td class="py-4 px-5 font-mono font-bold text-[#ffb700]">#TCK-${t.id}</td>
+                        <td class="py-4 px-5 font-mono text-gray-500 text-[10px]">#USR-${t.user_id || 'GUEST'}</td>
+                        <td class="py-4 px-5 text-white font-bold max-w-[200px] truncate" title="${t.subject}">${t.subject}</td>
+                        <td class="py-4 px-5">
+                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${t.priority==='high'?'bg-[#ff2a2a]/20 text-[#ff2a2a]':(t.priority==='medium'?'bg-[#ff8800]/20 text-[#ff8800]':'bg-emerald-500/20 text-emerald-400')}">${t.priority}</span>
+                        </td>
+                        <td class="py-4 px-5">
+                            <select onchange="updateSupportTicketLineRow(${t.id}, 'status', this.value)" class="bg-[#0b0f19] border border-[#222f47] rounded p-1.5 text-xs text-white focus:outline-none">
+                                <option value="open" ${t.status === 'open' ? 'selected' : ''}>Open</option>
+                                <option value="pending" ${t.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="closed" ${t.status === 'closed' ? 'selected' : ''}>Closed</option>
+                            </select>
+                        </td>
+                        <td class="py-4 px-5 text-center">
+                            <button onclick="wipeRecord('tickets', ${t.id}, loadSupportTicketsDeskDataNode)" class="text-gray-500 hover:text-[#ff2a2a]"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // GLOBAL ATOMIC WIPE LOGIC (Re-uses your backend delete hooks perfectly)
+        async function wipeRecord(endpoint, id, callback) {
+            if (!confirm(`WARNING: Irreversible deletion of ${endpoint} record #${id}. Proceed?`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/${endpoint}/${id}`, {
+                    method: 'DELETE',
+                    headers: getSecurityHeaders()
+                });
+                if (res.ok) callback();
+            } catch (err) { alert('Deletion pipeline failed. Check server logs.'); }
+        }
+    </script>
+</body>
+</html>
