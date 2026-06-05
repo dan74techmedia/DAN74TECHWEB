@@ -226,7 +226,7 @@
                         <div class="form-group"><label>Name</label><input type="text" id="srv_name" class="form-control" required></div>
                         <div class="form-group"><label>Icon (Emoji/Class)</label><input type="text" id="srv_icon" class="form-control"></div>
                     </div>
-                    <div class="form-group"><label>Description</label><textarea id="srv_desc" class="form-control"></textarea></div>
+                    <div class="form-group"><label>Description</label><textarea id="srv_description" class="form-control"></textarea></div>
                     <button type="submit" class="btn-submit">Add Service</button>
                 </form>
             </div>
@@ -247,10 +247,10 @@
                 <form onsubmit="handleFormSubmit(event, 'sub-services', 'POST')">
                     <div class="form-row">
                         <div class="form-group"><label>Parent Service</label><select id="pkg_service_id" class="form-control" required></select></div>
-                        <div class="form-group"><label>Package Name</label><input type="text" id="pkg_name" class="form-control" required></div>
+                        <div class="form-group"><label>Package Name</label><input type="text" id="pkg_title" class="form-control" required></div>
                         <div class="form-group"><label>Price Base</label><input type="number" step="0.01" id="pkg_price" class="form-control" required></div>
                     </div>
-                    <div class="form-group"><label>Description Scope</label><textarea id="pkg_desc" class="form-control"></textarea></div>
+                    <div class="form-group"><label>Description Scope</label><textarea id="pkg_description" class="form-control"></textarea></div>
                     <button type="submit" class="btn-submit">Add Package</button>
                 </form>
             </div>
@@ -612,41 +612,37 @@
     }
 
     function populateServiceDrops() {
-        const drop = document.getElementById('pkg_service_id');
-        drop.innerHTML = '<option value="">Select Target Service Node</option>';
-        state.services.forEach(s => { drop.innerHTML += `<option value="${s.id}">${s.name}</option>`; });
-    }
-
-    // --- FORM HANDLING ---
-    async function handleFormSubmit(e, endpoint, method) {
-        e.preventDefault();
-        const inputs = Array.from(e.target.querySelectorAll('input, select, textarea'));
-        const payload = {};
-        inputs.forEach(el => {
-            if(el.id) {
-                // map id 'srv_name' -> 'name'
-                const key = el.id.substring(el.id.indexOf('_') + 1);
-                payload[key] = el.value;
-            }
-        });
-        
-        try {
-            await apiCall(endpoint, method, payload);
-            showToast('Entity committed successfully', 'success');
-            e.target.reset();
+        async function handleFormSubmit(e, endpoint, method) {
+    e.preventDefault();
+    const inputs = Array.from(e.target.querySelectorAll('input, select, textarea'));
+    const payload = {};
+    
+    inputs.forEach(el => {
+        if(el.id) {
+            // Extract the part after the underscore (e.g., 'srv_name' -> 'name')
+            let key = el.id.substring(el.id.indexOf('_') + 1);
             
-            // Reload target mapping
-            let modKey = Object.keys(endpointMap).find(k => endpointMap[k] === endpoint) || endpoint;
-            loadData(modKey);
-            if(modKey === 'services' || modKey === 'orders') fetchStats();
-        } catch(err) { showToast(err.message, 'error'); }
-    }
+            // SPECIAL CASE: If we are dealing with sub_services, 
+            // and the ID is 'name', map it to 'title' to match the database.
+            if (endpoint === 'sub_services' && key === 'name') {
+                key = 'title';
+            }
+            
+            payload[key] = el.value;
+        }
+    });
 
-    async function submitMultipartForm(e, endpoint, fileField) {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
-        
+    // Proceed with the API call
+    try {
+        await apiCall(endpoint, method, payload);
+        showToast('Operation successful', 'success');
+        e.target.reset(); // Clear the form
+        loadData(endpoint); // Refresh table
+    } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+    }
+        }
+    
         // Ensure empty file doesn't crash uploads unless required
         const fileInput = form.querySelector(`input[name="${fileField}"]`);
         if(fileInput && fileInput.files.length === 0) formData.delete(fileField);
@@ -700,7 +696,7 @@
                             <button class="btn-action btn-delete" onclick="deleteRecord('services', ${item.id}, 'services')"><i class="fas fa-trash"></i></button>
                          </td>`;
             } else if (moduleKey === 'sub-services') {
-                html += `<td>${item.category_name}</td><td>${item.name}</td><td>$${item.price}</td><td>${(item.description||'').substring(0,40)}</td>
+                html += `<td>${item.category_name}</td><td>${item.title}</td><td>$${item.price}</td><td>${(item.description||'').substring(0,40)}</td>
                          <td><button class="btn-action btn-delete" onclick="deleteRecord('sub-services', ${item.id}, 'sub-services')"><i class="fas fa-trash"></i></button></td>`;
             } else if (moduleKey === 'portfolio') {
                 html += `<td>${item.link ? `<img src="${item.link}" class="media-preview">` : 'No Media'}</td>
@@ -775,6 +771,27 @@
                 <div class="form-group"><label>Icon</label><input type="text" id="edit_icon" class="form-control" value="${record.icon||''}"></div>
                 <div class="form-group"><label>Description</label><textarea id="edit_description" class="form-control">${record.description||''}</textarea></div>
             `;
+            
+    } else if (endpoint === 'sub_services') {
+            formHtml = `
+                <div class="form-group">
+                    <label>Service Category ID</label>
+                    <input type="number" id="edit_service_id" class="form-control" value="${record.service_id}">
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit_title" class="form-control" value="${record.title}">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" id="edit_price" class="form-control" value="${record.price}">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit_description" class="form-control">${record.description || ''}</textarea>
+                </div>
+            `;
+            
         } else if (endpoint === 'portfolio') {
             formHtml = `
                 <div class="form-group"><label>Title</label><input type="text" id="edit_title" class="form-control" value="${record.title}"></div>
