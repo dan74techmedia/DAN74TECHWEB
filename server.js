@@ -1041,6 +1041,118 @@ app.get('/api/admin/stats', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// ================= ADVANCED QUERY ENGINE =================
+const buildAdvancedQuery = (tableName, queryParams, searchableColumns = []) => {
+    let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = queryParams;
+    
+    let whereClauses = [`is_deleted = FALSE`]; // Default to hiding soft-deleted records
+    let values = [];
+    let valueIndex = 1;
+
+    // 1. Handle Search (Full-Text/ILIKE)
+    if (search && searchableColumns.length > 0) {
+        const searchClauses = searchableColumns.map(col => `${col} ILIKE $${valueIndex}`);
+        whereClauses.push(`(${searchClauses.join(' OR ')})`);
+        values.push(`%${search}%`);
+        valueIndex++;
+    }
+
+    // 2. Handle Exact Filters (e.g., status='pending')
+    for (const [key, val] of Object.entries(filters)) {
+        if (val !== undefined && val !== '') {
+            whereClauses.push(`${key} = $${valueIndex}`);
+            values.push(val);
+            valueIndex++;
+        }
+    }
+
+    // 3. Construct Final Query
+    const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Safety check for sort/order to prevent SQL injection
+    const safeSort = sort.replace(/[^a-zA-Z0-9_]/g, ''); 
+    const safeOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+    const queryString = `SELECT * FROM ${tableName} ${whereString} ORDER BY ${safeSort} ${safeOrder} LIMIT ${parseInt(limit)} OFFSET ${offset}`;
+    const countQuery = `SELECT COUNT(*) FROM ${tableName} ${whereString}`;
+
+    return { queryString, countQuery, values };
+};
+// Upgraded Orders Ledger
+app.get('/api/orders', verifyAdminAccess, async (req, res) => {
+    try {
+        const searchableFields = ['customer_name', 'email', 'phone', 'service', 'invoice_number'];
+        const { queryString, countQuery, values } = buildAdvancedQuery('orders', req.query, searchableFields);
+        
+        const data = await pool.query(queryString, values);
+        const countData = await pool.query(countQuery, values);
+        
+        res.json({
+            data: data.rows,
+            meta: {
+                total: parseInt(countData.rows[0].count),
+                page: parseInt(req.query.page || 1),
+                limit: parseInt(req.query.limit || 100)
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Universal Soft Delete / Restore
+app.put('/api/:table/:id/status', verifyAdminAccess, async (req, res) => {
+    const { is_deleted } = req.body;
+    try {
+        // Simple sanitization for table names
+        const table = req.params.table.replace(/[^a-z_]/g, '');
+        const result = await pool.query(
+            `UPDATE ${table} SET is_deleted = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
+            [is_deleted, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Universal Bulk Action Engine
+app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
+    const { action, ids } = req.body; // action: 'delete', 'restore', 'status_update'
+    const table = req.params.table.replace(/[^a-z_]/g, '');
+    
+    if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: "No IDs provided" });
+
+    try {
+        if (action === 'delete') {
+            // Soft delete bulk
+            await pool.query(`UPDATE ${table} SET is_deleted = TRUE WHERE id = ANY($1::int[])`, [ids]);
+        } else if (action === 'hard_delete') {
+            await pool.query(`DELETE FROM ${table} WHERE id = ANY($1::int[])`, [ids]);
+        }
+        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// Single Record Fetch Pattern (Apply to all tables)
+app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
+    const allowedTables = ['users', 'services', 'orders', 'portfolio', 'blog_posts', 'invoices', 'support_tickets']; // Safety whitelist
+    if (!allowedTables.includes(req.params.table)) return res.status(403).json({error: "Table access forbidden."});
+    
+    try {
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({error: "Record not found"});
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+            
+
 // ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
 app.get('/', (req, res) => {
     res.send('🚀 DAN74TECH MEDIA Unified Operations API Matrix is active.');
