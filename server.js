@@ -867,39 +867,120 @@ app.delete('/api/blog/:id', verifyAdminAccess, async (req, res) => {
     }
 });
 
+
 // ================= MODULE 9: NEWSLETTER AUDIENCE SUBSCRIPTION REGISTER =================
 
+// Subscribe
 app.post('/api/subscribers', async (req, res) => {
     try {
         const { email } = req.body;
+
         const result = await pool.query(
-            `INSERT INTO subscribers (email, status) VALUES ($1, 'active') ON CONFLICT (email) DO UPDATE SET status = 'active' RETURNING *`,
+            `INSERT INTO subscribers (email, status)
+             VALUES ($1, 'active')
+             ON CONFLICT (email)
+             DO UPDATE SET status = 'active'
+             RETURNING *`,
             [email]
         );
-        res.json({ success: true, data: result.rows[0] });
+
+        res.json({
+            success: true,
+            data: result.rows[0]
+        });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+// Get all subscribers
 app.get('/api/subscribers', verifyAdminAccess, async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM subscribers ORDER BY id DESC');
+        const result = await pool.query(
+            'SELECT * FROM subscribers ORDER BY id DESC'
+        );
+
         res.json(result.rows);
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+// Broadcast email to all active subscribers
+app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
+    try {
+
+        const { subject, message, html } = req.body;
+
+        if (!subject || !message) {
+            return res.status(400).json({
+                error: 'Subject and message are required'
+            });
+        }
+
+        const subscribers = await pool.query(
+            "SELECT email FROM subscribers WHERE status = 'active'"
+        );
+
+        let sent = 0;
+        let failed = 0;
+
+        for (const subscriber of subscribers.rows) {
+            try {
+
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER,
+                    to: subscriber.email,
+                    subject,
+                    text: message,
+                    html: html || `<div>${message}</div>`
+                });
+
+                sent++;
+
+            } catch (emailError) {
+
+                failed++;
+
+                console.error(
+                    `Failed to send to ${subscriber.email}:`,
+                    emailError.message
+                );
+            }
+        }
+
+        res.json({
+            success: true,
+            totalSubscribers: subscribers.rows.length,
+            sent,
+            failed
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete subscriber
 app.delete('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
-        await pool.query('DELETE FROM subscribers WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
+
+        await pool.query(
+            'DELETE FROM subscribers WHERE id = $1',
+            [req.params.id]
+        );
+
+        res.json({
+            success: true
+        });
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
+ 
 // ================= MODULE 10: MEDIA REPOSITORY PIPELINE =================
 
 app.get('/api/media', verifyAdminAccess, async (req, res) => {
