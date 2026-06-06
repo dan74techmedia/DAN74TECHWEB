@@ -216,27 +216,25 @@
             authAlert.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'} mr-2"></i>${message}`;
             authAlert.classList.remove('hidden');
         }
-
-    // --- Token Serialization & Redirection Engine ---
+        
+// --- Token Serialization & Redirection Engine ---
 function processAuthenticationSuccess(data) {
-    // Purge legacy identifiers completely to prevent ghost sessions
-    localStorage.removeItem('token');
-    localStorage.removeItem('adminToken');
+    // 1. Vaporize all ghost tokens in the browser's memory
+    localStorage.clear(); 
     
-    // Establish the single source of truth
+    // 2. Establish the single source of truth
     localStorage.setItem('dan74_token', data.token);
 
-    // Case-insensitive intelligent routing
+    // 3. Transparent Routing
     const userRole = String(data.user.role).trim().toLowerCase();
-    
     if (userRole === 'admin') {
         window.location.href = 'admin.html'; 
     } else {
+        alert("SECURITY NOTICE: You are logged in as a standard CLIENT, not an admin. Routing to client workspace...");
         window.location.href = 'client.html'; 
     }
 }
-        
-    
+
      // --- Authentication Workflows ---
 
         // 1. Login Pipeline
