@@ -44,20 +44,10 @@ cloudinary.config({
 const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
 brevoEmailInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-// Middleware: Admin Access Verification
-const verifyAdminAccess = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: "Access Denied" });
-    const token = authHeader.split(' ')[1];
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.role !== 'admin') return res.status(403).json({ error: "Unauthorized" });
-        req.user = decoded;
-        next();
-    } catch (err) { res.status(401).json({ error: "Invalid Token" }); }
-};
+// ================= ========================================= =================
+// ======================== GLOBAL MIDDLEWARE CONFIGURATION ====================
+// ================= ========================================= =================
 
-// ================= MIDDLEWARE CONFIGURATION =================
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
@@ -80,29 +70,9 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth/', authLimiter);
 
-// --- THE TABLE ACCESS ROUTE  ---
-app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
-    const allowedTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blogs', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries'
-    ];
-
-    if (!allowedTables.includes(req.params.table)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
-    }
-
-    try {
-        // Here is the logic that connects the allowed table to your DB:
-        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// ================= UPLOADS STORAGE SYSTEM =================
+// ================= ========================================= =================
+// =========================== UPLOADS STORAGE SYSTEM ==========================
+// ================= ========================================= =================
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) { fs.mkdirSync(uploadDir, { recursive: true }); }
 app.use('/uploads', express.static(uploadDir));
@@ -114,10 +84,46 @@ const localStorage = multer.diskStorage({
         cb(null, uniqueName);
     }
 });
-const upload = multer({ storage: localStorage });
+
+// Explicitly defining both naming conventions to prevent structural ReferenceErrors downstream
+const uploadLocal = multer({ storage: localStorage });
+const upload = uploadLocal; 
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-// ================= CORE AUXILIARY DISPATCH EMAIL LOGIC =================
+// ================= ========================================= =================
+// ==================== ARCHITECTURAL PROTECTION MIDDLEWARES ===================
+// ================= ========================================= =================
+
+// Middleware: Admin Access Verification
+const verifyAdminAccess = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "Access Denied" });
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'admin') return res.status(403).json({ error: "Unauthorized" });
+        req.user = decoded;
+        next();
+    } catch (err) { res.status(401).json({ error: "Invalid Token" }); }
+};
+
+// Middleware: System Token Generic Verification
+const verifySystemToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.status(401).json({ error: "Access token validation mapping empty. Unauthorized." });
+    
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: "Token reference structural compromise detected. Forbidden." });
+        req.user = user;
+        next();
+    });
+};
+
+// ================= ========================================= =================
+// ======================= CORE AUXILIARY DISPATCH EMAIL LOGIC =================
+// ================= ========================================= =================
 async function sendSystemNotificationEmail(to, subject, text, html) {
     if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
         console.warn("⚠️ Notification system idling: Credentials missing or empty.");
@@ -136,7 +142,32 @@ async function sendSystemNotificationEmail(to, subject, text, html) {
     }
 }
 
-// ================= BROADCAST ROUTE =================
+// ================= ========================================= =================
+// ============================ CORE API ROUTE DEFINITIONS =====================
+// ================= ========================================= =================
+
+// --- THE TABLE ACCESS ROUTE ---
+app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blogs', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries'
+    ];
+
+    if (!allowedTables.includes(req.params.table)) {
+        return res.status(403).json({ error: "Unauthorized Table Access" });
+    }
+
+    try {
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- BROADCAST ROUTE ---
 app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
     try {
         const { subject, html } = req.body;
@@ -185,20 +216,6 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('at
         res.status(500).json({ success: false, error: err.message });
     }
 });
-
-// ================= ARCHITECTURAL PROTECTION SECURITY MIDDLEWARE =================
-const verifySystemToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) return res.status(401).json({ error: "Access token validation mapping empty. Unauthorized." });
-    
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: "Token reference structural compromise detected. Forbidden." });
-        req.user = user;
-        next();
-    });
-};
 
 // ================= MODULE 1: AUTHENTICATION & SECURITY DATA ENGINE =================
 
