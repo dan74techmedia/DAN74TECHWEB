@@ -11,16 +11,37 @@ const multer = require('multer');
 const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const streamifier = require('streamifier');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs'); // Standardized on bcryptjs for broad compatibility
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
+const Brevo = require('@getbrevo/brevo');
 
+// Initialize Express App Engine (Must be declared before attaching middleware)
 const app = express();
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dan74tech_media_secure_jwt_core_token_secret_key';
+
+// Initialize Neon PostgreSQL Database Engine Pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Required for secure cloud communication with Neon PostgreSQL
+});
+
+// Configure Cloudinary Integration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Initialize Brevo Client
+let defaultClient = Brevo.ApiClient.instance;
+let apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
 
 // ================= MIDDLEWARE CONFIGURATION =================
 app.use(helmet({ contentSecurityPolicy: false })); // Permissive CSP to prevent inline frontend blocks from breaking
@@ -44,6 +65,7 @@ const authLimiter = rateLimit({
     message: { error: "Security threshold reached. Verification authentication requests throttled." }
 });
 app.use('/api/auth/', authLimiter);
+    
 
 // ================= CLOUDINARY MEDIA MANAGEMENT SETUP =================
 cloudinary.config({
@@ -87,27 +109,28 @@ pool.query("SELECT NOW()")
     .then(() => console.log("✅ Postgres Database Connected Successfully"))
     .catch(err => console.error("❌ Database Connection Error:", err));
 
-// ================= EMAIL ENGINE NOTIFICATION SERVICE (NODEMAILER) =================
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-        user: process.env.EMAIL_USER || '',
-        pass: process.env.EMAIL_PASS || ''
-    }
-});
+
+// ================= EMAIL ENGINE NOTIFICATION SERVICE (BREVO SDK) =================
+let defaultClient = Brevo.ApiClient.instance;
+let apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
 
 async function sendSystemNotificationEmail(to, subject, text, html) {
-    if (!process.env.EMAIL_USER) return; // Silent fallback if mail credentials aren't deployed yet
+    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+        console.warn("⚠️ Notification system idling: Credentials not deployed yet.");
+        return; 
+    }
+    
     try {
-        await transporter.sendMail({
-            from: `"DAN74TECH MEDIA Operations" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            text,
-            html
-        });
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;
+        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ email: to }];
+
+        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✉️ System alert dispatched successfully to: ${to}`);
     } catch (err) {
         console.error("❌ Notification Email Dispatch Fault:", err);
     }
@@ -129,7 +152,7 @@ const verifySystemToken = (req, res, next) => {
 
 const verifyAdminAccess = (req, res, next) => {
     verifySystemToken(req, res, () => {
-        if (req.user.role !== 'admin') {
+        if (!req.user || req.user.role !== 'admin') {
             return res.status(403).json({ error: "Console Operation Limited to System Administrators Only." });
         }
         next();
@@ -144,8 +167,8 @@ app.post('/api/auth/register', async (req, res) => {
         const { name, email, password, role, phone } = req.body;
         const userRole = role || 'client';
         
-        // Check structural existence
-        const checkUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        // Check structural existence and account state constraints
+        const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (checkUser.rows.length > 0) {
             return res.status(400).json({ error: "User registration email conflict detected." });
         }
@@ -154,13 +177,22 @@ app.post('/api/auth/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
         
         const result = await pool.query(
-            `INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, phone`,
+            `INSERT INTO users (name, email, password, role, phone, is_deleted) 
+             VALUES ($1, $2, $3, $4, $5, FALSE) 
+             RETURNING id, name, email, role, phone`,
             [name, email, hashedPassword, userRole, phone]
         );
         
         const userNode = result.rows[0];
-        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userRole }, JWT_SECRET, { expiresIn: '24h' });
+        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userNode.role }, JWT_SECRET, { expiresIn: '24h' });
         
+        // Optional tracking greeting pipeline
+        await sendSystemNotificationEmail(
+            userNode.email, 
+            "Welcome to DAN74TECH MEDIA", 
+            `Hello ${userNode.name}, your workspace engine profile setup is successfully validated.`
+        );
+
         res.json({ success: true, token: accessToken, user: userNode });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -171,7 +203,9 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        
+        // Enforce alignment with PostgreSQL soft delete column constraint
+        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
         }
@@ -202,27 +236,29 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// Fetch all registered profile nodes
-app.get('/api/users', async (req, res) => {
+// Fetch all active registered profile nodes (Excluding deleted records)
+app.get('/api/users', verifyAdminAccess, async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name, email, role, phone, created_at FROM users ORDER BY id DESC');
+        const result = await pool.query(
+            'SELECT id, name, email, role, phone, created_at FROM users WHERE is_deleted = FALSE ORDER BY id DESC'
+        );
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-
-
-// Admin endpoint to explicitly remove validation access lines
+// Admin endpoint to implement structural soft-deletion to match database engine layout
 app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
     try {
-        await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
+        // Aligned with your system's dynamic trigger configuration setup
+        await pool.query('UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true, message: "User node access credentials safely deprecated." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE =================
 
