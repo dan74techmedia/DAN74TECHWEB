@@ -3,30 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Authentication | DAN74TECH MEDIA</title>
+    <title>Gateway Authentication | DAN74TECH MEDIA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --brand-blue: #0044ff; --brand-red: #ff2a2a; --bg-light: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); }
+        :root { --brand-blue: #0044ff; --brand-red: #ff2a2a; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            /* Logo as background as requested */
+            background-image: url('images/logo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .hero-mesh { background: radial-gradient(circle at 50% 50%, rgba(0, 68, 255, 0.05), transparent 70%); }
-        .toast-notification { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideInLeft { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        /* Tab transitions */
-        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .tab-content.active { display: block; opacity: 1; }
+        /* Dark overlay to ensure floating panel pops */
+        .bg-overlay {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .floating-panel {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: floatUp 0.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Hide elements dynamically */
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="antialiased selection:bg-[#0044ff] selection:text-white min-h-screen flex flex-col justify-between hero-mesh">
+<body class="antialiased selection:bg-[#0044ff] selection:text-white min-h-screen flex flex-col justify-between relative">
 
-    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+    <div class="absolute inset-0 bg-overlay z-0"></div>
 
-    <header class="w-full bg-white border-b border-gray-100">
+    <header class="w-full relative z-10 border-b border-gray-800 bg-[#0b0f19]/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px]">
@@ -35,31 +54,28 @@
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-lg font-extrabold text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Professional Tech Solutions</span>
+                    <span class="text-lg font-extrabold text-white font-mono tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Unified Authentication Hub</span>
                 </div>
             </a>
-            <a href="index.html" class="text-sm font-bold text-[#0044ff] hover:underline"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
+            <a href="index.html" class="text-sm font-bold text-gray-300 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
         </div>
     </header>
 
-    <main class="flex-grow flex items-center justify-center px-4 py-12">
-        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 shadow-xl">
+    <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
+        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 floating-panel space-y-6">
             
-            <div class="text-center space-y-2 mb-6">
-                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
-                    <i class="fa-solid fa-shield-halved"></i>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto">
+                    <i class="fa-solid fa-fingerprint"></i>
                 </div>
-                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Portal Authentication</h1>
-                <p class="text-xs text-gray-500">Access your digital workspace and active deployments.</p>
+                <h1 id="panelTitle" class="text-2xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
+                <p id="panelSubtitle" class="text-xs text-gray-500 font-medium">Enter your credentials to access your workspace.</p>
             </div>
 
-            <div class="flex mb-6 border-b border-gray-100">
-                <button type="button" id="tabBtnLogin" class="w-1/2 py-3 text-xs font-bold tracking-wider font-mono uppercase text-[#0044ff] border-b-2 border-[#0044ff] transition-all focus:outline-none">Sign In</button>
-                <button type="button" id="tabBtnRegister" class="w-1/2 py-3 text-xs font-bold tracking-wider font-mono uppercase text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all focus:outline-none">Create Account</button>
-            </div>
+            <div id="authAlert" class="hidden p-3 rounded-xl text-xs font-bold text-center font-mono transition-all"></div>
 
-            <form id="secureAdministrativeLoginEngineForm" class="tab-content active space-y-4">
+            <form id="loginForm" class="space-y-4">
                 <div class="space-y-1">
                     <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Email Address</label>
                     <div class="relative">
@@ -69,19 +85,28 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Secret Keyphrase</label>
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Password</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044ff] transition-colors">
+                            <i id="loginEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-4">
-                    Secure Entry <i class="fa-solid fa-right-to-bracket ml-1"></i>
+                <button type="submit" id="loginBtn" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-2">
+                    Verify Identity <i class="fa-solid fa-right-to-bracket ml-1"></i>
                 </button>
+                
+                <div class="text-center pt-2">
+                    <button type="button" onclick="switchForm('register')" class="text-xs font-bold text-[#0044ff] hover:underline font-mono">
+                        Don't have an account? Register
+                    </button>
+                </div>
             </form>
 
-            <form id="clientRegistrationForm" class="tab-content space-y-4">
+            <form id="registerForm" class="space-y-4 hidden">
                 <div class="space-y-1">
                     <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Full Name</label>
                     <div class="relative">
@@ -102,7 +127,7 @@
                     <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Phone Number</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-phone"></i></span>
-                        <input type="text" id="regPhone" required placeholder="+254 700 000 000" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <input type="tel" id="regPhone" required placeholder="+254 700 000000" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
                     </div>
                 </div>
 
@@ -110,77 +135,119 @@
                     <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Password</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="regPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <input type="password" id="regPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044ff] transition-colors">
+                            <i id="regEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div class="space-y-1">
                     <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Confirm Password</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="regConfirmPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-shield-check"></i></span>
+                        <input type="password" id="regConfirmPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('regConfirmPassword', 'regConfirmEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044ff] transition-colors">
+                            <i id="regConfirmEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-4">
-                    Establish Connection <i class="fa-solid fa-user-plus ml-1"></i>
+                <button type="submit" id="registerBtn" class="w-full bg-[#10b981] hover:bg-emerald-600 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-emerald-600/10 transition-all font-mono uppercase mt-2">
+                    Create Workspace <i class="fa-solid fa-user-plus ml-1"></i>
                 </button>
+
+                <div class="text-center pt-2">
+                    <button type="button" onclick="switchForm('login')" class="text-xs font-bold text-gray-500 hover:text-[#0044ff] hover:underline font-mono">
+                        Already have an account? Sign In
+                    </button>
+                </div>
             </form>
+
         </div>
     </main>
 
-    <footer class="bg-[#0b0f19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
+    <footer class="w-full relative z-10 bg-[#0b0f19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
         &copy; 2026 DAN74TECH MEDIA. Systems Security Protocol Node. Status: <span class="text-emerald-500">Secure</span>
     </footer>
 
     <script>
         const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
 
-        // Universal Toast Notification Handler
-        function pushSystemOperationalToast(messageContext, messageType = 'info') {
-            const toastCenter = document.getElementById('applicationToastCenter');
-            if (!toastCenter) return;
-            const node = document.createElement('div');
-            node.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold max-w-sm w-full`;
-            if (messageType === 'success') { node.className += ' border-emerald-100 text-emerald-800'; node.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`; }
-            else { node.className += ' border-red-100 text-red-800'; node.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`; }
-            toastCenter.appendChild(node);
-            setTimeout(() => { node.remove(); }, 4000);
+        // --- DOM Elements ---
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const panelTitle = document.getElementById('panelTitle');
+        const panelSubtitle = document.getElementById('panelSubtitle');
+        const authAlert = document.getElementById('authAlert');
+
+        // --- UI Interactions ---
+        function switchForm(target) {
+            authAlert.classList.add('hidden'); // Clear errors on switch
+            if (target === 'register') {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                panelTitle.innerText = 'Register Profile';
+                panelSubtitle.innerText = 'Create a new client workspace to track your active orders.';
+            } else {
+                registerForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                panelTitle.innerText = 'System Login';
+                panelSubtitle.innerText = 'Enter your credentials to access your workspace.';
+            }
         }
 
-        // Tab Navigation Logic
-        const tabBtnLogin = document.getElementById('tabBtnLogin');
-        const tabBtnRegister = document.getElementById('tabBtnRegister');
-        const formLogin = document.getElementById('secureAdministrativeLoginEngineForm');
-        const formRegister = document.getElementById('clientRegistrationForm');
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
 
-        tabBtnLogin.addEventListener('click', () => {
-            tabBtnLogin.classList.replace('border-transparent', 'border-[#0044ff]');
-            tabBtnLogin.classList.replace('text-gray-400', 'text-[#0044ff]');
-            tabBtnRegister.classList.replace('border-[#0044ff]', 'border-transparent');
-            tabBtnRegister.classList.replace('text-[#0044ff]', 'text-gray-400');
-            
-            formRegister.classList.remove('active');
-            setTimeout(() => formLogin.classList.add('active'), 50);
-        });
+        function showPanelAlert(message, type = 'error') {
+            authAlert.className = `p-3 rounded-xl text-xs font-bold text-center font-mono transition-all mb-4 ${type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`;
+            authAlert.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'} mr-2"></i>${message}`;
+            authAlert.classList.remove('hidden');
+        }
 
-        tabBtnRegister.addEventListener('click', () => {
-            tabBtnRegister.classList.replace('border-transparent', 'border-[#0044ff]');
-            tabBtnRegister.classList.replace('text-gray-400', 'text-[#0044ff]');
-            tabBtnLogin.classList.replace('border-[#0044ff]', 'border-transparent');
-            tabBtnLogin.classList.replace('text-[#0044ff]', 'text-gray-400');
-            
-            formLogin.classList.remove('active');
-            setTimeout(() => formRegister.classList.add('active'), 50);
-        });
+        // --- Token Serialization & Redirection Engine ---
+        function processAuthenticationSuccess(data) {
+            // FIX: Set BOTH token identifiers to bridge the mismatch between legacy admin.html constraints and standard API fetching
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('adminToken', data.token);
 
-        // Login Logic Engine
-        document.getElementById('secureAdministrativeLoginEngineForm').addEventListener('submit', async function(e) {
+            // FIX: Role-based intelligent routing.
+            const userRole = data.user.role;
+            if (userRole === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'client.html'; // Or dashboard.html depending on standard naming
+            }
+        }
+
+        // --- Authentication Workflows ---
+
+        // 1. Login Pipeline
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            authAlert.classList.add('hidden');
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+            
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
 
             try {
+                btn.innerHTML = 'Authenticating... <i class="fa-solid fa-circle-notch fa-spin ml-1"></i>';
+                btn.disabled = true;
+
                 const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -190,44 +257,42 @@
                 const data = await response.json();
 
                 if (response.ok && data.token) {
-                    pushSystemOperationalToast("Handshake complete. Authorization validation successful!", "success");
-                    
-                    // Crucial Fix: Store token under BOTH keys to satisfy admin.html's conflicting retrieval hooks
-                    localStorage.setItem('adminToken', data.token);
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userData', JSON.stringify(data.user));
-
-                    // Role-based routing system
-                    setTimeout(() => { 
-                        if (data.user.role === 'admin') {
-                            window.location.href = 'admin.html'; 
-                        } else {
-                            window.location.href = 'client.html';
-                        }
-                    }, 1000);
+                    showPanelAlert("Handshake complete. Routing to workspace...", "success");
+                    setTimeout(() => processAuthenticationSuccess(data), 800);
                 } else {
-                    throw new Error(data.message || data.error || "Authentication access denied.");
+                    throw new Error(data.error || data.message || "Authentication access denied.");
                 }
             } catch (err) {
-                pushSystemOperationalToast(err.message, "error");
+                showPanelAlert(err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         });
 
-        // Registration Logic Engine
-        document.getElementById('clientRegistrationForm').addEventListener('submit', async function(e) {
+        // 2. Registration Pipeline
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            authAlert.classList.add('hidden');
+            const btn = document.getElementById('registerBtn');
+            const originalText = btn.innerHTML;
+
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const phone = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regConfirmPassword').value;
 
+            // Pre-flight validation
             if (password !== confirmPassword) {
-                pushSystemOperationalToast("Security validation failed: Passwords do not match.", "error");
+                showPanelAlert("Security Error: Passwords do not match.", "error");
                 return;
             }
 
             try {
+                btn.innerHTML = 'Creating Profile... <i class="fa-solid fa-circle-notch fa-spin ml-1"></i>';
+                btn.disabled = true;
+
                 const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -235,27 +300,24 @@
                         name, 
                         email, 
                         phone, 
-                        password,
-                        role: 'client' // Explicit assignment locking user role
+                        password, 
+                        role: 'client' // Explicit enforcement per rules
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.token) {
-                    pushSystemOperationalToast("Account deployed. Redirecting to workspace...", "success");
-                    
-                    // Store tokens to auto-login the client
-                    localStorage.setItem('adminToken', data.token);
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userData', JSON.stringify(data.user));
-
-                    setTimeout(() => { window.location.href = 'client.html'; }, 1000);
+                    showPanelAlert("Profile generated successfully. Initializing workspace...", "success");
+                    setTimeout(() => processAuthenticationSuccess(data), 1000);
                 } else {
-                    throw new Error(data.error || "Account generation sequence failed.");
+                    throw new Error(data.error || data.message || "Profile generation failed.");
                 }
             } catch (err) {
-                pushSystemOperationalToast(err.message, "error");
+                showPanelAlert(err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         });
     </script>
