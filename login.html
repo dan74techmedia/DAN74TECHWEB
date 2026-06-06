@@ -219,14 +219,18 @@
 
         // --- Token Serialization & Redirection Engine ---
         function processAuthenticationSuccess(data) {
-            // FIX: Set BOTH token identifiers to bridge the mismatch between legacy admin.html constraints and standard API fetching
+            // FIX: Set ALL required token identifiers to bridge the mismatch between legacy admin.html constraints and standard API fetching
             localStorage.setItem('token', data.token);
             localStorage.setItem('adminToken', data.token);
+            
+            // --> THIS IS THE FIX THAT STOPS THE LOOP <--
+            localStorage.setItem('dan74_token', data.token); 
 
             // FIX: Role-based intelligent routing.
             const userRole = data.user.role;
             if (userRole === 'admin') {
-                window.location.href = 'admin.html';
+                // Ensure this file name strictly matches whatever your admin panel file is actually named on your server
+                window.location.href = 'admin.html'; 
             } else {
                 window.location.href = 'client.html'; // Or dashboard.html depending on standard naming
             }
