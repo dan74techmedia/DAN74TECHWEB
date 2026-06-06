@@ -11,14 +11,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <script>
+        const storedToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
+        let isAuthenticated = false;
+        let currentUserContext = null;
+
+        if (storedToken) {
+            try {
+                const payload = JSON.parse(atob(storedToken.split('.')[1]));
+                const role = payload.role || (payload.user && payload.user.role);
+                if (role === 'admin') {
+                    isAuthenticated = true;
+                    currentUserContext = payload.user || payload;
+                }
+            } catch (e) {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('token');
+            }
+        }
+    </script>
+
     <style>
         :root {
             --brand-blue: #0044ff;
             --brand-red: #ff2a2a;
-            --brand-yellow: #ffd700;
             --bg-light: #f8fafc;
             --text-main: #0f172a;
-            --text-muted: #475569;
         }
 
         body {
@@ -27,16 +45,14 @@
             color: var(--text-main);
             overflow: hidden;
         }
-
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar matching index.html */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Animations & FX */
         .subtle-pulse-glow {
             box-shadow: 0 0 25px rgba(0, 68, 255, 0.1);
             animation: pulseGlow 4s ease-in-out infinite alternate;
@@ -46,19 +62,12 @@
             100% { transform: translateY(-4px); box-shadow: 0 0 35px rgba(255, 42, 42, 0.12); }
         }
 
-        /* Glassmorphism Auth */
-        #auth-overlay {
-            background: radial-gradient(circle at 50% 50%, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.98));
-            backdrop-filter: blur(10px);
-        }
-
         .toast-notification { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInRight {
             from { transform: translateX(120%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Sidebar & Table Hover Transitions */
         .sidebar-link { transition: all 0.2s ease; border-left: 3px solid transparent; }
         .sidebar-link:hover { background-color: rgba(0, 68, 255, 0.05); color: var(--brand-blue); }
         .sidebar-link.active { 
@@ -67,14 +76,19 @@
             border-left-color: var(--brand-blue); 
             font-weight: 700;
         }
+        
         tr:hover td { background-color: rgba(0, 68, 255, 0.02); }
+
+        /* Prevent layout shift based on inline script evaluation */
+        #auth-overlay { display: none; }
+        #app-layout { display: none; }
     </style>
 </head>
 <body class="antialiased selection:bg-[#0044ff] selection:text-white h-screen flex">
 
     <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
 
-    <div id="auth-overlay" class="fixed inset-0 z-[10000] flex items-center justify-center transition-opacity duration-300">
+    <div id="auth-overlay" class="fixed inset-0 z-[10000] flex-col items-center justify-center bg-[#0b0f19]/90 backdrop-blur-md transition-opacity duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-200 max-w-md w-full subtle-pulse-glow text-center mx-4">
             <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] mx-auto mb-4">
                 <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center overflow-hidden">
@@ -82,25 +96,15 @@
                 </div>
             </div>
             <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 font-mono">COMMAND NODE</h1>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 mb-8">System Administrator Login</p>
-            
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 text-left">
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 font-mono">Operator Email</label>
-                    <input type="email" id="auth-email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 font-mono">Cryptographic Key</label>
-                    <input type="password" id="auth-password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono">
-                </div>
-                <button type="submit" id="auth-btn" class="w-full py-3 bg-[#0044ff] text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/20 mt-2 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-shield-halved"></i> Establish Uplink
-                </button>
-            </form>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 mb-6">System Administrator Login Required</p>
+            <p class="text-xs text-gray-600 mb-6 font-mono">Session expired or invalid. Please re-authenticate via the main portal.</p>
+            <a href="login.html" class="w-full inline-block py-3 bg-[#0044ff] text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/20">
+                Return to Login Gateway
+            </a>
         </div>
     </div>
 
-    <div id="app-layout" class="w-full h-full flex hidden opacity-0 transition-opacity duration-500">
+    <div id="app-layout" class="w-full h-full flex opacity-0 transition-opacity duration-500">
         
         <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
             <div class="h-16 flex items-center gap-3 px-6 border-b border-gray-100">
@@ -115,21 +119,21 @@
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1" id="sidebar-menu">
+            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar" id="sidebar-menu">
                 </div>
 
             <div class="p-4 border-t border-gray-100">
-                <button onclick="handleLogout()" class="w-full py-2.5 px-4 bg-red-50 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-[#ff2a2a] hover:text-white transition-colors border border-red-100 flex items-center justify-center gap-2">
+                <button onclick="executeLogout()" class="w-full py-2.5 px-4 bg-red-50 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-[#ff2a2a] hover:text-white transition-colors border border-red-100 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-power-off"></i> Terminate Session
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
+        <main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc] relative">
             <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
                 <div class="flex items-center gap-3">
                     <h2 id="view-title" class="text-lg font-extrabold text-gray-900 tracking-tight">Dashboard Overview</h2>
-                    <span id="view-badge" class="px-2 py-0.5 rounded bg-blue-50 border border-blue-100 text-[9px] font-mono font-bold text-[#0044ff] uppercase tracking-widest">Core</span>
+                    <span id="view-badge" class="px-2 py-0.5 rounded bg-blue-50 border border-blue-100 text-[9px] font-mono font-bold text-[#0044ff] uppercase tracking-widest">Core Metrics</span>
                 </div>
                 <div class="flex items-center gap-4 text-sm font-mono text-gray-500">
                     <div class="hidden md:flex items-center gap-1.5">
@@ -138,15 +142,15 @@
                     </div>
                     <div class="h-6 w-px bg-gray-200"></div>
                     <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200">
-                            <i class="fa-solid fa-user-astronaut text-xs"></i>
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[#0044ff] border border-gray-200">
+                            <i class="fa-solid fa-user-shield text-xs"></i>
                         </div>
-                        <div class="text-xs font-bold text-gray-800" id="header-user-name">Admin</div>
+                        <div class="text-xs font-bold text-gray-800" id="header-user-name">Administrator</div>
                     </div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-8 relative">
+            <div class="flex-1 overflow-y-auto p-8 relative custom-scrollbar">
                 
                 <div id="view-dashboard" class="view-panel active space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -159,25 +163,32 @@
                         </div>
                         <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between group hover:border-[#0044ff] transition-colors">
                             <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 font-mono">Pipeline Orders</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 font-mono">Total Orders</p>
                                 <h3 class="text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="stat-orders">0</h3>
                             </div>
                             <div class="w-12 h-12 rounded-lg bg-blue-50 text-[#0044ff] flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-layer-group"></i></div>
                         </div>
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between group hover:border-[#ffd700] transition-colors">
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 font-mono">Pending Briefings</p>
-                                <h3 class="text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="stat-consults">0</h3>
-                            </div>
-                            <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-calendar-check"></i></div>
-                        </div>
                         <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between group hover:border-[#ff2a2a] transition-colors">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 font-mono">Pending Orders</p>
+                                <h3 class="text-2xl font-extrabold text-[#ff2a2a] font-mono tracking-tight" id="stat-pending-orders">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-lg bg-red-50 text-[#ff2a2a] flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between group hover:border-amber-400 transition-colors">
                             <div>
                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 font-mono">Open Tickets</p>
                                 <h3 class="text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="stat-tickets">0</h3>
                             </div>
-                            <div class="w-12 h-12 rounded-lg bg-red-50 text-[#ff2a2a] flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center text-xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-headset"></i></div>
                         </div>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-sm text-center max-w-2xl mx-auto mt-12">
+                        <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4 text-[#0044ff] text-2xl">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Systems Operational</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed font-mono">Welcome to the DAN74TECH MEDIA centralized routing matrix. Navigate through the side panel to manage users, portfolio injections, pricing models, and direct file asset streaming pipelines.</p>
                     </div>
                 </div>
 
@@ -185,27 +196,27 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="relative w-full md:w-96">
                             <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <input type="text" id="grid-search" class="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono" placeholder="Query matrix records...">
+                            <input type="text" id="grid-search" class="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#0044ff] transition-all font-mono" placeholder="Query matrix records...">
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 w-full md:w-auto">
                             <button onclick="refreshDataGrid()" class="px-3 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-50 transition-colors shadow-sm">
                                 <i class="fa-solid fa-rotate-right"></i>
                             </button>
-                            <button id="btn-create-record" class="px-4 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20 flex items-center gap-2">
-                                <i class="fa-solid fa-plus"></i> Inject New Record
+                            <button id="btn-create-record" class="flex-1 md:flex-none px-4 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Inject Record
                             </button>
                         </div>
                     </div>
                     
-                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative min-h-[400px]">
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left border-collapse whitespace-nowrap">
                                 <thead class="bg-gray-50 border-b border-gray-200" id="grid-head"></thead>
                                 <tbody class="divide-y divide-gray-100" id="grid-body"></tbody>
                             </table>
                         </div>
-                        <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center text-xs font-mono text-gray-500">
-                            <span id="grid-count">Displaying 0 records</span>
+                        <div class="mt-auto p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+                            <span id="grid-count">Awaiting Data Execution...</span>
                         </div>
                     </div>
                 </div>
@@ -214,38 +225,50 @@
         </main>
     </div>
 
-    <div id="form-modal" class="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300" id="form-modal-content">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
+    <div id="form-modal" class="fixed inset-0 z-[1000] bg-[#0b0f19]/70 backdrop-blur-sm hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300" id="form-modal-content">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-2xl">
                 <div>
                     <h3 class="text-sm font-extrabold text-gray-900 font-mono tracking-tight" id="modal-title">Record Injection</h3>
                     <p class="text-[10px] text-gray-500 font-mono uppercase tracking-widest mt-0.5" id="modal-subtitle">Schema Matrix Editor</p>
                 </div>
-                <button onclick="closeModal()" class="w-8 h-8 rounded-md bg-white border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-center">
+                <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
                 <form id="dynamic-form" onsubmit="handleFormSubmit(event)" class="space-y-4"></form>
             </div>
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-xl flex justify-end gap-2">
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl flex justify-end gap-3">
                 <button type="button" onclick="closeModal()" class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors shadow-sm">Cancel</button>
-                <button type="submit" form="dynamic-form" id="btn-submit-form" class="px-6 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/20">Execute Write</button>
+                <button type="submit" form="dynamic-form" id="btn-submit-form" class="px-6 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-microchip"></i> Execute Write
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        const API_HOST = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000' : window.location.origin;
+        // Check pre-paint authentication resolution
+        if (!isAuthenticated) {
+            document.getElementById('auth-overlay').style.display = 'flex';
+        } else {
+            document.getElementById('app-layout').style.display = 'flex';
+            setTimeout(() => { document.getElementById('app-layout').style.opacity = '1'; }, 50);
+            if(currentUserContext && currentUserContext.name) {
+                document.getElementById('header-user-name').innerText = currentUserContext.name;
+            }
+        }
 
-        // === 1. GLOBAL STATE & CONFIGURATION ===
+        // Configuration Parameters
+        const API_HOST = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000' : window.location.origin;
         let currentModule = 'dashboard';
         let currentGridData = [];
         let editingRecordId = null;
 
-        // Schema Config reflecting all 17 tables from the DOCX & server.js
+        // Schema Mapping for the 17 Database Tables outlined in DOCX & server.js
         const MODULE_REGISTRY = {
-            users: { icon: 'fa-users', title: 'Security Nodes', endpoint: '/api/users', dbTable: 'users', fields: [
+            users: { icon: 'fa-users', title: 'Security Nodes (Users)', endpoint: '/api/users', dbTable: 'users', fields: [
                 { name: 'name', type: 'text', label: 'Identity Name', required: true },
                 { name: 'email', type: 'email', label: 'Email Node', required: true },
                 { name: 'phone', type: 'text', label: 'Comm Link' },
@@ -255,11 +278,11 @@
             
             services: { icon: 'fa-server', title: 'Core Services', endpoint: '/api/services', dbTable: 'services', fields: [
                 { name: 'name', type: 'text', label: 'Capability Name', required: true },
-                { name: 'icon', type: 'text', label: 'FontAwesome Icon Class', required: true },
+                { name: 'icon', type: 'text', label: 'FontAwesome Class (e.g. fa-code)', required: true },
                 { name: 'description', type: 'textarea', label: 'Technical Description' }
             ], columns: ['id', 'icon', 'name', 'description'] },
             
-            sub_services: { icon: 'fa-layer-group', title: 'Sub-Packages', endpoint: '/api/sub-services', dbTable: 'sub_services', fields: [
+            sub_services: { icon: 'fa-layer-group', title: 'Pricing Packages', endpoint: '/api/sub-services', dbTable: 'sub_services', fields: [
                 { name: 'service_id', type: 'number', label: 'Parent Service ID', required: true },
                 { name: 'name', type: 'text', label: 'Package Designation', required: true },
                 { name: 'price', type: 'number', label: 'Base Pricing Float', required: true },
@@ -271,9 +294,9 @@
                 { name: 'phone', type: 'text', label: 'Phone', required: true },
                 { name: 'service', type: 'text', label: 'Core Service', required: true },
                 { name: 'sub_service', type: 'text', label: 'Package Variant' },
-                { name: 'price', type: 'number', label: 'Override Float Price' },
-                { name: 'status', type: 'select', label: 'Operational Status', options: ['pending', 'processing', 'completed', 'cancelled'] },
-                { name: 'payment_status', type: 'select', label: 'Ledger Status', options: ['unpaid', 'partial', 'paid', 'refunded'] }
+              { name: 'price', type: 'number', label: 'Override Float Price' },
+                { name: 'status', type: 'select', label: 'Operational Status', options: ['pending', 'in progress', 'completed', 'cancelled'] },
+                { name: 'payment_status', type: 'select', label: 'Ledger Status', options: ['unpaid', 'paid'] }
             ], columns: ['id', 'customer_name', 'service', 'price', 'status', 'payment_status'] },
             
             portfolio: { icon: 'fa-briefcase', title: 'Portfolio Array', endpoint: '/api/portfolio', dbTable: 'portfolio', hasFiles: true, fields: [
@@ -304,7 +327,7 @@
                 { name: 'is_featured', type: 'select', label: 'Pin to Front', options: ['false', 'true'] }
             ], columns: ['id', 'client_name', 'rating', 'status', 'is_featured'] },
             
-            blog_posts: { icon: 'fa-pen-nib', title: 'Insight Nodes', endpoint: '/api/blog', dbTable: 'blog_posts', fields: [
+            blog_posts: { icon: 'fa-pen-nib', title: 'Blog Insight Nodes', endpoint: '/api/blog', dbTable: 'blog_posts', fields: [
                 { name: 'title', type: 'text', label: 'Headline Title', required: true },
                 { name: 'category', type: 'text', label: 'Topic Vector' },
                 { name: 'slug', type: 'text', label: 'URL Routing Slug', required: true },
@@ -315,7 +338,7 @@
                 { name: 'seo_description', type: 'text', label: 'SEO Description' }
             ], columns: ['id', 'title', 'category', 'slug'] },
             
-            subscribers: { icon: 'fa-users-line', title: 'Target Vectors', endpoint: '/api/subscribers', dbTable: 'subscribers', fields: [
+            subscribers: { icon: 'fa-users-line', title: 'Newsletter Targets', endpoint: '/api/subscribers', dbTable: 'subscribers', fields: [
                 { name: 'email', type: 'email', label: 'Node Address', required: true },
                 { name: 'status', type: 'select', label: 'Pipeline State', options: ['active', 'unsubscribed'] }
             ], columns: ['id', 'email', 'status', 'created_at'] },
@@ -326,8 +349,8 @@
                 { name: 'html', type: 'textarea', label: 'HTML Payload Container', required: true }
             ], columns: [] }, 
             
-            media_library: { icon: 'fa-photo-film', title: 'Asset Network', endpoint: '/api/media', dbTable: 'media_library', hasFiles: true, fields: [
-                { name: 'file', type: 'file', label: 'Binary Object Injection', required: true }
+            media_library: { icon: 'fa-cloud-arrow-up', title: 'CDN Media Upload', endpoint: '/api/media', dbTable: 'media_library', hasFiles: true, fields: [
+                { name: 'file', type: 'file', label: 'Binary Object Injection (Cloudinary)', required: true }
             ], overridePostEndpoint: '/api/media/upload', columns: ['id', 'filename', 'format', 'bytes', 'url'] }, 
             
             invoices: { icon: 'fa-file-invoice-dollar', title: 'Financial Ledgers', endpoint: '/api/invoices', dbTable: 'invoices', fields: [
@@ -345,7 +368,7 @@
                 { name: 'channel', type: 'text', label: 'Routing Channel', value: 'dashboard' }
             ], columns: ['id', 'user_id', 'title', 'status', 'created_at'] },
             
-            support_tickets: { icon: 'fa-headset', title: 'Tech Escalations', endpoint: '/api/tickets', dbTable: 'support_tickets', fields: [
+            support_tickets: { icon: 'fa-life-ring', title: 'Tech Escalations', endpoint: '/api/tickets', dbTable: 'support_tickets', fields: [
                 { name: 'subject', type: 'text', label: 'Subject Vector', required: true },
                 { name: 'description', type: 'textarea', label: 'Technical Description', required: true },
                 { name: 'status', type: 'select', label: 'Resolution State', options: ['open', 'in_progress', 'resolved', 'closed'] },
@@ -360,7 +383,7 @@
                 { name: 'status', type: 'select', label: 'Review State', options: ['unread', 'read', 'archived'] }
             ], columns: ['id', 'name', 'subject', 'status', 'created_at'] },
             
-            consultations: { icon: 'fa-calendar-check', title: 'Briefing Skeds', endpoint: '/api/consultations', dbTable: 'consultations', fields: [
+            consultations: { icon: 'fa-calendar-check', title: 'Briefing Schedules', endpoint: '/api/consultations', dbTable: 'consultations', fields: [
                 { name: 'client_name', type: 'text', label: 'Client Identity', required: true },
                 { name: 'client_email', type: 'email', label: 'Client Email', required: true },
                 { name: 'booking_date', type: 'date', label: 'Target Date', required: true },
@@ -377,15 +400,15 @@
             ], columns: ['id', 'order_id', 'file_name', 'status'] }
         };
 
-        // === 2. UTILITIES & API WRAPPER ===
+        // Utility: Toast Notifications
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             let icon = 'fa-circle-info text-[#0044ff]';
-            let colors = 'border-blue-100 text-blue-800 bg-white';
+            let colors = 'border-blue-100 text-blue-800 bg-white shadow-blue-500/10';
             
-            if (type === 'success') { icon = 'fa-circle-check text-emerald-500'; colors = 'border-emerald-100 text-emerald-800 bg-white'; }
-            if (type === 'error') { icon = 'fa-triangle-exclamation text-red-500'; colors = 'border-red-100 text-red-800 bg-white'; }
+            if (type === 'success') { icon = 'fa-circle-check text-emerald-500'; colors = 'border-emerald-100 text-emerald-800 bg-white shadow-emerald-500/10'; }
+            if (type === 'error') { icon = 'fa-triangle-exclamation text-red-500'; colors = 'border-red-100 text-red-800 bg-white shadow-red-500/10'; }
             
             toast.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg text-xs font-bold transition-all duration-300 w-full font-mono ${colors}`;
             toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><div>${msg}</div>`;
@@ -393,18 +416,19 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        async function fetchSecure(endpoint, method = 'GET', payload = null, isFormData = false) {
-            const token = localStorage.getItem('dan74_token');
-            if (!token && endpoint !== '/api/auth/login') {
-                handleLogout();
-                throw new Error("Session invalid. Re-authenticate.");
+        // Core Secure Fetch Wrapper
+        async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart = false) {
+            const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+            if (!token) {
+                executeLogout();
+                throw new Error("Session Invalid");
             }
 
             const options = { method, headers: { 'Authorization': `Bearer ${token}` } };
             
             if (payload) {
-                if (isFormData) { 
-                    options.body = payload; // Browser auto-sets multipart boundary
+                if (isMultipart) { 
+                    options.body = payload; // Browser handles boundary
                 } else { 
                     options.headers['Content-Type'] = 'application/json'; 
                     options.body = JSON.stringify(payload); 
@@ -413,73 +437,24 @@
 
             const res = await fetch(`${API_HOST}${endpoint}`, options);
             if (!res.ok) {
-                if (res.status === 401 || res.status === 403) handleLogout();
+                if (res.status === 401 || res.status === 403) executeLogout();
                 const errData = await res.json().catch(() => ({}));
                 throw new Error(errData.error || errData.message || `HTTP Fault ${res.status}`);
             }
             return await res.json();
         }
 
-        // === 3. AUTHENTICATION ===
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const btn = document.getElementById('auth-btn');
-            const ogText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Establishing...`;
-            
-            try {
-                const res = await fetch(`${API_HOST}/api/auth/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) throw new Error(data.message || "Validation failed");
-                
-                const user = data.user || data;
-                if (user.role !== 'admin') throw new Error("Terminal access limited to administrators.");
-
-                localStorage.setItem('dan74_token', data.token);
-                localStorage.setItem('dan74_user', JSON.stringify(user));
-                document.getElementById('header-user-name').innerText = user.name || 'Admin';
-                
-                document.getElementById('auth-overlay').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('auth-overlay').style.pointerEvents = 'none';
-                    document.getElementById('app-layout').classList.remove('hidden');
-                    document.getElementById('app-layout').style.opacity = '1';
-                }, 300);
-                showToast("Cryptographic tunnel established.", "success");
-                initApp();
-            } catch (err) { 
-                showToast(err.message, "error"); 
-            } finally {
-                btn.innerHTML = ogText;
-            }
+        function executeLogout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
         }
 
-        function handleLogout() {
-            localStorage.removeItem('dan74_token');
-            localStorage.removeItem('dan74_user');
-            window.location.reload();
-        }
-
-        // === 4. ROUTING & UI INIT ===
-        function initApp() {
-            if(!localStorage.getItem('dan74_token')) return;
-            document.getElementById('auth-overlay').style.opacity = '0';
-            document.getElementById('auth-overlay').style.pointerEvents = 'none';
-            document.getElementById('app-layout').classList.remove('hidden');
-            setTimeout(() => document.getElementById('app-layout').style.opacity = '1', 100);
-            
-            const user = JSON.parse(localStorage.getItem('dan74_user') || '{}');
-            document.getElementById('header-user-name').innerText = user.name || 'Admin';
-            
+        // Initialization Logic
+        if (isAuthenticated) {
             buildSidebar();
             loadDashboardStats();
             
-            // Search Bar Listener
             document.getElementById('grid-search').addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
                 renderTable(currentGridData.filter(row => 
@@ -491,7 +466,7 @@
         function buildSidebar() {
             const menu = document.getElementById('sidebar-menu');
             let html = `
-                <a href="#" onclick="switchModule('dashboard')" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-[#0044ff] transition-colors mb-2 sidebar-link" data-module="dashboard">
+                <a href="#" onclick="switchModule('dashboard')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-[#0044ff] transition-colors mb-2 sidebar-link" data-module="dashboard">
                     <i class="fa-solid fa-chart-pie w-4 text-center"></i> Main Telemetry
                 </a>
                 <div class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest px-4 mt-4 mb-2 font-mono">Operations Schema</div>
@@ -499,7 +474,7 @@
             
             for(const [key, config] of Object.entries(MODULE_REGISTRY)) {
                 html += `
-                    <a href="#" onclick="switchModule('${key}')" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-[#0044ff] transition-colors sidebar-link" data-module="${key}">
+                    <a href="#" onclick="switchModule('${key}')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-[#0044ff] transition-colors sidebar-link" data-module="${key}">
                         <i class="fa-solid ${config.icon} w-4 text-center"></i> ${config.title}
                     </a>
                 `;
@@ -510,9 +485,9 @@
 
         function highlightSidebar(moduleKey) {
             document.querySelectorAll('.sidebar-link').forEach(el => {
-                el.classList.remove('bg-blue-50', 'text-[#0044ff]', 'border-l-4', 'border-[#0044ff]');
+                el.classList.remove('bg-blue-50', 'text-[#0044ff]', 'border-l-[3px]', 'border-[#0044ff]');
                 if(el.getAttribute('data-module') === moduleKey) {
-                    el.classList.add('bg-blue-50', 'text-[#0044ff]', 'border-l-4', 'border-[#0044ff]');
+                    el.classList.add('bg-blue-50', 'text-[#0044ff]', 'border-l-[3px]', 'border-[#0044ff]');
                 }
             });
         }
@@ -525,7 +500,7 @@
             if(moduleKey === 'dashboard') {
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('view-title').innerText = 'Dashboard Overview';
-                document.getElementById('view-badge').innerText = 'Core';
+                document.getElementById('view-badge').innerText = 'Core Metrics';
                 loadDashboardStats();
             } else {
                 document.getElementById('view-datagrid').classList.remove('hidden');
@@ -535,20 +510,19 @@
                 
                 const btnCreate = document.getElementById('btn-create-record');
                 btnCreate.innerHTML = `<i class="fa-solid ${moduleKey === 'broadcast' ? 'fa-paper-plane' : 'fa-plus'}"></i> ` + 
-                                      (moduleKey === 'broadcast' ? 'Deploy Transmission' : 'Inject New Record');
+                                      (moduleKey === 'broadcast' ? 'Deploy Transmission' : 'Inject Record');
                 btnCreate.onclick = () => openModal('create', moduleKey);
 
                 refreshDataGrid();
             }
-                    }
+        }
 
-        // === 5. DATA ENGINE ===
         async function loadDashboardStats() {
             try {
                 const stats = await fetchSecure('/api/admin/stats');
                 document.getElementById('stat-earnings').innerText = `$${parseFloat(stats.total_earnings).toFixed(2)}`;
                 document.getElementById('stat-orders').innerText = stats.orders;
-                document.getElementById('stat-consults').innerText = stats.pending_consultations;
+                document.getElementById('stat-pending-orders').innerText = stats.pending_orders;
                 document.getElementById('stat-tickets').innerText = stats.open_tickets;
             } catch(err) { console.error(err); }
         }
@@ -559,27 +533,27 @@
             const thead = document.getElementById('grid-head');
             
             if (currentModule === 'broadcast') {
-                thead.innerHTML = ''; tbody.innerHTML = `<tr><td class="p-8 text-center text-xs font-mono text-gray-500">Initiate mass email transmission via the deploy button. Uses Brevo SDK backend pipeline.</td></tr>`;
-                document.getElementById('grid-count').innerText = 'Broadcast Node Active';
+                thead.innerHTML = ''; 
+                tbody.innerHTML = `<tr><td class="p-8 text-center text-xs font-mono text-gray-500">Initiate mass email transmission via the deploy button. Uses secure Brevo SDK pipeline.</td></tr>`;
+                document.getElementById('grid-count').innerText = 'Broadcast Node Ready';
                 return;
             }
 
-            tbody.innerHTML = `<tr><td colspan="${config.columns.length + 1}" class="p-8 text-center text-xs font-mono text-gray-400"><i class="fa-solid fa-circle-notch fa-spin"></i> Extracting arrays...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${config.columns.length + 1}" class="p-12 text-center text-xs font-mono text-[#0044ff]"><i class="fa-solid fa-circle-notch fa-spin text-xl mb-3"></i><br>Extracting array definitions...</td></tr>`;
             
             try {
                 let res = await fetchSecure(config.endpoint);
-                let data = res.data || res; // Handle paginated wrappers if present
+                let data = res.data || res; // Handle potential paginated wrapper
                 currentGridData = data.filter(r => !r.is_deleted);
                 
-                // Build Header
                 let headHtml = `<tr>`;
-                config.columns.forEach(col => headHtml += `<th class="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">${col.replace(/_/g, ' ')}</th>`);
-                headHtml += `<th class="px-4 py-3 text-right text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Actions</th></tr>`;
+                config.columns.forEach(col => headHtml += `<th class="px-5 py-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">${col.replace(/_/g, ' ')}</th>`);
+                headHtml += `<th class="px-5 py-4 text-right text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Actions</th></tr>`;
                 thead.innerHTML = headHtml;
 
                 renderTable(currentGridData);
             } catch(err) { 
-                tbody.innerHTML = `<tr><td colspan="10" class="p-4 text-center text-xs text-red-500 font-mono">${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-xs text-red-500 font-mono"><i class="fa-solid fa-triangle-exclamation mb-2 text-xl"></i><br>${err.message}</td></tr>`;
                 showToast(err.message, 'error'); 
             }
         }
@@ -592,40 +566,54 @@
             document.getElementById('grid-count').innerText = `Mapping ${dataArray.length} valid entities`;
 
             if(dataArray.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${config.columns.length + 1}" class="p-8 text-center text-xs font-mono text-gray-400">Database node empty. Zero records matched.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${config.columns.length + 1}" class="p-12 text-center text-xs font-mono text-gray-400"><i class="fa-solid fa-database text-2xl mb-3 opacity-50"></i><br>Database node empty. Zero records matched.</td></tr>`;
                 return;
             }
 
             dataArray.forEach(row => {
                 let tr = document.createElement('tr');
+                tr.className = "hover:bg-blue-50/30 transition-colors";
                 let rowHtml = '';
                 
                 config.columns.forEach(col => {
-                    let val = row[col] || '';
-                    if(col === 'status' || col === 'payment_status' || col === 'role') {
-                        let badgeColor = 'bg-gray-100 text-gray-600';
-                        if(['approved', 'active', 'paid', 'completed', 'resolved', 'admin'].includes(String(val).toLowerCase())) badgeColor = 'bg-emerald-50 text-emerald-600 border-emerald-100';
-                        if(['pending', 'unpaid', 'in_progress', 'processing'].includes(String(val).toLowerCase())) badgeColor = 'bg-amber-50 text-amber-600 border-amber-100';
-                        if(['cancelled', 'deleted', 'closed'].includes(String(val).toLowerCase())) badgeColor = 'bg-red-50 text-red-600 border-red-100';
-                        val = `<span class="px-2 py-0.5 rounded border text-[9px] font-extrabold uppercase tracking-widest font-mono ${badgeColor}">${val}</span>`;
+                    let val = row[col] !== undefined && row[col] !== null ? row[col] : '--';
+                    
+                    if (col === 'id') {
+                        val = `<span class="font-bold text-[#0044ff] font-mono">#${val}</span>`;
+                    } else if (['status', 'payment_status', 'role', 'priority'].includes(col)) {
+                        let badgeColor = 'bg-gray-100 text-gray-600 border-gray-200';
+                        const strVal = String(val).toLowerCase();
+                        if (['approved', 'active', 'paid', 'completed', 'resolved', 'admin', 'available'].includes(strVal)) badgeColor = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                        if (['pending', 'unpaid', 'in_progress', 'processing', 'medium'].includes(strVal)) badgeColor = 'bg-amber-50 text-amber-600 border-amber-100';
+                        if (['cancelled', 'deleted', 'closed', 'expired', 'high', 'critical'].includes(strVal)) badgeColor = 'bg-red-50 text-red-600 border-red-100';
+                        val = `<span class="px-2.5 py-1 rounded-md border text-[9px] font-extrabold uppercase tracking-widest font-mono ${badgeColor}">${val}</span>`;
+                      } else if (col === 'price' || col === 'amount') {
+                        val = `<span class="font-bold text-emerald-600 font-mono">$${parseFloat(val).toFixed(2)}</span>`;
+                    } else if (col === 'progress') {
+                        val = `
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-[10px] font-bold">${val}%</span>
+                                <div class="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="bg-[#0044ff] h-full" style="width: ${val}%"></div></div>
+                            </div>`;
+                    } else if (col === 'icon') {
+                        val = `<div class="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[#0044ff] shadow-sm"><i class="${val}"></i></div>`;
+                    } else if (String(val).startsWith('http') || String(val).startsWith('/uploads')) {
+                        val = `<a href="${val}" target="_blank" class="text-[#0044ff] hover:underline font-bold text-[10px] flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Asset Node</a>`;
+                    } else if (col === 'created_at' || col.includes('date')) {
+                        val = `<span class="font-mono text-gray-500">${new Date(val).toLocaleDateString()}</span>`;
                     }
-                    if(col === 'price' || col === 'amount') val = `<span class="font-bold text-[#0f172a] font-mono">$${parseFloat(val).toFixed(2)}</span>`;
-                    if(col === 'progress') val = `${val}%`;
-                    if(col === 'icon') val = `<i class="${val} text-[#0044ff]"></i>`;
-                    if(String(val).startsWith('http') || String(val).startsWith('/uploads')) val = `<a href="${val}" target="_blank" class="text-[#0044ff] hover:underline font-bold text-[10px]"><i class="fa-solid fa-link"></i> Asset Node</a>`;
-                    if(col === 'created_at') val = new Date(val).toLocaleDateString();
 
-                    rowHtml += `<td class="px-4 py-3 text-xs text-gray-700 max-w-[200px] truncate">${val}</td>`;
+                    rowHtml += `<td class="px-5 py-4 text-xs text-gray-700 max-w-[250px] truncate">${val}</td>`;
                 });
 
                 rowHtml += `
-                    <td class="px-4 py-3 text-right">
-                        <div class="flex items-center justify-end gap-1.5">
-                            ${currentModule === 'invoices' ? `<a href="${API_HOST}/api/invoices/${row.id}/download" target="_blank" class="w-7 h-7 rounded bg-amber-50 text-amber-500 hover:bg-amber-500 hover:text-white transition-colors flex items-center justify-center text-[10px]" title="Download PDF"><i class="fa-solid fa-download"></i></a>` : ''}
-                            <button onclick="openModal('edit', '${currentModule}', ${row.id})" class="w-7 h-7 rounded bg-blue-50 text-[#0044ff] hover:bg-[#0044ff] hover:text-white transition-colors flex items-center justify-center text-[10px]">
+                    <td class="px-5 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            ${currentModule === 'invoices' ? `<a href="${API_HOST}/api/invoices/${row.id}/download" target="_blank" class="w-8 h-8 rounded-md bg-amber-50 border border-amber-100 text-amber-500 hover:bg-amber-500 hover:text-white transition-colors flex items-center justify-center text-xs shadow-sm" title="Download PDF"><i class="fa-solid fa-file-pdf"></i></a>` : ''}
+                            <button onclick="openModal('edit', '${currentModule}', ${row.id})" class="w-8 h-8 rounded-md bg-blue-50 border border-blue-100 text-[#0044ff] hover:bg-[#0044ff] hover:text-white transition-colors flex items-center justify-center text-xs shadow-sm">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button onclick="deleteRecord('${config.dbTable}', ${row.id})" class="w-7 h-7 rounded bg-red-50 text-[#ff2a2a] hover:bg-[#ff2a2a] hover:text-white transition-colors flex items-center justify-center text-[10px]">
+                            <button onclick="deleteRecord('${config.dbTable || currentModule}', ${row.id})" class="w-8 h-8 rounded-md bg-red-50 border border-red-100 text-[#ff2a2a] hover:bg-[#ff2a2a] hover:text-white transition-colors flex items-center justify-center text-xs shadow-sm">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
@@ -636,7 +624,7 @@
             });
         }
 
-        // === 6. FORM MODAL ENGINE ===
+        // Form Rendering and Submission Engine
         function openModal(action, moduleKey, id = null) {
             const config = MODULE_REGISTRY[moduleKey];
             editingRecordId = id;
@@ -647,7 +635,6 @@
             const form = document.getElementById('dynamic-form');
             form.innerHTML = '';
             
-            // Set multipart encoding if required
             if (config.hasFiles) form.setAttribute('enctype', 'multipart/form-data');
             else form.removeAttribute('enctype');
 
@@ -658,21 +645,21 @@
                 const val = existingData[f.name] !== undefined ? existingData[f.name] : (f.value || '');
                 let inputHtml = '';
                 
-                const labelHtml = `<label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1 font-mono">${f.label}</label>`;
-                const classStr = "w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono";
+                const labelHtml = `<label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 font-mono">${f.label}</label>`;
+                const classStr = "w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono text-gray-800 shadow-sm";
 
                 if (f.type === 'textarea') {
-                    inputHtml = `<textarea name="${f.name}" class="${classStr}" rows="4" ${f.required ? 'required' : ''}>${val}</textarea>`;
+                    inputHtml = `<textarea name="${f.name}" class="${classStr} resize-y min-h-[100px]" ${f.required ? 'required' : ''}>${val}</textarea>`;
                 } else if (f.type === 'select') {
                     let opts = f.options.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o.toUpperCase()}</option>`).join('');
                     inputHtml = `<select name="${f.name}" class="${classStr}">${opts}</select>`;
                 } else if (f.type === 'file') {
-                    inputHtml = `<input type="file" name="${f.name}" class="${classStr} bg-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-[#0044ff]" ${action === 'create' && f.required ? 'required' : ''}>`;
+                    inputHtml = `<input type="file" name="${f.name}" class="${classStr} p-2 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-[#0044ff]/10 file:text-[#0044ff] hover:file:bg-[#0044ff]/20 file:transition-colors" ${action === 'create' && f.required ? 'required' : ''}>`;
                 } else {
                     inputHtml = `<input type="${f.type}" name="${f.name}" value="${f.type !== 'password' ? val : ''}" class="${classStr}" ${f.required && f.type !== 'password' ? 'required' : ''}>`;
                 }
 
-                form.innerHTML += `<div class="mb-3">${labelHtml}${inputHtml}</div>`;
+                form.innerHTML += `<div class="mb-4">${labelHtml}${inputHtml}</div>`;
             });
 
             const modal = document.getElementById('form-modal');
@@ -702,7 +689,7 @@
             
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Transmitting...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Transmitting...';
 
                 let payload, isMultipart = false;
                 if (config.hasFiles) {
@@ -710,14 +697,22 @@
                     isMultipart = true;
                 } else {
                     payload = Object.fromEntries(new FormData(form));
+                    // Cleanup empty passwords for updates
+                    if (editingRecordId && payload.password === '') {
+                        delete payload.password;
+                    }
                 }
 
                 let method = editingRecordId ? 'PUT' : (config.methodOverride || 'POST');
                 let endpoint = (action === 'create' && config.overridePostEndpoint) ? config.overridePostEndpoint : config.endpoint;
                 
-                if (editingRecordId) endpoint += `/${editingRecordId}`;
+                if (editingRecordId) {
+                    // Normalize endpoint mappings to match Express exactly
+                    if (currentModule === 'blog_posts') endpoint = `/api/blog/${editingRecordId}`;
+                    else endpoint += `/${editingRecordId}`;
+                }
 
-                const res = await fetchSecure(endpoint, method, payload, isMultipart);
+                await fetchSecure(endpoint, method, payload, isMultipart);
                 showToast(`Sequence execution successful.`, "success");
                 
                 closeModal();
@@ -726,23 +721,25 @@
                 showToast(err.message, "error");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Execute Write';
+                submitBtn.innerHTML = '<i class="fa-solid fa-microchip"></i> Execute Write';
             }
         }
 
+        // Soft Delete Engine Hook
         async function deleteRecord(dbTable, id) {
-            if(!confirm(`WARNING: Initialize soft-delete purge protocol for ${dbTable} record #${id}?`)) return;
+            if(!confirm(`WARNING: Initialize soft-delete purge protocol for record #${id}?`)) return;
             try {
-                await fetchSecure(`/api/${dbTable}/bulk`, 'POST', { action: 'delete', ids: [id] });
+                // Ensure correct routing for table/module names
+                let deleteEndpoint = `/api/${dbTable}/${id}`;
+                if (dbTable === 'blog_posts') deleteEndpoint = `/api/blog/${id}`;
+                
+                await fetchSecure(deleteEndpoint, 'DELETE');
                 showToast("Data array purged from matrix.", "success");
                 refreshDataGrid();
                 loadDashboardStats();
-            } catch(err) { showToast(err.message, 'error'); }
-        }
-
-        // Initialize App Checks on Load
-        if(localStorage.getItem('dan74_token')) {
-            initApp();
+            } catch(err) { 
+                showToast(err.message, 'error'); 
+            }
         }
     </script>
 </body>
