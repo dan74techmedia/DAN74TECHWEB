@@ -1482,3 +1482,393 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 System fully operational on port ${PORT}`);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =========================================================================
+// DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
+// =========================================================================
+
+require('dotenv').config();
+const express = require('express');
+const { Pool } = require('pg');
+const path = require('path');
+const cors = require('cors');
+const multer = require('multer');
+const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+const bcrypt = require('bcryptjs'); // Standardized on bcryptjs for broad host compatibility
+const jwt = require('jsonwebtoken');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const PDFDocument = require('pdfkit');
+const Brevo = require('@getbrevo/brevo');
+
+// Initialize Express App Engine (Must be declared before attaching middleware modules)
+const app = express();
+const PORT = process.env.PORT || 10000;
+const JWT_SECRET = process.env.JWT_SECRET || 'dan74tech_media_secure_jwt_core_token_secret_key';
+
+// Initialize Neon PostgreSQL Database Engine Pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Required for secure cloud communication with Neon
+});
+
+// Configure Cloudinary Integration 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Initialize Brevo Transactional Email Client Framework Engine
+let defaultClient = Brevo.ApiClient.instance;
+let apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
+
+// =========================================================================
+// MIDDLEWARE CONFIGURATION CORRIDOR
+// =========================================================================
+app.use(helmet({ contentSecurityPolicy: false })); // Permissive CSP to prevent inline dashboard scripts from breaking
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname)));
+
+// Global API Request Rate Limiter Node
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, 
+    message: { error: "Too many corporate operational requests from this endpoint, please retry later." }
+});
+app.use('/api/', globalLimiter);
+
+// Auth Specific Security Rate Limiter
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { error: "Security threshold reached. Verification authentication requests throttled." }
+});
+app.use('/api/auth/', authLimiter);
+
+// =========================================================================
+// CORE SECURITY MIDDLEWARE FUNCTIONS (Hoisted up to prevent reference loops)
+// =========================================================================
+const verifySystemToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.status(401).json({ error: "Access token validation mapping empty. Unauthorized." });
+    
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: "Token reference structural compromise detected. Forbidden." });
+        req.user = user;
+        next();
+    });
+};
+
+const verifyAdminAccess = (req, res, next) => {
+    verifySystemToken(req, res, () => {
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: "Console Operation Limited to System Administrators Only." });
+        }
+        next();
+    });
+};
+
+// =========================================================================
+// CORE AUXILIARY DISPATCH EMAIL LOGIC
+// =========================================================================
+async function sendSystemNotificationEmail(to, subject, text, html) {
+    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+        console.warn("⚠️ Notification system idling: Credentials missing or empty.");
+        return; 
+    }
+    try {
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;
+        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ email: to }];
+
+        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✉️ System operational update notification dispatched to: ${to}`);
+    } catch (err) {
+        console.error("❌ Notification Email Dispatch Fault:", err);
+    }
+}
+
+// =========================================================================
+// AUTHENTICATION INFRASTRUCTURE MODULE
+// =========================================================================
+
+// User Registration Route Engine
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { name, email, password, role, phone } = req.body;
+        const userRole = role || 'client';
+        
+        const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
+        if (checkUser.rows.length > 0) {
+            return res.status(400).json({ error: "User registration email conflict detected." });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        const result = await pool.query(
+            `INSERT INTO users (name, email, password, role, phone, is_deleted) 
+             VALUES ($1, $2, $3, $4, $5, FALSE) 
+             RETURNING id, name, email, role, phone`,
+            [name, email, hashedPassword, userRole, phone]
+        );
+        
+        const userNode = result.rows[0];
+        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userNode.role }, JWT_SECRET, { expiresIn: '24h' });
+        
+        await sendSystemNotificationEmail(userNode.email, "Welcome to DAN74TECH MEDIA", `Hello ${userNode.name}, your workspace engine profile setup is successfully validated.`);
+
+        res.json({ success: true, token: accessToken, user: userNode });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// User Login Controller Node (Supports raw legacy check & salt/hash fallback matching frontend schema)
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
+        if (result.rows.length === 0) {
+            return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
+        }
+        
+        const user = result.rows[0];
+        let isMatch = false;
+        
+        if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
+            isMatch = await bcrypt.compare(password, user.password);
+        } else {
+            isMatch = (user.password === password);
+        }
+        
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
+        }
+        
+        const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+        
+        res.json({
+            success: true,
+            token: accessToken,
+            user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone }
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// =========================================================================
+// DATA CORRIDORS FOR DATA FETCH OPERATIONS (Clean from Soft Deleted rows)
+// =========================================================================
+
+app.get('/api/users', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, name, email, role, phone, created_at FROM users WHERE is_deleted = FALSE ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/orders', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM orders WHERE is_deleted = FALSE ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/blogs', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM blog_posts WHERE is_deleted = FALSE ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/subscribers', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM subscribers WHERE is_deleted = FALSE ORDER BY created_at DESC");
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/testimonials', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM testimonials WHERE is_deleted = FALSE ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM consultations WHERE is_deleted = FALSE ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// =========================================================================
+// ADMIN STATUS AND OPERATIONS CONTROL SYSTEM 
+// =========================================================================
+
+// Update Testimonial Approval Status
+app.put('/api/testimonials/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status, is_featured } = req.body;
+        const result = await pool.query(
+            `UPDATE testimonials 
+             SET status = COALESCE($1, status), is_featured = COALESCE($2, is_featured), updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $3 RETURNING *`,
+            [status, is_featured, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update Consultation Pipelines
+app.put('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await pool.query(
+            `UPDATE consultations SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
+            [status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Dynamic Table Record Soft Deletion Endpoint (Handles Admin table actions clean)
+app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        await pool.query('UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true, message: "User credentials safely deactivated." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// =========================================================================
+// PRIVATE SEGMENTED MASS EMAIL PIPELINE BROADCASTER (BREVO FOR DISPATCH)
+// =========================================================================
+app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
+  const { subject, message, html } = req.body;
+
+  if (!subject || (!message && !html)) {
+    return res.status(400).json({ error: 'Missing subject or content data body parameters.' });
+  }
+
+  try {
+    // 🔍 SCHEMA ALIGNMENT FIX: Maps exactly to database tracking columns 'status' and 'is_deleted'
+    const dbResult = await pool.query("SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE");
+    const subscribers = dbResult.rows.map(row => row.email);
+
+    if (subscribers.length === 0) {
+      return res.status(200).json({ sent: 0, failed: 0, message: 'No active subscription lines detected.' });
+    }
+
+    const formattedRecipients = subscribers.map(email => ({ email: email }));
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html || `<div style="font-family:sans-serif; line-height:1.6;"><p>${message}</p></div>`;
+    
+    // Privacy Shield Strategy - Deliver via Blind Carbon Copy (BCC)
+    sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
+    sendSmtpEmail.to = [{ email: process.env.EMAIL_USER }]; 
+    sendSmtpEmail.bcc = formattedRecipients;               
+
+    const data = await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
+    console.log(`Pipeline broadcast executed. Assigned MessageID Token: ${data.messageId}`);
+    
+    return res.status(200).json({ sent: subscribers.length, failed: 0 });
+  } catch (error) {
+    console.error('❌ Broadcast Corridor Fatal Failure:', error);
+    return res.status(500).json({ error: 'Transmission deployment crashed.', message: error.message, sent: 0, failed: 1 });
+  }
+});
+
+// =========================================================================
+// BULK OPERATIONS SYSTEM & CATCH-ALL ROUTING PIPES
+// =========================================================================
+
+// Bulk operations executor
+app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
+    const { table } = req.params;
+    const { ids, action } = req.body;
+    try {
+        if (action === 'soft_delete') {
+            await pool.query(`UPDATE ${table} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
+        } else if (action === 'hard_delete') {
+            await pool.query(`DELETE FROM ${table} WHERE id = ANY($1::int[])`, [ids]);
+        }
+        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Single Record Generic Core Endpoint (Fallback tool for table audits)
+app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
+    const allowedTables = ['users', 'services', 'orders', 'portfolio', 'blog_posts', 'invoices', 'support_tickets', 'testimonials', 'consultations'];
+    if (!allowedTables.includes(req.params.table)) return res.status(403).json({ error: "Table configuration block restricted." });
+    
+    try {
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: "Record missing from active tracking nodes." });
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Baseline health validation index routing check
+app.get('/', (req, res) => {
+    res.status(200).send('🚀 DAN74TECH MEDIA Production Server Platform Node Is Fully Operational.');
+});
+
+// Start Server Engine
+app.listen(PORT, () => {
+    console.log(`🌐 System Core Online. Framework operational on port parameter: ${PORT}`);
+});
+      
