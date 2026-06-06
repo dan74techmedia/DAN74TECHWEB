@@ -96,16 +96,31 @@ const uploadMemory = multer({ storage: multer.memoryStorage() });
 
 // Middleware: Admin Access Verification
 const verifyAdminAccess = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: "Access Denied" });
+    // Safely capture the header regardless of framework casing
+    const authHeader = req.headers.authorization || req.headers['authorization'];
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: "Access Denied: Token missing or malformed" });
+    }
+    
     const token = authHeader.split(' ')[1];
+    
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.role !== 'admin') return res.status(403).json({ error: "Unauthorized" });
+        
+        // Case-insensitive role validation
+        if (String(decoded.role).trim().toLowerCase() !== 'admin') {
+            return res.status(403).json({ error: "Unauthorized: Admin clearance required" });
+        }
+        
         req.user = decoded;
         next();
-    } catch (err) { res.status(401).json({ error: "Invalid Token" }); }
+    } catch (err) { 
+        console.error("JWT Verification block:", err.message);
+        return res.status(401).json({ error: "Invalid or Expired Token" }); 
+    }
 };
+
 
 // Middleware: System Token Generic Verification
 const verifySystemToken = (req, res, next) => {
