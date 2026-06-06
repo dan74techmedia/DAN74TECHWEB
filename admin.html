@@ -563,6 +563,17 @@
     <div id="toast-container"></div>
 
     <script>
+
+        // Add or update this right at the start of your script tag in admin.html
+(function() {
+    const sessionToken = localStorage.getItem('adminToken');
+    
+    // If the token is missing, redirect immediately to the authorization portal
+    if (!sessionToken) {
+        window.location.href = 'login.html';
+    }
+})();
+        
         // System Gateway Architecture Variables
         const targetBackendOrigin = window.location.origin;
 
