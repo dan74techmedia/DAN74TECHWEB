@@ -42,11 +42,30 @@ cloudinary.config({
 });
 
 // Initialize Brevo Client
-let defaultClient = Brevo.ApiClient.instance;
-let apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+// Safe instantiation for modern @getbrevo/brevo library version 5+
 const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
+brevoEmailInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
+// Core Auxiliary Dispatch Email Logic
+async function sendSystemNotificationEmail(to, subject, text, html) {
+    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+        console.warn("⚠️ Notification system idling: Credentials missing or empty.");
+        return; 
+    }
+    
+    try {
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;
+        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
+        sendSmtpEmail.to = [{ email: to }];
+
+        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
+        console.log(`✉️ System alert dispatched successfully to: ${to}`);
+    } catch (err) {
+        console.error("❌ Notification Email Dispatch Fault:", err);
+    }
+}
 // ================= MIDDLEWARE CONFIGURATION =================
 app.use(helmet({ contentSecurityPolicy: false })); 
 app.use(cors());
