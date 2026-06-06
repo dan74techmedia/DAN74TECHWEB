@@ -1,7 +1,6 @@
 // =========================================================================
 // DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
 // =========================================================================
-
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
@@ -11,11 +10,11 @@ const multer = require('multer');
 const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const streamifier = require('streamifier');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const nodemailer = require('nodemailer'); // Retained per explicit preservation requirements
+const nodemailer = require('nodemailer'); 
 const PDFDocument = require('pdfkit');
 const Brevo = require('@getbrevo/brevo');
 
@@ -26,8 +25,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dan74tech_media_secure_jwt_core_to
 
 // Initialize Neon PostgreSQL Database Engine Pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } 
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
 
 pool.query("SELECT NOW()")
@@ -36,38 +35,30 @@ pool.query("SELECT NOW()")
 
 // Configure Cloudinary Integration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dan74tech',
-  api_key: process.env.CLOUDINARY_API_KEY || '',
-  api_secret: process.env.CLOUDINARY_API_SECRET || ''
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dan74tech',
+    api_key: process.env.CLOUDINARY_API_KEY || '',
+    api_secret: process.env.CLOUDINARY_API_SECRET || ''
 });
 
 // Initialize Brevo Client
-// Safe instantiation for modern @getbrevo/brevo library version 5+
 const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
 brevoEmailInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-// Core Auxiliary Dispatch Email Logic
-async function sendSystemNotificationEmail(to, subject, text, html) {
-    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
-        console.warn("⚠️ Notification system idling: Credentials missing or empty.");
-        return; 
-    }
-    
+// Middleware: Admin Access Verification
+const verifyAdminAccess = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "Access Denied" });
+    const token = authHeader.split(' ')[1];
     try {
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;
-        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-        sendSmtpEmail.to = [{ email: to }];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role !== 'admin') return res.status(403).json({ error: "Unauthorized" });
+        req.user = decoded;
+        next();
+    } catch (err) { res.status(401).json({ error: "Invalid Token" }); }
+};
 
-        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✉️ System alert dispatched successfully to: ${to}`);
-    } catch (err) {
-        console.error("❌ Notification Email Dispatch Fault:", err);
-    }
-}
 // ================= MIDDLEWARE CONFIGURATION =================
-app.use(helmet({ contentSecurityPolicy: false })); 
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -75,8 +66,8 @@ app.use(express.static(path.join(__dirname)));
 
 // Global API Request Rate Limiter Node
 const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 1000, 
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
     message: { error: "Too many corporate operational requests from this endpoint, please retry later." }
 });
 app.use('/api/', globalLimiter);
@@ -89,47 +80,89 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth/', authLimiter);
 
-// ================= UPLOADS LOCAL FALLBACK STORAGE SYSTEM =================
+// ================= UPLOADS STORAGE SYSTEM =================
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) { fs.mkdirSync(uploadDir, { recursive: true }); }
 app.use('/uploads', express.static(uploadDir));
 
 const localStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
+    destination: (req, file, cb) => { cb(null, uploadDir); },
     filename: (req, file, cb) => {
         const uniqueName = 'portfolio-' + Date.now() + path.extname(file.originalname);
         cb(null, uniqueName);
     }
 });
-const uploadLocal = multer({ storage: localStorage });
-
-const memoryStorage = multer.memoryStorage();
-const uploadMemory = multer({ storage: memoryStorage });
+const upload = multer({ storage: localStorage });
+const uploadMemory = multer({ storage: multer.memoryStorage() });
 
 // ================= CORE AUXILIARY DISPATCH EMAIL LOGIC =================
 async function sendSystemNotificationEmail(to, subject, text, html) {
     if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
         console.warn("⚠️ Notification system idling: Credentials missing or empty.");
-        return; 
+        return;
     }
-    
-    try {
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;
-        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-        sendSmtpEmail.to = [{ email: to }];
-
-        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
-        console.log(`✉️ System alert dispatched successfully to: ${to}`);
-    } catch (err) {
-        console.error("❌ Notification Email Dispatch Fault:", err);
+    try {  
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();  
+        sendSmtpEmail.subject = subject;  
+        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;  
+        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };  
+        sendSmtpEmail.to = [{ email: to }];  
+        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);  
+        console.log(`✉️ System alert dispatched successfully to: ${to}`);  
+    } catch (err) {  
+        console.error("❌ Notification Email Dispatch Fault:", err);  
     }
 }
+
+// ================= BROADCAST ROUTE =================
+app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
+    try {
+        const { subject, html } = req.body;
+        const attachments = req.files ? req.files.map(file => ({
+            name: file.originalname,
+            content: file.buffer.toString('base64')
+        })) : [];
+
+        const subscribers = await pool.query(
+            "SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE"
+        );
+
+        const emailList = subscribers.rows.map(subscriber => ({
+            email: subscriber.email
+        }));
+
+        if (emailList.length === 0) {
+            return res.status(400).json({ success: false, error: 'No active subscribers found' });
+        }
+
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html;
+        sendSmtpEmail.bcc = emailList;
+        sendSmtpEmail.sender = {
+            name: "DAN74TECH",
+            email: "admin@dan74tech.com"
+        };
+
+        if (attachments.length > 0) {
+            sendSmtpEmail.attachment = attachments;
+        }
+
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+        
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+        res.json({
+            success: true,
+            sent: emailList.length,
+            attachments: attachments.length
+        });
+    } catch (err) {
+        console.error('Broadcast Email Error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 // ================= ARCHITECTURAL PROTECTION SECURITY MIDDLEWARE =================
 const verifySystemToken = (req, res, next) => {
