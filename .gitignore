@@ -1,0 +1,13 @@
+# Node dependencies
+node_modules/
+npm-debug.log
+
+# Environment variables (Never upload this to Git)
+.env
+
+# Uploads folder (if you are storing local files)
+uploads/
+
+# OS System files
+.DS_Store
+Thumbs.db
