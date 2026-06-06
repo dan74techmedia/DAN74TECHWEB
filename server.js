@@ -1261,6 +1261,43 @@ app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// 1. Missing Sub-Services Update Route
+app.put('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { name, price, description, service_id } = req.body;
+        const result = await pool.query(
+            `UPDATE sub_services SET name=$1, price=$2, description=$3, service_id=COALESCE($4, service_id), updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING *`,
+            [name, price, description, service_id, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 2. Missing Messages Update Route
+app.put('/api/messages/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await pool.query(
+            `UPDATE messages SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
+            [status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// 3. Missing Invoices Update Route
+app.put('/api/invoices/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await pool.query(
+            `UPDATE invoices SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
+            [status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
             
 // ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
 app.get('/', (req, res) => {
