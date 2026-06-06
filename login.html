@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Authentication | DAN74TECH MEDIA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --brand-blue: #0044ff; --brand-red: #ff2a2a; --bg-light: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .hero-mesh { background: radial-gradient(circle at 50% 50%, rgba(0, 68, 255, 0.05), transparent 70%); }
+        .toast-notification { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideInLeft { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#0044ff] selection:text-white min-h-screen flex flex-col justify-between hero-mesh">
+
+    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <!-- Header (Identical Brand Identity Mirror) -->
+    <header class="w-full bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px]">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-extrabold text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Professional Tech Solutions</span>
+                </div>
+            </a>
+            <a href="index.html" class="text-sm font-bold text-[#0044ff] hover:underline"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
+        </div>
+    </header>
+
+    <!-- Main Login Panel Form Context Container -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 shadow-xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">System Node Authentication</h1>
+                <p class="text-xs text-text-muted">Enter active database validation configurations to access control layers.</p>
+            </div>
+
+            <form id="secureAdministrativeLoginEngineForm" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Admin Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="loginEmail" required placeholder="admin@dan74techmedia.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Secret Keyphrase Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-2">
+                    Verify Credentials <i class="fa-solid fa-right-to-bracket ml-1"></i>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer System Nodes Matrix -->
+    <footer class="bg-[#0b0f19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
+        &copy; 2026 DAN74TECH MEDIA. Systems Security Protocol Node. Status: <span class="text-emerald-500">Secure</span>
+    </footer>
+
+    <script>
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
+
+        function pushSystemOperationalToast(messageContext, messageType = 'info') {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
+            const node = document.createElement('div');
+            node.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold max-w-sm w-full`;
+            if (messageType === 'success') { node.className += ' border-emerald-100 text-emerald-800'; node.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`; }
+            else { node.className += ' border-red-100 text-red-800'; node.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`; }
+            toastCenter.appendChild(node);
+            setTimeout(() => { node.remove(); }, 4000);
+        }
+
+        document.getElementById('secureAdministrativeLoginEngineForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    pushSystemOperationalToast("Handshake complete. Authorization validation successful!", "success");
+                    localStorage.setItem('adminToken', data.token);
+                    setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+                } else {
+                    throw new Error(data.error || "Authentication access denied.");
+                }
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            }
+        });
+    </script>
+</body>
+</html>
