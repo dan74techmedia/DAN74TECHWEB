@@ -458,10 +458,15 @@ async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart
 }
 
         function executeLogout() {
-            localStorage.removeItem('adminToken');
-            localStorage.removeItem('token');
-            window.location.href = 'login.html';
-        }
+    // Purge unified token array and return to gateway
+    localStorage.removeItem('dan74_token');
+    
+    // Fallback cleanup for legacy tokens to prevent ghost sessions
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('token');
+    
+    window.location.href = 'login.html';
+}
 
         // Initialization Logic
         if (isAuthenticated) {
