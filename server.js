@@ -41,11 +41,23 @@ cloudinary.config({
 });
 
 // Initialize Brevo Client
-let defaultClient = Brevo.ApiClient.instance;
-let apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+// ================= EMAIL ENGINE NOTIFICATION SERVICE (BREVO SDK) =================
+
 const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
 
+try {
+    if (process.env.BREVO_API_KEY) {
+        brevoEmailInstance.setApiKey(
+            Brevo.TransactionalEmailsApiApiKeys.apiKey,
+            process.env.BREVO_API_KEY
+        );
+        console.log("✅ Brevo Email Engine Initialized");
+    } else {
+        console.warn("⚠️ BREVO_API_KEY not configured");
+    }
+} catch (err) {
+    console.error("❌ Brevo Initialization Error:", err.message);
+}
 // ================= MIDDLEWARE CONFIGURATION =================
 app.use(helmet({ contentSecurityPolicy: false })); // Permissive CSP to prevent inline frontend blocks from breaking
 app.use(cors());
