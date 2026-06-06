@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | Official Tech Hub</title>
+    
+    <meta name="description" content="DAN74TECH | Professional Tech & Creative Solutions
+
+Welcome to DAN74TECH, your premier hub for cutting-edge digital development and reliable tech infrastructure. We bridge the gap between technical engineering and creative media to deliver seamless, high-performance solutions for businesses and individuals.
+
+🛠️ Our Core Services
+
+App Development: Custom, robust mobile applications tailored for seamless user experiences and modern OS compatibility.
+
+Website Development: High-fidelity, responsive, and secure websites built to scale and optimize your online presence.
+
+ICT Consultation & Repairs: Expert hardware diagnostics, system optimizations, network auditing, and professional tech support.
+
+Graphic Design: Professional branding assets, high-impact marketing posters, and clean, modern visual identities.
+
+Video Editing: Premium video production, dynamic transitions, and cinematic edits tailored for social media or corporate platforms.
+
+🌐 Connect With Us Today
+ Managed by Daniel Ngumi.">
+    <meta name="keywords" content="DAN74TECH, Daniel Ngumi, Tech Support, Web Development, Meru, Kenya, Node.js, Express, Postgres, Android Developer, ICT Technician, Creative Media">
+    <meta name="author" content="DAN74TECH MEDIA">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dan74techmedia.com/">
+    <meta property="og:title" content="DAN74TECH MEDIA | Official Technology & Digital Agency Hub">
+    <meta property="og:description" content="Empowering businesses with production-grade web systems, Android deployment matrices, and high-performance digital media campaigns.">
+    <meta property="og:image" content="images/logo.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-blue: #0044ff;
+            --brand-red: #ff2a2a;
+            --brand-yellow: #ffd700;
+            --bg-light: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Abstract Premium Geometric Background Elements */
+        .hero-mesh {
+            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.04), transparent 45%);
+        }
+
+        /* Continuous Smooth Subtle Rotation Effect */
+        .subtle-pulse-glow {
+            box-shadow: 0 0 25px rgba(0, 68, 255, 0.1);
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translateY(0px); box-shadow: 0 0 25px rgba(0, 68, 255, 0.08); }
+            100% { transform: translateY(-4px); box-shadow: 0 0 35px rgba(255, 42, 42, 0.12); }
+        }
+
+        /* Toast Slide Animation Matrix */
+        .toast-notification {
+            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#0044ff] selection:text-white">
+
+    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <a href="index.html" class="flex items-center gap-2.5 group focus:outline-none">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-base font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Tech & Creative Solutions</span>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-6 text-xs font-bold tracking-wide text-gray-600">
+                <a href="index.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-0.5 font-bold">Home</a>
+                <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
+                <a href="services.html" class="hover:text-[#0044ff] transition-colors">Services</a>
+                <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
+                <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
+                <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
+                <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
+               
+                <a href="contact.html" class="px-3 py-1.5 rounded-md bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Get In Touch</a>
+            </nav>
+
+            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-1.5 rounded-md text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars-staggered text-lg"></i>
+            </button>
+        </div>
+
+        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-4 flex flex-col gap-2 text-sm font-semibold">
+            <a href="index.html" class="text-[#0044ff] bg-blue-50/50 p-2 rounded-md">Home </a>
+            <a href="about.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">About Us</a>
+            <a href="services.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Services </a>
+            <a href="portfolio.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
+            <a href="case-studies.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Case Studies</a>
+            <a href="blog.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Blog Platform</a>
+            <a href="testimonials.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Client Testimonials</a>
+            
+            <a href="contact.html" class="mt-1 w-full text-center py-2.5 rounded-lg bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-sm">Connect Directly</a>
+        </div>
+    </header>
+
+    <section class="relative hero-mesh pt-8 pb-14 lg:pt-14 lg:pb-20 overflow-hidden border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                
+                <div class="lg:col-span-7 space-y-4 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-sm text-[10px] font-bold text-gray-700 tracking-wide">
+                        <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span class="text-gray-400 font-mono font-normal">💥</span> ACTIVE
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight">
+                        DAN74TECH MEDIA <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#0044ff] to-[#ff2a2a]">Professional Tech</span> & Creative Solutions.
+                    </h1>
+                    
+                    <p class="text-sm sm:text-base text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                        Empowering forward-thinking enterprises with high-fidelity web applications, custom Android architectures, precise hardware diagnostics, graphic designs, video production and media positioning strategies engineered by <span class="font-bold text-gray-900">Dan74tech Media</span>.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
+                        <a href="services.html" class="w-full sm:w-auto px-5 py-2.5 bg-[#0044ff] text-white text-xs font-bold rounded-lg shadow-md shadow-blue-600/10 hover:bg-blue-700 transition-all text-center tracking-wide flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> Explore Services
+                        </a>
+                        <a href="portfolio.html" class="w-full sm:w-auto px-5 py-2.5 bg-white text-gray-800 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-center tracking-wide flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-briefcase"></i> View Portfolio
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 pt-5 border-t border-gray-200/60 max-w-md mx-auto lg:mx-0">
+                        <div class="text-center lg:text-left">
+                            <div id="liveClientCounter" class="text-xl sm:text-2xl font-extrabold text-gray-900 font-mono tracking-tight">--</div>
+                            <p class="text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-0.5">Active Clients</p>
+                        </div>
+                        <div class="text-center lg:text-left">
+                            <div id="liveProjectCounter" class="text-xl sm:text-2xl font-extrabold text-gray-900 font-mono tracking-tight">--</div>
+                            <p class="text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-0.5">Orders Filed</p>
+                        </div>
+                        <div class="text-center lg:text-left">
+                            <div class="text-xl sm:text-2xl font-extrabold text-gray-900 font-mono tracking-tight flex items-center justify-center lg:justify-start gap-0.5">
+                                5.0<span class="text-[#ffd700] text-sm"><i class="fa-solid fa-star"></i></span>
+                            </div>
+                            <p class="text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-0.5">Audited Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex justify-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-[#0044ff]/5 to-[#ff2a2a]/5 rounded-full blur-3xl opacity-60 max-w-xs mx-auto"></div>
+                    <div class="relative w-full max-w-xs rounded-2xl overflow-hidden subtle-pulse-glow border-2 border-white bg-white shadow-md">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10"></div>
+                        <img src="images/logo.png" alt="DAN74TECH Core Matrix" class="w-full h-60 object-contain bg-slate-50 p-4" onerror="this.src='https://placehold.co/500x500/0044ff/ffffff?text=DAN74TECH+MEDIA'">
+                        <div class="absolute bottom-4 left-4 right-4 z-20 text-white">
+                            <span class="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.5 bg-[#ff2a2a] rounded font-mono">LIVE</span>
+                            <h3 class="text-sm font-bold mt-1 font-mono">DAN74TECH_HUB</h3>
+                            <p class="text-[11px] text-gray-200 font-light mt-0.5">Your visit means alot to us</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative p-2 bg-gradient-to-br from-[#0044ff] via-[#ffd700] to-[#ff2a2a] rounded-2xl shadow-md max-w-xs w-full transition-transform duration-500 hover:scale-[1.01]">
+                        <div class="bg-white p-1.5 rounded-[12px]">
+                            <img src="images/dan74tech.png" alt="Daniel Ngumi - Founder" class="w-full aspect-square object-cover rounded-lg shadow-inner filter contrast-[1.01]" onerror="this.src='https://placehold.co/400x400/0f172a/ffffff?text=Daniel+Ngumi'">
+                        </div>
+                        <div class="absolute -bottom-3 -right-3 bg-white border border-gray-100 shadow-md px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                            <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                            <span class="text-[11px] font-bold font-mono text-gray-800">Daniel Ngumi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="text-[10px] uppercase font-extrabold tracking-widest text-[#ff2a2a] font-mono">THE BRAIN BEHIND THE OPERATIONS</div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                        Architecting Scalable Software Ecosystems & Digital Infrastructure.
+                    </h2>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        As an ICT specialist and full-stack developer based in Meru, Kenya, I manage the overarching product vision and engineering frameworks at DAN74TECH MEDIA. We turn complex requirements into clean architectures.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4 pt-1">
+                        <div class="flex items-start gap-2.5">
+                            <div class="p-1.5 rounded-md bg-blue-50 text-[#0044ff] mt-0.5"><i class="fa-solid fa-code text-xs"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Full Diagnostics</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">Advanced structural hardware verification and performance matching.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <div class="p-1.5 rounded-md bg-red-50 text-[#ff2a2a] mt-0.5"><i class="fa-solid fa-mobile-screen-button text-xs"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Application Deployment</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">Custom architectural app binaries designed for responsive scalability.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <a href="services.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0044ff] hover:text-blue-700 transition-colors group">
+                            Learn more about OUR SERVICES<i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-0.5"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-[#f8fafc] border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
+                <div class="space-y-0.5 text-center sm:text-left">
+                    <div class="text-[10px] uppercase font-extrabold tracking-widest text-[#0044ff] font-mono">PRODUCTION RECORD DATA</div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Featured Operations Matrix</h2>
+                </div>
+                <a href="portfolio.html" class="mx-auto sm:mx-0 px-3.5 py-2 bg-white border border-gray-200 text-xs font-bold rounded-md text-gray-700 hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-1.5">
+                    Open Complete Archive <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                </a>
+            </div>
+
+            <div id="dynamicFeaturedPortfolioContainer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="bg-white border border-gray-100 rounded-xl p-5 space-y-3 animate-pulse">
+                    <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-5 bg-gray-200 rounded w-2/3"></div>
+                    <div class="space-y-1.5">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full w-full pt-0.5"></div>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-xl p-5 space-y-3 animate-pulse">
+                    <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-5 bg-gray-200 rounded w-2/3"></div>
+                    <div class="space-y-1.5">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full w-full pt-0.5"></div>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-xl p-5 space-y-3 animate-pulse">
+                    <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-5 bg-gray-200 rounded w-2/3"></div>
+                    <div class="space-y-1.5">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        
+                                     <div class="h-2 bg-gray-100 rounded-full w-full pt-0.5"></div>
+                </div            
+                           <div class="bg-white border border-gray-100 rounded-xl p-5 space-y-3 animate-pulse">
+                    <div class="h-3 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-5 bg-gray-200 rounded w-2/3"></div>
+                    <div class="space-y-1.5">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full w-full pt-0.5"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+            <div class="max-w-2xl mx-auto space-y-1">
+                <span class="text-[10px] font-extrabold tracking-widest text-[#ff2a2a] uppercase font-mono">STREAMLINED ACCESS POINTS</span>
+                <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Operational Resource Modules</h2>
+                <p class="text-xs text-gray-500">Select an specialized segment node below to navigate to dedicated service parameters.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
+                <a href="services.html" class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#0044ff] hover:bg-blue-50/10 group transition-all text-center">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#0044ff] text-base mx-auto mb-2 transition-transform group-hover:scale-105">
+                        <i class="fa-solid fa-laptop-code"></i>
+                    </div>
+                    <span class="block text-xs font-bold text-gray-800 tracking-wide">Services Catalog</span>
+                </a>
+                
+                <a href="case-studies.html" class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#ff2a2a] hover:bg-red-50/10 group transition-all text-center">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#ff2a2a] text-base mx-auto mb-2 transition-transform group-hover:scale-105">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <span class="block text-xs font-bold text-gray-800 tracking-wide">Case Studies</span>
+                </a>
+
+                <a href="blog.html" class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#ffd700] hover:bg-amber-50/10 group transition-all text-center">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#b29600] text-base mx-auto mb-2 transition-transform group-hover:scale-105">
+                        <i class="fa-solid fa-newspaper"></i>
+                    </div>
+                    <span class="block text-xs font-bold text-gray-800 tracking-wide">Blog Platform</span>
+                </a>
+
+                <a href="testimonials.html" class="p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#0044ff] hover:bg-blue-50/10 group transition-all text-center">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#0044ff] text-base mx-auto mb-2 transition-transform group-hover:scale-105">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <span class="block text-xs font-bold text-gray-800 tracking-wide">Testimonials</span>
+                </a>
+
+                <a href="contact.html" class="col-span-2 md:col-span-1 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#ff2a2a] hover:bg-red-50/10 group transition-all text-center">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#ff2a2a] text-base mx-auto mb-2 transition-transform group-hover:scale-105">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                    <span class="block text-xs font-bold text-gray-800 tracking-wide">Contact Desk</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 text-[10px] font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
+    </a>
+
+    <footer class="bg-[#0b0f19] text-gray-400 pt-12 pb-6 border-t border-gray-900 font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-gray-800/60">
+            
+            <div class="md:col-span-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-7 h-7 object-cover rounded bg-white p-0.5">
+                    <span class="text-sm font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed max-w-xs">
+                    Production-grade tech systems deployment matrices. Fully reliable database monitoring networks and custom business execution channels based in Kenya.
+                </p>
+                <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-900 rounded border border-gray-800 text-[10px] font-mono">
+                    <i class="fa-solid fa-users text-[#ffd700]"></i>
+                    <span class="text-gray-300 font-bold" id="footerSubscriberCounter">140+</span> 
+                    <span class="text-gray-500 text-[9px]">Verified Clients Pool</span>
+                </div>
+            </div>
+
+            <div class="md:col-span-3 space-y-3">
+                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">System Nodes</h4>
+                <ul class="space-y-1.5 text-xs font-medium">
+                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1">📂 Service Parameters</a></li>
+                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1">📁 Project Repository</a></li>
+                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1">📈 Performance Records</a></li>
+                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1">📑 Technical Logs</a></li>
+                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1">💬 Audit Appraisals</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-4 space-y-3">
+                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
+                <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
+                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p class="text-[10px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
+            <div class="flex items-center gap-3 text-[10px] font-mono text-gray-500">
+                <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
+                <span id="telemetryPulseTimestamp">--:--:--</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CONFIGURATION PARAMETER BASE URL
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+            ? 'http://localhost:10000/api' 
+            : '/api';
+
+        // GLOBAL APPLICATION NOTIFICATION ALERTS CONTROLLER
+        function pushSystemOperationalToast(messageContext, messageType = 'info') {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
+
+            const individualToastNode = document.createElement('div');
+            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
+            
+            // Adjust styles depending on the type of message context
+            if (messageType === 'success' || messageType === 'success-variant') {
+                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            } else if (messageType === 'error') {
+                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
+            } else {
+                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
+            }
+
+            toastCenter.appendChild(individualToastNode);
+
+            // Automatically clean up toast elements after display timer runs out
+            setTimeout(() => {
+                individualToastNode.style.opacity = '0';
+                individualToastNode.style.transform = 'translateY(10px)';
+                setTimeout(() => individualToastNode.remove(), 300);
+            }, 4000);
+        }
+
+        // TELEMETRY LIVE DIGITAL CLOCK PULSE
+        function triggerTelemetryClockPulse() {
+            setInterval(() => {
+                const clockNode = document.getElementById('telemetryPulseTimestamp');
+                if (clockNode) {
+                    const currentSystemTime = new Date();
+                    clockNode.textContent = currentSystemTime.toTimeString().split(' ')[0];
+                }
+            }, 1000);
+        }
+
+        // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
+        async function runSystemTelemetryDatabaseSynchronization() {
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
+                if (!response.ok) throw new Error("Telemetry matrix payload sync rejected.");
+                
+                const responseData = await response.json();
+                
+                // Bind retrieved numeric counters into landing page components
+                // If responseData.users exists, compute verified client base counts dynamically
+                const activeUsersCount = parseInt(responseData.users) || 28;
+                const activeOrdersCount = parseInt(responseData.orders) || 64;
+
+                document.getElementById('liveClientCounter').textContent = `${activeUsersCount}+`;
+                document.getElementById('liveProjectCounter').textContent = `${activeOrdersCount}+`;
+                
+                const footerCounter = document.getElementById('footerSubscriberCounter');
+                if (footerCounter) {
+                    footerCounter.textContent = `${activeUsersCount + activeOrdersCount}+ Pool`;
+                }
+
+            } catch (exceptionContextError) {
+                console.error("Database counter synchronization offline:", exceptionContextError);
+                // Graceful fallback to static hardcoded standards during local pipeline maintenance windows
+                document.getElementById('liveClientCounter').textContent = '40+';
+                document.getElementById('liveProjectCounter').textContent = '95+';
+            }
+        }
+        
+            // DYNAMIC FEATURED PORTFOLIO INJECTION METHOD (GET /api/portfolio)
+        async function fetchFeaturedPortfolioPreview() {
+            const targetPortfolioViewContainer = document.getElementById('dynamicFeaturedPortfolioContainer');
+            if (!targetPortfolioViewContainer) return;
+
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/portfolio`);
+                if (!response.ok) throw new Error("Portfolio dynamic query failed.");
+
+                const projectsArray = await response.json();
+                
+                // Clear out skeleton placeholder cards
+                targetPortfolioViewContainer.innerHTML = '';
+
+                if (!projectsArray || projectsArray.length === 0) {
+                    targetPortfolioViewContainer.innerHTML = `
+                        <div class="col-span-full p-6 bg-white border border-gray-100 rounded-xl text-center text-xs font-mono text-gray-400">
+                            <i class="fa-solid fa-folder-open block text-xl mb-2 text-gray-300"></i>
+                            No items found inside the live database portfolio index schema.
+                        </div>`;
+                    return;
+                }
+
+                // Slice the array to showcase only the latest 3 elements on the clean homepage entry point
+                const latestFeaturedProjects = projectsArray.slice(0, 3);
+
+                latestFeaturedProjects.forEach(projectItem => {
+                    const projectProgressPercent = projectItem.progress || 100;
+                    const projectStatusValue = projectItem.status || 'In Progress';
+                    const targetProjectLink = projectItem.link || 'portfolio.html';
+
+                    // Parse potential file extensions or system configurations to extract thumbnail paths cleanly
+                    let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
+                    
+                    if (projectItem.image_url) {
+                        calculatedThumbnailAssetUrl = projectItem.image_url;
+                    } else if (projectItem.link && (projectItem.link.includes('/uploads/') || projectItem.link.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
+                        calculatedThumbnailAssetUrl = projectItem.link;
+                    }
+
+                    const projectCardStructure = `
+                        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                            <div class="relative w-full h-36 bg-gray-50 overflow-hidden border-b border-gray-100">
+                                <img src="${calculatedThumbnailAssetUrl}" alt="${projectItem.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/600x350/0044ff/ffffff?text=DAN74TECH+MEDIA'">
+                                <div class="absolute top-2 right-2">
+                                    <span class="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm border border-gray-100 text-[9px] font-mono font-bold text-gray-800 shadow-sm">${projectStatusValue}</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                                <div class="space-y-1.5">
+                                    <div class="text-[9px] font-mono font-bold uppercase text-[#0044ff] tracking-wider">${projectItem.category || 'Development'}</div>
+                                    <h3 class="text-sm font-extrabold text-gray-900 line-clamp-1">${projectItem.title}</h3>
+                                    <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed font-medium">${projectItem.description || 'No descriptive technical matrix logs recorded for this parameter.'}</p>
+                                </div>
+                                
+                                <div class="pt-3 mt-3 border-t border-gray-50 space-y-2">
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-[9px] font-mono text-gray-400">
+                                            <span>Progress Track</span>
+                                            <span>${projectProgressPercent}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
+                                            <div class="bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] h-full" style="width: ${projectProgressPercent}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-0.5">
+                                        <a href="${targetProjectLink}" class="text-[11px] font-bold text-[#0044ff] hover:underline flex items-center gap-0.5">
+                                            VIEW DETAILS <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    targetPortfolioViewContainer.insertAdjacentHTML('beforeend', projectCardStructure);
+                });
+
+            } catch (errorContextException) {
+                console.error("Dynamic Portfolio Rendering Fault:", errorContextException);
+                targetPortfolioViewContainer.innerHTML = `
+                    <div class="col-span-full p-6 bg-white border border-rose-100 rounded-xl text-center text-xs font-mono text-rose-500 bg-rose-50/10">
+                        <i class="fa-solid fa-triangle-exclamation block text-xl mb-1 text-rose-400"></i>
+                        Failed to fetch dynamic portfolio preview arrays from database matrix.
+                    </div>`;
+            }
+        }
+
+        // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+            formSubmissionEvent.preventDefault();
+            // Perform explicit routing shift to login.html per subscriber flow directives
+            window.location.href = 'login.html';
+        });
+
+        // NAVBAR RESPONSIVE TOGGLE LOGIC MATRIX LINK PACKET
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
+            if (dropdownLinksTargetMenu) {
+                dropdownLinksTargetMenu.classList.toggle('hidden');
+            }
+        });
+
+        // GLOBAL APPLICATION INITIALIZATION CONTEXT ENGINE
+        document.addEventListener('DOMContentLoaded', () => {
+            triggerTelemetryClockPulse();
+            runSystemTelemetryDatabaseSynchronization();
+            fetchFeaturedPortfolioPreview();
+            
+            setTimeout(() => {
+                pushSystemOperationalToast("DAN74TECH MEDIA Hub fully operational.", "success");
+            }, 800);
+        });
+    </script>
+</body>
+</html>
