@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gateway Authentication | DAN74TECH MEDIA</title>
+    <title>Portal Authentication | DAN74TECH MEDIA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,13 +16,16 @@
         .hero-mesh { background: radial-gradient(circle at 50% 50%, rgba(0, 68, 255, 0.05), transparent 70%); }
         .toast-notification { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideInLeft { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        /* Tab transitions */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .tab-content.active { display: block; opacity: 1; }
     </style>
 </head>
 <body class="antialiased selection:bg-[#0044ff] selection:text-white min-h-screen flex flex-col justify-between hero-mesh">
 
     <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
 
-    <!-- Header (Identical Brand Identity Mirror) -->
     <header class="w-full bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
@@ -40,42 +43,92 @@
         </div>
     </header>
 
-    <!-- Main Login Panel Form Context Container -->
     <main class="flex-grow flex items-center justify-center px-4 py-12">
-        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 shadow-xl space-y-6">
-            <div class="text-center space-y-2">
-                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto">
+        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 shadow-xl">
+            
+            <div class="text-center space-y-2 mb-6">
+                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">System Node Authentication</h1>
-                <p class="text-xs text-text-muted">Enter active database validation configurations to access control layers.</p>
+                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Portal Authentication</h1>
+                <p class="text-xs text-gray-500">Access your digital workspace and active deployments.</p>
             </div>
 
-            <form id="secureAdministrativeLoginEngineForm" class="space-y-4">
+            <div class="flex mb-6 border-b border-gray-100">
+                <button type="button" id="tabBtnLogin" class="w-1/2 py-3 text-xs font-bold tracking-wider font-mono uppercase text-[#0044ff] border-b-2 border-[#0044ff] transition-all focus:outline-none">Sign In</button>
+                <button type="button" id="tabBtnRegister" class="w-1/2 py-3 text-xs font-bold tracking-wider font-mono uppercase text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all focus:outline-none">Create Account</button>
+            </div>
+
+            <form id="secureAdministrativeLoginEngineForm" class="tab-content active space-y-4">
                 <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Admin Email Address</label>
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Email Address</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="email" id="loginEmail" required placeholder="admin@dan74techmedia.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <input type="email" id="loginEmail" required placeholder="name@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
                     </div>
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Secret Keyphrase Password</label>
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Secret Keyphrase</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
                         <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-2">
-                    Verify Credentials <i class="fa-solid fa-right-to-bracket ml-1"></i>
+                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-4">
+                    Secure Entry <i class="fa-solid fa-right-to-bracket ml-1"></i>
+                </button>
+            </form>
+
+            <form id="clientRegistrationForm" class="tab-content space-y-4">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Full Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="regName" required placeholder="John Doe" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="regEmail" required placeholder="name@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Phone Number</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-phone"></i></span>
+                        <input type="text" id="regPhone" required placeholder="+254 700 000 000" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="regPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Confirm Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="regConfirmPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-4">
+                    Establish Connection <i class="fa-solid fa-user-plus ml-1"></i>
                 </button>
             </form>
         </div>
     </main>
 
-    <!-- Footer System Nodes Matrix -->
     <footer class="bg-[#0b0f19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
         &copy; 2026 DAN74TECH MEDIA. Systems Security Protocol Node. Status: <span class="text-emerald-500">Secure</span>
     </footer>
@@ -83,6 +136,7 @@
     <script>
         const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
 
+        // Universal Toast Notification Handler
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
             if (!toastCenter) return;
@@ -94,6 +148,33 @@
             setTimeout(() => { node.remove(); }, 4000);
         }
 
+        // Tab Navigation Logic
+        const tabBtnLogin = document.getElementById('tabBtnLogin');
+        const tabBtnRegister = document.getElementById('tabBtnRegister');
+        const formLogin = document.getElementById('secureAdministrativeLoginEngineForm');
+        const formRegister = document.getElementById('clientRegistrationForm');
+
+        tabBtnLogin.addEventListener('click', () => {
+            tabBtnLogin.classList.replace('border-transparent', 'border-[#0044ff]');
+            tabBtnLogin.classList.replace('text-gray-400', 'text-[#0044ff]');
+            tabBtnRegister.classList.replace('border-[#0044ff]', 'border-transparent');
+            tabBtnRegister.classList.replace('text-[#0044ff]', 'text-gray-400');
+            
+            formRegister.classList.remove('active');
+            setTimeout(() => formLogin.classList.add('active'), 50);
+        });
+
+        tabBtnRegister.addEventListener('click', () => {
+            tabBtnRegister.classList.replace('border-transparent', 'border-[#0044ff]');
+            tabBtnRegister.classList.replace('text-gray-400', 'text-[#0044ff]');
+            tabBtnLogin.classList.replace('border-[#0044ff]', 'border-transparent');
+            tabBtnLogin.classList.replace('text-[#0044ff]', 'text-gray-400');
+            
+            formLogin.classList.remove('active');
+            setTimeout(() => formRegister.classList.add('active'), 50);
+        });
+
+        // Login Logic Engine
         document.getElementById('secureAdministrativeLoginEngineForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
@@ -110,10 +191,68 @@
 
                 if (response.ok && data.token) {
                     pushSystemOperationalToast("Handshake complete. Authorization validation successful!", "success");
+                    
+                    // Crucial Fix: Store token under BOTH keys to satisfy admin.html's conflicting retrieval hooks
                     localStorage.setItem('adminToken', data.token);
-                    setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+
+                    // Role-based routing system
+                    setTimeout(() => { 
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin.html'; 
+                        } else {
+                            window.location.href = 'client.html';
+                        }
+                    }, 1000);
                 } else {
-                    throw new Error(data.error || "Authentication access denied.");
+                    throw new Error(data.message || data.error || "Authentication access denied.");
+                }
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            }
+        });
+
+        // Registration Logic Engine
+        document.getElementById('clientRegistrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                pushSystemOperationalToast("Security validation failed: Passwords do not match.", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name, 
+                        email, 
+                        phone, 
+                        password,
+                        role: 'client' // Explicit assignment locking user role
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    pushSystemOperationalToast("Account deployed. Redirecting to workspace...", "success");
+                    
+                    // Store tokens to auto-login the client
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+
+                    setTimeout(() => { window.location.href = 'client.html'; }, 1000);
+                } else {
+                    throw new Error(data.error || "Account generation sequence failed.");
                 }
             } catch (err) {
                 pushSystemOperationalToast(err.message, "error");
