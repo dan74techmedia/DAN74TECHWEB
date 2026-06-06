@@ -222,7 +222,7 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('at
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, email, password, role, phone } = req.body;
-        const userRole = role || 'client';
+        const userRole = role || 'client'; // Explicitly enforcing role boundary
         
         const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (checkUser.rows.length > 0) {
@@ -240,7 +240,13 @@ app.post('/api/auth/register', async (req, res) => {
         );
         
         const userNode = result.rows[0];
-        const accessToken = jwt.sign({ id: userNode.id, email: userNode.email, role: userNode.role }, JWT_SECRET, { expiresIn: '24h' });
+        
+        // FIX: Inject 'name' into the JWT payload for frontend context hydration
+        const accessToken = jwt.sign(
+            { id: userNode.id, name: userNode.name, email: userNode.email, role: userNode.role }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
         
         await sendSystemNotificationEmail(
             userNode.email, 
@@ -276,7 +282,12 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
         }
         
-        const accessToken = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+        // FIX: Inject 'name' into the JWT payload 
+        const accessToken = jwt.sign(
+            { id: user.id, name: user.name, email: user.email, role: user.role }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
         
         res.json({
             success: true,
