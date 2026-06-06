@@ -219,19 +219,23 @@
 
     // --- Token Serialization & Redirection Engine ---
 function processAuthenticationSuccess(data) {
-    // UNIFIED STORAGE: Purge legacy token mappings and use a single source of truth
+    // Purge legacy identifiers completely to prevent ghost sessions
     localStorage.removeItem('token');
     localStorage.removeItem('adminToken');
+    
+    // Establish the single source of truth
     localStorage.setItem('dan74_token', data.token);
 
-    // Strict role-based intelligent routing
-    const userRole = data.user.role;
+    // Case-insensitive intelligent routing
+    const userRole = String(data.user.role).trim().toLowerCase();
+    
     if (userRole === 'admin') {
         window.location.href = 'admin.html'; 
     } else {
         window.location.href = 'client.html'; 
     }
 }
+        
     
      // --- Authentication Workflows ---
 
