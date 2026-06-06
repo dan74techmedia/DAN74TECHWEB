@@ -502,30 +502,50 @@
         } catch(e) { handleLogout(); }
     }
 
-    async function handleLogin(e) {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        try {
-            const res = await fetch(`${API_BASE}/auth/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password})
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
-            if (data.user.role !== 'admin') throw new Error('Console Operation Limited to System Administrators Only.');
-            
-            token = data.token;
-            localStorage.setItem('dan74_token', token);
-            parseToken();
-            showApp();
-            initData();
-            showToast('Authentication Successful', 'success');
-        } catch (err) {
-            showToast(err.message, 'error');
+    
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    console.log("Attempting login for:", email); // Step 1 check
+    
+    try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email, password})
+        });
+        
+        console.log("Server responded with status:", res.status); // Step 2 check
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            console.error("Login Error Data:", data); // Step 3 check
+            throw new Error(data.message || data.error || 'Login failed');
         }
+        
+        console.log("Login successful, role received:", data.user.role); // Step 4 check
+        
+        if (data.user.role !== 'admin') {
+            throw new Error('Console Operation Limited to System Administrators Only.');
+        }
+        
+        token = data.token;
+        localStorage.setItem('dan74_token', token);
+        parseToken();
+        showApp();
+        initData();
+        showToast('Authentication Successful', 'success');
+        
+    } catch (err) {
+        console.error("CATCH BLOCK ERROR:", err.message); // Step 5 check
+        showToast(err.message, 'error');
     }
+}
+
+    
 
     function handleLogout() {
         token = null;
