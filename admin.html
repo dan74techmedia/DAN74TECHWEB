@@ -528,7 +528,7 @@ async function handleLogin(e) {
         
         console.log("Login successful, role received:", data.user.role); // Step 4 check
         
-        if (data.user.role !=by= 'admin') {
+        if (data.user.role !== 'admin') {
             throw new Error('Console Operation Limited to System Administrators Only.');
         }
         
