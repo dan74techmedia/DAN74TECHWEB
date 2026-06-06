@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Reader | DAN74TECH MEDIA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --brand-blue: #0044ff; --brand-red: #ff2a2a; --bg-light: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .article-mesh { background: linear-gradient(180deg, rgba(0,68,255,0.03) 0%, transparent 400px); }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#0044ff] selection:text-white article-mesh">
+
+    <!-- Header Frame -->
+    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px]">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-extrabold text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Professional Tech Solutions</span>
+                </div>
+            </a>
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold text-gray-600">
+                <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
+                <a href="blog.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-1 font-bold">Blog Insights</a>
+                <a href="contact.html" class="px-4 py-2 rounded-lg bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Get In Touch</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Dynamic Main Parsing View Node Content Block Container -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-6">
+            <a href="blog.html" class="text-xs font-bold text-[#0044ff] uppercase tracking-wider hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left-long"></i> Back to Logs Database Archive
+            </a>
+        </div>
+
+        <!-- Skeleton Content Loader Animation UI -->
+        <div id="articleStructuralLoadingModule" class="space-y-6 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div class="h-10 bg-gray-200 rounded w-3/4"></div>
+            <div class="h-96 bg-gray-200 rounded-2xl w-full"></div>
+            <div class="space-y-3 pt-4">
+                <div class="h-4 bg-gray-200 rounded w-full"></div>
+                <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+        </div>
+
+        <!-- Populated Production Layout Display (Hidden initially until async lookup mapping clears) -->
+        <article id="articleRenderCoreAnchor" class="hidden space-y-8">
+            <div class="space-y-3">
+                <div class="inline-flex items-center gap-3 text-xs font-mono">
+                    <span id="articleCategoryBadge" class="px-2.5 py-0.5 rounded-md bg-blue-50 text-[#0044ff] font-bold uppercase">CATEGORY</span>
+                    <span class="text-gray-400" id="articleDateTimestamp"><i class="fa-regular fa-calendar"></i> --/--/--</span>
+                </div>
+                <h1 id="articleDisplayTitleHeadline" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight"></h1>
+                <p id="articleDisplaySummary" class="text-md text-gray-500 italic leading-relaxed border-l-4 border-gray-200 pl-4"></p>
+            </div>
+
+            <div class="w-full max-h-[480px] rounded-3xl overflow-hidden shadow-inner border border-gray-100 bg-white">
+                <img id="articleBannerDisplayImage" src="" alt="Post Banner" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/1200x600/0044ff/ffffff?text=DAN74TECH+INSIGHT'">
+            </div>
+
+            <!-- Main Rendered Article Block (Injected HTML format) -->
+            <div id="articlePrimaryMainContentStream" class="prose max-w-none text-gray-700 text-sm sm:text-base leading-relaxed space-y-4 font-normal"></div>
+        </article>
+    </main>
+
+    <!-- Footer System Identity Matrix -->
+    <footer class="bg-[#0b0f19] text-gray-400 mt-20 pt-12 pb-6 border-t border-gray-900 text-center font-mono text-xs">
+        <p>&copy; 2026 DAN74TECH MEDIA. Content Delivery Stream Interface Node.</p>
+    </footer>
+
+    <script>
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
+
+        async function dynamicExecuteArticleDataLayerSync() {
+            const loadingSkeleton = document.getElementById('articleStructuralLoadingModule');
+            const targetContainer = document.getElementById('articleRenderCoreAnchor');
+
+            try {
+                // Parse exact tracking token from target browser window URL bar matrix 
+                const queryParameters = new URLSearchParams(window.location.search);
+                const currentArticleSlug = queryParameters.get('slug');
+
+                if (!currentArticleSlug) { throw new Error("Null operational execution tracking slug index context."); }
+
+                // Query full logs index payload array list directly from database collection API routing path
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/portfolio`); // Fallback route mapping matrix array loop check
+                // Note: If you add an explicit `/api/blog/:slug` server route to your server architecture, swap this fetch to match it directly.
+                
+                if (!response.ok) throw new Error("Data stream communication link rejected.");
+                const itemsArray = await response.json();
+
+                // Find matching blog entity mapped by matching string slug identity parameter keys
+                const matchingPost = itemsArray.find(item => item.slug === currentArticleSlug);
+
+                if (!matchingPost) {
+                    throw new Error("Targeted article configuration was not found inside database schema index.");
+                }
+
+                // Render matching content payloads into operational container slots
+                document.getElementById('articleCategoryBadge').textContent = matchingPost.category || 'Insights';
+                document.getElementById('articleDisplayTitleHeadline').textContent = matchingPost.title;
+                document.getElementById('articleDisplaySummary').textContent = matchingPost.summary || '';
+                
+                if(matchingPost.image_url) {
+                    document.getElementById('articleBannerDisplayImage').src = matchingPost.image_url;
+                }
+
+                // Inject structured text bodies securely while parsing multi-line carriage adjustments
+                const innerBodyStreamContainer = document.getElementById('articlePrimaryMainContentStream');
+                innerBodyStreamContainer.innerHTML = matchingPost.content ? matchingPost.content.replace(/\n/g, '<br>') : 'Empty logging history profile recorded.';
+
+                // Page titles adjustment matrix injection
+                document.title = `${matchingPost.seo_title || matchingPost.title} | DAN74TECH MEDIA`;
+
+                // Layout display toggles processing
+                loadingSkeleton.classList.add('hidden');
+                targetContainer.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                loadingSkeleton.innerHTML = `
+                    <div class="p-8 bg-rose-50/20 border border-rose-100 rounded-2xl text-center text-sm font-mono text-rose-500">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2 block"></i>
+                        Critical data stream runtime fault: ${err.message || 'Entity rendering aborted.'}
+                    </div>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', dynamicExecuteArticleDataLayerSync);
+    </script>
+</body>
+</html>
