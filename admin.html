@@ -528,7 +528,7 @@ async function handleLogin(e) {
         
         console.log("Login successful, role received:", data.user.role); // Step 4 check
         
-        if (data.user.role !== 'admin') {
+        if (data.user.role !=by= 'admin') {
             throw new Error('Console Operation Limited to System Administrators Only.');
         }
         
@@ -915,7 +915,15 @@ async function handleLogin(e) {
         toast.innerHTML = `<i class="fas fa-${icon}"></i> ${msg}`;
         container.appendChild(toast);
         setTimeout(() => { toast.style.animation = 'slideIn 0.3s reverse'; setTimeout(() => toast.remove(), 300); }, 4000);
-    }
+    } 
+
+    const cors = require('cors');
+app.use(cors({
+    origin: '*', // For testing, allow everything
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+    
 </script>
 
 </body>
