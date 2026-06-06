@@ -262,13 +262,25 @@ app.post('/api/auth/register', async (req, res) => {
             JWT_SECRET, 
             { expiresIn: '24h' }
         );
-        
-        await sendSystemNotificationEmail(
-            userNode.email, 
-            "Welcome to DAN74TECH MEDIA", 
-            `Hello ${userNode.name}, your workspace engine profile setup is successfully validated.`
-        );
 
+         // 1. Define your masked link variable first
+const maskedLink = '<a href="https://dan74techweb.onrender.com" style="color: #0044FF; text-decoration: none;">DAN74TECH MEDIA</a>';
+
+// 2. Construct the body using template literals
+const emailBody = `Hello ${userNode.name}, your Subscriber profile setup is successfully validated. 
+We are glad you joined. 
+For more information you can reply to this email or reach us via our website ${maskedLink}. 
+✨DAN74TECH MEDIA ✨.`;
+
+// 3. Execute the function call
+await sendSystemNotificationEmail(
+    userNode.email, 
+    "Welcome to DAN74TECH MEDIA", 
+    emailBody
+);
+        
+
+        
         res.json({ success: true, token: accessToken, user: userNode });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -350,7 +362,7 @@ app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
 
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
-            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
+            query = `UPDATE usuers SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
             values = [name, email, role, phone, hashedPassword, req.params.id];
         } else {
             query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING id,name,email,role,phone`;
@@ -920,6 +932,17 @@ app.get('/api/subscribers', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// NEW: Fetch historical email campaigns
+app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM email_campaigns WHERE is_deleted = FALSE ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// RECTIFIED: Broadcast Route with logging
 app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     const { subject, message, html } = req.body;
 
@@ -940,7 +963,6 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
       sendSmtpEmail.subject = subject;
       sendSmtpEmail.htmlContent = html || `<div style="font-family:sans-serif; line-height:1.6;"><p>${message}</p></div>`;
       
-      // Privacy Shield Strategy - Deliver via Blind Carbon Copy (BCC)
       sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
       sendSmtpEmail.to = [{ email: process.env.EMAIL_USER }]; 
       sendSmtpEmail.bcc = formattedRecipients;               
@@ -948,12 +970,20 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
       const data = await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Pipeline broadcast executed. Assigned MessageID Token: ${data.messageId}`);
       
+      // NEW: Log the campaign execution into the database
+      await pool.query(
+          `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by) VALUES ($1, $2, 'newsletter', $3, $4)`,
+          [subject, html || message, subscribers.length, req.user ? req.user.id : null]
+      );
+
       return res.status(200).json({ sent: subscribers.length, failed: 0 });
     } catch (error) {
       console.error('❌ Broadcast Corridor Fatal Failure:', error);
       return res.status(500).json({ error: 'Transmission deployment crashed.', message: error.message, sent: 0, failed: 1 });
     }
 });
+
+
 
 app.delete('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
@@ -1009,7 +1039,7 @@ app.delete('/api/media/:id', verifyAdminAccess, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
-    }
+    }app.post
 });
 
 // ================= MODULE 11: FINANCIAL LOGISTICS & INVOICING =================
@@ -1320,23 +1350,38 @@ app.put('/api/:table/:id/status', verifyAdminAccess, async (req, res) => {
 
 app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
     const { ids, action } = req.body; 
-    const table = req.params.table.replace(/[^a-z_]/g, '');
+    const sanitizedTable = req.params.table.replace(/[^a-z_]/g, '');
     
-    if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: "No IDs provided" });
+    // STRICT SCHEMA WHITELIST
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries', 'email_campaigns'
+    ];
+
+    if (!allowedTables.includes(sanitizedTable)) {
+        return res.status(403).json({ error: "Unauthorized schema matrix table operation." });
+    }
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "No target IDs provided for bulk execution." });
+    }
 
     try {
         if (action === 'delete' || action === 'soft_delete') {
-            await pool.query(`UPDATE ${table} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
+            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
         } else if (action === 'hard_delete') {
-            await pool.query(`DELETE FROM ${table} WHERE id = ANY($1::int[])`, [ids]);
+            await pool.query(`DELETE FROM ${sanitizedTable} WHERE id = ANY($1::int[])`, [ids]);
         } else if (action === 'restore') {
-            await pool.query(`UPDATE ${table} SET is_deleted = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
+            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
         }
-        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records.` });
+        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records within ${sanitizedTable}.` });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
     const allowedTables = ['users', 'services', 'orders', 'portfolio', 'blog_posts', 'invoices', 'support_tickets', 'testimonials', 'consultations']; 
@@ -1384,6 +1429,66 @@ app.put('/api/invoices/:id', verifyAdminAccess, async (req, res) => {
             [status, req.params.id]
         );
         res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+
+// ================= MISSING ADMIN CRUD CONSOLIDATION BLOCK =================
+
+// Table 9 (Subscribers): Missing PUT Route for Status Toggles
+app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`, 
+            [req.body.status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Table 12 (Notifications): Missing PUT & DELETE Routes
+app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status, title, message } = req.body;
+        const result = await pool.query(
+            `UPDATE notifications SET status=COALESCE($1, status), title=COALESCE($2, title), message=COALESCE($3, message), updated_at=CURRENT_TIMESTAMP WHERE id=$4 RETURNING *`, 
+            [status, title, message, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        await pool.query('UPDATE notifications SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Table 16 (File Deliveries): Missing PUT Route for Expiry/Status Updates
+app.put('/api/file-deliveries/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status, file_name } = req.body;
+        const result = await pool.query(
+            `UPDATE file_deliveries SET status=COALESCE($1, status), file_name=COALESCE($2, file_name), updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING *`, 
+            [status, file_name, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Table 17 (Email Campaigns): Complete Integration
+app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM email_campaigns WHERE is_deleted = FALSE ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/email-campaigns/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        await pool.query('UPDATE email_campaigns SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
