@@ -440,13 +440,13 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        // Core Secure Fetch Wrapper
+// Core Secure Fetch Wrapper
 async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart = false) {
     const token = localStorage.getItem('dan74_token');
     
     if (!token) {
         executeLogout();
-        throw new Error("Session Invalid");
+        throw new Error("Session Invalid: Token missing");
     }
 
     const options = { method, headers: { 'Authorization': `Bearer ${token}` } };
@@ -461,13 +461,20 @@ async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart
     }
 
     const res = await fetch(`${API_HOST}${endpoint}`, options);
+    
     if (!res.ok) {
-        if (res.status === 401 || res.status === 403) executeLogout();
+        // Only trigger a hard logout on explicit 401/403 cryptographic rejections
+        if (res.status === 401 || res.status === 403) {
+            console.error("Server rejected token matrix:", res.status);
+            executeLogout();
+        }
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || errData.message || `HTTP Fault ${res.status}`);
     }
+    
     return await res.json();
 }
+        
 
         function executeLogout() {
     // Purge unified token array and return to gateway
