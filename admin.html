@@ -990,3 +990,297 @@ app.use(cors({
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+<script>
+        const API_HOST = window.location.origin;
+        let systemSessionToken = localStorage.getItem('dan74_admin_token') || null;
+
+        // Document Boot Execution Checks
+        document.addEventListener('DOMContentLoaded', () => {
+            if (systemSessionToken) {
+                document.getElementById('login-overlay').style.display = 'none';
+                loadTabDataset('orders');
+            }
+            
+            // Register Authentication Submit Mechanism
+            document.getElementById('login-engine-form').addEventListener('submit', executeSecurityAuthentication);
+            // Register Broadcast Delivery Mechanism
+            document.getElementById('broadcast-execution-form').addEventListener('submit', fireEmailBroadcastPipeline);
+        });
+
+        // Push Overlay Warning To Operational Windows
+        function triggerNotificationToast(text, statusType = 'success') {
+            const container = document.getElementById('alert-pipeline');
+            const alertCard = document.createElement('div');
+            alertCard.className = `alert-toast`;
+            alertCard.style.backgroundColor = statusType === 'success' ? 'var(--accent-green)' : 'var(--accent-red)';
+            alertCard.innerHTML = `<i class="fa-solid ${statusType === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> <span>${text}</span>`;
+            container.appendChild(alertCard);
+            setTimeout(() => { alertCard.remove(); }, 4000);
+        }
+
+        // Globalized Secure API Dynamic Request Fetch Framework
+        async function fetchSecureGateway(endpoint, method = 'GET', payload = null) {
+            const configurations = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': systemSessionToken ? `Bearer ${systemSessionToken}` : ''
+                }
+            };
+            if(payload) configurations.body = JSON.stringify(payload);
+
+            try {
+                const response = await fetch(`${API_HOST}${endpoint}`, configurations);
+                const decodedJson = await response.json();
+                
+                if(!response.ok) {
+                    if(response.status === 401 || response.status === 403) {
+                        triggerNotificationToast("Authorization layer rejected structural token validity parameters.", 'error');
+                        terminateSession();
+                    }
+                    throw new Error(decodedJson.error || "System network exception encountered.");
+                }
+                return decodedJson;
+            } catch (err) {
+                triggerNotificationToast(err.message, 'error');
+                throw err;
+            }
+        }
+
+        // Authentication Event Controller Matrix
+        async function executeSecurityAuthentication(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_HOST}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const responseData = await response.json();
+
+                if (!response.ok || !responseData.success) {
+                    throw new Error(responseData.message || "Credential configuration verification breakdown.");
+                }
+                if (responseData.user.role !== 'admin') {
+                    throw new Error("Access privileges restricted: Insufficient structural security context.");
+                }
+
+                systemSessionToken = responseData.token;
+                localStorage.setItem('dan74_admin_token', systemSessionToken);
+                document.getElementById('login-overlay').style.display = 'none';
+                triggerNotificationToast("Authentication parameters validated. Session established.");
+                loadTabDataset('orders');
+            } catch (err) {
+                triggerNotificationToast(err.message, 'error');
+            }
+        }
+
+        // Drop Security Access Parameters
+        function terminateSession() {
+            localStorage.removeItem('dan74_admin_token');
+            systemSessionToken = null;
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+
+        // Window Tab Manager Toggles
+        function switchConsoleTab(tabKey) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.dashboard-view').forEach(el => el.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(`view-${tabKey}`).classList.add('active');
+            
+            // Format Display Headings
+            const titlesMap = {
+                orders: "Operational Orders Pipeline",
+                blogs: "Blog Content Indexing",
+                subscribers: "Subscriber Base Management",
+                testimonials: "Testimonials Moderation Deck",
+                consultations: "Consultations Booking Pipelines",
+                broadcast: "Emergency Mass Broadcast Corridor"
+            };
+            document.getElementById('view-title').innerText = titlesMap[tabKey];
+            loadTabDataset(tabKey);
+        }
+
+        // Data Loader Hub Switch Engine Routing Table Target Fetches
+        function loadTabDataset(tabKey) {
+            switch(tabKey) {
+                case 'orders': fetchDashboardOrders(); break;
+                case 'blogs': fetchDashboardBlogs(); break;
+                case 'subscribers': fetchDashboardSubscribers(); break;
+                case 'testimonials': fetchDashboardTestimonials(); break;
+                case 'consultations': fetchDashboardConsultations(); break;
+            }
+        }
+
+        // 1. Fetch Orders Processing Grid Layout
+        async function fetchDashboardOrders() {
+            try {
+                const dataset = await fetchSecureGateway('/api/orders');
+                const bodyContainer = document.getElementById('table-orders-body');
+                bodyContainer.innerHTML = '';
+                
+                dataset.forEach(row => {
+                    const trackingRow = document.createElement('tr');
+                    trackingRow.innerHTML = `
+                        <td><strong>#${row.id}</strong></td>
+                        <td>${row.client_name || 'Anonymous User'}</td>
+                        <td><span class="badge badge-active">${row.package_name || 'Standard Plan'}</span></td>
+                        <td>$${parseFloat(row.amount || 0).toFixed(2)}</td>
+                        <td><span class="badge ${row.status === 'completed' ? 'badge-active' : 'badge-pending'}">${row.status}</span></td>
+                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
+                    `;
+                    bodyContainer.appendChild(trackingRow);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // 2. Fetch Blog Analytics Processing Grid Layout
+        async function fetchDashboardBlogs() {
+            try {
+                const dataset = await fetchSecureGateway('/api/blogs');
+                const bodyContainer = document.getElementById('table-blogs-body');
+                bodyContainer.innerHTML = '';
+
+                dataset.forEach(row => {
+                    const rowElement = document.createElement('tr');
+                    rowElement.innerHTML = `
+                        <td>${row.id}</td>
+                        <td><strong>${row.title}</strong></td>
+                        <td><code>${row.category || 'Uncategorized'}</code></td>
+                        <td><i class="fa-regular fa-eye"></i> ${row.views_count || 0}</td>
+                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
+                    `;
+                    bodyContainer.appendChild(rowElement);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // 3. Fetch Subscribers Processing Grid Matrix (Aligned perfectly to 'status' and 'is_deleted')
+        async function fetchDashboardSubscribers() {
+            try {
+                const dataset = await fetchSecureGateway('/api/subscribers');
+                const bodyContainer = document.getElementById('table-subscribers-body');
+                bodyContainer.innerHTML = '';
+
+                dataset.forEach(row => {
+                    const rowElement = document.createElement('tr');
+                    rowElement.innerHTML = `
+                        <td>${row.id}</td>
+                        <td><code>${row.email}</code></td>
+                        <td><span class="badge ${row.status === 'active' ? 'badge-active' : 'badge-disabled'}">${row.status}</span></td>
+                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
+                    `;
+                    bodyContainer.appendChild(rowElement);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // 4. Fetch and Moderate Testimonials Dynamic Grid Interface
+        async function fetchDashboardTestimonials() {
+            try {
+                const dataset = await fetchSecureGateway('/api/testimonials');
+                const bodyContainer = document.getElementById('table-testimonials-body');
+                bodyContainer.innerHTML = '';
+
+                dataset.forEach(row => {
+                    const rowElement = document.createElement('tr');
+                    rowElement.innerHTML = `
+                        <td>${row.id}</td>
+                        <td><strong>${row.name}</strong></td>
+                        <td style="max-width: 300px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">"${row.content}"</td>
+                        <td><span class="badge ${row.is_featured ? 'badge-active' : 'badge-disabled'}">${row.is_featured ? 'Featured' : 'Standard'}</span></td>
+                        <td><span class="badge ${row.status === 'approved' ? 'badge-active' : (row.status === 'pending' ? 'badge-pending' : 'badge-disabled')}">${row.status}</span></td>
+                        <td>
+                            <div class="action-row">
+                                ${row.status !== 'approved' ? `<button onclick="updateTestimonialState(${row.id}, 'approved')" class="btn-sm btn-approve"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
+                                ${!row.is_featured ? `<button onclick="toggleTestimonialFeature(${row.id}, true)" class="btn-sm" style="background-color: var(--accent-blue);"><i class="fa-solid fa-star"></i> Feature</button>` : `<button onclick="toggleTestimonialFeature(${row.id}, false)" class="btn-sm" style="background-color: var(--border-color);"><i class="fa-regular fa-star"></i> Unfeature</button>`}
+                            </div>
+                        </td>
+                    `;
+                    bodyContainer.appendChild(rowElement);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateTestimonialState(id, statusValue) {
+            await fetchSecureGateway(`/api/testimonials/${id}`, 'PUT', { status: statusValue });
+            triggerNotificationToast("Testimonial verification configuration state processed.");
+            fetchDashboardTestimonials();
+        }
+
+        async function toggleTestimonialFeature(id, featureFlag) {
+            await fetchSecureGateway(`/api/testimonials/${id}`, 'PUT', { is_featured: featureFlag });
+            triggerNotificationToast("Testimonial discovery prominence priority toggled.");
+            fetchDashboardTestimonials();
+        }
+
+        // 5. Fetch and Update Consultations Dynamic Grid Interface
+        async function fetchDashboardConsultations() {
+            try {
+                const dataset = await fetchSecureGateway('/api/consultations');
+                const bodyContainer = document.getElementById('table-consultations-body');
+                bodyContainer.innerHTML = '';
+
+                dataset.forEach(row => {
+                    const rowElement = document.createElement('tr');
+                    rowElement.innerHTML = `
+                        <td>${row.id}</td>
+                        <td><strong>${row.client_name}</strong></td>
+                        <td><code>${row.client_email}</code></td>
+                        <td>${new Date(row.requested_date).toLocaleString()}</td>
+                        <td><span class="badge ${row.status === 'scheduled' ? 'badge-active' : (row.status === 'pending' ? 'badge-pending' : 'badge-disabled')}">${row.status}</span></td>
+                        <td>
+                            <div class="action-row">
+                                ${row.status === 'pending' ? `<button onclick="updateConsultationState(${row.id}, 'scheduled')" class="btn-sm btn-approve"><i class="fa-solid fa-calendar-check"></i> Book</button>` : ''}
+                                ${row.status !== 'cancelled' ? `<button onclick="updateConsultationState(${row.id}, 'cancelled')" class="btn-sm btn-delete"><i class="fa-solid fa-ban"></i> Cancel</button>` : ''}
+                            </div>
+                        </td>
+                    `;
+                    bodyContainer.appendChild(rowElement);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateConsultationState(id, statusValue) {
+            await fetchSecureGateway(`/api/consultations/${id}`, 'PUT', { status: statusValue });
+            triggerNotificationToast(`Consultation workflow update deployed: ${statusValue}`);
+            fetchDashboardConsultations();
+        }
+
+        // 6. Mass Automated Communication Delivery Transmission Controller Block
+        async function fireEmailBroadcastPipeline(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('broadcast-submit-btn');
+            const subject = document.getElementById('broadcast-subject').value;
+            const html = document.getElementById('broadcast-content').value;
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Deploying Communications Array Pipeline...";
+                
+                const responseMetrics = await fetchSecureGateway('/api/subscribers/broadcast', 'POST', { subject, html });
+                triggerNotificationToast(`Broadcast success! Dispatched down the pipeline safely to ${responseMetrics.sent} subscribers.`);
+                
+                document.getElementById('broadcast-execution-form').reset();
+            } catch(err) {
+                console.error(err);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Deploy Broadcast Corridor`;
+            }
+        }
+            </script>
