@@ -123,7 +123,7 @@
 
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: rgba(0,68,255,0.1); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
         .badge.pending { background: rgba(255, 215, 0, 0.2); color: #cc8800; border-color: var(--accent-yellow); }
-        .badge.active, .badge.approved, .badge.paid { background: rgba(37, 211, 102, 0.2); color: #1e9e4f; border-color: #25D366; }
+        .badge.active, .badge.approved, .badge.paid, .badge.completed { background: rgba(37, 211, 102, 0.2); color: #1e9e4f; border-color: #25D366; }
 
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast { background: white; color: var(--text-dark); padding: 16px 20px; border-radius: 10px; border-left: 4px solid var(--primary-blue); margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s; font-weight: 600; }
@@ -481,88 +481,64 @@
     const state = {
         services: [], subServices: [], orders: [], portfolio: [], blogs: [],
         caseStudies: [], tickets: [], consultations: [], users: [], subscribers: [],
-        invoices: [], media: []
+        invoices: [], media: [], testimonials: []
     };
     let editContext = { endpoint: '', id: null };
 
     // --- AUTHENTICATION ---
-    
     window.onload = () => {
-    // Safely check if token exists and isn't a string literal "undefined"
-    if (token && token !== "undefined") {
-        parseToken();
-        showApp();
-        initData();
+        if (token && token !== "undefined") {
+            parseToken();
+            showApp();
+            initData();
+        }
+    };
+
+    function parseToken() {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(atob(base64));
+            const userData = payload.user || payload; 
+            currentUser = userData;
+            document.getElementById('currentUserLabel').innerHTML = 
+                `<i class="fas fa-user-shield"></i> ${userData.email} (${userData.role || 'No Role Found'})`;
+        } catch(e) { 
+            console.error("Token parsing failed:", e);
+            handleLogout(); 
+        }
     }
-};
 
-function parseToken() {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Ensure standard base64 decoding compatibility
-        const payload = JSON.parse(atob(base64));
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
         
-        console.log("Decrypted Token Payload:", payload); // Debug tool
-
-        // Extract credentials cleanly whether nested under data.user or flat on the root object
-        const userData = payload.user || payload; 
-        
-        currentUser = userData;
-        
-        document.getElementById('currentUserLabel').innerHTML = 
-            `<i class="fas fa-user-shield"></i> ${userData.email} (${userData.role || 'No Role Found'})`;
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            });
+            const data = await res.json();
             
-    } catch(e) { 
-        console.error("Token parsing failed:", e);
-        handleLogout(); 
-    }
-}
-
-async function handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    console.log("Attempting login for:", email);
-    
-    try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
-        });
-        
-        console.log("Server responded with status:", res.status);
-        
-        const data = await res.json();
-        
-        if (!res.ok) {
-            console.error("Login Error Data:", data);
-            throw new Error(data.message || data.error || 'Login failed');
+            if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
+            
+            const targetUser = data.user || data;
+            if (!targetUser.role || targetUser.role.toLowerCase() !== 'admin') {
+                throw new Error(`Console Operation Limited to System Administrators Only.`);
+            }
+            
+            token = data.token;
+            localStorage.setItem('dan74_token', token);
+            parseToken();
+            showApp();
+            initData();
+            showToast('Authentication Successful', 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
         }
-        
-        // Safety Fallback check: Map object correctly if backend sends flat user object vs nested
-        const targetUser = data.user || data;
-        console.log("Login successful, user payload received:", targetUser);
-        
-        if (!targetUser.role || targetUser.role.toLowerCase() !== 'admin') {
-            throw new Error(`Console Operation Limited to System Administrators Only. Your current role is: ${targetUser.role || 'None'}`);
-        }
-        
-        token = data.token;
-        localStorage.setItem('dan74_token', token);
-        
-        parseToken();
-        showApp();
-        initData();
-        showToast('Authentication Successful', 'success');
-        
-    } catch (err) {
-        console.error("CATCH BLOCK ERROR:", err.message);
-        showToast(err.message, 'error');
     }
-}
-    
 
     function handleLogout() {
         token = null;
@@ -584,9 +560,9 @@ async function handleLogin(e) {
         document.getElementById(tabId).classList.add('active');
         event.target.classList.add('active');
         
-        // Refresh mapping when switching to ensure fresh state
         if(tabId !== 'dashboard') loadData(tabId.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
+
     // --- API CORE ---
     async function apiCall(endpoint, method = 'GET', body = null, isForm = false) {
         const headers = { 'Authorization': `Bearer ${token}` };
@@ -609,7 +585,7 @@ async function handleLogin(e) {
         await loadData('services');
         await loadData('sub-services');
         await loadData('orders');
-        await loadData('subscribers'); // For counts
+        await loadData('subscribers'); 
     }
 
     async function fetchStats() {
@@ -628,60 +604,65 @@ async function handleLogin(e) {
         'services': 'services', 'sub-services': 'sub-services', 'orders': 'orders',
         'portfolio': 'portfolio', 'blogs': 'blog', 'case-studies': 'case-studies',
         'tickets': 'tickets', 'consultations': 'consultations', 'users': 'users',
-        'subscribers': 'subscribers', 'invoices': 'invoices', 'media': 'media'
+        'subscribers': 'subscribers', 'invoices': 'invoices', 'media': 'media', 'testimonials': 'testimonials'
     };
 
     async function loadData(moduleKey) {
         const route = endpointMap[moduleKey] || moduleKey;
         try {
             const data = await apiCall(route);
-            // State normalization
             if(moduleKey === 'sub-services') state.subServices = data;
             else if(moduleKey === 'case-studies') state.caseStudies = data;
             else state[moduleKey] = data;
             
             renderTable(moduleKey);
             
-            // Side-effects
             if(moduleKey === 'services') populateServiceDrops();
             if(moduleKey === 'subscribers') document.getElementById('statSubs').innerText = data.length || 0;
         } catch(e) { showToast(`Failed to load ${moduleKey}`, 'error'); }
     }
 
+    // --- RECONSTRUCTED FORM AND UPLOAD HANDLERS ---
     function populateServiceDrops() {
-        async function handleFormSubmit(e, endpoint, method) {
-    e.preventDefault();
-    const inputs = Array.from(e.target.querySelectorAll('input, select, textarea'));
-    const payload = {};
-    
-    inputs.forEach(el => {
-        if(el.id) {
-            // Extract the part after the underscore (e.g., 'srv_name' -> 'name')
-            let key = el.id.substring(el.id.indexOf('_') + 1);
-            
-            // SPECIAL CASE: If we are dealing with sub_services, 
-            // and the ID is 'name', map it to 'title' to match the database.
-            if (endpoint === 'sub_services' && key === 'name') {
-                key = 'title';
-            }
-            
-            payload[key] = el.value;
-        }
-    });
-
-    // Proceed with the API call
-    try {
-        await apiCall(endpoint, method, payload);
-        showToast('Operation successful', 'success');
-        e.target.reset(); // Clear the form
-        loadData(endpoint); // Refresh table
-    } catch (err) {
-        showToast('Error: ' + err.message, 'error');
+        const select = document.getElementById('pkg_service_id');
+        if(!select) return;
+        select.innerHTML = '<option value="">Select a Parent Service</option>';
+        state.services.forEach(srv => {
+            select.innerHTML += `<option value="${srv.id}">${srv.name}</option>`;
+        });
     }
+
+    async function handleFormSubmit(e, endpoint, method) {
+        e.preventDefault();
+        const inputs = Array.from(e.target.querySelectorAll('input, select, textarea'));
+        const payload = {};
+        
+        inputs.forEach(el => {
+            if(el.id) {
+                let key = el.id.substring(el.id.indexOf('_') + 1);
+                if (endpoint === 'sub_services' && key === 'name') {
+                    key = 'title';
+                }
+                payload[key] = el.value;
+            }
+        });
+
+        try {
+            await apiCall(endpoint, method, payload);
+            showToast('Operation successful', 'success');
+            e.target.reset(); 
+            loadData(endpoint); 
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
         }
-    
-        // Ensure empty file doesn't crash uploads unless required
+    }
+
+    async function submitMultipartForm(event, endpoint, fileField) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
         const fileInput = form.querySelector(`input[name="${fileField}"]`);
+        
         if(fileInput && fileInput.files.length === 0) formData.delete(fileField);
 
         try {
@@ -693,6 +674,67 @@ async function handleLogin(e) {
         } catch(err) { showToast(err.message, 'error'); }
     }
 
+    // --- COMMUNICATION ENGINE DISPATCHERS ---
+    async function sendBroadcast(event) {
+        event.preventDefault();
+        const subject = document.getElementById('brd_subject').value;
+        const message = document.getElementById('brd_message').value;
+        const html = document.getElementById('brd_html').value;
+        const btn = event.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerText;
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deploying Pipeline...`;
+            const data = await apiCall('subscribers/broadcast', 'POST', { subject, message, html });
+            showToast(`Broadcast success! Dispatched safely to ${data.sent} subscribers.`, 'success');
+            event.target.reset();
+        } catch (err) {
+            showToast(err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+
+    async function broadcastBlog(id) {
+        const blog = state.blogs.find(b => b.id === id);
+        if(!blog || !confirm(`Deploy broadcast for article: ${blog.title}?`)) return;
+        try {
+            await apiCall('subscribers/broadcast', 'POST', {
+                subject: `New Article: ${blog.title}`,
+                message: blog.summary || 'Check out our new article.',
+                html: `<h2>${blog.title}</h2><p>${blog.summary || 'Read our latest article online.'}</p><a href="https://dan74tech.com/blog/${blog.slug}">Read More</a>`
+            });
+            showToast('Blog broadcast deployed', 'success');
+        } catch(err) { showToast(err.message, 'error'); }
+    }
+
+    // --- QUICK ACTION STATUS TOGGLES ---
+    async function updateConsultationState(id, statusValue) {
+        try {
+            await apiCall(`consultations/${id}`, 'PUT', { status: statusValue });
+            showToast(`Consultation workflow update deployed: ${statusValue}`, 'success');
+            loadData('consultations');
+        } catch (err) { showToast(err.message, 'error'); }
+    }
+
+    async function updateTestimonialState(id, statusValue) {
+        try {
+            await apiCall(`testimonials/${id}`, 'PUT', { status: statusValue });
+            showToast("Testimonial verification configuration state processed.", 'success');
+            loadData('testimonials');
+        } catch (err) { showToast(err.message, 'error'); }
+    }
+
+    async function toggleTestimonialFeature(id, featureFlag) {
+        try {
+            await apiCall(`testimonials/${id}`, 'PUT', { is_featured: featureFlag });
+            showToast("Testimonial discovery prominence priority toggled.", 'success');
+            loadData('testimonials');
+        } catch (err) { showToast(err.message, 'error'); }
+    }
+
     // --- UNIVERSAL DELETE ---
     async function deleteRecord(endpoint, id, moduleKey) {
         if(!confirm('Authorized deletion protocol: Proceed with record wiping?')) return;
@@ -700,587 +742,540 @@ async function handleLogin(e) {
             await apiCall(`${endpoint}/${id}`, 'DELETE');
             showToast('Data row erased', 'success');
             loadData(moduleKey);
-            fetchStats();
-        } catch(err) { showToast(err.message, 'error'); }
-    }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    // --- RENDERING ENGINE ---
-    function renderTable(moduleKey) {
-        const tbody = document.getElementById(`${moduleKey}Tbody`);
-        if(!tbody) return;
-        
-        const data = moduleKey === 'sub-services' ? state.subServices : (moduleKey === 'case-studies' ? state.caseStudies : state[moduleKey]);
-        if(!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--text-gray);">Query sequence returned 0 rows</td></tr>`;
-            return;
+        /* FORMS & TABLES */
+        .form-section, .table-section {
+            background: white; border: 2px solid var(--accent-yellow); border-radius: 15px;
+            padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
-
-        let html = '';
-        data.forEach(item => {
-            html += `<tr>`;
-            if (moduleKey === 'orders') {
-                html += `<td>${item.id}</td><td>${item.customer_name}</td><td>${item.service} / ${item.sub_service||'N/A'}</td>
-                         <td>$${item.price}</td><td><span class="badge ${item.status}">${item.status}</span></td>
-                         <td><span class="badge ${item.payment_status}">${item.payment_status}</span></td>
-                         <td>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('orders', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('orders', ${item.id}, 'orders')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'services') {
-                html += `<td>${item.id}</td><td>${item.icon||''}</td><td>${item.name}</td><td>${(item.description||'').substring(0,40)}</td>
-                         <td>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('services', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('services', ${item.id}, 'services')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'sub-services') {
-                html += `<td>${item.category_name}</td><td>${item.title}</td><td>$${item.price}</td><td>${(item.description||'').substring(0,40)}</td>
-                         <td><button class="btn-action btn-delete" onclick="deleteRecord('sub-services', ${item.id}, 'sub-services')"><i class="fas fa-trash"></i></button></td>`;
-            } else if (moduleKey === 'portfolio') {
-                html += `<td>${item.link ? `<img src="${item.link}" class="media-preview">` : 'No Media'}</td>
-                         <td>${item.title}</td><td>${item.category}</td><td>${item.status} (${item.progress}%)</td>
-                         <td>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('portfolio', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('portfolio', ${item.id}, 'portfolio')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'blogs') {
-                html += `<td>${item.title}</td><td>${item.category}</td><td>/${item.slug}</td>
-                         <td>
-                            <button class="btn-action btn-special" onclick="broadcastBlog(${item.id})"><i class="fas fa-bullhorn"></i> Send</button>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('blog', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('blog', ${item.id}, 'blogs')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'case-studies') {
-                html += `<td>${item.title}</td><td>${item.category}</td><td>${(item.challenge||'').substring(0,40)}...</td>
-                         <td><button class="btn-action btn-delete" onclick="deleteRecord('case-studies', ${item.id}, 'case-studies')"><i class="fas fa-trash"></i></button></td>`;
-            } else if (moduleKey === 'tickets') {
-                html += `<td>${item.id}</td><td>${item.user_id||'Guest'}</td><td>${item.subject}</td>
-                         <td><span class="badge ${item.priority}">${item.priority}</span></td><td><span class="badge ${item.status}">${item.status}</span></td>
-                         <td>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('tickets', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('tickets', ${item.id}, 'tickets')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'consultations') {
-                html += `<td>${item.client_name}</td><td>${item.client_email}</td><td>${item.booking_date} ${item.booking_time}</td>
-                         <td>${item.platform}</td><td><span class="badge ${item.status}">${item.status}</span></td>
-                         <td>
-                            <button class="btn-action btn-edit" onclick="triggerEdit('consultations', ${item.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('consultations', ${item.id}, 'consultations')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'subscribers') {
-                html += `<td>${item.email}</td><td><span class="badge active">${item.status}</span></td><td>${new Date(item.created_at).toLocaleDateString()}</td>
-                         <td><button class="btn-action btn-delete" onclick="deleteRecord('subscribers', ${item.id}, 'subscribers')"><i class="fas fa-trash"></i></button></td>`;
-            } else if (moduleKey === 'invoices') {
-                html += `<td>${item.invoice_number}</td><td>${item.client_name}</td><td>$${item.amount}</td><td><span class="badge ${item.status}">${item.status}</span></td>
-                         <td>
-                            <a href="${API_BASE}/invoices/${item.id}/download" target="_blank" class="btn-action btn-special"><i class="fas fa-download"></i> PDF</a>
-                            <button class="btn-action btn-delete" onclick="deleteRecord('invoices', ${item.id}, 'invoices')"><i class="fas fa-trash"></i></button>
-                         </td>`;
-            } else if (moduleKey === 'media') {
-                html += `<td><img src="${item.url}" class="media-preview"></td><td>${item.filename}</td><td>${item.format} / ${Math.round(item.bytes/1024)}KB</td>
-                         <td><input type="text" value="${item.url}" readonly style="width:100px;font-size:0.7rem;"></td>
-                         <td><button class="btn-action btn-delete" onclick="deleteRecord('media', ${item.id}, 'media')"><i class="fas fa-trash"></i></button></td>`;
-            } else if (moduleKey === 'users') {
-                html += `<td>${item.id}</td><td>${item.name}</td><td>${item.email}</td><td><span class="badge">${item.role}</span></td><td>${item.phone||'N/A'}</td>
-                         <td><button class="btn-action btn-delete" onclick="deleteRecord('users', ${item.id}, 'users')"><i class="fas fa-trash"></i></button></td>`;
-            }
-            html += `</tr>`;
-        });
-        tbody.innerHTML = html;
-    }
-
-  // --- DYNAMIC EDIT ENGINE ---
-    function triggerEdit(endpoint, id) {
-        editContext = { endpoint, id };
-        const dataArr = endpoint === 'blog' ? state.blogs : state[endpoint];
-        const record = dataArr.find(r => r.id === id);
-        if(!record) return;
-
-        let formHtml = '';
-        if (endpoint === 'orders') {
-            formHtml = `
-                <div class="form-group"><label>Status</label><select id="edit_status" class="form-control"><option value="pending">Pending</option><option value="processing">Processing</option><option value="completed">Completed</option></select></div>
-                <div class="form-group"><label>Payment Status</label><select id="edit_payment_status" class="form-control"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
-                <div class="form-group"><label>Price Override ($)</label><input type="number" step="0.01" id="edit_price" class="form-control" value="${record.price}"></div>
-            `;
-        } else if (endpoint === 'services') {
-            formHtml = `
-                <div class="form-group"><label>Name</label><input type="text" id="edit_name" class="form-control" value="${record.name}"></div>
-                <div class="form-group"><label>Icon</label><input type="text" id="edit_icon" class="form-control" value="${record.icon||''}"></div>
-                <div class="form-group"><label>Description</label><textarea id="edit_description" class="form-control">${record.description||''}</textarea></div>
-            `;
-            
-    } else if (endpoint === 'sub_services') {
-            formHtml = `
-                <div class="form-group">
-                    <label>Service Category ID</label>
-                    <input type="number" id="edit_service_id" class="form-control" value="${record.service_id}">
-                </div>
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="edit_title" class="form-control" value="${record.title}">
-                </div>
-                <div class="form-group">
-                    <label>Price</label>
-                    <input type="number" step="0.01" id="edit_price" class="form-control" value="${record.price}">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="edit_description" class="form-control">${record.description || ''}</textarea>
-                </div>
-            `;
-            
-        } else if (endpoint === 'portfolio') {
-            formHtml = `
-                <div class="form-group"><label>Title</label><input type="text" id="edit_title" class="form-control" value="${record.title}"></div>
-                <div class="form-group"><label>Status</label><input type="text" id="edit_status" class="form-control" value="${record.status||''}"></div>
-                <div class="form-group"><label>Progress (%)</label><input type="number" id="edit_progress" class="form-control" value="${record.progress||0}"></div>
-                <div class="form-group"><label>Description</label><textarea id="edit_description" class="form-control">${record.description||''}</textarea></div>
-            `;
-        } else if (endpoint === 'blog') {
-            formHtml = `
-                <div class="form-group"><label>Title</label><input type="text" id="edit_title" class="form-control" value="${record.title}"></div>
-                <div class="form-group"><label>Category</label><input type="text" id="edit_category" class="form-control" value="${record.category}"></div>
-                <div class="form-group"><label>Slug</label><input type="text" id="edit_slug" class="form-control" value="${record.slug}"></div>
-                <div class="form-group"><label>Content</label><textarea id="edit_content" class="form-control" style="min-height:150px;">${record.content}</textarea></div>
-            `;
-        } else if (endpoint === 'tickets') {
-            formHtml = `
-                <div class="form-group"><label>Status</label><select id="edit_status" class="form-control"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="resolved">Resolved</option></select></div>
-                <div class="form-group"><label>Priority</label><select id="edit_priority" class="form-control"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
-            `;
-        } else if (endpoint === 'consultations') {
-            formHtml = `
-                <div class="form-group"><label>Status</label><select id="edit_status" class="form-control"><option value="pending">Pending</option><option value="approved">Approved</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
-            `;
+        .table-section { padding: 0; overflow: hidden; }
+        .form-section h2 {
+            font-family: 'Montserrat', sans-serif; font-size: 1.4rem; margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-red));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px;
         }
-
-        formHtml += `<button type="submit" class="btn-submit" style="width:100%; margin-top:15px;">Commit Patch Updates</button>`;
-        document.getElementById('editForm').innerHTML = formHtml;
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--primary-blue); font-weight: 700; text-transform: uppercase; }
+        .form-control {
+            width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px;
+            font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary-blue); outline: none; box-shadow: 0 0 10px rgba(0, 68, 255, 0.1); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
         
-        // Auto-select dropdown values if present
-        if(record.status && document.getElementById('edit_status')) document.getElementById('edit_status').value = record.status;
-        if(record.payment_status && document.getElementById('edit_payment_status')) document.getElementById('edit_payment_status').value = record.payment_status;
-        if(record.priority && document.getElementById('edit_priority')) document.getElementById('edit_priority').value = record.priority;
+        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-submit {
+            padding: 12px 20px; background: linear-gradient(135deg, var(--primary-blue), #0033cc);
+            color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; text-transform: uppercase;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 68, 255, 0.3); }
+        
+        .table-header {
+            padding: 15px 25px; background: linear-gradient(135deg, rgba(0, 68, 255, 0.1), rgba(255, 215, 0, 0.1));
+            border-bottom: 2px solid var(--accent-yellow); display: flex; justify-content: space-between; align-items: center;
+        }
+        .table-header h3 { margin: 0; font-size: 1.1rem; color: var(--primary-blue); font-weight: 700; }
+        .table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto;}
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th, td { padding: 14px 20px; border-bottom: 1px solid var(--border-light); }
+        th { background: #f0f4ff; font-family: 'Montserrat', sans-serif; font-size: 0.8rem; text-transform: uppercase; color: var(--primary-blue); font-weight: 700; position: sticky; top: 0; z-index: 10;}
+        tr:hover td { background: var(--hover-light); }
 
-        document.getElementById('editModal').classList.add('active');
-    }
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-action { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; }
+        .btn-edit { background: rgba(0, 68, 255, 0.15); color: var(--primary-blue); }
+        .btn-delete { background: rgba(255, 42, 42, 0.15); color: var(--accent-red); }
+        .btn-special { background: rgba(255, 215, 0, 0.2); color: #cc8800; }
+        .btn-action:hover { transform: scale(1.05); }
 
-    async function executeEdit(e) {
-        e.preventDefault();
-        const inputs = Array.from(e.target.querySelectorAll('input, select, textarea'));
-        const payload = {};
-        inputs.forEach(el => {
-            if(el.id && el.id.startsWith('edit_')) {
-                payload[el.id.replace('edit_', '')] = el.value;
-            }
-        });
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: white; border: 2px solid var(--accent-yellow); border-radius: 12px; padding: 20px; text-align: center;
+        }
+        .stat-card h4 { color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px; }
+        .stat-card .number { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--primary-blue), var(--accent-red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        try {
-            // Note: some dual routes map blog to blogs for PUT.
-            const route = editContext.endpoint === 'blog' ? 'blogs' : editContext.endpoint;
-            await apiCall(`${route}/${editContext.id}`, 'PUT', payload);
-            showToast('Update executed successfully', 'success');
-            closeModal('editModal');
-            loadData(editContext.endpoint === 'blog' ? 'blogs' : editContext.endpoint);
-            if(editContext.endpoint === 'orders') fetchStats();
-        } catch(err) { showToast(err.message, 'error'); }
-    }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: rgba(0,68,255,0.1); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
+        .badge.pending { background: rgba(255, 215, 0, 0.2); color: #cc8800; border-color: var(--accent-yellow); }
+        .badge.active, .badge.approved, .badge.paid, .badge.completed { background: rgba(37, 211, 102, 0.2); color: #1e9e4f; border-color: #25D366; }
 
-    // --- EMAIL BROADCAST SPECIFICS ---
-const express = require('express');
-const router = express.Router();
-const { Pool } = require('pg');
-const Brevo = require('@getbrevo/brevo');
-require('dotenv').config();
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .toast { background: white; color: var(--text-dark); padding: 16px 20px; border-radius: 10px; border-left: 4px solid var(--primary-blue); margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); animation: slideIn 0.3s; font-weight: 600; }
+        .toast.success { border-left-color: #25D366; } .toast.error { border-left-color: var(--accent-red); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-// Initialize Neon PostgreSQL Pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Required for Neon connections
-});
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; border-radius: 15px; padding: 25px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; border: 2px solid var(--accent-yellow); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--accent-yellow); padding-bottom: 10px; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--accent-red); cursor: pointer; }
 
-// Initialize Brevo Client
-const defaultClient = Brevo.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-const apiInstance = new Brevo.TransactionalEmailsApi();
+        .media-preview { max-width: 100px; max-height: 60px; border-radius: 5px; object-fit: cover; }
+    </style>
+</head>
+<body>
 
-/**
- * POST /api/subscribers/broadcast
- * Handles both manual broadcasts and automated blog push notifications
- */
-router.post('/broadcast', async (req, res) => {
-  const { subject, message, html } = req.body;
+<div id="authLayer">
+    <div class="auth-card">
+        <h2><i class="fas fa-shield-alt"></i> SYSTEM LOGIN</h2>
+        <p style="color:var(--text-gray); margin-bottom:20px; font-size:0.9rem;">Authorized Personnel Only</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="admin@dan74tech.com" required>
+            </div>
+            <div class="form-group">
+                <label>Access Password</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Authenticate</button>
+        </form>
+    </div>
+</div>
 
-  // Simple validation
-  if (!subject || (!message && !html)) {
-    return res.status(400).json({ error: 'Missing subject or email content body.' });
-  }
+<div id="dashboardLayer">
+    <div class="top-nav">
+        <h1><i class="fas fa-globe"></i> DAN74TECH MEDIA OPERATIONS</h1>
+        <div class="nav-actions">
+            <span id="currentUserLabel" style="font-weight:600; font-size:0.9rem;"></span>
+            <button class="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
 
-  try {
-    // 1. Fetch active subscriber email nodes from your Neon Database
-    // Adjust table/column names if they differ in your DB structure
-    const dbResult = await pool.query('SELECT email FROM subscribers WHERE is_active = true');
-    const subscribers = dbResult.rows.map(row => row.email);
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+        <button class="tab-btn" onclick="switchTab('services')">Services</button>
+        <button class="tab-btn" onclick="switchTab('packages')">Packages</button>
+        <button class="tab-btn" onclick="switchTab('portfolio')">Portfolio</button>
+        <button class="tab-btn" onclick="switchTab('blogs')">Blogs</button>
+        <button class="tab-btn" onclick="switchTab('caseStudies')">Case Studies</button>
+        <button class="tab-btn" onclick="switchTab('emails')">Email Center</button>
+        <button class="tab-btn" onclick="switchTab('tickets')">Tickets</button>
+        <button class="tab-btn" onclick="switchTab('consultations')">Consults</button>
+        <button class="tab-btn" onclick="switchTab('invoices')">Invoices</button>
+        <button class="tab-btn" onclick="switchTab('media')">Media</button>
+        <button class="tab-btn" onclick="switchTab('users')">Users</button>
+    </div>
 
-    if (subscribers.length === 0) {
-      return res.status(200).json({ sent: 0, failed: 0, message: 'No active subscribers found.' });
-    }
+    <div class="dashboard-container">
+        
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-bar">
+                <div class="stat-card"><h4>Users</h4><div class="number" id="statUsers">0</div></div>
+                <div class="stat-card"><h4>Total Orders</h4><div class="number" id="statOrders">0</div></div>
+                <div class="stat-card"><h4>Pending Orders</h4><div class="number" id="statPendingOrders">0</div></div>
+                <div class="stat-card"><h4>Open Tickets</h4><div class="number" id="statTickets">0</div></div>
+                <div class="stat-card"><h4>Total Earnings</h4><div class="number" id="statEarnings">$0</div></div>
+                <div class="stat-card"><h4>Consultations</h4><div class="number" id="statConsults">0</div></div>
+            </div>
+            <div class="form-section">
+                <h2><i class="fas fa-bolt"></i> System Status Matrix</h2>
+                <p>Welcome to the unified backend operations console. All routing endpoints, metrics, and CRM modules are fully active and connected to the Neon PostgreSQL cluster.</p>
+            </div>
+        </div>
 
-    // 2. Format emails for Brevo SDK structure
-    const formattedRecipients = subscribers.map(email => ({ email: email }));
+        <div id="orders" class="tab-content">
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="fas fa-shopping-cart"></i> Operations Ledger (Orders)</h3>
+                    <button class="btn-action btn-edit" onclick="loadData('orders')"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Client</th><th>Service / Pkg</th><th>Price</th><th>Status</th><th>Payment</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="ordersTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    // 3. Build Private Transactional Email Payload
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    
-    // Prioritize rich HTML content but fallback to plain message text if HTML isn't provided
-    sendSmtpEmail.htmlContent = html || `<p>${message}</p>`;
-    
-    // Masking the broadcaster identities
-    sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-    sendSmtpEmail.to = [{ email: process.env.EMAIL_USER }]; // Users will only see your email in "To:"
-    sendSmtpEmail.bcc = formattedRecipients;               // Users are completely hidden from one another
+        <div id="services" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-cogs"></i> Create Main Service Node</h2>
+                <form onsubmit="handleFormSubmit(event, 'services', 'POST')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Name</label><input type="text" id="srv_name" class="form-control" required></div>
+                        <div class="form-group"><label>Icon (Emoji/Class)</label><input type="text" id="srv_icon" class="form-control"></div>
+                    </div>
+                    <div class="form-group"><label>Description</label><textarea id="srv_description" class="form-control"></textarea></div>
+                    <button type="submit" class="btn-submit">Add Service</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-list"></i> Services Structural Nodes</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Icon</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+                        <tbody id="servicesTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    // 4. Deploy Email Pipeline to Brevo Engine
-    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    
-    console.log(`Pipeline broadcast complete. MessageID: ${data.messageId}`);
-    
-    // Respond to frontend framework matching expected metrics
-    return res.status(200).json({
-      sent: subscribers.length,
-      failed: 0
-    });
+        <div id="packages" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-box"></i> Add Dynamic Pricing Tier (Package)</h2>
+                <form onsubmit="handleFormSubmit(event, 'sub-services', 'POST')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Parent Service</label><select id="pkg_service_id" class="form-control" required></select></div>
+                        <div class="form-group"><label>Package Name</label><input type="text" id="pkg_title" class="form-control" required></div>
+                        <div class="form-group"><label>Price Base</label><input type="number" step="0.01" id="pkg_price" class="form-control" required></div>
+                    </div>
+                    <div class="form-group"><label>Description Scope</label><textarea id="pkg_description" class="form-control"></textarea></div>
+                    <button type="submit" class="btn-submit">Add Package</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-boxes"></i> Package Matrices</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Category</th><th>Name</th><th>Price</th><th>Description</th><th>Actions</th></tr></thead>
+                        <tbody id="packagesTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-  } catch (error) {
-    console.error('Broadcast Pipeline Failed:', error);
-    return res.status(500).json({ 
-      error: 'Pipeline deployment failed', 
-      message: error.message,
-      sent: 0,
-      failed: 1 
-    });
-  }
-});
+        <div id="portfolio" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-images"></i> Append Portfolio Asset</h2>
+                <form onsubmit="submitMultipartForm(event, 'portfolio', 'image')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" required></div>
+                        <div class="form-group"><label>Category</label><input type="text" name="category" class="form-control" required></div>
+                        <div class="form-group"><label>Progress (%)</label><input type="number" name="progress" class="form-control" value="100"></div>
+                    </div>
+                    <div class="form-group"><label>Description</label><textarea name="description" class="form-control" required></textarea></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Image File (Local System)</label><input type="file" name="image" class="form-control" accept="image/*"></div>
+                        <div class="form-group"><label>External Link (Optional)</label><input type="text" name="link" class="form-control"></div>
+                    </div>
+                    <button type="submit" class="btn-submit">Save Asset</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-photo-video"></i> Showcase Index</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Asset</th><th>Title</th><th>Category</th><th>Status/Prog</th><th>Actions</th></tr></thead>
+                        <tbody id="portfolioTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-module.exports = router;
-    
-    
-    // --- UTILS ---
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    function showToast(msg, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle';
-        toast.innerHTML = `<i class="fas fa-${icon}"></i> ${msg}`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.style.animation = 'slideIn 0.3s reverse'; setTimeout(() => toast.remove(), 300); }, 4000);
-    } 
+        <div id="blogs" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-pen-nib"></i> Publish Article</h2>
+                <form onsubmit="handleFormSubmit(event, 'blog', 'POST')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Title</label><input type="text" id="blg_title" class="form-control" required onkeyup="document.getElementById('blg_slug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')"></div>
+                        <div class="form-group"><label>Category</label><input type="text" id="blg_category" class="form-control" required></div>
+                        <div class="form-group"><label>URL Slug</label><input type="text" id="blg_slug" class="form-control" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>SEO Title</label><input type="text" id="blg_seo_title" class="form-control"></div>
+                        <div class="form-group"><label>Image URL</label><input type="text" id="blg_image_url" class="form-control"></div>
+                    </div>
+         <div class="form-group"><label>Summary</label><textarea id="blg_summary" class="form-control" style="min-height:60px;"></textarea></div>
+                    <div class="form-group"><label>Content (HTML/Rich)</label><textarea id="blg_content" class="form-control" required></textarea></div>
+                    <button type="submit" class="btn-submit">Publish</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-book-open"></i> Content Routing Table</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Title</th><th>Category</th><th>Slug</th><th>Actions</th></tr></thead>
+                        <tbody id="blogsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    const cors = require('cors');
-app.use(cors({
-    origin: '*', // For testing, allow everything
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-    
-</script>
+        <div id="caseStudies" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-chart-pie"></i> Log Case Study</h2>
+                <form onsubmit="handleFormSubmit(event, 'case-studies', 'POST')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Title</label><input type="text" id="cs_title" class="form-control" required></div>
+                        <div class="form-group"><label>Category</label><input type="text" id="cs_category" class="form-control" required></div>
+                        <div class="form-group"><label>Image URL</label><input type="text" id="cs_image_url" class="form-control"></div>
+                    </div>
+                    <div class="form-group"><label>Challenge</label><textarea id="cs_challenge" class="form-control"></textarea></div>
+                    <div class="form-group"><label>Solution</label><textarea id="cs_solution" class="form-control"></textarea></div>
+                    <div class="form-group"><label>Result</label><textarea id="cs_result" class="form-control"></textarea></div>
+                    <button type="submit" class="btn-submit">Save Case Study</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-archive"></i> Records</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Title</th><th>Category</th><th>Challenge Preview</th><th>Actions</th></tr></thead>
+                        <tbody id="caseStudiesTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-</body>
-</html>
+        <div id="emails" class="tab-content">
+            <div class="stats-bar" style="margin-bottom:15px;">
+                <div class="stat-card"><h4>Active Subscribers</h4><div class="number" id="statSubs">0</div></div>
+            </div>
+            <div class="form-section" style="border-color: #0044ff;">
+                <h2><i class="fas fa-paper-plane"></i> Email Broadcast Engine</h2>
+                <form onsubmit="sendBroadcast(event)">
+                    <div class="form-group"><label>Subject Matrix</label><input type="text" id="brd_subject" class="form-control" required></div>
+                    <div class="form-group"><label>Fallback Text Message</label><textarea id="brd_message" class="form-control" required style="min-height:60px;"></textarea></div>
+                    <div class="form-group"><label>HTML Content Payload</label><textarea id="brd_html" class="form-control" style="font-family:monospace;"></textarea></div>
+                    <button type="submit" class="btn-submit" style="background:var(--primary-blue);">Dispatch Broadcast</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-users"></i> Audience Manifest</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Email</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+                        <tbody id="subsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div id="tickets" class="tab-content">
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-life-ring"></i> Support Routing Queues</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>User ID</th><th>Subject</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="ticketsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div id="consultations" class="tab-content">
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-calendar-alt"></i> Calendar Mapping Events</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Client</th><th>Email</th><th>Date/Time</th><th>Platform</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="consultsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div id="invoices" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-file-invoice-dollar"></i> Generate Financial Ledger (Invoice)</h2>
+                <form onsubmit="handleFormSubmit(event, 'invoices', 'POST')">
+                    <div class="form-row">
+                        <div class="form-group"><label>Invoice #</label><input type="text" id="inv_invoice_number" class="form-control" required></div>
+                        <div class="form-group"><label>Order ID (Opt)</label><input type="number" id="inv_order_id" class="form-control"></div>
+                        <div class="form-group"><label>Amount</label><input type="number" step="0.01" id="inv_amount" class="form-control" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Client Name</label><input type="text" id="inv_client_name" class="form-control" required></div>
+                        <div class="form-group"><label>Client Email</label><input type="email" id="inv_client_email" class="form-control"></div>
+                    </div>
+                    <button type="submit" class="btn-submit">Log Invoice</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-receipt"></i> Invoices</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Inv #</th><th>Client</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="invoicesTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div id="media" class="tab-content">
+            <div class="form-section">
+                <h2><i class="fas fa-cloud-upload-alt"></i> Cloudinary Pipeline Upload</h2>
+                <form onsubmit="submitMultipartForm(event, 'media/upload', 'file')">
+                    <div class="form-group">
+                        <label>Select Binary Node</label>
+                        <input type="file" name="file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn-submit">Push to Cloud</button>
+                </form>
+            </div>
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-photo-video"></i> Repository Grid</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Preview</th><th>Filename</th><th>Format/Size</th><th>URL</th><th>Actions</th></tr></thead>
+                        <tbody id="mediaTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+        <div id="users" class="tab-content">
+            <div class="table-section">
+                <div class="table-header"><h3><i class="fas fa-user-shield"></i> Security Node Profiles</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Actions</th></tr></thead>
+                        <tbody id="usersTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
+    </div>
+</div>
 
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="editModalTitle">Edit Record</h3>
+            <button class="modal-close" onclick="closeModal('editModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="editForm" onsubmit="executeEdit(event)"></form>
+    </div>
+</div>
 
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-        const API_HOST = window.location.origin;
-        let systemSessionToken = localStorage.getItem('dan74_admin_token') || null;
+    const API_BASE = '/api';
+    let token = localStorage.getItem('dan74_token') || null;
+    let currentUser = null;
 
-        // Document Boot Execution Checks
-        document.addEventListener('DOMContentLoaded', () => {
-            if (systemSessionToken) {
-                document.getElementById('login-overlay').style.display = 'none';
-                loadTabDataset('orders');
+    // State Trees
+    const state = {
+        services: [], subServices: [], orders: [], portfolio: [], blogs: [],
+        caseStudies: [], tickets: [], consultations: [], users: [], subscribers: [],
+        invoices: [], media: [], testimonials: []
+    };
+    let editContext = { endpoint: '', id: null };
+
+    // --- AUTHENTICATION ---
+    window.onload = () => {
+        if (token && token !== "undefined") {
+            parseToken();
+            showApp();
+            initData();
+        }
+    };
+
+    function parseToken() {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(atob(base64));
+            const userData = payload.user || payload; 
+            currentUser = userData;
+            document.getElementById('currentUserLabel').innerHTML = 
+                `<i class="fas fa-user-shield"></i> ${userData.email} (${userData.role || 'No Role Found'})`;
+        } catch(e) { 
+            console.error("Token parsing failed:", e);
+            handleLogout(); 
+        }
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.message || data.error || 'Login failed');
+            
+            const targetUser = data.user || data;
+            if (!targetUser.role || targetUser.role.toLowerCase() !== 'admin') {
+                throw new Error(`Console Operation Limited to System Administrators Only.`);
             }
             
-            // Register Authentication Submit Mechanism
-            document.getElementById('login-engine-form').addEventListener('submit', executeSecurityAuthentication);
-            // Register Broadcast Delivery Mechanism
-            document.getElementById('broadcast-execution-form').addEventListener('submit', fireEmailBroadcastPipeline);
-        });
-
-        // Push Overlay Warning To Operational Windows
-        function triggerNotificationToast(text, statusType = 'success') {
-            const container = document.getElementById('alert-pipeline');
-            const alertCard = document.createElement('div');
-            alertCard.className = `alert-toast`;
-            alertCard.style.backgroundColor = statusType === 'success' ? 'var(--accent-green)' : 'var(--accent-red)';
-            alertCard.innerHTML = `<i class="fa-solid ${statusType === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> <span>${text}</span>`;
-            container.appendChild(alertCard);
-            setTimeout(() => { alertCard.remove(); }, 4000);
+            token = data.token;
+            localStorage.setItem('dan74_token', token);
+            parseToken();
+            showApp();
+            initData();
+            showToast('Authentication Successful', 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
         }
+    }
 
-        // Globalized Secure API Dynamic Request Fetch Framework
-        async function fetchSecureGateway(endpoint, method = 'GET', payload = null) {
-            const configurations = {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': systemSessionToken ? `Bearer ${systemSessionToken}` : ''
-                }
-            };
-            if(payload) configurations.body = JSON.stringify(payload);
+    function handleLogout() {
+        token = null;
+        currentUser = null;
+        localStorage.removeItem('dan74_token');
+        document.getElementById('authLayer').style.display = 'flex';
+        document.getElementById('dashboardLayer').style.display = 'none';
+        showToast('Session Terminated', 'success');
+    }
 
-            try {
-                const response = await fetch(`${API_HOST}${endpoint}`, configurations);
-                const decodedJson = await response.json();
+    function showApp() {
+        document.getElementById('authLayer').style.display = 'none';
+        document.getElementById('dashboardLayer').style.display = 'block';
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+        
+        if(tabId !== 'dashboard') loadData(tabId.replace(/([A-Z])/g, "-$1").toLowerCase());
+    }
+
+    // --- API CORE ---
+    async function apiCall(endpoint, method = 'GET', body = null, isForm = false) {
+        const headers = { 'Authorization': `Bearer ${token}` };
+        if (!isForm) headers['Content-Type'] = 'application/json';
+        const opts = { method, headers };
+        if (body) opts.body = isForm ? body : JSON.stringify(body);
+        
+        const res = await fetch(`${API_BASE}/${endpoint}`, opts);
+        if (res.status === 401 || res.status === 403) { handleLogout(); throw new Error('Session Expired'); }
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { throw new Error(text || 'Network Error'); }
+        if (!res.ok) throw new Error(data.error || data.message || 'Operation Failed');
+        return data;
+    }
+
+    // --- DATA PIPELINE ---
+    async function initData() {
+        await fetchStats();
+        await loadData('services');
+        await loadData('sub-services');
+        await loadData('orders');
+        await loadData('subscribers'); 
+    }
+
+    async function fetchStats() {
+        try {
+            const data = await apiCall('admin/stats');
+            document.getElementById('statUsers').innerText = data.users;
+            document.getElementById('statOrders').innerText = data.orders;
+            document.getElementById('statPendingOrders').innerText = data.pending_orders;
+            document.getElementById('statTickets').innerText = data.open_tickets;
+            document.getElementById('statEarnings').innerText = `$${parseFloat(data.total_earnings).toFixed(2)}`;
+            document.getElementById('statConsults').innerText = data.
+</script>
+</body>
+</html>
                 
-                if(!response.ok) {
-                    if(response.status === 401 || response.status === 403) {
-                        triggerNotificationToast("Authorization layer rejected structural token validity parameters.", 'error');
-                        terminateSession();
-                    }
-                    throw new Error(decodedJson.error || "System network exception encountered.");
-                }
-                return decodedJson;
-            } catch (err) {
-                triggerNotificationToast(err.message, 'error');
-                throw err;
-            }
-        }
-
-        // Authentication Event Controller Matrix
-        async function executeSecurityAuthentication(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            try {
-                const response = await fetch(`${API_HOST}/api/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const responseData = await response.json();
-
-                if (!response.ok || !responseData.success) {
-                    throw new Error(responseData.message || "Credential configuration verification breakdown.");
-                }
-                if (responseData.user.role !== 'admin') {
-                    throw new Error("Access privileges restricted: Insufficient structural security context.");
-                }
-
-                systemSessionToken = responseData.token;
-                localStorage.setItem('dan74_admin_token', systemSessionToken);
-                document.getElementById('login-overlay').style.display = 'none';
-                triggerNotificationToast("Authentication parameters validated. Session established.");
-                loadTabDataset('orders');
-            } catch (err) {
-                triggerNotificationToast(err.message, 'error');
-            }
-        }
-
-        // Drop Security Access Parameters
-        function terminateSession() {
-            localStorage.removeItem('dan74_admin_token');
-            systemSessionToken = null;
-            document.getElementById('login-overlay').style.display = 'flex';
-        }
-
-        // Window Tab Manager Toggles
-        function switchConsoleTab(tabKey) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.dashboard-view').forEach(el => el.classList.remove('active'));
-            
-            event.currentTarget.classList.add('active');
-            document.getElementById(`view-${tabKey}`).classList.add('active');
-            
-            // Format Display Headings
-            const titlesMap = {
-                orders: "Operational Orders Pipeline",
-                blogs: "Blog Content Indexing",
-                subscribers: "Subscriber Base Management",
-                testimonials: "Testimonials Moderation Deck",
-                consultations: "Consultations Booking Pipelines",
-                broadcast: "Emergency Mass Broadcast Corridor"
-            };
-            document.getElementById('view-title').innerText = titlesMap[tabKey];
-            loadTabDataset(tabKey);
-        }
-
-        // Data Loader Hub Switch Engine Routing Table Target Fetches
-        function loadTabDataset(tabKey) {
-            switch(tabKey) {
-                case 'orders': fetchDashboardOrders(); break;
-                case 'blogs': fetchDashboardBlogs(); break;
-                case 'subscribers': fetchDashboardSubscribers(); break;
-                case 'testimonials': fetchDashboardTestimonials(); break;
-                case 'consultations': fetchDashboardConsultations(); break;
-            }
-        }
-
-        // 1. Fetch Orders Processing Grid Layout
-        async function fetchDashboardOrders() {
-            try {
-                const dataset = await fetchSecureGateway('/api/orders');
-                const bodyContainer = document.getElementById('table-orders-body');
-                bodyContainer.innerHTML = '';
-                
-                dataset.forEach(row => {
-                    const trackingRow = document.createElement('tr');
-                    trackingRow.innerHTML = `
-                        <td><strong>#${row.id}</strong></td>
-                        <td>${row.client_name || 'Anonymous User'}</td>
-                        <td><span class="badge badge-active">${row.package_name || 'Standard Plan'}</span></td>
-                        <td>$${parseFloat(row.amount || 0).toFixed(2)}</td>
-                        <td><span class="badge ${row.status === 'completed' ? 'badge-active' : 'badge-pending'}">${row.status}</span></td>
-                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
-                    `;
-                    bodyContainer.appendChild(trackingRow);
-                });
-            } catch (err) { console.error(err); }
-        }
-
-        // 2. Fetch Blog Analytics Processing Grid Layout
-        async function fetchDashboardBlogs() {
-            try {
-                const dataset = await fetchSecureGateway('/api/blogs');
-                const bodyContainer = document.getElementById('table-blogs-body');
-                bodyContainer.innerHTML = '';
-
-                dataset.forEach(row => {
-                    const rowElement = document.createElement('tr');
-                    rowElement.innerHTML = `
-                        <td>${row.id}</td>
-                        <td><strong>${row.title}</strong></td>
-                        <td><code>${row.category || 'Uncategorized'}</code></td>
-                        <td><i class="fa-regular fa-eye"></i> ${row.views_count || 0}</td>
-                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
-                    `;
-                    bodyContainer.appendChild(rowElement);
-                });
-            } catch (err) { console.error(err); }
-        }
-
-        // 3. Fetch Subscribers Processing Grid Matrix (Aligned perfectly to 'status' and 'is_deleted')
-        async function fetchDashboardSubscribers() {
-            try {
-                const dataset = await fetchSecureGateway('/api/subscribers');
-                const bodyContainer = document.getElementById('table-subscribers-body');
-                bodyContainer.innerHTML = '';
-
-                dataset.forEach(row => {
-                    const rowElement = document.createElement('tr');
-                    rowElement.innerHTML = `
-                        <td>${row.id}</td>
-                        <td><code>${row.email}</code></td>
-                        <td><span class="badge ${row.status === 'active' ? 'badge-active' : 'badge-disabled'}">${row.status}</span></td>
-                        <td>${new Date(row.created_at).toLocaleDateString()}</td>
-                    `;
-                    bodyContainer.appendChild(rowElement);
-                });
-            } catch (err) { console.error(err); }
-        }
-
-        // 4. Fetch and Moderate Testimonials Dynamic Grid Interface
-        async function fetchDashboardTestimonials() {
-            try {
-                const dataset = await fetchSecureGateway('/api/testimonials');
-                const bodyContainer = document.getElementById('table-testimonials-body');
-                bodyContainer.innerHTML = '';
-
-                dataset.forEach(row => {
-                    const rowElement = document.createElement('tr');
-                    rowElement.innerHTML = `
-                        <td>${row.id}</td>
-                        <td><strong>${row.name}</strong></td>
-                        <td style="max-width: 300px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">"${row.content}"</td>
-                        <td><span class="badge ${row.is_featured ? 'badge-active' : 'badge-disabled'}">${row.is_featured ? 'Featured' : 'Standard'}</span></td>
-                        <td><span class="badge ${row.status === 'approved' ? 'badge-active' : (row.status === 'pending' ? 'badge-pending' : 'badge-disabled')}">${row.status}</span></td>
-                        <td>
-                            <div class="action-row">
-                                ${row.status !== 'approved' ? `<button onclick="updateTestimonialState(${row.id}, 'approved')" class="btn-sm btn-approve"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
-                                ${!row.is_featured ? `<button onclick="toggleTestimonialFeature(${row.id}, true)" class="btn-sm" style="background-color: var(--accent-blue);"><i class="fa-solid fa-star"></i> Feature</button>` : `<button onclick="toggleTestimonialFeature(${row.id}, false)" class="btn-sm" style="background-color: var(--border-color);"><i class="fa-regular fa-star"></i> Unfeature</button>`}
-                            </div>
-                        </td>
-                    `;
-                    bodyContainer.appendChild(rowElement);
-                });
-            } catch (err) { console.error(err); }
-        }
-
-        async function updateTestimonialState(id, statusValue) {
-            await fetchSecureGateway(`/api/testimonials/${id}`, 'PUT', { status: statusValue });
-            triggerNotificationToast("Testimonial verification configuration state processed.");
-            fetchDashboardTestimonials();
-        }
-
-        async function toggleTestimonialFeature(id, featureFlag) {
-            await fetchSecureGateway(`/api/testimonials/${id}`, 'PUT', { is_featured: featureFlag });
-            triggerNotificationToast("Testimonial discovery prominence priority toggled.");
-            fetchDashboardTestimonials();
-        }
-
-        // 5. Fetch and Update Consultations Dynamic Grid Interface
-        async function fetchDashboardConsultations() {
-            try {
-                const dataset = await fetchSecureGateway('/api/consultations');
-                const bodyContainer = document.getElementById('table-consultations-body');
-                bodyContainer.innerHTML = '';
-
-                dataset.forEach(row => {
-                    const rowElement = document.createElement('tr');
-                    rowElement.innerHTML = `
-                        <td>${row.id}</td>
-                        <td><strong>${row.client_name}</strong></td>
-                        <td><code>${row.client_email}</code></td>
-                        <td>${new Date(row.requested_date).toLocaleString()}</td>
-                        <td><span class="badge ${row.status === 'scheduled' ? 'badge-active' : (row.status === 'pending' ? 'badge-pending' : 'badge-disabled')}">${row.status}</span></td>
-                        <td>
-                            <div class="action-row">
-                                ${row.status === 'pending' ? `<button onclick="updateConsultationState(${row.id}, 'scheduled')" class="btn-sm btn-approve"><i class="fa-solid fa-calendar-check"></i> Book</button>` : ''}
-                                ${row.status !== 'cancelled' ? `<button onclick="updateConsultationState(${row.id}, 'cancelled')" class="btn-sm btn-delete"><i class="fa-solid fa-ban"></i> Cancel</button>` : ''}
-                            </div>
-                        </td>
-                    `;
-                    bodyContainer.appendChild(rowElement);
-                });
-            } catch (err) { console.error(err); }
-        }
-
-        async function updateConsultationState(id, statusValue) {
-            await fetchSecureGateway(`/api/consultations/${id}`, 'PUT', { status: statusValue });
-            triggerNotificationToast(`Consultation workflow update deployed: ${statusValue}`);
-            fetchDashboardConsultations();
-        }
-
-        // 6. Mass Automated Communication Delivery Transmission Controller Block
-        async function fireEmailBroadcastPipeline(event) {
-            event.preventDefault();
-            const submitBtn = document.getElementById('broadcast-submit-btn');
-            const subject = document.getElementById('broadcast-subject').value;
-            const html = document.getElementById('broadcast-content').value;
-
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Deploying Communications Array Pipeline...";
-                
-                const responseMetrics = await fetchSecureGateway('/api/subscribers/broadcast', 'POST', { subject, html });
-                triggerNotificationToast(`Broadcast success! Dispatched down the pipeline safely to ${responseMetrics.sent} subscribers.`);
-                
-                document.getElementById('broadcast-execution-form').reset();
-            } catch(err) {
-                console.error(err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Deploy Broadcast Corridor`;
-            }
-        }
-            </script>
