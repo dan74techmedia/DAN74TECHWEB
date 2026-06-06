@@ -441,12 +441,15 @@
         }
 
 // Core Secure Fetch Wrapper
+        // Core Secure Fetch Wrapper - Anti-Loop Edition
 async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart = false) {
-    const token = localStorage.getItem('dan74_token');
+    // Hunt for the token using fallback keys just in case
+    const token = localStorage.getItem('dan74_token') || localStorage.getItem('adminToken') || localStorage.getItem('token');
     
     if (!token) {
+        alert("SYSTEM FAULT: No cryptographic token found in local storage. Halting execution.");
         executeLogout();
-        throw new Error("Session Invalid: Token missing");
+        throw new Error("Session Invalid");
     }
 
     const options = { method, headers: { 'Authorization': `Bearer ${token}` } };
@@ -463,12 +466,14 @@ async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart
     const res = await fetch(`${API_HOST}${endpoint}`, options);
     
     if (!res.ok) {
-        // Only trigger a hard logout on explicit 401/403 cryptographic rejections
-        if (res.status === 401 || res.status === 403) {
-            console.error("Server rejected token matrix:", res.status);
-            executeLogout();
-        }
         const errData = await res.json().catch(() => ({}));
+        
+        // If the server rejects the token, PAUSE the loop and display the error
+        if (res.status === 401 || res.status === 403) {
+            alert(`SERVER REJECTED TOKEN MATRIX:\nStatus: ${res.status}\nReason: ${errData.error || 'Clearance Denied'}\n\nRedirecting to login in 5 seconds...`);
+            setTimeout(() => executeLogout(), 5000);
+        }
+        
         throw new Error(errData.error || errData.message || `HTTP Fault ${res.status}`);
     }
     
