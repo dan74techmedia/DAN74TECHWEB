@@ -905,19 +905,21 @@ app.delete('/api/blog/:id', verifyAdminAccess, async (req, res) => {
 });
 
 // ================= MODULE 9: NEWSLETTER AUDIENCE SUBSCRIPTION REGISTER =================
-
+// POST: Add new subscriber
 app.post('/api/subscribers', async (req, res) => {
+    const { email, status } = req.body;
     try {
-        const { email } = req.body;
-        const result = await pool.query(
-            `INSERT INTO subscribers (email, status)
-             VALUES ($1, 'active')
-             ON CONFLICT (email)
-             DO UPDATE SET status = 'active', is_deleted = FALSE
-             RETURNING *`,
-            [email]
+        // Check if exists
+        const check = await pool.query('SELECT id FROM subscribers WHERE email = $1', [email]);
+        if (check.rows.length > 0) {
+            return res.status(400).json({ error: 'Email already subscribed.' });
+        }
+        
+        await pool.query(
+            'INSERT INTO subscribers (email, status) VALUES ($1, $2)',
+            [email, status || 'active']
         );
-        res.json({ success: true, data: result.rows[0] });
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
