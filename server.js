@@ -80,6 +80,28 @@ const authLimiter = rateLimit({
 });
 app.use('/api/auth/', authLimiter);
 
+// ---  TABLE ACCESS ROUTE ---
+app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blogs', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries'
+    ];
+
+    if (!allowedTables.includes(req.params.table)) {
+        return res.status(403).json({ error: "Unauthorized Table Access" });
+    }
+
+    try {
+        // Here is the logic that connects the allowed table to your DB:
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ================= UPLOADS STORAGE SYSTEM =================
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) { fs.mkdirSync(uploadDir, { recursive: true }); }
