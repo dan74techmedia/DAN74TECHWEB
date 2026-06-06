@@ -486,29 +486,44 @@
     let editContext = { endpoint: '', id: null };
 
     // --- AUTHENTICATION ---
-    window.onload = () => {
-        if (token) {
-            parseToken();
-            showApp();
-            initData();
-        }
-    };
-
-    function parseToken() {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            currentUser = payload;
-            document.getElementById('currentUserLabel').innerHTML = `<i class="fas fa-user-shield"></i> ${payload.email} (${payload.role})`;
-        } catch(e) { handleLogout(); }
-    }
-
     
+    window.onload = () => {
+    // Safely check if token exists and isn't a string literal "undefined"
+    if (token && token !== "undefined") {
+        parseToken();
+        showApp();
+        initData();
+    }
+};
+
+function parseToken() {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Ensure standard base64 decoding compatibility
+        const payload = JSON.parse(atob(base64));
+        
+        console.log("Decrypted Token Payload:", payload); // Debug tool
+
+        // Extract credentials cleanly whether nested under data.user or flat on the root object
+        const userData = payload.user || payload; 
+        
+        currentUser = userData;
+        
+        document.getElementById('currentUserLabel').innerHTML = 
+            `<i class="fas fa-user-shield"></i> ${userData.email} (${userData.role || 'No Role Found'})`;
+            
+    } catch(e) { 
+        console.error("Token parsing failed:", e);
+        handleLogout(); 
+    }
+}
+
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    console.log("Attempting login for:", email); // Step 1 check
+    console.log("Attempting login for:", email);
     
     try {
         const res = await fetch(`${API_BASE}/auth/login`, {
@@ -517,34 +532,36 @@ async function handleLogin(e) {
             body: JSON.stringify({email, password})
         });
         
-        console.log("Server responded with status:", res.status); // Step 2 check
+        console.log("Server responded with status:", res.status);
         
         const data = await res.json();
         
         if (!res.ok) {
-            console.error("Login Error Data:", data); // Step 3 check
+            console.error("Login Error Data:", data);
             throw new Error(data.message || data.error || 'Login failed');
         }
         
-        console.log("Login successful, role received:", data.user.role); // Step 4 check
+        // Safety Fallback check: Map object correctly if backend sends flat user object vs nested
+        const targetUser = data.user || data;
+        console.log("Login successful, user payload received:", targetUser);
         
-        if (data.user.role !== 'admin') {
-            throw new Error('Console Operation Limited to System Administrators Only.');
+        if (!targetUser.role || targetUser.role.toLowerCase() !== 'admin') {
+            throw new Error(`Console Operation Limited to System Administrators Only. Your current role is: ${targetUser.role || 'None'}`);
         }
         
         token = data.token;
         localStorage.setItem('dan74_token', token);
+        
         parseToken();
         showApp();
         initData();
         showToast('Authentication Successful', 'success');
         
     } catch (err) {
-        console.error("CATCH BLOCK ERROR:", err.message); // Step 5 check
+        console.error("CATCH BLOCK ERROR:", err.message);
         showToast(err.message, 'error');
     }
 }
-
     
 
     function handleLogout() {
