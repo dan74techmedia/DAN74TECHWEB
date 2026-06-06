@@ -59,39 +59,8 @@
 <body class="antialiased selection:bg-[#0044ff] selection:text-white h-screen flex">
 
     <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
-
-    <div id="auth-overlay" class="fixed inset-0 z-[10000] flex items-center justify-center transition-opacity duration-300">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 max-w-md w-full subtle-pulse-glow text-center mx-4">
-            <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] mx-auto mb-4">
-                <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center overflow-hidden">
-                    <span class="font-mono font-bold text-[#0f172a]">D74</span>
-                </div>
-            </div>
-            <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 font-mono">COMMAND NODE</h1>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 mb-8">Unified Cryptographic Access</p>
-            
-        </div>
-    </div>
-
-    <div id="app-layout" class="w-full h-full flex hidden opacity-0 transition-opacity duration-500">
-        
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-            <div class="h-16 flex items-center gap-3 px-6 border-b border-gray-100">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px]">
-                    <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center">
-                        <i class="fa-solid fa-server text-[#0f172a] text-xs"></i>
-                    </div>
-                </div>
-                <div class="flex flex-col leading-none">
-                    <span class="text-sm font-extrabold text-[#0f172a] font-mono tracking-tight">HQ<span class="text-[#0044ff]">.</span>MATRIX</span>
-                    <span class="text-[8px] font-bold text-emerald-500 uppercase tracking-widest mt-0.5">Online</span>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1" id="sidebar-menu">
-                </div>
-
-            <div class="p-4 border-t border-gray-100">
+    
+      <div class="p-4 border-t border-gray-100">
                 <button onclick="handleLogout()" class="w-full py-2.5 px-4 bg-red-50 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-[#ff2a2a] hover:text-white transition-colors border border-red-100 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-power-off"></i> Terminate Session
                 </button>
@@ -414,8 +383,10 @@
         }
 
         function handleLogout() {
-            localStorage.removeItem('dan74_token');
-            window.location.reload();
+    localStorage.removeItem('dan74_token');
+    window.location.href = 'login.html'; // Redirects instead of looping
+}
+
         }
 
         // === 4. UI INITIALIZATION & ROUTING ===
