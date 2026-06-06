@@ -3,1292 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH | Unified Admin Control Center</title>
+    <title>DAN74TECH MEDIA | Unified Operations Command</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary-blue: #0044ff; --accent-red: #ff2a2a; --accent-yellow: #ffd700;
-            --text-dark: #1a1a1a; --text-gray: #666666; --bg-light: #f5f7fa;
-            --card-bg: #ffffff; --border-light: #e0e0e0; --hover-light: #f9f9f9;
+            --brand-blue: #0044ff; --brand-red: #ff2a2a; --brand-yellow: #ffd700;
+            --bg-dark: #0b0f19; --bg-card: #151c2c; --border-color: #222f47;
+            --text-main: #f3f4f6; --text-muted: #9ca3af;
         }
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
-            color: var(--text-dark); line-height: 1.6; display: flex; min-height: 100vh;
+            font-family: 'Poppins', sans-serif; background-color: var(--bg-dark);
+            color: var(--text-main); display: flex; height: 100vh; overflow: hidden;
         }
+        
+        /* AUTHENTICATION OVERLAY */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); display: flex; align-items: center; justify-content: center;
+            z-index: 10000; transition: opacity 0.3s;
+        }
+        .auth-card {
+            background: var(--bg-card); padding: 3rem 2.5rem; border-radius: 16px;
+            border: 1px solid var(--border-color); width: 100%; max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center;
+        }
+        .auth-card h1 { font-family: 'Montserrat', sans-serif; color: var(--brand-blue); font-size: 2rem; margin-bottom: 0.5rem; }
+        .auth-card p { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2rem; }
+        
+        /* SIDEBAR */
         #sidebar {
-            width: 280px; background: #0b132b; color: #ffffff; padding: 2rem 1rem;
-            display: flex; flex-direction: column; gap: 2rem; flex-shrink: 0;
+            width: 280px; background: var(--bg-card); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; flex-shrink: 0;
         }
-        .sidebar-brand { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.5rem; color: #ffffff; text-align: center; }
-        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-        .sidebar-item a {
-            display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; color: #a0aec0;
-            text-decoration: none; border-radius: 8px; transition: all 0.3s ease; font-weight: 500;
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .sidebar-header h2 { font-family: 'Montserrat', sans-serif; color: var(--text-main); font-size: 1.2rem; }
+        .sidebar-header span { color: var(--brand-yellow); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .sidebar-menu { overflow-y: auto; flex-grow: 1; padding: 1rem 0; list-style: none; }
+        .sidebar-menu li a {
+            display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.5rem; color: var(--text-muted);
+            text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent;
         }
-        .sidebar-item a:hover, .sidebar-item.active a { background: var(--primary-blue); color: #ffffff; }
-        #main-content { flex-grow: 1; padding: 2.5rem; overflow-y: auto; max-width: calc(100% - 280px); }
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
-        .page-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 2rem; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem;
-            border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s ease;
-        }
-        .btn-primary { background: var(--primary-blue); color: #ffffff; }
-        .btn-primary:hover { background: #0033cc; }
-        .btn-secondary { background: #e2e8f0; color: var(--text-dark); }
-        .btn-secondary:hover { background: #cbd5e1; }
-        .btn-danger { background: var(--accent-red); color: #ffffff; }
-        .btn-danger:hover { background: #cc0000; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
-        .stat-info h3 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
-        .stat-info p { color: var(--text-gray); font-size: 0.9rem; }
-        .stat-icon { width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .bg-blue-light { background: rgba(0,68,255,0.1); color: var(--primary-blue); }
-        .bg-red-light { background: rgba(255,42,42,0.1); color: var(--accent-red); }
-        .bg-yellow-light { background: rgba(255,215,0,0.1); color: #b79400; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        .table-container { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 1.5rem; }
+        .sidebar-menu li a:hover { background: rgba(0, 68, 255, 0.1); color: var(--text-main); }
+        .sidebar-menu li.active a { background: var(--brand-blue); color: #fff; border-left-color: var(--brand-yellow); }
+        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; }
+        .btn-logout { background: transparent; color: var(--brand-red); border: 1px solid var(--brand-red); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; transition: all 0.2s; }
+        .btn-logout:hover { background: var(--brand-red); color: #fff; }
+
+        /* MAIN CONTENT */
+        #main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-nav { height: 70px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: var(--bg-dark); }
+        .top-nav h2 { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; }
+        .content-area { padding: 2rem; overflow-y: auto; flex-grow: 1; }
+        
+        /* VIEWS & PANELS */
+        .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+        .tab-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* DASHBOARD CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .stat-card h4 { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        .icon-box { width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+
+        /* TABLES & FORMS */
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .table-wrapper { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 1rem 1.5rem; font-weight: 600; color: var(--text-gray); border-bottom: 1px solid var(--border-light); }
-        td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light); font-size: 0.95rem; vertical-align: middle; }
-        tr:hover { background: var(--hover-light); }
-        .badge { display: inline-flex; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
-        .badge-success { background: #dcfce7; color: #15803d; }
-        .badge-warning { background: #fef9c3; color: #a16207; }
-        .badge-danger { background: #fee2e2; color: #b91c1c; }
-        .actions-cell { display: flex; gap: 0.5rem; }
-        .btn-icon { width: 35px; height: 35px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: all 0.2s ease; font-size: 1rem; }
-        .btn-edit { background: rgba(0,68,255,0.1); color: var(--primary-blue); }
-        .btn-edit:hover { background: var(--primary-blue); color: #ffffff; }
-        .btn-delete { background: rgba(255,42,42,0.1); color: var(--accent-red); }
-        .btn-delete:hover { background: var(--accent-red); color: #ffffff; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
-        .modal-content { background: var(--card-bg); width: 100%; max-width: 650px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; }
-        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h2 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.4rem; }
-        .close-btn { font-size: 1.5rem; color: var(--text-gray); cursor: pointer; border: none; background: none; }
-        .modal-body { padding: 2rem; overflow-y: auto; }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s ease; }
-        .form-control:focus { outline: none; border-color: var(--primary-blue); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 1rem; background: #f8fafc; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
-        #toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 9999; }
-        .toast { background: #0f172a; color: #ffffff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 0.75rem; min-width: 300px; animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .toast.success { border-left: 4px solid #10b981; }
-        .toast.error { border-left: 4px solid var(--accent-red); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media(max-width: 992px) {
-            body { flex-direction: column; }
-            #sidebar { width: 100%; max-width: 100%; }
-            #main-content { max-width: 100%; padding: 1.5rem; }
-        }
+        th { background: rgba(0,0,0,0.2); padding: 1rem 1.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; border-bottom: 1px solid var(--border-color); }
+        td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        tr:hover td { background: rgba(0,68,255,0.05); }
+
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.75rem 1rem; border-radius: 8px; font-family: 'Poppins', sans-serif; margin-bottom: 1rem; }
+        .form-control:focus { outline: none; border-color: var(--brand-blue); }
+        select.form-control { appearance: none; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--brand-blue); color: #fff; }
+        .btn-primary:hover { background: #0033cc; }
+        
+        /* BADGES & ICONS */
+        .badge { padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .badge.pending, .badge.warning { background: rgba(255,215,0,0.1); color: var(--brand-yellow); }
+        .badge.active, .badge.completed, .badge.paid { background: rgba(16,185,129,0.1); color: #10b981; }
+        .badge.cancelled, .badge.unpaid, .badge.danger { background: rgba(255,42,42,0.1); color: var(--brand-red); }
+        
+        .action-btns { display: flex; gap: 0.5rem; }
+        .btn-icon { width: 32px; height: 32px; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .edit-btn { background: rgba(0,68,255,0.1); color: var(--brand-blue); }
+        .edit-btn:hover { background: var(--brand-blue); color: #fff; }
+        .del-btn { background: rgba(255,42,42,0.1); color: var(--brand-red); }
+        .del-btn:hover { background: var(--brand-red); color: #fff; }
+
+        /* TOASTS */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--bg-card); border-left: 4px solid var(--brand-blue); color: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500; animation: slideIn 0.3s forwards; }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: var(--brand-red); }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
 
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h1>DAN74TECH</h1>
+            <p>Unified Command Console</p>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <input type="email" id="auth-email" class="form-control" placeholder="Admin Email" required>
+                <input type="password" id="auth-password" class="form-control" placeholder="Cryptographic Key" required>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
     <aside id="sidebar">
-        <div class="sidebar-brand">DAN74TECH MEDIA</div>
+        <div class="sidebar-header">
+            <h2>DAN74TECH</h2>
+            <span>HQ Operations</span>
+        </div>
         <ul class="sidebar-menu">
-            <li class="sidebar-item active" data-target="dashboard-section"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard Core</a></li>
-            <li class="sidebar-item" data-target="services-section"><a href="#"><i class="fa-solid fa-server"></i> Services Catalog</a></li>
-            <li class="sidebar-item" data-target="orders-section"><a href="#"><i class="fa-solid fa-cart-shopping"></i> Client Orders</a></li>
-            <li class="sidebar-item" data-target="portfolio-section"><a href="#"><i class="fa-solid fa-briefcase"></i> Portfolio Array</a></li>
-            <li class="sidebar-item" data-target="blog-section"><a href="#"><i class="fa-solid fa-pen-nib"></i> Insights Blog</a></li>
-            <li class="sidebar-item" data-target="invoices-section"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices Engine</a></li>
-            <li class="sidebar-item" data-target="tickets-section"><a href="#"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
-            <li class="sidebar-item" data-target="testimonials-section"><a href="#"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
-            <li class="sidebar-item" data-target="consultations-section"><a href="#"><i class="fa-solid fa-calendar-check"></i> Consultations</a></li>
-            <li class="sidebar-item" data-target="subscribers-section"><a href="#"><i class="fa-solid fa-envelope-open-text"></i> Newsletter Broadcast</a></li>
+            <li class="active" data-target="dashboard"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li data-target="orders"><a href="#"><i class="fa-solid fa-cart-shopping"></i> Orders Pipeline</a></li>
+            <li data-target="services"><a href="#"><i class="fa-solid fa-server"></i> Core Services</a></li>
+            <li data-target="subservices"><a href="#"><i class="fa-solid fa-layer-group"></i> Sub-Packages</a></li>
+            <li data-target="portfolio"><a href="#"><i class="fa-solid fa-briefcase"></i> Portfolio Array</a></li>
+            <li data-target="blogs"><a href="#"><i class="fa-solid fa-pen-nib"></i> Insights Blog</a></li>
+            <li data-target="invoices"><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Financial Ledgers</a></li>
+            <li data-target="tickets"><a href="#"><i class="fa-solid fa-headset"></i> Support Desk</a></li>
+            <li data-target="testimonials"><a href="#"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
+            <li data-target="consultations"><a href="#"><i class="fa-solid fa-calendar-check"></i> Consultations</a></li>
+            <li data-target="subscribers"><a href="#"><i class="fa-solid fa-envelope-open-text"></i> Broadcasts</a></li>
+            <li data-target="users"><a href="#"><i class="fa-solid fa-users"></i> Security Nodes</a></li>
         </ul>
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+        </div>
     </aside>
 
     <main id="main-content">
-        
-        <section id="dashboard-section" class="content-section active">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Operations Control Core</h1>
-                    <p style="color: var(--text-gray);">Real-time monitoring telemetry across system channels.</p>
-                </div>
-            </div>
-            <div class="dashboard-grid">
-                <div class="stat-card">
-                    <div class="stat-info"><h3 id="stat-orders-count">0</h3><p>Total Revenue Pipeline Orders</p></div>
-                    <div class="stat-icon bg-blue-light"><i class="fa-solid fa-bag-shopping"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info"><h3 id="stat-tickets-count">0</h3><p>Active Open Tickets</p></div>
-                    <div class="stat-icon bg-red-light"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info"><h3 id="stat-consultations-count">0</h3><p>Pending Briefing Checkpoints</p></div>
-                    <div class="stat-icon bg-yellow-light"><i class="fa-solid fa-hourglass-half"></i></div>
-                </div>
-            </div>
-            <div class="table-container">
-                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light); font-weight:700; font-family:'Montserrat';">Upcoming Briefing Matrix & Active Consultations</div>
-                <table id="dashboard-consultations-table">
-                    <thead>
-                        <tr><th>Client Identity</th><th>Email Address</th><th>Target Date</th><th>Timeframe Slot</th><th>Channel Platform</th><th>Status State</th><th>Workflow Mutation</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
+        <header class="top-nav">
+            <h2 id="view-title">Dashboard Core</h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-circle text-success" style="color: #10b981; margin-right: 5px;"></i> Neon Postgres Cluster Active</div>
+        </header>
 
-        <section id="services-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Services Catalog Array</h1>
-                    <p style="color: var(--text-gray);">Manage core capability definitions and target configuration metrics.</p>
-                </div>
-                <button class="btn btn-primary" onclick="launchServiceCreationModal()"><i class="fa-solid fa-plus"></i> Append Catalog Entity</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Visual Icon Token</th><th>Capability Matrix Identifier</th><th>Functional Description Summary</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="services-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="orders-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Client Orders Center</h1>
-                    <p style="color: var(--text-gray);">Monitor transaction structures and cross-platform fulfillment paths.</p>
-                </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Client Label</th><th>Phone Contact</th><th>Primary Category</th><th>Sub-Capability</th><th>Project Domain Target</th><th>Runtime Hardware Architecture</th><th>Financial Matrix Value</th><th>Fulfillment State</th><th>Financial Settlement Status</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="orders-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="portfolio-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Production Portfolio Showcase</h1>
-                    <p style="color: var(--text-gray);">Manage case configurations, live deployments, and capability proofs.</p>
-                </div>
-                <button class="btn btn-primary" onclick="launchPortfolioCreationModal()"><i class="fa-solid fa-plus"></i> Inject Portfolio Showcase</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Linked Order Reference</th><th>Project Title Node</th><th>Category Mapping</th><th>Production Endpoint Link</th><th>Fulfillment Milestone Progress</th><th>Lifecycle Deployment State</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="portfolio-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="blog-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Insights Hub Engine</h1>
-                    <p style="color: var(--text-gray);">Publish data telemetry, engineering guides, and company reports.</p>
-                </div>
-                <button class="btn btn-primary" onclick="launchBlogCreationModal()"><i class="fa-solid fa-plus"></i> Author Content Publication</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Article Header Title</th><th>Category Node</th><th>Resource Pointer Slug</th><th>SEO Framework Descriptor</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="blog-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="invoices-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Financial Invoices Matrix</h1>
-                    <p style="color: var(--text-gray);">Track balance sheets, target invoices, and ledger generation pipelines.</p>
-                </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Linked Transaction ID</th><th>Invoice Ledger Hash</th><th>Target Account Legal Entity</th><th>Billing Point Email Address</th><th>Financial Quantifier Value</th><th>Settlement Verification State</th><th>Cryptographic Document Handle</th></tr></thead>
-                    <tbody id="invoices-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="tickets-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Support Ticket Telemetry Desk</h1>
-                    <p style="color: var(--text-gray);">Audit system performance notifications and handle high-priority technical escalations.</p>
-                </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Linked Account Reference</th><th>Subject Vector</th><th>Technical Incident Context</th><th>Priority Matrix Rank</th><th>Resolution State</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="tickets-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="testimonials-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Client Testimonials Verification</h1>
-                    <p style="color: var(--text-gray);">Moderate public review indicators, ratings, and featured presentation state flags.</p>
-                </div>
-                <button class="btn btn-primary" onclick="launchTestimonialCreationModal()"><i class="fa-solid fa-plus"></i> Inject Manual Audit Testimonial</button>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Client Entity Name</th><th>Designation Node</th><th>Associated Corporate Entity</th><th>Rating Metric Scale</th><th>System Verification State</th><th>Showcase Highlight State</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="testimonials-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="consultations-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Consultation Registry Logs</h1>
-                    <p style="color: var(--text-gray);">Audit historical pipelines, check scheduled briefings, and confirm calendar channel paths.</p>
-                </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>ID</th><th>Client Identity</th><th>Email Address</th><th>Target Date</th><th>Timeframe Slot</th><th>Channel Platform</th><th>Status State</th><th>Actions Engine</th></tr></thead>
-                    <tbody id="consultations-table-body"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="subscribers-section" class="content-section">
-            <div class="header-container">
-                <div>
-                    <h1 class="page-title">Newsletter Communications Hub</h1>
-                    <p style="color: var(--text-gray);">Broadcast massive email arrays down the pipeline safely to active platform subscribers.</p>
-                </div>
-            </div>
-            <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 1rem; font-family:'Montserrat';">Deploy Automated Transmission Form</h3>
-                <form id="broadcast-execution-form" onsubmit="fireEmailBroadcastPipeline(event)">
-                    <div class="form-group">
-                        <label>Email Subject Identifier</label>
-                        <input type="text" id="broadcast-subject" class="form-control" placeholder="Enter high-impact headline vector..." required>
+        <div class="content-area">
+            
+            <div id="dashboard" class="tab-panel active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div><h4>Earnings</h4><div class="value" id="stat-earnings" style="color: #10b981;">$0.00</div></div>
+                        <div class="icon-box" style="background: rgba(16,185,129,0.1); color: #10b981;"><i class="fa-solid fa-sack-dollar"></i></div>
                     </div>
-                    <div class="form-group">
-                        <label>Payload Content Body (HTML Supported Framework)</label>
-                        <textarea id="broadcast-content" class="form-control" rows="8" placeholder="🚨 Synthesize compilation metrics or marketing content text vectors here..." required></textarea>
+                    <div class="stat-card">
+                        <div><h4>Total Orders</h4><div class="value" id="stat-orders" style="color: var(--brand-blue);">0</div></div>
+                        <div class="icon-box" style="background: rgba(0,68,255,0.1); color: var(--brand-blue);"><i class="fa-solid fa-bag-shopping"></i></div>
                     </div>
-                    <button type="submit" id="broadcast-submit-btn" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Deploy Broadcast Corridor</button>
-                </form>
+                    <div class="stat-card">
+                        <div><h4>Pending Briefings</h4><div class="value" id="stat-consults" style="color: var(--brand-yellow);">0</div></div>
+                        <div class="icon-box" style="background: rgba(255,215,0,0.1); color: var(--brand-yellow);"><i class="fa-solid fa-calendar-check"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><h4>Open Tickets</h4><div class="value" id="stat-tickets" style="color: var(--brand-red);">0</div></div>
+                        <div class="icon-box" style="background: rgba(255,42,42,0.1); color: var(--brand-red);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    </div>
+                </div>
             </div>
-            <div class="table-container">
-                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-light); font-weight:700; font-family:'Montserrat';">Active Subscriber Manifest Array</div>
-                <table>
-                    <thead><tr><th>ID</th><th>Target Subscriber Endpoint Address</th><th>Subscription Pipeline State</th><th>System Registration Timestamp</th></tr></thead>
-                    <tbody id="subscribers-table-body"></tbody>
-                </table>
+
+            <div id="orders" class="tab-panel">
+                <div class="panel-header"><h3>Active Deployments</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Client</th><th>Service / Pkg</th><th>Pricing</th><th>Fulfillment</th><th>Ledger</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-orders"></tbody>
+                    </table>
+                </div>
             </div>
-        </section>
+
+            <div id="services" class="tab-panel">
+                <div class="panel-header">
+                    <h3>Service Catalog</h3>
+                    <form onsubmit="handlePost(event, 'services', 'tb-services')" style="display:flex; gap:10px;">
+                        <input type="text" name="name" placeholder="Name" class="form-control" style="margin:0;" required>
+                        <input type="text" name="icon" placeholder="fa-solid fa-code" class="form-control" style="margin:0;" required>
+                        <input type="text" name="description" placeholder="Description" class="form-control" style="margin:0;">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Icon</th><th>Capability Name</th><th>Description</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-services"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="subservices" class="tab-panel">
+                <div class="panel-header">
+                    <h3>Sub-Packages Grid</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Parent Category</th><th>Package Tier</th><th>Price</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-subservices"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="portfolio" class="tab-panel">
+                <div class="panel-header">
+                    <h3>Portfolio Showcase</h3>
+                    <form onsubmit="handleMultipartPost(event, 'portfolio', 'tb-portfolio')" style="display:flex; gap:10px;">
+                        <input type="text" name="title" placeholder="Project Title" class="form-control" style="margin:0;" required>
+                        <input type="text" name="category" placeholder="Category" class="form-control" style="margin:0;" required>
+                        <input type="file" name="image" class="form-control" style="margin:0; padding: 0.5rem;" required>
+                        <button type="submit" class="btn btn-primary">Inject</button>
+                    </form>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Visual Link</th><th>Title</th><th>Category</th><th>Progress</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-portfolio"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="blogs" class="tab-panel">
+                <div class="panel-header"><h3>Content Routing Node</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Headline Title</th><th>Category</th><th>Slug Reference</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-blogs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="invoices" class="tab-panel">
+                <div class="panel-header"><h3>Financial Ledgers</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Invoice Hash</th><th>Client</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-invoices"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tickets" class="tab-panel">
+                <div class="panel-header"><h3>Technical Escalations</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Subject Vector</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-tickets"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="testimonials" class="tab-panel">
+                <div class="panel-header"><h3>Review Auditing Matrix</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Client Name</th><th>Company</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-testimonials"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="consultations" class="tab-panel">
+                <div class="panel-header"><h3>Briefing Checkpoints</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Client Identity</th><th>Email Address</th><th>Date/Time</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-consultations"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="subscribers" class="tab-panel">
+                <div class="panel-header"><h3>Broadcast Control</h3></div>
+                <div style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+                    <form onsubmit="executeBroadcast(event)">
+                        <input type="text" id="brd-subject" class="form-control" placeholder="Transmission Subject Line" required>
+                        <textarea id="brd-html" class="form-control" rows="4" placeholder="HTML Payload / Message Content" required></textarea>
+                        <button type="submit" class="btn btn-primary" id="brd-btn"><i class="fa-solid fa-paper-plane"></i> Deploy Mass Transmission</button>
+                    </form>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Target Address</th><th>Pipeline State</th><th>Joined</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-subscribers"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="users" class="tab-panel">
+                <div class="panel-header"><h3>Security Nodes</h3></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>ID</th><th>Identifier Name</th><th>Email Node</th><th>Role Permission</th><th>Actions</th></tr></thead>
+                        <tbody id="tb-users"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </main>
-
-    <div id="service-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="service-modal-title">Append Catalog Entity</h2>
-                <button class="close-btn" onclick="terminateModal('service-modal')">&times;</button>
-            </div>
-            <form id="service-form" onsubmit="executeServiceDataPersistencePipeline(event)">
-                <input type="hidden" id="service-id-field">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Capability Matrix Identifier (Name)</label>
-                        <input type="text" id="service-name-field" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Visual Icon Token (FontAwesome CSS Specifiers, e.g., fa-solid fa-robot)</label>
-                        <input type="text" id="service-icon-field" class="form-control" placeholder="fa-solid fa-code" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Functional Description Summary</label>
-                        <textarea id="service-description-field" class="form-control" rows="4" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="terminateModal('service-modal')">Abort Action</button>
-                    <button type="submit" class="btn btn-primary">Commit Matrix Records</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="order-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Mutate Order Configuration Parameters</h2>
-                <button class="close-btn" onclick="terminateModal('order-modal')">&times;</button>
-            </div>
-            <form id="order-form" onsubmit="executeOrderDataPersistencePipeline(event)">
-                <input type="hidden" id="order-id-field">
-                <input type="hidden" id="order-customer_name-field">
-                <input type="hidden" id="order-phone-field">
-                <input type="hidden" id="order-service-field">
-                <input type="hidden" id="order-sub_service-field">
-                <input type="hidden" id="order-project_details-field">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Linked User ID Handle Reference (Optional Node)</label>
-                        <input type="number" id="order-user_id-field" class="form-control">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Project Domain Target (FQDN)</label>
-                            <input type="text" id="order-domain-field" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Runtime Hardware Architecture / Device Model</label>
-                            <input type="text" id="order-device_model-field" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Financial Matrix Line Value (Amount)</label>
-                        <input type="number" step="0.01" id="order-price-field" class="form-control" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Fulfillment State Configuration</label>
-                            <select id="order-status-field" class="form-control">
-                                <option value="pending">Pending Operational Launch</option>
-                                <option value="in_progress">Active Engineering Synthesis</option>
-                                <option value="completed">Pipeline Execution Success</option>
-                                <option value="cancelled">Fulfillment Frame Revoked</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Financial Settlement Status</label>
-                            <select id="order-payment_status-field" class="form-control">
-                                <option value="unpaid">Outstanding Ledger Account</option>
-                                <option value="paid">Settled and Locked Ledger</option>
-                                <option value="refunded">Value Backtrack Reversed</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="terminateModal('order-modal')">Abort Action</button>
-                    <button type="submit" class="btn btn-primary">Commit Order Parameters</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="portfolio-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="portfolio-modal-title">Inject Portfolio Showcase</h2>
-                <button class="close-btn" onclick="terminateModal('portfolio-modal')">&times;</button>
-            </div>
-            <form id="portfolio-form" onsubmit="executePortfolioDataPersistencePipeline(event)">
-                <input type="hidden" id="portfolio-id-field">
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Linked Target Order Reference (ID Node)</label>
-                            <input type="number" id="portfolio-order_id-field" class="form-control" placeholder="Optional integer reference...">
-                        </div>
-                        <div class="form-group">
-                            <label>Project Title Node</label>
-                            <input type="text" id="portfolio-title-field" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Category Mapping Class</label>
-                        <input type="text" id="portfolio-category-field" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Functional Scope Summary Context</label>
-                        <textarea id="portfolio-description-field" class="form-control" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Production Endpoint Web Link (URL Reference)</label>
-                        <input type="url" id="portfolio-link-field" class="form-control" placeholder="https://..." required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Fulfillment Milestone Progress Matrix (<span id="progress-val-display">0</span>%)</label>
-                            <input type="range" id="portfolio-progress-field" min="0" max="100" class="form-control" oninput="document.getElementById('progress-val-display').innerText=this.value">
-                        </div>
-                        <div class="form-group">
-                            <label>Lifecycle Deployment State</label>
-                            <select id="portfolio-status-field" class="form-control">
-                                <option value="In Progress">In Progress Core Dev</option>
-                                <option value="Review State">In Evaluation Matrix Review</option>
-                                <option value="Completed">Completed Live Release</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="terminateModal('portfolio-modal')">Abort Action</button>
-                    <button type="submit" class="btn btn-primary">Save Showcase Record</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="blog-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="blog-modal-title">Author Content Publication</h2>
-                <button class="close-btn" onclick="terminateModal('blog-modal')">&times;</button>
-            </div>
-            <form id="blog-form" onsubmit="executeBlogDataPersistencePipeline(event)">
-                <input type="hidden" id="blog-id-field">
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Article Header Title</label>
-                            <input type="text" id="blog-title-field" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Category Node</label>
-                            <input type="text" id="blog-category-field" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Resource Pointer Unique Slug</label>
-                            <input type="text" id="blog-slug-field" class="form-control" placeholder="unique-url-handle-vector" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Asset Image URL Anchor</label>
-                            <input type="text" id="blog-image_url-field" class="form-control" placeholder="https://res.cloudinary.com/...">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Executive Digest Summary</label>
-                        <input type="text" id="blog-summary-field" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Core Technical Document Body (Content Framework)</label>
-                        <textarea id="blog-content-field" class="form-control" rows="5" required></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>SEO Document Header Title</label>
-                            <input type="text" id="blog-seo_title-field" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>SEO Crawler Description Metric</label>
-                            <input type="text" id="blog-seo_description-field" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="terminateModal('blog-modal')">Abort Action</button>
-                    <button type="submit" class="btn btn-primary">Publish Core Ledger</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div id="testimonial-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="testimonial-modal-title">Inject Manual Audit Testimonial</h2>
-                <button class="close-btn" onclick="terminateModal('testimonial-modal')">&times;</button>
-            </div>
-            <form id="testimonial-form" onsubmit="executeTestimonialDataPersistencePipeline(event)">
-                <input type="hidden" id="testimonial-id-field">
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Client Entity Name</label>
-                            <input type="text" id="testimonial-client_name-field" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Designation Node Role</label>
-                            <input type="text" id="testimonial-client_designation-field" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Associated Corporate Entity Name</label>
-                            <input type="text" id="testimonial-company-field" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Resource Avatar Asset Link (URL)</label>
-                            <input type="text" id="testimonial-client_avatar_url-field" class="form-control" placeholder="https://...">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Rating Metric Scale Value (1-5)</label>
-                            <input type="number" id="testimonial-rating-field" min="1" max="5" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>System Verification Validation State</label>
-                            <select id="testimonial-status-field" class="form-control">
-                                <option value="pending">Awaiting Review Board</option>
-                                <option value="approved">Approved for UI Injection</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Showcase Highlight Visibility Configuration</label>
-                        <select id="testimonial-is_featured-field" class="form-control">
-                            <option value="false">Standard Repository Storage</option>
-                            <option value="true">Promote to Featured Main Frame</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Review Transmission Content Text Segment</label>
-                        <textarea id="testimonial-review-field" class="form-control" rows="3" required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="terminateModal('testimonial-modal')">Abort Action</button>
-                    <button type="submit" class="btn btn-primary">Commit Validation Record</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <div id="toast-container"></div>
 
-    <script>
+       <script>
+        const API_HOST = window.location.origin;
 
-        // Add or update this right at the start of your script tag in admin.html
-(function() {
-    const sessionToken = localStorage.getItem('adminToken');
-    
-    // If the token is missing, redirect immediately to the authorization portal
-    if (!sessionToken) {
-        window.location.href = 'login.html';
-    }
-})();
-        
-        // System Gateway Architecture Variables
-        const targetBackendOrigin = window.location.origin;
-
-        // 1. Core Interceptor Network Gateway Protocol
-        async function fetchSecureGateway(endpoint, method = 'GET', dataBody = null) {
-            const systemSecurityToken = localStorage.getItem('token');
-            if (!systemSecurityToken) {
-                triggerNotificationToast("Authorization missing. Redirecting downstream...", "error");
-                window.location.href = '/login.html';
-                throw new Error("Missing cryptographic token context.");
+        // 1. Core API Fetch Wrapper
+        async function fetchSecure(endpoint, method = 'GET', payload = null, isFormData = false) {
+            const token = localStorage.getItem('dan74_token');
+            if (!token && endpoint !== '/api/auth/login') {
+                document.getElementById('auth-overlay').style.opacity = '1';
+                document.getElementById('auth-overlay').style.pointerEvents = 'all';
+                throw new Error("Session expired. Please re-authenticate.");
             }
+
+            const options = { method, headers: { 'Authorization': `Bearer ${token}` } };
             
-            const pipelineOptions = {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${systemSecurityToken}`
+            if (payload) {
+                if (isFormData) {
+                    options.body = payload; // Browser sets multipart/form-data boundary automatically
+                } else {
+                    options.headers['Content-Type'] = 'application/json';
+                    options.body = JSON.stringify(payload);
                 }
-            };
-            if (dataBody) pipelineOptions.body = JSON.stringify(dataBody);
-            
-            const serverResponse = await fetch(`${targetBackendOrigin}${endpoint}`, pipelineOptions);
-            if (!serverResponse.ok) {
-                if (serverResponse.status === 401 || serverResponse.status === 403) {
-                    localStorage.removeItem('token');
-                    window.location.href = '/login.html';
-                }
-                const errorPayload = await serverResponse.json().catch(() => ({}));
-                throw new Error(errorPayload.error || `HTTP Network Disruption: Status code ${serverResponse.status}`);
             }
-            return serverResponse.json();
-        }
 
-        // 2. Notification Toast Engine
-        function triggerNotificationToast(messageText, statusType = 'success') {
-            const containerNode = document.getElementById('toast-container');
-            const alertElement = document.createElement('div');
-            alertElement.className = `toast ${statusType}`;
-            alertElement.innerHTML = `
-                <i class="fa-solid ${statusType === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
-                <span>${messageText}</span>
-            `;
-            containerNode.appendChild(alertElement);
-            setTimeout(() => alertElement.remove(), 4500);
-        }
-
-        // 3. Modal Lifecycle Window Automation
-        function deployModal(targetElementId) {
-            document.getElementById(targetElementId).style.display = 'flex';
-        }
-        function terminateModal(targetElementId) {
-            document.getElementById(targetElementId).style.display = 'none';
-        }
-
-        // 4. Initial Launch Sequence Orchestrator
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('token')) {
-                window.location.href = '/login.html';
-                return;
+            const res = await fetch(`${API_HOST}${endpoint}`, options);
+            if (!res.ok) {
+                if (res.status === 401 || res.status === 403) handleLogout();
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || errData.message || `HTTP Execution Error ${res.status}`);
             }
-            initializeNavigationCorridorHooks();
-            fetchDashboardStats();
-            fetchDashboardConsultations();
+            return await res.json();
+        }
+
+        // 2. Authentication Logic
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            try {
+                const res = await fetch(`${API_HOST}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if (!res.ok || !data.success) throw new Error(data.message || "Credential validation failed");
+                if (data.user.role !== 'admin') throw new Error("Security policy restricts access to administrators only.");
+
+                localStorage.setItem('dan74_token', data.token);
+                document.getElementById('auth-overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('auth-overlay').style.pointerEvents = 'none', 300);
+                showToast("Cryptographic tunnel established.", "success");
+                
+                initDashboard();
+            } catch (err) { showToast(err.message, "error"); }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('dan74_token');
+            window.location.reload();
+        }
+
+        // 3. UI Interactions
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu li').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                
+                item.classList.add('active');
+                const target = item.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+                document.getElementById('view-title').innerText = item.innerText;
+                
+                loadTableData(target);
+            });
         });
 
-        // 5. Sidebar Navigation Matrix Routing Rules
-        function initializeNavigationCorridorHooks() {
-            document.querySelectorAll('#sidebar .sidebar-item').forEach(menuItem => {
-                menuItem.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    document.querySelectorAll('#sidebar .sidebar-item').forEach(item => item.classList.remove('active'));
-                    document.querySelectorAll('.content-section').forEach(sect => sect.classList.remove('active'));
-                    
-                    menuItem.classList.add('active');
-                    const targetFrameId = menuItem.getAttribute('data-target');
-                    document.getElementById(targetFrameId).classList.add('active');
-                    
-                    dispatchSectionDataFetchPipeline(targetFrameId);
-                });
-            });
-        }
-
-        // Data Refresh Multiplexer
-        function dispatchSectionDataFetchPipeline(sectionIdentifier) {
-            switch(sectionIdentifier) {
-                case 'dashboard-section':
-                    fetchDashboardStats();
-                    fetchDashboardConsultations();
-                    break;
-                case 'services-section': fetchServicesCatalogManifest(); break;
-                case 'orders-section': fetchOrdersRepositoryManifest(); break;
-                case 'portfolio-section': fetchPortfolioShowcaseManifest(); break;
-                case 'blog-section': fetchBlogEngineManifest(); break;
-                case 'invoices-section': fetchInvoicesLedgerManifest(); break;
-                case 'tickets-section': fetchSupportTicketsDeskManifest(); break;
-                case 'testimonials-section': fetchTestimonialsVerificationManifest(); break;
-                case 'consultations-section': fetchConsultationRegistryManifest(); break;
-                case 'subscribers-section': fetchSubscriberManifestArray(); break;
-            }
-        }
-
-        // 6. Real-time Telemetry Metrics Aggregator
-        async function fetchDashboardStats() {
+        // 4. Data Routing Engine
+        async function initDashboard() {
+            if(!localStorage.getItem('dan74_token')) return;
+            document.getElementById('auth-overlay').style.opacity = '0';
+            document.getElementById('auth-overlay').style.pointerEvents = 'none';
+            
             try {
-                const ordersManifest = await fetchSecureGateway('/api/orders');
-                const ticketsManifest = await fetchSecureGateway('/api/support_tickets');
-                const consultationsManifest = await fetchSecureGateway('/api/consultations');
+                const stats = await fetchSecure('/api/admin/stats');
+                document.getElementById('stat-earnings').innerText = `$${parseFloat(stats.total_earnings).toFixed(2)}`;
+                document.getElementById('stat-orders').innerText = stats.orders;
+                document.getElementById('stat-consults').innerText = stats.pending_consultations;
+                document.getElementById('stat-tickets').innerText = stats.open_tickets;
+            } catch(err) { console.error(err); }
+        }
+
+        async function loadTableData(module) {
+            const routeMap = {
+                orders: '/api/orders', services: '/api/services', subservices: '/api/sub-services',
+                portfolio: '/api/portfolio', blogs: '/api/blog', invoices: '/api/invoices',
+                tickets: '/api/tickets', testimonials: '/api/testimonials', 
+                consultations: '/api/consultations', subscribers: '/api/subscribers', users: '/api/users'
+            };
+
+            if (!routeMap[module]) return;
+
+            try {
+                let data = await fetchSecure(routeMap[module]);
+                if (module === 'orders') data = data.data || data; // Handle pagination wrapper if present
                 
-                document.getElementById('stat-orders-count').innerText = ordersManifest.filter(o => !o.is_deleted).length;
-                document.getElementById('stat-tickets-count').innerText = ticketsManifest.filter(t => t.status === 'open' && !t.is_deleted).length;
-                document.getElementById('stat-consultations-count').innerText = consultationsManifest.filter(c => c.status === 'pending' && !c.is_deleted).length;
-            } catch (err) {
-                console.error("Telemetry collection interrupted:", err);
-            }
-        }
-
-        // Dashboard Live Consultation Loop
-        async function fetchDashboardConsultations() {
-            try {
-                const datasets = await fetchSecureGateway('/api/consultations');
-                const cleanRows = datasets.filter(c => !c.is_deleted);
-                const tableTarget = document.querySelector('#dashboard-consultations-table tbody');
-                tableTarget.innerHTML = '';
-                
-                cleanRows.slice(0, 6).forEach(item => {
-                    const dynamicRow = document.createElement('tr');
-                    dynamicRow.innerHTML = `
-                        <td style="font-weight:600;">${escapeHtml(item.client_name)}</td>
-                        <td>${escapeHtml(item.client_email)}</td>
-                        <td>${new Date(item.booking_date).toLocaleDateString()}</td>
-                        <td><span class="badge badge-warning">${escapeHtml(item.booking_time)}</span></td>
-                        <td><span class="badge badge-success">${escapeHtml(item.platform || 'Google Meet')}</span></td>
-                        <td><span class="badge ${item.status === 'pending' ? 'badge-warning' : 'badge-success'}">${escapeHtml(item.status)}</span></td>
-                        <td>
-                            <select onchange="updateConsultationState(${item.id}, this.value)" style="padding:0.3rem 0.5rem; border-radius:6px; border:1px solid var(--border-light);">
-                                <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="confirmed" ${item.status === 'confirmed' ? 'selected' : ''}>Confirm</option>
-                                <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>Complete</option>
-                                <option value="cancelled" ${item.status === 'cancelled' ? 'selected' : ''}>Cancel</option>
-                            </select>
-                        </td>
-                    `;
-                    tableTarget.appendChild(dynamicRow);
-                });
-            } catch (err) {
-                console.error("Dashboard component sync fault:", err);
-            }
-        }
-
-        async function updateConsultationState(id, statusValue) {
-            try {
-                await fetchSecureGateway(`/api/consultations/${id}`, 'PUT', { status: statusValue });
-                triggerNotificationToast(`Consultation workflow update deployed: ${statusValue}`);
-                fetchDashboardConsultations();
-            } catch(err) {
-                triggerNotificationToast(err.message, "error");
-            }
-        }
-
-        // ======================= CRUD SUBSYSTEM MATRIX IMPLEMENTATIONS =======================
-
-        // --- SERVICES PIPELINE ---
-        async function fetchServicesCatalogManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/services');
-                const tbody = document.getElementById('services-table-body');
+                const tbody = document.getElementById(`tb-${module}`);
                 tbody.innerHTML = '';
-                data.filter(s => !s.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td><i class="${escapeHtml(item.icon || 'fa-solid fa-cube')}" style="font-size:1.2rem; color:var(--primary-blue);"></i></td>
-                        <td style="font-weight:600;">${escapeHtml(item.name)}</td>
-                        <td>${escapeHtml(item.description || 'N/A')}</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchServiceModificationModal(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('services', ${item.id}, fetchServicesCatalogManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                
+                data.filter(row => !row.is_deleted).forEach(row => {
+                    let html = `<tr>`;
+                    if (module === 'orders') {
+                        html += `<td>#${row.id}</td><td>${row.customer_name}</td><td><span class="badge active">${row.service}</span></td>
+                                 <td>$${row.price}</td><td><span class="badge ${row.status}">${row.status}</span></td>
+                                 <td><span class="badge ${row.payment_status}">${row.payment_status}</span></td>`;
+                    } else if (module === 'services') {
+                        html += `<td>${row.id}</td><td><i class="${row.icon} text-primary"></i></td>
+                                 <td><strong>${row.name}</strong></td><td>${row.description || ''}</td>`;
+                    } else if (module === 'subservices') {
+                        html += `<td>${row.category_name || 'N/A'}</td><td><strong>${row.name}</strong></td><td>$${row.price}</td>`;
+                    } else if (module === 'portfolio') {
+                        html += `<td><a href="${row.link}" target="_blank" style="color:var(--brand-yellow);">View Asset</a></td>
+                                 <td>${row.title}</td><td>${row.category}</td><td>${row.progress}%</td>`;
+                    } else if (module === 'blogs') {
+                        html += `<td>${row.id}</td><td><strong>${row.title}</strong></td><td>${row.category}</td><td>${row.slug}</td>`;
+                    } else if (module === 'invoices') {
+                        html += `<td><strong>${row.invoice_number}</strong></td><td>${row.client_name}</td>
+                                 <td>$${row.amount}</td><td><span class="badge ${row.status}">${row.status}</span></td>`;
+                    } else if (module === 'tickets') {
+                        html += `<td>#${row.id}</td><td>${row.subject}</td>
+                                 <td><span class="badge ${row.priority}">${row.priority}</span></td>
+                                 <td><span class="badge ${row.status}">${row.status}</span></td>`;
+                    } else if (module === 'testimonials') {
+                        html += `<td>${row.id}</td><td>${row.client_name}</td><td>${row.company || 'N/A'}</td>
+                                 <td><span style="color:var(--brand-yellow);"><i class="fa-solid fa-star"></i> ${row.rating}</span></td>
+                                 <td><span class="badge ${row.status}">${row.status}</span></td>`;
+                    } else if (module === 'consultations') {
+                        html += `<td>${row.client_name}</td><td>${row.client_email}</td>
+                                 <td>${new Date(row.booking_date).toLocaleDateString()} ${row.booking_time}</td>
+                                 <td><span class="badge ${row.status}">${row.status}</span></td>`;
+                    } else if (module === 'subscribers') {
+                        html += `<td>${row.email}</td><td><span class="badge active">${row.status}</span></td>
+                                 <td>${new Date(row.created_at).toLocaleDateString()}</td>`;
+                    } else if (module === 'users') {
+                        html += `<td>${row.id}</td><td>${row.name}</td><td>${row.email}</td>
+                                 <td><span class="badge active">${row.role}</span></td>`;
+                    }
+
+                    // Standardize Deletion Logic dynamically to server.js /api/:table/bulk
+                    const dbTableMapping = {
+                        orders: 'orders', services: 'services', subservices: 'sub_services',
+                        portfolio: 'portfolio', blogs: 'blog_posts', invoices: 'invoices',
+                        tickets: 'support_tickets', testimonials: 'testimonials',
+                        consultations: 'consultations', subscribers: 'subscribers', users: 'users'
+                    };
+
+                    html += `<td><div class="action-btns">
+                                <button class="btn-icon del-btn" onclick="executeSoftDelete('${dbTableMapping[module]}', ${row.id}, '${module}')"><i class="fa-solid fa-trash"></i></button>
+                             </div></td></tr>`;
+                    tbody.innerHTML += html;
                 });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
+            } catch(err) { showToast(err.message, 'error'); }
         }
-
-        function launchServiceCreationModal() {
-            document.getElementById('service-form').reset();
-            document.getElementById('service-id-field').value = '';
-            document.getElementById('service-modal-title').innerText = "Append Catalog Entity";
-            deployModal('service-modal');
-        }
-
-        async function launchServiceModificationModal(id) {
+             // 5. Universal Execution Pipelines
+        async function executeSoftDelete(table, id, moduleRef) {
+            if(!confirm(`Authorize soft-delete logic for record ID #${id} in ${table}?`)) return;
             try {
-                const record = await fetchSecureGateway(`/api/services/${id}`);
-                document.getElementById('service-id-field').value = record.id;
-                document.getElementById('service-name-field').value = record.name;
-                document.getElementById('service-icon-field').value = record.icon || '';
-                document.getElementById('service-description-field').value = record.description || '';
-                document.getElementById('service-modal-title').innerText = "Mutate Service Configuration Entity";
-                deployModal('service-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
+                await fetchSecure(`/api/${table}/bulk`, 'POST', { action: 'delete', ids: [id] });
+                showToast("Record execution sequence terminated.", "success");
+                loadTableData(moduleRef);
+                initDashboard();
+            } catch(err) { showToast(err.message, 'error'); }
         }
 
-        async function executeServiceDataPersistencePipeline(e) {
+        async function handlePost(e, endpoint, tableId) {
             e.preventDefault();
-            const id = document.getElementById('service-id-field').value;
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData);
+            try {
+                await fetchSecure(`/api/${endpoint}`, 'POST', payload);
+                showToast("Data array successfully ingested.", "success");
+                e.target.reset();
+                loadTableData(endpoint);
+            } catch(err) { showToast(err.message, 'error'); }
+        }
+
+        async function handleMultipartPost(e, endpoint, tableId) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            try {
+                await fetchSecure(`/api/${endpoint}`, 'POST', formData, true);
+                showToast("Multipart stream executed successfully.", "success");
+                e.target.reset();
+                loadTableData(endpoint);
+            } catch(err) { showToast(err.message, 'error'); }
+        }
+
+        async function executeBroadcast(e) {
+            e.preventDefault();
+            const btn = document.getElementById('brd-btn');
             const payload = {
-                name: document.getElementById('service-name-field').value,
-                icon: document.getElementById('service-icon-field').value,
-                description: document.getElementById('service-description-field').value
+                subject: document.getElementById('brd-subject').value,
+                html: document.getElementById('brd-html').value
             };
             try {
-                if (id) {
-                    await fetchSecureGateway(`/api/services/${id}`, 'PUT', payload);
-                    triggerNotificationToast("Service parameters successfully re-serialized.");
-                } else {
-                    await fetchSecureGateway('/api/services', 'POST', payload);
-                    triggerNotificationToast("New service injected into system inventory layout.");
-                }
-                terminateModal('service-modal');
-                fetchServicesCatalogManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
+                btn.disabled = true; btn.innerHTML = "Deploying...";
+                const res = await fetchSecure('/api/subscribers/broadcast', 'POST', payload);
+                showToast(`Broadcast success. Transmission hits: ${res.sent}`, "success");
+                e.target.reset();
+            } catch(err) { showToast(err.message, 'error'); }
+            finally { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Deploy Mass Transmission`; }
         }
 
-        // --- ORDERS PIPELINE ---
-        async function fetchOrdersRepositoryManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/orders');
-                const tbody = document.getElementById('orders-table-body');
-                tbody.innerHTML = '';
-                data.filter(o => !o.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td style="font-weight:600;">${escapeHtml(item.customer_name)}</td>
-                        <td>${escapeHtml(item.phone)}</td>
-                        <td><span class="badge badge-success">${escapeHtml(item.service)}</span></td>
-                        <td>${escapeHtml(item.sub_service || 'None')}</td>
-                        <td><code>${escapeHtml(item.domain || 'N/A')}</code></td>
-                        <td><small>${escapeHtml(item.device_model || 'Web Client')}</small></td>
-                        <td style="font-weight:700; color:var(--primary-blue);">$${parseFloat(item.price || 0).toFixed(2)}</td>
-                        <td><span class="badge ${item.status === 'completed' ? 'badge-success' : 'badge-warning'}">${item.status}</span></td>
-                        <td><span class="badge ${item.payment_status === 'paid' ? 'badge-success' : 'badge-danger'}">${item.payment_status}</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchOrderModificationModal(${item.id})"><i class="fa-solid fa-sliders"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('orders', ${item.id}, fetchOrdersRepositoryManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function launchOrderModificationModal(id) {
-            try {
-                const record = await fetchSecureGateway(`/api/orders/${id}`);
-                document.getElementById('order-id-field').value = record.id;
-                document.getElementById('order-customer_name-field').value = record.customer_name;
-                document.getElementById('order-phone-field').value = record.phone;
-                document.getElementById('order-service-field').value = record.service;
-                document.getElementById('order-sub_service-field').value = record.sub_service || '';
-                document.getElementById('order-project_details-field').value = record.project_details || '';
-                
-                document.getElementById('order-user_id-field').value = record.user_id || '';
-                document.getElementById('order-domain-field').value = record.domain || 'N/A';
-                document.getElementById('order-device_model-field').value = record.device_model || 'Web Client';
-                document.getElementById('order-price-field').value = record.price || 0.00;
-                document.getElementById('order-status-field').value = record.status || 'pending';
-                document.getElementById('order-payment_status-field').value = record.payment_status || 'unpaid';
-                
-                deployModal('order-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function executeOrderDataPersistencePipeline(e) {
-            e.preventDefault();
-            const id = document.getElementById('order-id-field').value;
-            const payload = {
-                customer_name: document.getElementById('order-customer_name-field').value,
-                phone: document.getElementById('order-phone-field').value,
-                service: document.getElementById('order-service-field').value,
-                sub_service: document.getElementById('order-sub_service-field').value,
-                project_details: document.getElementById('order-project_details-field').value,
-                
-                user_id: document.getElementById('order-user_id-field').value ? parseInt(document.getElementById('order-user_id-field').value) : null,
-                domain: document.getElementById('order-domain-field').value,
-                device_model: document.getElementById('order-device_model-field').value,
-                price: parseFloat(document.getElementById('order-price-field').value),
-                status: document.getElementById('order-status-field').value,
-                payment_status: document.getElementById('order-payment_status-field').value
-            };
-            try {
-                await fetchSecureGateway(`/api/orders/${id}`, 'PUT', payload);
-                triggerNotificationToast("Transactional order matrix variables saved securely.");
-                terminateModal('order-modal');
-                fetchOrdersRepositoryManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- PORTFOLIO PIPELINE ---
-        async function fetchPortfolioShowcaseManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/portfolio');
-                const tbody = document.getElementById('portfolio-table-body');
-                tbody.innerHTML = '';
-                data.filter(p => !p.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td><code>ID #${item.order_id || 'N/A'}</code></td>
-                        <td style="font-weight:600;">${escapeHtml(item.title)}</td>
-                        <td><span class="badge badge-success">${escapeHtml(item.category)}</span></td>
-                        <td><a href="${escapeHtml(item.link)}" target="_blank" style="color:var(--primary-blue); text-decoration:none;"><code>Link Engine <i class="fa-solid fa-arrow-up-right-from-square"></i></code></a></td>
-                        <td>
-                            <div style="background:#e2e8f0; border-radius:50px; height:8px; width:100%; position:relative;">
-                                <div style="background:var(--primary-blue); width:${item.progress}%; height:100%; border-radius:50px;"></div>
-                            </div>
-                            <small>${item.progress}%</small>
-                        </td>
-                        <td><span class="badge badge-warning">${escapeHtml(item.status || 'In Progress')}</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchPortfolioModificationModal(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('portfolio', ${item.id}, fetchPortfolioShowcaseManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        function launchPortfolioCreationModal() {
-            document.getElementById('portfolio-form').reset();
-            document.getElementById('portfolio-id-field').value = '';
-            document.getElementById('portfolio-progress-field').value = 0;
-            document.getElementById('progress-val-display').innerText = 0;
-            document.getElementById('portfolio-modal-title').innerText = "Inject Portfolio Showcase";
-            deployModal('portfolio-modal');
-        }
-
-        async function launchPortfolioModificationModal(id) {
-            try {
-                const record = await fetchSecureGateway(`/api/portfolio/${id}`);
-                document.getElementById('portfolio-id-field').value = record.id;
-                document.getElementById('portfolio-order_id-field').value = record.order_id || '';
-                document.getElementById('portfolio-title-field').value = record.title;
-                document.getElementById('portfolio-category-field').value = record.category;
-                document.getElementById('portfolio-description-field').value = record.description || '';
-                document.getElementById('portfolio-link-field').value = record.link || '';
-                document.getElementById('portfolio-progress-field').value = record.progress || 0;
-                document.getElementById('progress-val-display').innerText = record.progress || 0;
-                document.getElementById('portfolio-status-field').value = record.status || 'In Progress';
-                document.getElementById('portfolio-modal-title').innerText = "Modify Showcase Parameters";
-                deployModal('portfolio-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function executePortfolioDataPersistencePipeline(e) {
-            e.preventDefault();
-            const id = document.getElementById('portfolio-id-field').value;
-            const payload = {
-                order_id: document.getElementById('portfolio-order_id-field').value ? parseInt(document.getElementById('portfolio-order_id-field').value) : null,
-                title: document.getElementById('portfolio-title-field').value,
-                category: document.getElementById('portfolio-category-field').value,
-                description: document.getElementById('portfolio-description-field').value,
-                link: document.getElementById('portfolio-link-field').value,
-                progress: parseInt(document.getElementById('portfolio-progress-field').value),
-                status: document.getElementById('portfolio-status-field').value
-            };
-            try {
-                if (id) {
-                    await fetchSecureGateway(`/api/portfolio/${id}`, 'PUT', payload);
-                    triggerNotificationToast("Portfolio data cluster updated successfully.");
-                } else {
-                    await fetchSecureGateway('/api/portfolio', 'POST', payload);
-                    triggerNotificationToast("New design blueprint committed onto production timeline.");
-                }
-                terminateModal('portfolio-modal');
-                fetchPortfolioShowcaseManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- INSIGHTS HUB ENGINE (BLOG) ---
-        async function fetchBlogEngineManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/blog_posts');
-                const tbody = document.getElementById('blog-table-body');
-                tbody.innerHTML = '';
-                data.filter(b => !b.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td style="font-weight:600;">${escapeHtml(item.title)}</td>
-                        <td><span class="badge badge-success">${escapeHtml(item.category)}</span></td>
-                        <td><code>${escapeHtml(item.slug)}</code></td>
-                        <td><small>${escapeHtml(item.seo_title || 'N/A')}</small></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchBlogModificationModal(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('blog_posts', ${item.id}, fetchBlogEngineManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        function launchBlogCreationModal() {
-            document.getElementById('blog-form').reset();
-            document.getElementById('blog-id-field').value = '';
-            document.getElementById('blog-modal-title').innerText = "Author Content Publication";
-            deployModal('blog-modal');
-        }
-
-        async function launchBlogModificationModal(id) {
-            try {
-                const record = await fetchSecureGateway(`/api/blog_posts/${id}`);
-                document.getElementById('blog-id-field').value = record.id;
-                document.getElementById('blog-title-field').value = record.title;
-                document.getElementById('blog-category-field').value = record.category;
-                document.getElementById('blog-slug-field').value = record.slug;
-                document.getElementById('blog-image_url-field').value = record.image_url || '';
-                document.getElementById('blog-summary-field').value = record.summary || '';
-                document.getElementById('blog-content-field').value = record.content;
-                document.getElementById('blog-seo_title-field').value = record.seo_title || '';
-                document.getElementById('blog-seo_description-field').value = record.seo_description || '';
-                document.getElementById('blog-modal-title').innerText = "Revise Content Structure Parameters";
-                deployModal('blog-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function executeBlogDataPersistencePipeline(e) {
-            e.preventDefault();
-            const id = document.getElementById('blog-id-field').value;
-            const payload = {
-                title: document.getElementById('blog-title-field').value,
-                category: document.getElementById('blog-category-field').value,
-                slug: document.getElementById('blog-slug-field').value,
-                image_url: document.getElementById('blog-image_url-field').value,
-                summary: document.getElementById('blog-summary-field').value,
-                content: document.getElementById('blog-content-field').value,
-                seo_title: document.getElementById('blog-seo_title-field').value,
-                seo_description: document.getElementById('blog-seo_description-field').value
-            };
-            try {
-                if (id) {
-                    await fetchSecureGateway(`/api/blog_posts/${id}`, 'PUT', payload);
-                    triggerNotificationToast("Article array successfully re-indexed and deployment updated.");
-                } else {
-                    await fetchSecureGateway('/api/blog_posts', 'POST', payload);
-                    triggerNotificationToast("Data publication deployed live into server ecosystem.");
-                }
-                terminateModal('blog-modal');
-                fetchBlogEngineManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- INVOICES LEDGER MATRIX ---
-        async function fetchInvoicesLedgerManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/invoices');
-                const tbody = document.getElementById('invoices-table-body');
-                tbody.innerHTML = '';
-                data.filter(i => !i.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td><code>Order #${item.order_id}</code></td>
-                        <td style="font-weight:600; color:var(--text-dark);">${escapeHtml(item.invoice_number)}</td>
-                        <td>${escapeHtml(item.client_name)}</td>
-                        <td>${escapeHtml(item.client_email || 'N/A')}</td>
-                        <td style="font-weight:700; color:var(--accent-red);">$${parseFloat(item.amount).toFixed(2)}</td>
-                        <td><span class="badge ${item.status === 'paid' ? 'badge-success' : 'badge-danger'}">${item.status}</span></td>
-                        <td><a href="${escapeHtml(item.pdf_url || '#')}" target="_blank" class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;"><i class="fa-solid fa-file-pdf"></i> View Ledger PDF</a></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- SUPPORT INCIDENT ESCALATIONS ---
-        async function fetchSupportTicketsDeskManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/support_tickets');
-                const tbody = document.getElementById('tickets-table-body');
-                tbody.innerHTML = '';
-                data.filter(t => !t.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td><code>User Reference Account #${item.user_id || 'Guest'}</code></td>
-                        <td style="font-weight:600;">${escapeHtml(item.subject)}</td>
-                        <td><small>${escapeHtml(item.description)}</small></td>
-                        <td><span class="badge ${item.priority === 'high' ? 'badge-danger' : 'badge-warning'}">${item.priority}</span></td>
-                        <td><span class="badge ${item.status === 'closed' ? 'badge-success' : 'badge-warning'}">${item.status}</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchTicketModificationModal(${item.id})"><i class="fa-solid fa-wrench"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('support_tickets', ${item.id}, fetchSupportTicketsDeskManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function launchTicketModificationModal(id) {
-            try {
-                const record = await fetchSecureGateway(`/api/support_tickets/${id}`);
-                document.getElementById('ticket-id-field').value = record.id;
-                document.getElementById('ticket-user_id-field').value = record.user_id || '';
-                document.getElementById('ticket-subject-field').value = record.subject;
-                document.getElementById('ticket-description-field').value = record.description;
-                document.getElementById('ticket-priority-field').value = record.priority || 'medium';
-                document.getElementById('ticket-status-field').value = record.status || 'open';
-                deployModal('ticket-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function executeTicketDataPersistencePipeline(e) {
-            e.preventDefault();
-            const id = document.getElementById('ticket-id-field').value;
-            const payload = {
-                user_id: document.getElementById('ticket-user_id-field').value ? parseInt(document.getElementById('ticket-user_id-field').value) : null,
-                subject: document.getElementById('ticket-subject-field').value,
-                description: document.getElementById('ticket-description-field').value,
-                priority: document.getElementById('ticket-priority-field').value,
-                status: document.getElementById('ticket-status-field').value
-            };
-            try {
-                await fetchSecureGateway(`/api/support_tickets/${id}`, 'PUT', payload);
-                triggerNotificationToast("Support ticket status vector updated seamlessly.");
-                terminateModal('ticket-modal');
-                fetchSupportTicketsDeskManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- TESTIMONIALS CONFIGURATION ENGINE ---
-        async function fetchTestimonialsVerificationManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/testimonials');
-                const tbody = document.getElementById('testimonials-table-body');
-                tbody.innerHTML = '';
-                data.filter(t => !t.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td style="font-weight:600;">${escapeHtml(item.client_name)}</td>
-                        <td>${escapeHtml(item.client_designation || 'Client')}</td>
-                        <td><code>${escapeHtml(item.company || 'N/A')}</code></td>
-                        <td><strong style="color:var(--accent-yellow);"><i class="fa-solid fa-star"></i> ${item.rating}/5</strong></td>
-                        <td><span class="badge ${item.status === 'approved' ? 'badge-success' : 'badge-warning'}">${item.status}</span></td>
-                        <td><span class="badge ${item.is_featured ? 'badge-success' : 'badge-danger'}">${item.is_featured ? 'Featured Frame' : 'Standard'}</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" onclick="launchTestimonialModificationModal(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="btn-icon btn-delete" onclick="executeSoftDeletePipeline('testimonials', ${item.id}, fetchTestimonialsVerificationManifest)"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        function launchTestimonialCreationModal() {
-            document.getElementById('testimonial-form').reset();
-            document.getElementById('testimonial-id-field').value = '';
-            document.getElementById('testimonial-modal-title').innerText = "Inject Manual Audit Testimonial";
-            deployModal('testimonial-modal');
-        }
-
-        async function launchTestimonialModificationModal(id) {
-            try {
-                const record = await fetchSecureGateway(`/api/testimonials/${id}`);
-                document.getElementById('testimonial-id-field').value = record.id;
-                document.getElementById('testimonial-client_name-field').value = record.client_name;
-                document.getElementById('testimonial-client_designation-field').value = record.client_designation || '';
-                document.getElementById('testimonial-company-field').value = record.company || '';
-                document.getElementById('testimonial-client_avatar_url-field').value = record.client_avatar_url || '';
-                document.getElementById('testimonial-rating-field').value = record.rating;
-                document.getElementById('testimonial-status-field').value = record.status || 'pending';
-                document.getElementById('testimonial-is_featured-field').value = record.is_featured ? "true" : "false";
-                document.getElementById('testimonial-review-field').value = record.review;
-                document.getElementById('testimonial-modal-title').innerText = "Audit Testimonial Metadata Parameters";
-                deployModal('testimonial-modal');
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function executeTestimonialDataPersistencePipeline(e) {
-            e.preventDefault();
-            const id = document.getElementById('testimonial-id-field').value;
-            const payload = {
-                client_name: document.getElementById('testimonial-client_name-field').value,
-                client_designation: document.getElementById('testimonial-client_designation-field').value,
-                company: document.getElementById('testimonial-company-field').value,
-                client_avatar_url: document.getElementById('testimonial-client_avatar_url-field').value,
-                rating: parseInt(document.getElementById('testimonial-rating-field').value),
-                status: document.getElementById('testimonial-status-field').value,
-                is_featured: document.getElementById('testimonial-is_featured-field').value === "true" ? true : false,
-                review: document.getElementById('testimonial-review-field').value
-            };
-            try {
-                if (id) {
-                    await fetchSecureGateway(`/api/testimonials/${id}`, 'PUT', payload);
-                    triggerNotificationToast("Testimonial parameters modified.");
-                } else {
-                    await fetchSecureGateway('/api/testimonials', 'POST', payload);
-                    triggerNotificationToast("Manual review log recorded into framework array.");
-                }
-                terminateModal('testimonial-modal');
-                fetchTestimonialsVerificationManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- CONSULTATION ARCHIVE REGISTRY ---
-        async function fetchConsultationRegistryManifest() {
-            try {
-                const data = await fetchSecureGateway('/api/consultations');
-                const tbody = document.getElementById('consultations-table-body');
-                tbody.innerHTML = '';
-                data.filter(c => !c.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td style="font-weight:600;">${escapeHtml(item.client_name)}</td>
-                        <td>${escapeHtml(item.client_email)}</td>
-                        <td>${new Date(item.booking_date).toLocaleDateString()}</td>
-                        <td><span class="badge badge-warning">${escapeHtml(item.booking_time)}</span></td>
-                        <td><span class="badge badge-success">${escapeHtml(item.platform || 'Google Meet')}</span></td>
-                        <td><span class="badge ${item.status === 'pending' ? 'badge-warning' : 'badge-success'}">${item.status}</span></td>
-                        <td>
-                            <select onchange="updateConsultationStateRegistry(${item.id}, this.value)" style="padding:0.3rem 0.5rem; border-radius:6px; border:1px solid var(--border-light);">
-                                <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="confirmed" ${item.status === 'confirmed' ? 'selected' : ''}>Confirm</option>
-                                <option value="completed" ${item.status === 'completed' ? 'selected' : ''}>Complete</option>
-                                <option value="cancelled" ${item.status === 'cancelled' ? 'selected' : ''}>Cancel</option>
-                            </select>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        async function updateConsultationStateRegistry(id, val) {
-            try {
-                await fetchSecureGateway(`/api/consultations/${id}`, 'PUT', { status: val });
-                triggerNotificationToast(`Registry context changed to ${val}`);
-                fetchConsultationRegistryManifest();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-            // --- SUBSCRIBER STREAM CORRIDOR ---
-        async function fetchSubscriberManifestArray() {
-            try {
-                const data = await fetchSecureGateway('/api/subscribers');
-                const tbody = document.getElementById('subscribers-table-body');
-                tbody.innerHTML = '';
-                data.filter(sub => !sub.is_deleted).forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.id}</td>
-                        <td style="font-weight:600;">${escapeHtml(item.email)}</td>
-                        <td><span class="badge badge-success">${escapeHtml(item.status || 'active')}</span></td>
-                        <td><small>${new Date(item.created_at).toLocaleString()}</small></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // Mass Email Pipeline Dispatch Controller
-        async function fireEmailBroadcastPipeline(event) {
-            event.preventDefault();
-            const submitBtn = document.getElementById('broadcast-submit-btn');
-            const subject = document.getElementById('broadcast-subject').value;
-            const html = document.getElementById('broadcast-content').value;
-
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Deploying Communications Array Pipeline...";
-                
-                const responseMetrics = await fetchSecureGateway('/api/subscribers/broadcast', 'POST', { subject, html });
-                triggerNotificationToast(`Broadcast success! Dispatched down the pipeline safely to subscribers.`);
-                
-                document.getElementById('broadcast-execution-form').reset();
-            } catch(err) {
-                triggerNotificationToast(err.message, 'error');
-                console.error(err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Deploy Broadcast Corridor`;
-            }
-        }
-
-        // --- BATCH PROCESS SOFT DELETE DRIVER ---
-        async function executeSoftDeletePipeline(tableKey, recordId, completionCallback) {
-            if (!confirm(`Are you absolutely sure you want to flag and purge Entity Reference ID #${recordId} from ${tableKey}?`)) return;
-            try {
-                await fetchSecureGateway(`/api/bulk-action`, 'POST', {
-                    table: tableKey,
-                    action: 'delete',
-                    ids: [parseInt(recordId)]
-                });
-                triggerNotificationToast("Record flagged as is_deleted and removed from active visualization.");
-                completionCallback();
-            } catch(err) { triggerNotificationToast(err.message, 'error'); }
-        }
-
-        // --- SANITIZATION AND STRUCTURAL UTILITIES ---
-        function escapeHtml(textString) {
-            if (!textString) return '';
-            return textString.toString()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+        // Initialize Boot Sequence
+        initDashboard();
     </script>
 </body>
 </html>
