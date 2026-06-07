@@ -1585,7 +1585,73 @@ app.post('/api/communications/send', verifyAdminAccess, uploadMemory.single('att
         res.status(500).json({ error: err.message });
     }
 });
-         
+
+// ================= MODULE 19: CLIENT-SIDE PORTAL OPERATIONS =================
+
+// Fetch Client's Own Chat Thread
+app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        
+        // Mark messages sent TO this client as read
+        await pool.query(
+            `UPDATE client_communications SET is_read = TRUE 
+             WHERE receiver_id = $1 AND is_read = FALSE AND is_deleted = FALSE`,
+            [userId]
+        );
+
+        const result = await pool.query(`
+            SELECT * FROM client_communications 
+            WHERE (sender_id = $1 OR receiver_id = $1)
+            AND is_deleted = FALSE 
+            ORDER BY created_at ASC
+        `, [userId]);
+        
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Client Sends Message to Admin Hub
+app.post('/api/client-portal/send', verifySystemToken, uploadMemory.single('attachment'), async (req, res) => {
+    try {
+        const { message_body } = req.body;
+        const sender_id = req.user.id;
+        
+        // Dynamically find the primary active Admin to route the message to
+        const adminRes = await pool.query("SELECT id FROM users WHERE role = 'admin' AND is_deleted = FALSE ORDER BY id ASC LIMIT 1");
+        const receiver_id = adminRes.rows.length > 0 ? adminRes.rows[0].id : null;
+
+        if (req.file) {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "dan74tech_communications", resource_type: "auto" },
+                async (error, result) => {
+                    if (error) return res.status(500).json({ error: error.message });
+                    
+                    const savedMsg = await pool.query(
+                        `INSERT INTO client_communications (sender_id, receiver_id, message_body, attachment_url, attachment_name) 
+                         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                        [sender_id, receiver_id, message_body, result.secure_url, req.file.originalname]
+                    );
+                    return res.json({ success: true, data: savedMsg.rows[0] });
+                }
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        } else {
+            const savedMsg = await pool.query(
+                `INSERT INTO client_communications (sender_id, receiver_id, message_body) 
+                 VALUES ($1, $2, $3) RETURNING *`,
+                [sender_id, receiver_id, message_body]
+            );
+            res.json({ success: true, data: savedMsg.rows[0] });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 // ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
 // --- THE TABLE ACCESS ROUTE (MOVED HERE TO PREVENT ROUTE SHADOWING) ---
 app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
