@@ -357,21 +357,24 @@
             const threadContainer = document.getElementById('chat-thread');
             const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 50;
 
-            try {
-                const res = await fetch(`${API_BASE}/client-portal/thread`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
+                    try {
+            const res = await fetch(`${API_BASE}/client-portal/thread`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            // 1. Only trigger a hard logout on actual authentication rejections
+            if (res.status === 401 || res.status === 403) {
+                throw new Error('Auth failure');
+            }
+            
+            // 2. Prevent logout on database or server crashes (HTTP 500, 404, etc.)
+            if (!res.ok) {
+                throw new Error(`Server communication error: HTTP ${res.status}`);
+            }
+            
+            const messages = await res.json();
+                        
                 
-                // FIX #1: Only target explicitly denied auth codes. Ignore 500s or 429s to prevent loops.
-                if (!res.ok) {
-                    if (res.status === 401 || res.status === 403) {
-                        throw new Error('Auth failure');
-                    } else {
-                        throw new Error(`Non-auth network fault: ${res.status}`);
-                    }
-                }
-                
-                const messages = await res.json();
                 threadContainer.innerHTML = '';
                 
                 if (messages.length === 0) {
