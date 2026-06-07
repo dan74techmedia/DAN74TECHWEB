@@ -219,11 +219,11 @@
         
 // --- Token Serialization & Redirection Engine ---
 
-        function processAuthenticationSuccess(data) {
+function processAuthenticationSuccess(data) {
     // 1. Vaporize all ghost tokens to ensure session isolation
     localStorage.clear(); 
     
-    // 2. Establish the single source of truth for both roles using standardized keys
+    // 2. Establish the single source of truth for both roles using synchronized keys
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -231,16 +231,19 @@
     const userRole = String(data.user.role || 'client').trim().toLowerCase();
     
     // 4. Unified Routing Logic
+    // Both roles are now directed to their respective workspaces 
+    // after establishing a persistent session context.
     if (userRole === 'admin') {
         console.log("Admin session validated. Directing to Master Operations Console.");
-        // Ensure this points to your actual admin dashboard if 'client.html' is meant strictly for clients
+        // To maintain backward compatibility with any admin modules listening for specific keys:
+        localStorage.setItem('dan74_admin_token', data.token);
+        localStorage.setItem('dan74_admin_user', JSON.stringify(data.user));
         window.location.href = 'client.html'; 
     } else {
-        console.log("Client session validated. Directing to Client Workspace.");
+        console.log("Validated. ✨Directing to Chat Box.");
         window.location.href = 'client.html'; 
     }
-        }
-        
+}
 
      // --- Authentication Workflows ---
 
