@@ -925,15 +925,6 @@ app.post('/api/subscribers', async (req, res) => {
     }
 });
 
-app.get('/api/subscribers', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM subscribers WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // NEW: Fetch historical email campaigns
 app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
     try {
@@ -985,6 +976,17 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// Locate this existing route:
+app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        // PASTE/UPDATE THE QUERY LINE HERE:
+        const result = await pool.query(
+            `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`, 
+            [req.body.status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
 
 
 app.delete('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
