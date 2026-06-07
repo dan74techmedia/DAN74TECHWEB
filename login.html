@@ -331,6 +331,33 @@
                 btn.disabled = false;
             }
         });
+
+                // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(formSubmissionEvent) {
+    formSubmissionEvent.preventDefault();
+    
+    const emailInput = this.querySelector('input[type="email"]').value;
+    
+    try {
+        const response = await fetch('/api/subscribers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailInput, status: 'active' })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert("✅ Subscription confirmed for DAN74TECH MEDIA updates.");
+            this.reset();
+        } else {
+            alert("Notice: " + (result.error || "Subscription already exists."));
+        }
+    } catch (err) {
+        console.error("Submission Failure:", err);
+        alert("Pipeline error. Please try again later.");
+    }
+});
     </script>
 </body>
 </html>
