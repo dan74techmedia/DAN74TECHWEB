@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | Client Communication Center</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            yellow: '#ffd700',
+                            blue: '#0044ff',
+                            red: '#ff2a2a',
+                            bg: '#0f172a',
+                            panel: '#1e293b',
+                            border: '#334155',
+                            text: '#f8fafc',
+                            muted: '#94a3b8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: theme('colors.brand.bg'); color: theme('colors.brand.text'); overflow: hidden; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.brand.border'); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.brand.muted'); }
+
+        .client-card { transition: all 0.2s ease; border-left: 3px solid transparent; }
+        .client-card:hover { background-color: rgba(255, 215, 0, 0.05); }
+        .client-card.active { 
+            background-color: rgba(255, 215, 0, 0.1); 
+            border-left-color: theme('colors.brand.yellow'); 
+        }
+
+        .chat-bubble { max-width: 75%; animation: slideUp 0.3s ease-out forwards; }
+        .chat-admin { background-color: theme('colors.brand.yellow'); color: #000; border-bottom-right-radius: 0; }
+        .chat-client { background-color: theme('colors.brand.panel'); color: theme('colors.brand.text'); border: 1px solid theme('colors.brand.border'); border-bottom-left-radius: 0; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased h-screen flex relative">
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <div class="w-full h-full flex">
+        
+        <aside class="w-80 bg-brand-panel border-r border-brand-border flex flex-col flex-shrink-0 z-20 shadow-2xl">
+            <div class="h-16 flex items-center justify-between px-6 border-b border-brand-border bg-brand-panel">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-brand-yellow flex items-center justify-center text-black">
+                        <i class="fa-solid fa-comments text-sm"></i>
+                    </div>
+                    <span class="text-sm font-extrabold text-white font-mono tracking-tight">COMM_HUB</span>
+                </div>
+                <a href="admin.html" class="text-brand-muted hover:text-brand-yellow transition-colors" title="Back to Admin Dashboard">
+                    <i class="fa-solid fa-layer-group"></i>
+                </a>
+            </div>
+            
+            <div class="p-4 border-b border-brand-border">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted text-xs"></i>
+                    <input type="text" id="search-clients" class="w-full pl-9 pr-4 py-2 bg-brand-bg border border-brand-border rounded-xl text-xs font-mono text-white focus:border-brand-yellow focus:outline-none transition-colors" placeholder="Search operations nodes...">
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar" id="client-list">
+                <div class="p-8 text-center text-xs font-mono text-brand-muted">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2 text-brand-yellow"></i><br>Synchronizing Contacts...
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-brand-bg relative hidden" id="workspace-area">
+            <header class="h-16 bg-brand-panel border-b border-brand-border flex items-center justify-between px-6 sticky top-0 z-10 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-bg border border-brand-border flex items-center justify-center text-brand-yellow font-bold" id="active-client-avatar">
+                        --
+                    </div>
+                    <div>
+                        <h2 id="active-client-name" class="text-sm font-extrabold text-white tracking-tight">Select a Client</h2>
+                        <span id="active-client-email" class="text-[10px] font-mono text-brand-muted">--</span>
+                    </div>
+                </div>
+                <button id="toggle-info-panel" class="text-brand-muted hover:text-brand-yellow transition-colors px-3 py-1.5 bg-brand-bg rounded-md border border-brand-border text-xs font-bold font-mono">
+                    <i class="fa-solid fa-address-card"></i> Profile Data
+                </button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar" id="chat-thread">
+                </div>
+
+            <div class="p-4 bg-brand-panel border-t border-brand-border">
+                <form id="message-form" class="flex flex-col gap-2">
+                    <div id="attachment-preview" class="hidden flex items-center gap-2 px-3 py-2 bg-brand-bg rounded-lg border border-brand-blue w-max">
+                        <i class="fa-solid fa-paperclip text-brand-blue text-xs"></i>
+                        <span id="attachment-name" class="text-xs font-mono text-white">filename.pdf</span>
+                        <button type="button" id="remove-attachment" class="text-brand-red hover:text-red-400 ml-2"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <label class="cursor-pointer w-10 h-10 flex-shrink-0 bg-brand-bg border border-brand-border hover:border-brand-blue rounded-xl flex items-center justify-center text-brand-muted hover:text-brand-blue transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                            <input type="file" id="file-upload" class="hidden">
+                        </label>
+                        <textarea id="message-input" rows="1" class="flex-1 bg-brand-bg border border-brand-border rounded-xl px-4 py-2.5 text-sm font-mono text-white focus:border-brand-yellow focus:outline-none resize-none custom-scrollbar" placeholder="Draft transmission payload..."></textarea>
+                        <button type="submit" id="btn-send" class="w-10 h-10 flex-shrink-0 bg-brand-yellow hover:bg-yellow-500 text-black rounded-xl flex items-center justify-center transition-colors shadow-md">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <aside class="w-72 bg-brand-panel border-l border-brand-border flex flex-col flex-shrink-0 transition-all duration-300 transform translate-x-0" id="info-panel">
+            <div class="p-6 border-b border-brand-border text-center">
+                <div class="w-20 h-20 mx-auto rounded-full bg-brand-bg border-2 border-brand-yellow flex items-center justify-center text-brand-yellow text-2xl font-bold mb-3" id="panel-avatar">--</div>
+                <h3 class="text-sm font-extrabold text-white" id="panel-name">Client Identity</h3>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-800 text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-widest">Active Node</span>
+            </div>
+            
+            <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+                <div>
+                    <h4 class="text-[10px] font-bold text-brand-muted uppercase tracking-widest font-mono mb-3">Routing Telemetry</h4>
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="flex items-center gap-3 text-white"><i class="fa-solid fa-envelope text-brand-muted w-4"></i> <span id="panel-email" class="truncate">--</span></div>
+                        <div class="flex items-center gap-3 text-white"><i class="fa-solid fa-phone text-brand-muted w-4"></i> <span id="panel-phone">--</span></div>
+                        <div class="flex items-center gap-3 text-white"><i class="fa-solid fa-calendar text-brand-muted w-4"></i> <span id="panel-date">--</span></div>
+                    </div>
+                </div>
+
+                <div class="border-t border-brand-border pt-6">
+                    <h4 class="text-[10px] font-bold text-brand-muted uppercase tracking-widest font-mono mb-3 flex justify-between">
+                        <span>Shared Assets</span>
+                        <i class="fa-solid fa-cloud text-brand-blue"></i>
+                    </h4>
+                    <div id="shared-files-list" class="space-y-2">
+                        <div class="text-[10px] text-brand-muted font-mono text-center mt-4">No assets transferred.</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col items-center justify-center bg-brand-bg text-center px-6" id="empty-workspace">
+            <div class="w-24 h-24 rounded-full bg-brand-panel border border-brand-border flex items-center justify-center text-brand-yellow text-4xl mb-6 shadow-lg">
+                <i class="fa-solid fa-satellite-dish"></i>
+            </div>
+            <h2 class="text-xl font-extrabold text-white mb-2 font-mono">Awaiting Connection Protocol</h2>
+            <p class="text-sm text-brand-muted max-w-md">Select an operation node from the matrix on the left to initiate direct bidirectional communication arrays and asset transfers.</p>
+        </main>
+    </div>
+
+    <script>
+        const API_HOST = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000' : window.location.origin;
+        let sessionToken = localStorage.getItem('dan74_admin_token');
+        let adminUser = JSON.parse(localStorage.getItem('dan74_admin_user') || '{}');
+        let activeClientId = null;
+        let clientsCache = [];
+        let selectedFile = null;
+
+        // UI Toast Controller
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let icon = 'fa-circle-info text-brand-blue';
+            let colors = 'border-brand-blue text-brand-blue bg-brand-panel';
+            if (type === 'success') { icon = 'fa-circle-check text-emerald-500'; colors = 'border-emerald-500/30 text-emerald-400 bg-brand-panel'; }
+            if (type === 'error') { icon = 'fa-triangle-exclamation text-brand-red'; colors = 'border-red-500/30 text-red-400 bg-brand-panel'; }
+            
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg text-xs font-bold transition-all duration-300 w-full font-mono ${colors}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><div>${msg}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        async function fetchSecure(endpoint, method = 'GET', payload = null, isMultipart = false) {
+            if (!sessionToken) { window.location.href = 'admin.html'; return; }
+            const options = { method, headers: { 'Authorization': `Bearer ${sessionToken}` } };
+            
+            if (payload) {
+                if (isMultipart) { options.body = payload; } 
+                else { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(payload); }
+            }
+            const res = await fetch(`${API_HOST}${endpoint}`, options);
+            if (!res.ok) throw new Error(await res.text());
+            return await res.json();
+        }
+
+        // 1. Load Client List
+        async function loadClients() {
+            try {
+                const clients = await fetchSecure('/api/communications/clients');
+                clientsCache = clients;
+                renderClientList(clients);
+            } catch (err) {
+                document.getElementById('client-list').innerHTML = `<div class="p-6 text-brand-red text-xs font-mono text-center">Transmission Error: ${err.message}</div>`;
+            }
+        }
+
+        function renderClientList(clients) {
+            const list = document.getElementById('client-list');
+            list.innerHTML = '';
+            
+            if(clients.length === 0) {
+                list.innerHTML = `<div class="p-6 text-brand-muted text-[10px] font-mono text-center">No active client matrices found.</div>`;
+                return;
+            }
+
+            clients.forEach(client => {
+                const initials = client.name.substring(0, 2).toUpperCase();
+                const unreadBadge = parseInt(client.unread_count) > 0 ? `<div class="w-4 h-4 rounded-full bg-brand-red text-white text-[8px] flex items-center justify-center font-bold font-mono">${client.unread_count}</div>` : '';
+                const timeStr = client.last_message_date ? new Date(client.last_message_date).toLocaleDateString() : '';
+                const snippet = client.last_message ? client.last_message.substring(0, 25) + '...' : 'No telemetry data...';
+
+                const card = document.createElement('div');
+                card.className = `client-card p-4 border-b border-brand-border cursor-pointer flex items-center gap-3 ${activeClientId === client.id ? 'active' : ''}`;
+                card.onclick = () => selectClient(client);
+                card.innerHTML = `
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-xl bg-brand-bg border border-brand-border flex items-center justify-center text-brand-yellow font-bold text-xs">${initials}</div>
+                        ${unreadBadge ? `<div class="absolute -top-1 -right-1">${unreadBadge}</div>` : ''}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center mb-0.5">
+                            <h4 class="text-xs font-bold text-white truncate">${client.name}</h4>
+                            <span class="text-[9px] text-brand-muted font-mono">${timeStr}</span>
+                        </div>
+                        <p class="text-[10px] text-brand-muted truncate font-mono">${snippet}</p>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+      // 2. Select Client & Load Workspace
+        async function selectClient(client) {
+            activeClientId = client.id;
+            document.getElementById('empty-workspace').classList.add('hidden');
+            document.getElementById('workspace-area').classList.remove('hidden');
+            
+            // Re-render list to show active state
+            renderClientList(clientsCache);
+
+            // Populate Headers and Info Panel
+            document.getElementById('active-client-name').innerText = client.name;
+            document.getElementById('active-client-email').innerText = client.email;
+            document.getElementById('active-client-avatar').innerText = client.name.substring(0, 2).toUpperCase();
+            
+            document.getElementById('panel-name').innerText = client.name;
+            document.getElementById('panel-email').innerText = client.email;
+            document.getElementById('panel-phone').innerText = client.phone || 'N/A';
+            document.getElementById('panel-date').innerText = new Date(client.created_at).toLocaleDateString();
+            document.getElementById('panel-avatar').innerText = client.name.substring(0, 2).toUpperCase();
+
+            loadThread(client.id);
+        }
+
+        // 3. Load Chat Thread
+        async function loadThread(userId) {
+            const threadContainer = document.getElementById('chat-thread');
+            threadContainer.innerHTML = `<div class="text-center text-brand-yellow my-10"><i class="fa-solid fa-circle-notch fa-spin text-2xl"></i></div>`;
+            
+            try {
+                const thread = await fetchSecure(`/api/communications/thread/${userId}`);
+                threadContainer.innerHTML = '';
+                const filesList = document.getElementById('shared-files-list');
+                filesList.innerHTML = '';
+
+                if(thread.length === 0) {
+                    threadContainer.innerHTML = `<div class="text-center text-[10px] font-mono text-brand-muted mt-10">End of operational matrix sequence.</div>`;
+                    return;
+                }
+
+                let sharedFilesCount = 0;
+
+                thread.forEach(msg => {
+                    const isAdmin = msg.sender_id === adminUser.id;
+                    const alignment = isAdmin ? 'justify-end' : 'justify-start';
+                    const bubbleClass = isAdmin ? 'chat-admin' : 'chat-client';
+                    const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    let attachmentHtml = '';
+                    if (msg.attachment_url) {
+                        sharedFilesCount++;
+                        const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
+                        
+                        // Render in chat
+                        if(isImage) {
+                            attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-brand-border shadow-sm cursor-pointer hover:opacity-90" onclick="window.open('${msg.attachment_url}')"></div>`;
+                        } else {
+                            attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-2 bg-black/20 rounded-lg text-xs font-mono hover:bg-black/30 transition-colors"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'Download Asset'}</a>`;
+                        }
+
+                        // Add to Right Panel Shared Files
+                        filesList.innerHTML += `
+                            <a href="${msg.attachment_url}" target="_blank" class="flex items-center gap-3 p-2 rounded-lg hover:bg-brand-bg transition-colors border border-transparent hover:border-brand-border group">
+                                <div class="w-8 h-8 rounded bg-brand-bg flex items-center justify-center text-brand-blue group-hover:text-brand-yellow transition-colors">
+                                    <i class="fa-solid ${isImage ? 'fa-image' : 'fa-file'}"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[10px] font-bold text-white truncate font-mono">${msg.attachment_name || 'System Asset'}</p>
+                                    <p class="text-[9px] text-brand-muted font-mono">${time}</p>
+                                </div>
+                            </a>
+                        `;
+                    }
+
+                    threadContainer.innerHTML += `
+                        <div class="flex ${alignment} w-full">
+                            <div class="chat-bubble p-3 rounded-xl shadow-sm text-sm ${bubbleClass}">
+                                <p class="whitespace-pre-wrap font-sans">${msg.message_body}</p>
+                                ${attachmentHtml}
+                                <div class="text-[9px] mt-1 font-mono text-right opacity-70">${time}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (sharedFilesCount === 0) {
+                    filesList.innerHTML = `<div class="text-[10px] text-brand-muted font-mono text-center mt-4">No assets transferred.</div>`;
+                }
+
+                // Scroll to bottom
+                threadContainer.scrollTop = threadContainer.scrollHeight;
+
+            } catch (err) {
+                threadContainer.innerHTML = `<div class="text-center text-brand-red text-xs font-mono my-10">Data sequence fetch failed.</div>`;
+            }
+        }
+
+        // 4. Send Message
+        document.getElementById('message-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!activeClientId) return;
+
+            const btn = document.getElementById('btn-send');
+            const input = document.getElementById('message-input');
+            const msgText = input.value.trim();
+            
+            if (!msgText && !selectedFile) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+            try {
+                let formData = new FormData();
+                formData.append('receiver_id', activeClientId);
+                formData.append('message_body', msgText || 'Encrypted Asset Delivery');
+                if (selectedFile) formData.append('attachment', selectedFile);
+
+                const res = await fetchSecure('/api/communications/send', 'POST', formData, true);
+                if (res.success) {
+                    input.value = '';
+                    removeAttachment();
+                    loadThread(activeClientId); // Refresh Thread
+                    loadClients(); // Update sidebar snippets
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            }
+        });
+
+        // Search Filter
+        document.getElementById('search-clients').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = clientsCache.filter(c => 
+                c.name.toLowerCase().includes(term) || 
+                c.email.toLowerCase().includes(term) || 
+                (c.phone && c.phone.includes(term))
+            );
+            renderClientList(filtered);
+        });
+
+        // File Attachment Handling
+        document.getElementById('file-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('attachment-preview').classList.remove('hidden');
+                document.getElementById('attachment-name').innerText = file.name;
+            }
+        });
+
+        document.getElementById('remove-attachment').addEventListener('click', removeAttachment);
+        
+        function removeAttachment() {
+            selectedFile = null;
+            document.getElementById('file-upload').value = '';
+            document.getElementById('attachment-preview').classList.add('hidden');
+        }
+
+        // Info Panel Toggle
+        document.getElementById('toggle-info-panel').addEventListener('click', () => {
+            const panel = document.getElementById('info-panel');
+            if (panel.classList.contains('hidden') || panel.style.display === 'none') {
+                panel.style.display = 'flex';
+                setTimeout(() => panel.classList.remove('translate-x-full', 'hidden'), 10);
+            } else {
+                panel.classList.add('translate-x-full');
+                setTimeout(() => panel.style.display = 'none', 300);
+            }
+        });
+
+        // Initialize Session Verification & Load
+        if (!sessionToken) {
+            window.location.href = 'admin.html';
+        } else {
+            loadClients();
+            // Polling for real-time feel (every 15 seconds)
+            setInterval(() => {
+                if(activeClientId) loadThread(activeClientId);
+                loadClients();
+            }, 15000);
+        }
+    </script>
+</body>
+</html>
