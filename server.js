@@ -1494,7 +1494,98 @@ app.delete('/api/email-campaigns/:id', verifyAdminAccess, async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ================= MODULE 18: CLIENT COMMUNICATION CENTER =================
 
+// Fetch all clients with their latest message snippet and unread counts
+app.get('/api/communications/clients', verifyAdminAccess, async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                u.id, u.name, u.email, u.phone, u.role, u.created_at,
+                (SELECT message_body FROM client_communications cc 
+                 WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) 
+                 AND cc.is_deleted = FALSE 
+                 ORDER BY cc.created_at DESC LIMIT 1) as last_message,
+                (SELECT created_at FROM client_communications cc 
+                 WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) 
+                 AND cc.is_deleted = FALSE 
+                 ORDER BY cc.created_at DESC LIMIT 1) as last_message_date,
+                (SELECT COUNT(*) FROM client_communications cc 
+                 WHERE cc.sender_id = u.id AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
+            FROM users u
+            WHERE u.role = 'client' AND u.is_deleted = FALSE
+            ORDER BY last_message_date DESC NULLS LAST;
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Fetch conversation thread for a specific client
+app.get('/api/communications/thread/:userId', verifyAdminAccess, async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        // Mark unread messages from this user as read
+        await pool.query(
+            `UPDATE client_communications SET is_read = TRUE 
+             WHERE sender_id = $1 AND receiver_id = $2 AND is_read = FALSE AND is_deleted = FALSE`,
+            [userId, req.user.id]
+        );
+
+        const result = await pool.query(`
+            SELECT * FROM client_communications 
+            WHERE ((sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1))
+            AND is_deleted = FALSE 
+            ORDER BY created_at ASC
+        `, [userId, req.user.id]);
+        
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Send a message (Admin to Client) with optional Cloudinary attachment
+app.post('/api/communications/send', verifyAdminAccess, uploadMemory.single('attachment'), async (req, res) => {
+    try {
+        const { receiver_id, message_body } = req.body;
+        const sender_id = req.user.id; // Admin ID from JWT token
+        let attachment_url = null;
+        let attachment_name = null;
+
+        // Process Cloudinary Upload if file exists
+        if (req.file) {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "dan74tech_communications", resource_type: "auto" },
+                async (error, result) => {
+                    if (error) return res.status(500).json({ error: error.message });
+                    
+                    const savedMsg = await pool.query(
+                        `INSERT INTO client_communications (sender_id, receiver_id, message_body, attachment_url, attachment_name) 
+                         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                        [sender_id, receiver_id, message_body, result.secure_url, req.file.originalname]
+                    );
+                    return res.json({ success: true, data: savedMsg.rows[0] });
+                }
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        } else {
+            // Text-only message
+            const savedMsg = await pool.query(
+                `INSERT INTO client_communications (sender_id, receiver_id, message_body) 
+                 VALUES ($1, $2, $3) RETURNING *`,
+                [sender_id, receiver_id, message_body]
+            );
+            res.json({ success: true, data: savedMsg.rows[0] });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+         
 // ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
 // --- THE TABLE ACCESS ROUTE (MOVED HERE TO PREVENT ROUTE SHADOWING) ---
 app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
