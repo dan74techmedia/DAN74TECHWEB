@@ -179,22 +179,10 @@
         const hostname = window.location.hostname;
         const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
         const API_BASE = isLocalNetwork ? 'http://localhost:10000/api' : '/api';
-
-        // FIX #3: Safely sanitize the token to remove stringified quotes
-        let rawToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || '';
-        let authToken = rawToken.replace(/^["']|["']$/g, ''); 
-
-        // FIX #4: Wrapped userNode parsing to prevent fatal JS crashes on malformed data
-        let userNode = null;
-        try {
-            const storedUserStr = localStorage.getItem('user') || localStorage.getItem('dan74_admin_user');
-            if (storedUserStr && storedUserStr !== '[object Object]') {
-                userNode = JSON.parse(storedUserStr);
-            }
-        } catch (e) {
-            console.warn("User parsing error - cache may be invalid.");
-        }
-
+         
+        // Rectified token retrieval: captures standard keys and legacy keys to prevent future drift
+        let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || localStorage.getItem('dan74_token'); 
+        let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || localStorage.getItem('user_context') || 'null');
         let selectedFile = null;
 
         // Auth Enforcement Gate
@@ -238,13 +226,15 @@
         }
 
         function logout() {
+            // Comprehensive session wipe targeting all possible legacy and active keys
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('dan74_admin_token');
             localStorage.removeItem('dan74_admin_user');
+            localStorage.removeItem('dan74_token');
+            localStorage.removeItem('user_context');
             window.location.replace('login.html');
         }
-
         async function loadSocialFeed() {
             const container = document.getElementById('feed-container');
             try {
