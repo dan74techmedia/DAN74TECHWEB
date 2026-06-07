@@ -23,7 +23,6 @@
         }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
-        /* Hide scrollbar for mobile clean look */
         ::-webkit-scrollbar { display: none; }
         
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
@@ -40,7 +39,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Floating Service Button */
         .fab-services {
             background: linear-gradient(135deg, var(--brand-blue), var(--brand-red));
             box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
@@ -70,7 +68,6 @@
     <main class="pt-16 px-0 md:max-w-2xl md:mx-auto">
         
         <section id="view-feed" class="tab-content active space-y-3">
-            
             <div class="bg-white p-4 shadow-sm border-b border-gray-100 flex items-center gap-3">
                 <div id="feed-avatar" class="w-10 h-10 rounded-full bg-blue-100 text-[#0044ff] flex items-center justify-center font-bold flex-shrink-0">--</div>
                 <div class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors" onclick="switchTab('chat')">
@@ -102,7 +99,7 @@
             </div>
 
             <div id="chat-thread" class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8fafc]">
-                </div>
+            </div>
 
             <form id="client-message-form" class="p-3 bg-white border-t border-gray-200 sticky bottom-14 md:bottom-0">
                 <div id="attachment-preview" class="hidden mb-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg w-max max-w-full overflow-hidden">
@@ -153,7 +150,6 @@
                 </div>
             </div>
         </section>
-
     </main>
 
     <a href="services.html" class="fab-services fixed bottom-20 right-4 w-14 h-14 rounded-full flex items-center justify-center text-white z-40 transition-transform active:scale-95 md:right-[calc(50vw-300px)]">
@@ -178,26 +174,40 @@
             <span class="text-[9px] font-bold">Profile</span>
         </button>
     </nav>
-
     <script>
-        // System Config
-        const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
-        let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token'); // Support standard token keys
-        let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || 'null');
+        // FIX #2: Stabilized robust API_BASE calculation for local network IP access
+        const hostname = window.location.hostname;
+        const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
+        const API_BASE = isLocalNetwork ? 'http://localhost:10000/api' : '/api';
+
+        // FIX #3: Safely sanitize the token to remove stringified quotes
+        let rawToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || '';
+        let authToken = rawToken.replace(/^["']|["']$/g, ''); 
+
+        // FIX #4: Wrapped userNode parsing to prevent fatal JS crashes on malformed data
+        let userNode = null;
+        try {
+            const storedUserStr = localStorage.getItem('user') || localStorage.getItem('dan74_admin_user');
+            if (storedUserStr && storedUserStr !== '[object Object]') {
+                userNode = JSON.parse(storedUserStr);
+            }
+        } catch (e) {
+            console.warn("User parsing error - cache may be invalid.");
+        }
+
         let selectedFile = null;
 
-        // Auth Enforcement
+        // Auth Enforcement Gate
         if (!authToken || !userNode) {
             window.location.replace('login.html');
         }
 
         // Init App Data
         document.addEventListener('DOMContentLoaded', () => {
-            populateUserData();
+            if (userNode) populateUserData();
             loadSocialFeed();
             loadChatThread();
             
-            // Background Chat Polling
             setInterval(loadChatThread, 15000); 
         });
 
@@ -213,7 +223,6 @@
             document.getElementById('profile-role').textContent = userNode.role === 'admin' ? 'System Admin' : 'Verified Client';
         }
 
-        // ================= NAVIGATION LOGIC =================
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -235,12 +244,10 @@
             localStorage.removeItem('dan74_admin_user');
             window.location.replace('login.html');
         }
-        // ================= SOCIAL FEED GENERATOR =================
+
         async function loadSocialFeed() {
             const container = document.getElementById('feed-container');
-            
             try {
-                // Fetch Data Concurrently
                 const [blogs, caseStudies, testimonials] = await Promise.all([
                     fetch(`${API_BASE}/blogs`).then(res => res.json()).catch(() => []),
                     fetch(`${API_BASE}/case-studies`).then(res => res.json()).catch(() => []),
@@ -249,7 +256,6 @@
 
                 let feedItems = [];
 
-                // Map Blogs
                 if (Array.isArray(blogs)) {
                     blogs.forEach(b => feedItems.push({
                         type: 'Blog Post',
@@ -264,7 +270,6 @@
                     }));
                 }
 
-                // Map Case Studies
                 if (Array.isArray(caseStudies)) {
                     caseStudies.forEach(c => feedItems.push({
                         type: 'Case Study',
@@ -279,7 +284,6 @@
                     }));
                 }
 
-                // Map Testimonials
                 if (Array.isArray(testimonials)) {
                     testimonials.forEach(t => feedItems.push({
                         type: 'Community Review',
@@ -294,7 +298,6 @@
                     }));
                 }
 
-                // Sort by newest
                 feedItems.sort((a, b) => b.date - a.date);
 
                 container.innerHTML = '';
@@ -350,7 +353,6 @@
             }
         }
 
-        // ================= COMMUNICATION HUB =================
         async function loadChatThread() {
             const threadContainer = document.getElementById('chat-thread');
             const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 50;
@@ -360,9 +362,16 @@
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 
-                if (!res.ok) throw new Error('Auth failure');
-                const messages = await res.json();
+                // FIX #1: Only target explicitly denied auth codes. Ignore 500s or 429s to prevent loops.
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        throw new Error('Auth failure');
+                    } else {
+                        throw new Error(`Non-auth network fault: ${res.status}`);
+                    }
+                }
                 
+                const messages = await res.json();
                 threadContainer.innerHTML = '';
                 
                 if (messages.length === 0) {
@@ -404,11 +413,13 @@
                 if (atBottom) threadContainer.scrollTop = threadContainer.scrollHeight;
 
             } catch (err) {
-                if(err.message.includes('Auth')) logout();
+                // Ignore transient network errors during background polling
+                if (err.message.includes('Auth')) {
+                    console.error("Token compromised. Forcing logout.");
+                    logout();
+                }
             }
         }
-
-        // Send Message
         document.getElementById('client-message-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-send-chat');
@@ -446,7 +457,6 @@
             }
         });
 
-        // Chat File Handling
         document.getElementById('chat-file-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
