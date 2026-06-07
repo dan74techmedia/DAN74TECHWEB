@@ -713,6 +713,8 @@
             }
         }
 
+
+        
         async function deleteRecord(dbTable, id) {
             if(!confirm(`WARNING: Initialize soft-delete purge protocol for record #${id}?`)) return;
             try {
