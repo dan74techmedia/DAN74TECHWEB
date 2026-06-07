@@ -157,80 +157,6 @@ async function sendSystemNotificationEmail(to, subject, text, html) {
     }
 }
 
-// ================= ========================================= =================
-// ============================ CORE API ROUTE DEFINITIONS =====================
-// ================= ========================================= =================
-
-// --- THE TABLE ACCESS ROUTE ---
-app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
-    const allowedTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blogs', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries'
-    ];
-
-    if (!allowedTables.includes(req.params.table)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
-    }
-
-    try {
-        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- BROADCAST ROUTE ---
-app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
-    try {
-        const { subject, html } = req.body;
-        const attachments = req.files ? req.files.map(file => ({
-            name: file.originalname,
-            content: file.buffer.toString('base64')
-        })) : [];
-
-        const subscribers = await pool.query(
-            "SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE"
-        );
-
-        const emailList = subscribers.rows.map(subscriber => ({
-            email: subscriber.email
-        }));
-
-        if (emailList.length === 0) {
-            return res.status(400).json({ success: false, error: 'No active subscribers found' });
-        }
-
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html;
-        sendSmtpEmail.bcc = emailList;
-        sendSmtpEmail.sender = {
-            name: "DAN74TECH",
-            email: "admin@dan74tech.com"
-        };
-
-        if (attachments.length > 0) {
-            sendSmtpEmail.attachment = attachments;
-        }
-
-        const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-        
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-        res.json({
-            success: true,
-            sent: emailList.length,
-            attachments: attachments.length
-        });
-    } catch (err) {
-        console.error('Broadcast Email Error:', err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
 
 // ================= MODULE 1: AUTHENTICATION & SECURITY DATA ENGINE =================
 
@@ -1352,6 +1278,78 @@ app.put('/api/:table/:id/status', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// --- THE TABLE ACCESS ROUTE ---
+app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blogs', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries', 'email_campaigns'
+    ];
+
+    if (!allowedTables.includes(req.params.table)) {
+        return res.status(403).json({ error: "Unauthorized Table Access" });
+    }
+
+    try {
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- BROADCAST ROUTE ---
+app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
+    try {
+        const { subject, html } = req.body;
+        const attachments = req.files ? req.files.map(file => ({
+            name: file.originalname,
+            content: file.buffer.toString('base64')
+        })) : [];
+
+        const subscribers = await pool.query(
+            "SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE"
+        );
+
+        const emailList = subscribers.rows.map(subscriber => ({
+            email: subscriber.email
+        }));
+
+        if (emailList.length === 0) {
+            return res.status(400).json({ success: false, error: 'No active subscribers found' });
+        }
+
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html;
+        sendSmtpEmail.bcc = emailList;
+        sendSmtpEmail.sender = {
+            name: "DAN74TECH",
+            email: "admin@dan74tech.com"
+        };
+
+        if (attachments.length > 0) {
+            sendSmtpEmail.attachment = attachments;
+        }
+
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+        
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+        res.json({
+            success: true,
+            sent: emailList.length,
+            attachments: attachments.length
+        });
+    } catch (err) {
+        console.error('Broadcast Email Error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+
 app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
     const { ids, action } = req.body; 
     const sanitizedTable = req.params.table.replace(/[^a-z_]/g, '');
@@ -1496,7 +1494,30 @@ app.delete('/api/email-campaigns/:id', verifyAdminAccess, async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-            
+
+// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
+// --- THE TABLE ACCESS ROUTE (MOVED HERE TO PREVENT ROUTE SHADOWING) ---
+app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blogs', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries'
+    ];
+
+    if (!allowedTables.includes(req.params.table)) {
+        return res.status(403).json({ error: "Unauthorized Table Access" });
+    }
+
+    try {
+        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 // ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
 app.get('/', (req, res) => {
     res.status(200).send('🚀 DAN74TECH MEDIA Unified Operations API Matrix is active.');
@@ -1506,3 +1527,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🌐 System Core Online. Framework operational on port parameter: ${PORT}`);
 });
+
+
