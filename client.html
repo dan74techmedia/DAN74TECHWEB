@@ -8,13 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <style>
         :root {
             --brand-blue: #0044ff;
             --brand-red: #ff2a2a;
             --brand-yellow: #ffd700;
-            --bg-social: #f8fafc;
+            --bg-social: #f0f2f5;
         }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -32,7 +33,7 @@
         .nav-item.active { color: var(--brand-blue); }
         .nav-item.active i { transform: scale(1.1); color: var(--brand-blue); }
         
-        .chat-bubble { max-width: 80%; animation: slideUp 0.3s ease-out forwards; }
+        .chat-bubble { max-width: 80%; animation: slideUp 0.3s ease-out forwards; position: relative;}
         .chat-user { background-color: var(--brand-blue); color: #fff; border-bottom-right-radius: 4px; }
         .chat-admin { background-color: #fff; color: #0f172a; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
 
@@ -44,236 +45,264 @@
             box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
         }
 
-        .toast-notification {
-            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes slideInLeft {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+        /* Status Tick Indicators */
+        .msg-status { font-size: 0.65rem; margin-left: 4px; }
+        .status-pending { color: rgba(255,255,255,0.6); }
+        .status-delivered { color: #fff; }
+        .status-read { color: var(--brand-yellow); }
     </style>
 </head>
-<body class="antialiased pb-20 selection:bg-[#0044ff] selection:text-white">
+<body class="antialiased pb-20">
 
-    <div id="applicationToastCenter" class="fixed bottom-20 right-4 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none md:max-w-md"></div>
-
-    <header class="fixed top-0 w-full bg-white border-b border-gray-200 z-40 shadow-sm h-14 flex items-center justify-between px-4 md:max-w-2xl md:mx-auto md:left-0 md:right-0">
+    <header class="fixed top-0 w-full bg-white border-b border-gray-200 z-40 shadow-sm h-14 flex items-center justify-between px-4">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px]">
                 <div class="w-full h-full bg-white rounded-md flex items-center justify-center overflow-hidden">
                     <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=D74'">
                 </div>
             </div>
-            <span class="text-[15px] font-extrabold tracking-tight text-gray-900 font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+            <span class="text-[15px] font-extrabold tracking-tight text-gray-900 font-mono">DAN74TECH</span>
         </div>
         <div class="flex items-center gap-4 text-gray-600">
-            <button onclick="toggleLedgerPanel()" class="relative hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none">
-                <i class="fa-solid fa-bell text-gray-700"></i>
-                <span id="ledger-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff2a2a] rounded-full border border-white hidden"></span>
+            <button class="relative hover:bg-gray-100 p-2 rounded-full transition-colors">
+                <i class="fa-solid fa-bell"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff2a2a] rounded-full border border-white"></span>
             </button>
-            <div id="header-avatar" class="w-8 h-8 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer border border-blue-200" onclick="switchTab('profile')">--</div>
+            <div id="header-avatar" class="w-8 h-8 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer" onclick="switchTab('profile')">--</div>
         </div>
     </header>
-
-    <div id="ledger-drawer" class="fixed top-14 bottom-0 right-0 left-0 bg-black/40 z-40 hidden transition-opacity duration-300 md:max-w-2xl md:mx-auto">
-        <div class="bg-white w-full max-w-sm ml-auto h-full shadow-2xl p-4 flex flex-col overflow-y-auto">
-            <div class="flex items-center justify-between pb-3 border-b border-gray-100">
-                <h3 class="text-sm font-extrabold text-gray-900 tracking-tight font-mono uppercase"><i class="fa-solid fa-folder-open text-[#0044ff] mr-1.5"></i>Account Ledger Matrix</h3>
-                <button onclick="toggleLedgerPanel()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <div class="mt-4 space-y-6 flex-1">
-                <div>
-                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">Financial Statements</h4>
-                    <div id="invoice-ledger-container" class="space-y-2">
-                        <p class="text-xs text-gray-400 font-mono italic">No billing statements synced.</p>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">Production Asset Handovers</h4>
-                    <div id="deliveries-ledger-container" class="space-y-2">
-                        <p class="text-xs text-gray-400 font-mono italic">No binary delivery handovers found.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <main class="pt-16 px-0 md:max-w-2xl md:mx-auto">
         
         <section id="view-feed" class="tab-content active space-y-3">
-            <div class="bg-white p-4 shadow-sm border-b border-gray-100 flex items-center gap-3 mx-2 rounded-xl mt-2 border">
-                <div id="feed-avatar" class="w-10 h-10 rounded-full bg-blue-50 text-[#0044ff] flex items-center justify-center font-bold flex-shrink-0 border border-blue-100">--</div>
-                <div class="flex-1 bg-gray-50 rounded-full px-4 py-2.5 text-xs text-gray-500 cursor-pointer hover:bg-gray-100 border border-gray-200 transition-colors" onclick="switchTab('chat')">
-                    Have a technical inquiry or project blueprint to map out?
+            
+            <div class="bg-white p-4 shadow-sm border-b border-gray-100">
+                <div class="flex items-center gap-3 mb-3">
+                    <div id="feed-avatar" class="w-10 h-10 rounded-full bg-blue-100 text-[#0044ff] flex items-center justify-center font-bold flex-shrink-0">--</div>
+                    <div class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors" onclick="openSubmissionModal()">
+                        Share a project, blog, or technical inquiry...
+                    </div>
+                </div>
+                <div class="flex justify-around border-t border-gray-50 pt-2 text-xs font-bold text-gray-500">
+                    <button onclick="openSubmissionModal('portfolio')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-briefcase text-[#0044ff]"></i> Portfolio</button>
+                    <button onclick="openSubmissionModal('blog')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-newspaper text-red-500"></i> Blog Post</button>
+                    <button onclick="openSubmissionModal('case_study')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-chart-line text-[#ffd700]"></i> Case Study</button>
                 </div>
             </div>
 
-            <div id="feed-container" class="space-y-3 pb-6 px-2">
-                <div class="text-center py-12 text-gray-400 bg-white rounded-xl border border-gray-100">
+            <div id="feed-container" class="space-y-3 pb-6">
+                <div class="text-center py-10 text-gray-400">
                     <i class="fa-solid fa-circle-notch fa-spin text-2xl text-[#0044ff]"></i>
-                    <p class="text-xs font-mono mt-2 tracking-wide text-gray-500">Synchronizing Local Network Nodes...</p>
+                    <p class="text-xs font-mono mt-2">Synchronizing Network Data...</p>
                 </div>
             </div>
         </section>
 
-        <section id="view-chat" class="tab-content h-[calc(100vh-7.5rem)] flex flex-col bg-white mx-2 mt-2 rounded-xl border border-gray-200 overflow-hidden">
-            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50 sticky top-0 z-30">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-[#ffd700] flex items-center justify-center text-black font-bold shadow-sm border border-yellow-400">
-                        <i class="fa-solid fa-headset text-sm"></i>
+        <section id="view-chat" class="tab-content h-[calc(100vh-7rem)] flex flex-col bg-white">
+            
+            <div class="px-2 py-3 border-b border-gray-100 bg-gray-50 sticky top-14 z-30">
+                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-2 font-mono">Active Network</h4>
+                <div id="active-users-directory" class="flex gap-3 overflow-x-auto px-2 pb-2 snap-x">
+                    <div class="flex flex-col items-center gap-1 min-w-[60px] cursor-pointer opacity-100 snap-center" onclick="setChatTarget(1, 'Admin Support')">
+                        <div class="w-12 h-12 rounded-full bg-[#ffd700] border-2 border-[#0044ff] flex items-center justify-center text-black font-bold shadow-sm relative">
+                            <i class="fa-solid fa-headset text-lg"></i>
+                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-800 text-center leading-tight">Admin</span>
                     </div>
-                    <div>
-                        <h3 class="text-xs font-extrabold text-gray-900 tracking-tight">Admin Support Matrix</h3>
-                        <p class="text-[9px] text-emerald-600 font-mono font-bold flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> SYSTEM CHANNEL ACTIVE
-                        </p>
                     </div>
+                <div class="px-2 mt-1 flex items-center justify-between">
+                    <h3 id="current-chat-target" class="text-sm font-extrabold text-[#0044ff]">Thread: Admin Support</h3>
+                    <p class="text-[10px] text-emerald-600 font-mono font-bold flex items-center gap-1">
+                        <span id="socket-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Connected
+                    </p>
                 </div>
             </div>
 
-            <div id="chat-thread" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50"></div>
+            <div id="chat-thread" class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8fafc]">
+            </div>
 
-            <form id="client-message-form" class="p-3 bg-white border-t border-gray-100 sticky bottom-0">
+            <form id="client-message-form" class="p-3 bg-white border-t border-gray-200 sticky bottom-14 md:bottom-0">
                 <div id="attachment-preview" class="hidden mb-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg w-max max-w-full overflow-hidden">
                     <i class="fa-solid fa-paperclip text-[#0044ff] text-xs"></i>
-                    <span id="attachment-name" class="text-xs font-mono text-gray-700 truncate">asset_stream.pdf</span>
+                    <span id="attachment-name" class="text-xs font-mono text-gray-700 truncate">file.pdf</span>
                     <button type="button" onclick="removeAttachment()" class="text-[#ff2a2a] ml-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="flex items-end gap-2">
-                    <label class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-[#0044ff] border border-gray-200 transition-colors cursor-pointer flex-shrink-0">
-                        <i class="fa-solid fa-paperclip text-sm"></i>
+                    <label class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-[#0044ff] transition-colors cursor-pointer flex-shrink-0">
+                        <i class="fa-solid fa-paperclip"></i>
                         <input type="file" id="chat-file-upload" class="hidden">
                     </label>
-                    <textarea id="chat-input" rows="1" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-800 focus:ring-1 focus:ring-[#0044ff] focus:bg-white focus:outline-none resize-none transition-all" placeholder="Transmit operational directive or message context..."></textarea>
-                    <button type="submit" id="btn-send-chat" class="w-10 h-10 rounded-full bg-[#0044ff] flex items-center justify-center text-white shadow-md hover:bg-blue-700 transition-colors flex-shrink-0 focus:outline-none">
-                        <i class="fa-solid fa-paper-plane text-xs translate-x-[-0.5px] translate-y-[0.5px]"></i>
+                    <textarea id="chat-input" rows="1" class="flex-1 bg-gray-100 border-none rounded-2xl px-4 py-3 text-sm text-gray-800 focus:ring-0 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
+                    <button type="submit" id="btn-send-chat" class="w-10 h-10 rounded-full bg-[#0044ff] flex items-center justify-center text-white shadow-md hover:bg-blue-700 transition-colors flex-shrink-0">
+                        <i class="fa-solid fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px]"></i>
                     </button>
                 </div>
             </form>
         </section>
 
-        <section id="view-profile" class="tab-content bg-white min-h-[calc(100vh-4rem)] mx-2 mt-2 rounded-xl border border-gray-200 overflow-hidden">
-            <div class="relative h-28 bg-gradient-to-r from-[#0044ff] to-[#ff2a2a]"></div>
+        <section id="view-profile" class="tab-content bg-white min-h-[calc(100vh-3.5rem)]">
+            <div class="relative h-32 bg-gradient-to-r from-[#0044ff] to-[#ff2a2a]"></div>
             <div class="px-4 pb-6 relative">
-                <div id="profile-avatar-lg" class="w-20 h-20 rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center text-2xl font-bold text-[#0044ff] -mt-10 mb-3 mx-auto relative z-10 font-mono">
+                <div id="profile-avatar-lg" class="w-24 h-24 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center text-3xl font-bold text-[#0044ff] -mt-12 mb-3 mx-auto relative z-10">
                     --
                 </div>
                 <div class="text-center space-y-1">
-                    <h2 id="profile-name" class="text-base font-extrabold text-gray-900 tracking-tight">Loading Client Frame...</h2>
-                    <p id="profile-role" class="text-[9px] font-mono font-bold text-[#0044ff] uppercase tracking-widest bg-blue-50 inline-block px-2.5 py-0.5 rounded border border-blue-100">Verified Client</p>
+                    <h2 id="profile-name" class="text-xl font-extrabold text-gray-900">User Identity</h2>
+                    <p id="profile-role" class="text-xs font-mono font-bold text-[#0044ff] uppercase tracking-widest bg-blue-50 inline-block px-2 py-0.5 rounded">Verified Client</p>
                 </div>
 
-                <div class="mt-6 space-y-4">
+                <div class="mt-8 space-y-4">
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3">
-                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Secure Identity Metadata Token</h4>
-                        <div class="flex items-center gap-3 text-xs">
-                            <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-100"><i class="fa-solid fa-envelope text-[10px]"></i></div>
+                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Telemetry Data</h4>
+                        <div class="flex items-center gap-3 text-sm">
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-envelope"></i></div>
                             <span id="profile-email" class="text-gray-700 font-mono">--</span>
                         </div>
-                        <div class="flex items-center gap-3 text-xs">
-                            <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-100"><i class="fa-solid fa-phone text-[10px]"></i></div>
+                        <div class="flex items-center gap-3 text-sm">
+                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-phone"></i></div>
                             <span id="profile-phone" class="text-gray-700 font-mono">--</span>
                         </div>
                     </div>
 
-                    <button onclick="logout()" class="w-full py-2.5 rounded-xl border border-red-200 bg-red-50/50 text-[#ff2a2a] font-bold text-xs hover:bg-red-50 transition-colors tracking-wide font-mono uppercase">
-                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5 text-[11px]"></i> Terminate Encrypted Session
+                    <button onclick="logout()" class="w-full py-3 rounded-xl border-2 border-red-50 text-[#ff2a2a] font-bold text-sm hover:bg-red-50 transition-colors">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Terminate Session
                     </button>
                 </div>
             </div>
         </section>
     </main>
 
-    <a href="services.html" class="fab-services fixed bottom-20 right-4 w-12 h-12 rounded-full flex items-center justify-center text-white z-40 transition-transform active:scale-95 md:right-[calc(50vw-300px)]">
-        <i class="fa-solid fa-layer-group text-sm"></i>
+    <div id="post-submission-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end md:items-center justify-center">
+        <div class="bg-white w-full md:w-[500px] rounded-t-2xl md:rounded-2xl p-5 transform transition-transform translate-y-full md:translate-y-0 duration-300" id="post-modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-extrabold text-lg text-gray-900">Create Submission</h3>
+                <button onclick="closeSubmissionModal()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="content-submission-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Content Type</label>
+                    <select id="post-type" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff]">
+                        <option value="portfolio">Portfolio Project</option>
+                        <option value="blog_posts">Technical Blog</option>
+                        <option value="case_studies">Case Study</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Title</label>
+                    <input type="text" id="post-title" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Details / Content</label>
+                    <textarea id="post-content" rows="4" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff] resize-none"></textarea>
+                </div>
+                <div class="bg-blue-50 text-[#0044ff] text-[10px] font-mono p-2 rounded flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <p>Submissions enter a 'pending' state. They will appear in the global feed upon Administrator verification.</p>
+                </div>
+                <button type="submit" class="w-full py-3 bg-[#0044ff] text-white rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition-colors">
+                    Submit to Network
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <a href="services.html" class="fab-services fixed bottom-20 right-4 w-14 h-14 rounded-full flex items-center justify-center text-white z-40 transition-transform active:scale-95 md:right-[calc(50vw-300px)]">
+        <i class="fa-solid fa-layer-group text-xl"></i>
     </a>
 
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 h-14 flex items-center justify-around px-2 z-50 md:max-w-2xl md:mx-auto md:left-0 md:right-0">
-        <button onclick="switchTab('feed')" class="nav-item active flex flex-col items-center justify-center w-16 gap-0.5 focus:outline-none" data-target="feed">
-            <i class="fa-solid fa-house text-base"></i>
+        <button onclick="switchTab('feed')" class="nav-item active flex flex-col items-center justify-center w-16 gap-1" data-target="feed">
+            <i class="fa-solid fa-house text-lg"></i>
             <span class="text-[9px] font-bold">Feed</span>
         </button>
-        <a href="services.html" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5">
-            <i class="fa-solid fa-store text-base"></i>
+        <a href="services.html" class="nav-item flex flex-col items-center justify-center w-16 gap-1">
+            <i class="fa-solid fa-store text-lg"></i>
             <span class="text-[9px] font-bold">Store</span>
         </a>
-        <button onclick="switchTab('chat')" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5 relative focus:outline-none" data-target="chat">
-            <i class="fa-solid fa-comment-dots text-base"></i>
+        <button onclick="switchTab('chat')" class="nav-item flex flex-col items-center justify-center w-16 gap-1 relative" data-target="chat">
+            <i class="fa-solid fa-comment-dots text-lg"></i>
             <span class="text-[9px] font-bold">Inbox</span>
         </button>
-        <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5 focus:outline-none" data-target="profile">
-            <i class="fa-solid fa-user text-base"></i>
+        <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center justify-center w-16 gap-1" data-target="profile">
+            <i class="fa-solid fa-user text-lg"></i>
             <span class="text-[9px] font-bold">Profile</span>
         </button>
     </nav>
 
     <script>
-        // System API Base Calculation Logic
+        // API Configuration & Networking Context
         const hostname = window.location.hostname;
         const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
         const API_BASE = isLocalNetwork ? 'http://localhost:10000/api' : '/api';
+        const SOCKET_URL = isLocalNetwork ? 'http://localhost:10000' : window.location.origin;
          
-        // Explicit Session Extraction Pipeline
         let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || localStorage.getItem('dan74_token'); 
         let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || localStorage.getItem('user_context') || 'null');
         let selectedFile = null;
+        let activeChatReceiverId = 1; // Defaulting 1 to Admin
+        let socket;
 
-        // Perimeter Authorization Gate Enforcer
+        // Security Authentication Block
         if (!authToken || !userNode) {
             window.location.replace('login.html');
         }
 
-        // Global Visual Notification Injection Engine
-        function pushSystemOperationalToast(messageContext, messageType) {
-            const toastCenter = document.getElementById('applicationToastCenter');
-            if (!toastCenter) return;
-            
-            const individualToastNode = document.createElement('div');
-            individualToastNode.className = 'toast-notification pointer-events-auto bg-white border p-3.5 rounded-xl shadow-xl flex items-center gap-3 text-xs font-medium transition-all duration-300 border-gray-100';
-            
-            if (messageType === 'success' || messageType === 'success-variant') {
-                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
-            } else if (messageType === 'error') {
-                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
-            } else {
-                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
-            }
-            
-            toastCenter.appendChild(individualToastNode);
-            setTimeout(() => {
-                individualToastNode.style.opacity = '0';
-                individualToastNode.style.transform = 'translateY(10px)';
-                setTimeout(() => individualToastNode.remove(), 300);
-            }, 4000);
-        }
-
-        // Orchestrated Application Initialization Block
+        // Boot Sequence Master Function
         document.addEventListener('DOMContentLoaded', () => {
             if (userNode) populateUserData();
-            loadSocialFeed();
-            loadChatThread();
-            syncLedgerRecords();
             
-            // Continuous Background Socket Emulator Workloads
-            setInterval(loadChatThread, 15000); 
-            setInterval(syncLedgerRecords, 30000); 
+            // Phase 1: Operational Telemetry Synchronization
+            triggerTelemetryClockPulse();
+            runSystemTelemetryDatabaseSynchronization();
+
+            // Load Interface Data Blocks
+            loadSocialFeed();
+            loadActiveDirectory();
+            loadChatThread();
+            
+            // Phase 5: Initialize Real-Time WebSocket Infrastructure
+            initSocketConnection();
         });
 
+        // ==========================================
+        // PHASE 1: TELEMETRY ENGINE
+        // ==========================================
+        function triggerTelemetryClockPulse() {
+            const start = performance.now();
+            setTimeout(() => {
+                const end = performance.now();
+                if ((end - start) > 100) {
+                    console.warn("⚠️ Telemetry Pulse: Interface thread blockage detected (>100ms latency).");
+                }
+            }, 0);
+        }
+
+        async function runSystemTelemetryDatabaseSynchronization() {
+            try {
+                // Ping the backend admin stats if accessible to aggregate data logic
+                const res = await fetch(`${API_BASE}/admin/dashboard-stats`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if(res.ok) console.log("✅ Telemetry Data Matrix Synchronized.");
+            } catch (err) {
+                console.log("Telemetry sync pending operational parameters.");
+            }
+        }
+
+        // ==========================================
+        // CORE UI & PROFILE MANAGEMENT
+        // ==========================================
         function populateUserData() {
             const initials = userNode.name ? userNode.name.substring(0, 2).toUpperCase() : 'U';
             document.getElementById('header-avatar').textContent = initials;
             document.getElementById('feed-avatar').textContent = initials;
             document.getElementById('profile-avatar-lg').textContent = initials;
             
-            document.getElementById('profile-name').textContent = userNode.name || 'Unknown Corporate Actor';
+            document.getElementById('profile-name').textContent = userNode.name || 'Unknown User';
             document.getElementById('profile-email').textContent = userNode.email || 'N/A';
-            document.getElementById('profile-phone').textContent = userNode.phone || 'No phone metric captured';
-            document.getElementById('profile-role').textContent = userNode.role === 'admin' ? 'System Administrator' : 'Verified Client Matrix';
+            document.getElementById('profile-phone').textContent = userNode.phone || 'No phone recorded';
+            document.getElementById('profile-role').textContent = userNode.role === 'admin' ? 'System Admin' : 'Verified Client';
         }
 
         function switchTab(tabId) {
@@ -290,75 +319,64 @@
             }
         }
 
-        function toggleLedgerPanel() {
-            const drawer = document.getElementById('ledger-drawer');
-            drawer.classList.toggle('hidden');
-        }
-
         function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            localStorage.removeItem('dan74_admin_token');
-            localStorage.removeItem('dan74_admin_user');
-            localStorage.removeItem('dan74_token');
-            localStorage.removeItem('user_context');
+            localStorage.clear();
             window.location.replace('login.html');
         }
 
-        // Ledger Mapping Synchronization Framework Execution
-        async function syncLedgerRecords() {
-            const invoiceContainer = document.getElementById('invoice-ledger-container');
-            const deliveriesContainer = document.getElementById('deliveries-ledger-container');
-            const badge = document.getElementById('ledger-badge');
-
-            try {
-                const [invoicesRes, deliveriesRes] = await Promise.all([
-                    fetch(`${API_BASE}/invoices/client/${userNode.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } }).catch(() => null),
-                    fetch(`${API_BASE}/file-deliveries/client/${userNode.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } }).catch(() => null)
-                ]);
-
-                if (invoicesRes && invoicesRes.ok) {
-                    const invoices = await invoicesRes.json();
-                    if (Array.isArray(invoices) && invoices.length > 0) {
-                        badge.classList.remove('hidden');
-                        invoiceContainer.innerHTML = '';
-                        invoices.forEach(inv => {
-                            invoiceContainer.innerHTML += `
-                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between text-xs">
-                                    <div>
-                                        <p class="font-bold text-gray-900">${inv.invoice_number || 'INV-UNMAPPED'}</p>
-                                        <p class="text-[10px] text-gray-500 font-mono">${inv.service || 'General Engagement'}</p>
-                                        <p class="text-[10px] text-blue-600 font-bold font-mono">KES ${parseFloat(inv.amount || 0).toLocaleString()}</p>
-                                    </div>
-                                    <a href="${API_BASE}/invoices/stream/${inv.id}" target="_blank" class="px-2 py-1 bg-[#0044ff] text-white font-mono text-[10px] font-bold rounded hover:bg-blue-700 transition-colors"><i class="fa-solid fa-file-pdf"></i> Stream</a>
-                                </div>`;
-                        });
-                    }
-                }
-
-                if (deliveriesRes && deliveriesRes.ok) {
-                    const deliveries = await deliveriesRes.json();
-                    if (Array.isArray(deliveries) && deliveries.length > 0) {
-                        badge.classList.remove('hidden');
-                        deliveriesContainer.innerHTML = '';
-                        deliveries.forEach(file => {
-                            deliveriesContainer.innerHTML += `
-                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between text-xs">
-                                    <div class="truncate max-w-[180px]">
-                                        <p class="font-bold text-gray-900 truncate">${file.file_name || 'Production Asset'}</p>
-                                        <p class="text-[9px] text-gray-400 font-mono">${new Date(file.created_at).toLocaleDateString()}</p>
-                                    </div>
-                                    <a href="${file.file_url}" target="_blank" class="px-2 py-1 bg-emerald-600 text-white font-mono text-[10px] font-bold rounded hover:bg-emerald-700 transition-colors"><i class="fa-solid fa-download"></i> Get</a>
-                                </div>`;
-                        });
-                    }
-                }
-            } catch (err) {
-                console.warn("Ledger Sync Throttle Exception Block:", err.message);
-            }
+        // ==========================================
+        // PHASE 5: FACEBOOK-STYLE COMMUNITY FEED
+        // ==========================================
+        function openSubmissionModal(presetType = 'portfolio') {
+            document.getElementById('post-type').value = presetType;
+            const modal = document.getElementById('post-submission-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('post-modal-content').classList.remove('translate-y-full');
+            }, 10);
         }
 
-        // Asynchronous Network Synchronization Pipeline (Feed Aggregation Layer)
+        function closeSubmissionModal() {
+            document.getElementById('post-modal-content').classList.add('translate-y-full');
+            setTimeout(() => {
+                document.getElementById('post-submission-modal').classList.add('hidden');
+            }, 300);
+        }
+
+        document.getElementById('content-submission-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const type = document.getElementById('post-type').value;
+            const payload = {
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                publisher_id: userNode.id,
+                is_approved: false // Strict master flow requirement
+            };
+
+            try {
+                // Post to respective architectural endpoints. 
+                // Assumes backend routing adapts to `POST /api/:table` dynamically.
+                const res = await fetch(`${API_BASE}/${type}`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    alert("Submission received successfully. Awaiting Administrator verification.");
+                    document.getElementById('content-submission-form').reset();
+                    closeSubmissionModal();
+                } else {
+                    alert("System error accepting submission.");
+                }
+            } catch (err) {
+                console.error("Submission failed:", err);
+            }
+        });
+
         async function loadSocialFeed() {
             const container = document.getElementById('feed-container');
             try {
@@ -370,91 +388,50 @@
 
                 let feedItems = [];
 
-                if (Array.isArray(blogs)) {
-                    blogs.forEach(b => feedItems.push({
-                        type: 'Blog Post',
-                        icon: 'fa-newspaper text-blue-500',
-                        author: 'DAN74TECH MEDIA',
-                        title: b.title,
-                        body: b.summary || (b.content ? b.content.substring(0, 150) + '...' : 'No programmatic summary recorded.'),
-                        image: b.image_url,
-                        date: new Date(b.created_at || Date.now()).getTime(),
-                        rawDate: b.created_at || new Date().toISOString(),
-                        likes: Math.floor(Math.random() * 50) + 12 
-                    }));
-                }
-
-                if (Array.isArray(caseStudies)) {
-                    caseStudies.forEach(c => feedItems.push({
-                        type: 'Case Study',
-                        icon: 'fa-chart-line text-red-500',
-                        author: 'DAN74TECH MEDIA',
-                        title: c.title,
-                        body: `<b>Challenge Paradigm:</b> ${c.challenge || 'N/A'}<br><b class="text-emerald-600">Resolution Execution:</b> ${c.result || 'N/A'}`,
-                        image: c.image_url,
-                        date: new Date(c.created_at || Date.now()).getTime(),
-                        rawDate: c.created_at || new Date().toISOString(),
-                        likes: Math.floor(Math.random() * 80) + 24
-                    }));
-                }
-
-                if (Array.isArray(testimonials)) {
-                    testimonials.forEach(t => feedItems.push({
-                        type: 'Client Review',
-                        icon: 'fa-star text-yellow-500',
-                        author: t.client_name + (t.company ? ` (${t.company})` : ''),
-                        title: `Performance Assessment: ${t.rating || 5} Stars!`,
-                        body: `"${t.review || ''}"`,
-                        image: null,
-                        date: new Date(t.created_at || Date.now()).getTime(),
-                        rawDate: t.created_at || new Date().toISOString(),
-                        likes: Math.floor(Math.random() * 100) + 35
-                    }));
-                }
+                if (Array.isArray(blogs)) blogs.forEach(b => feedItems.push(formatFeedItem(b, 'Blog Post', 'fa-newspaper', 'text-blue-500')));
+                if (Array.isArray(caseStudies)) caseStudies.forEach(c => feedItems.push(formatFeedItem(c, 'Case Study', 'fa-chart-line', 'text-[#ff2a2a]')));
+                if (Array.isArray(testimonials)) testimonials.forEach(t => feedItems.push(formatFeedItem(t, 'Community Review', 'fa-star', 'text-[#ffd700]')));
 
                 feedItems.sort((a, b) => b.date - a.date);
 
                 container.innerHTML = '';
                 if (feedItems.length === 0) {
-                    container.innerHTML = `<div class="text-center p-8 bg-white rounded-xl border text-gray-400 font-mono text-xs">No active pipeline feed data found in the master domain matrix.</div>`;
+                    container.innerHTML = `<div class="text-center p-8 bg-white text-gray-400 font-mono text-xs">No active verified network data found.</div>`;
                     return;
                 }
 
                 feedItems.forEach(item => {
                     const timeStr = new Date(item.rawDate).toLocaleDateString();
                     const card = document.createElement('div');
-                    card.className = "bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm mb-3";
+                    card.className = "bg-white shadow-sm border-y border-gray-100 mb-2";
                     card.innerHTML = `
-                        <div class="px-4 py-3 flex items-center justify-between bg-gray-50/50 border-b border-gray-50">
+                        <div class="px-4 py-3 flex items-center justify-between">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-gray-200 flex-shrink-0">
-                                    <i class="fa-solid ${item.icon} text-sm"></i>
+                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-lg ${item.color}">
+                                    <i class="fa-solid ${item.icon}"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-xs font-bold text-gray-900">${item.author}</h4>
-                                    <div class="text-[9px] text-gray-500 font-mono flex items-center gap-1">
+                                    <h4 class="text-sm font-bold text-gray-900">${item.author}</h4>
+                                    <div class="text-[10px] text-gray-500 font-mono flex items-center gap-1">
                                         <span>${timeStr}</span> • <i class="fa-solid fa-earth-africa"></i>
                                     </div>
                                 </div>
                             </div>
-                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-2 py-0.5 bg-white border rounded font-mono">${item.type}</span>
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-2 py-1 bg-gray-50 rounded">${item.type}</span>
                         </div>
-
-                        <div class="px-4 py-3">
-                            <h3 class="text-sm font-extrabold text-gray-900 leading-snug mb-1.5">${item.title}</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed font-sans">${item.body}</p>
+                        <div class="px-4 pb-2">
+                            <h3 class="text-base font-extrabold text-gray-900 leading-tight mb-1">${item.title}</h3>
+                            <p class="text-sm text-gray-700 leading-relaxed font-sans">${item.body}</p>
                         </div>
-                        
-                        ${item.image ? `<img src="${item.image}" class="w-full max-h-56 object-cover bg-gray-50 border-y border-gray-100">` : ''}
-
-                        <div class="px-4 py-1.5 border-t border-gray-50 flex items-center justify-between bg-gray-50/30">
-                            <div class="flex gap-1 py-1 text-[10px] text-gray-500 font-bold">
-                                <div class="flex items-center justify-center w-4 h-4 rounded-full bg-[#0044ff] text-white"><i class="fa-solid fa-thumbs-up text-[8px]"></i></div>
-                                <span class="font-mono">${item.likes}</span>
+                        ${item.image ? `<img src="${item.image}" class="w-full max-h-72 object-cover bg-gray-100 border-y border-gray-50">` : ''}
+                        <div class="px-4 py-1 border-t border-gray-50 flex items-center justify-between">
+                            <div class="flex gap-1 py-2 text-[11px] text-gray-500 font-bold">
+                                <div class="flex items-center justify-center w-5 h-5 rounded-full bg-[#0044ff] text-white"><i class="fa-solid fa-thumbs-up text-[10px]"></i></div>
+                                <span>${item.likes}</span>
                             </div>
                             <div class="flex items-center text-gray-500 gap-4 text-xs font-bold">
-                                <button onclick="pushSystemOperationalToast('Telemetry transaction verified. Feedback recorded.', 'success')" class="flex items-center gap-1 hover:text-[#0044ff] text-[11px] font-sans transition-colors"><i class="fa-regular fa-thumbs-up"></i> Like</button>
-                                <button onclick="switchTab('chat')" class="flex items-center gap-1 hover:text-[#0044ff] text-[11px] font-sans transition-colors"><i class="fa-regular fa-message"></i> Connect</button>
+                                <button class="flex items-center gap-1.5 hover:text-[#0044ff] transition-colors"><i class="fa-regular fa-thumbs-up text-lg"></i> Support</button>
+                                <button onclick="switchTab('chat')" class="flex items-center gap-1.5 hover:text-[#0044ff] transition-colors"><i class="fa-regular fa-message text-lg"></i> Connect</button>
                             </div>
                         </div>
                     `;
@@ -462,81 +439,158 @@
                 });
 
             } catch (err) {
-                container.innerHTML = `<div class="p-6 text-center text-[#ff2a2a] text-xs font-mono bg-white rounded-xl border">Critical Stream Sync Abort: ${err.message}</div>`;
+                container.innerHTML = `<div class="p-6 text-center text-[#ff2a2a] text-xs font-mono">Feed sync failure: ${err.message}</div>`;
             }
         }
 
-        // Real-Time Core Messaging Polling Engine Interface
+        function formatFeedItem(obj, type, icon, color) {
+            return {
+                type: type, icon: icon, color: color,
+                author: obj.publisher_name || obj.client_name || 'DAN74TECH Community',
+                title: obj.title || `Rating: ${obj.rating} Stars`,
+                body: obj.content ? obj.content.substring(0, 150) + '...' : obj.review || obj.challenge,
+                image: obj.image_url || null,
+                date: new Date(obj.created_at).getTime(),
+                rawDate: obj.created_at,
+                likes: Math.floor(Math.random() * 50) + 5 
+            };
+        }
+
+        // ==========================================
+        // PHASE 5: REAL-TIME WEBSOCKET P2P CHAT
+        // ==========================================
+        function initSocketConnection() {
+            if (typeof io !== 'undefined') {
+                socket = io(SOCKET_URL);
+                socket.on('connect', () => {
+                    document.getElementById('socket-status-dot').classList.replace('bg-red-500', 'bg-emerald-500');
+                    socket.emit('join_thread', userNode.id.toString());
+                });
+
+                socket.on('receive_message', (msg) => {
+                    if(msg.sender_id === activeChatReceiverId || msg.receiver_id === activeChatReceiverId) {
+                        appendMessageToThread(msg);
+                        const thread = document.getElementById('chat-thread');
+                        thread.scrollTop = thread.scrollHeight;
+                    }
+                });
+
+                socket.on('disconnect', () => {
+                    document.getElementById('socket-status-dot').classList.replace('bg-emerald-500', 'bg-red-500');
+                });
+            } else {
+                console.error("Socket.io library uninitialized. Fallback required.");
+            }
+        }
+
+        async function loadActiveDirectory() {
+            const directoryContainer = document.getElementById('active-users-directory');
+            try {
+                // Pull active user roster for P2P connection
+                const res = await fetch(`${API_BASE}/users`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (res.ok) {
+                    const users = await res.json();
+                    users.forEach(u => {
+                        if(u.id !== userNode.id && u.role !== 'admin') {
+                            const initial = u.name.substring(0, 1).toUpperCase();
+                            directoryContainer.innerHTML += `
+                                <div class="flex flex-col items-center gap-1 min-w-[60px] cursor-pointer opacity-70 hover:opacity-100 snap-center transition-opacity" onclick="setChatTarget(${u.id}, '${u.name}')">
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 border border-[#0044ff] flex items-center justify-center text-[#0044ff] font-bold shadow-sm">
+                                        ${initial}
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 text-center leading-tight truncate w-full px-1">${u.name.split(' ')[0]}</span>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+            } catch (err) {
+                console.log("Directory fetching restricted by active role scope.");
+            }
+        }
+
+        function setChatTarget(id, name) {
+            activeChatReceiverId = id;
+            document.getElementById('current-chat-target').innerText = `Thread: ${name}`;
+            loadChatThread(); // Refresh thread based on new selection
+        }
+
         async function loadChatThread() {
             const threadContainer = document.getElementById('chat-thread');
-            if (!threadContainer) return;
-
-            const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 60;
+            const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 50;
 
             try {
+                // Using generic portal thread fetch, backend logic processes query based on JWT
                 const res = await fetch(`${API_BASE}/client-portal/thread`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 
-                // Immediate Boundary Enforcement Gate
-                if (res.status === 401 || res.status === 403) {
-                    throw new Error('Auth failure');
-                }
-                
-                if (!res.ok) {
-                    throw new Error(`Server Operational Communication Exception: HTTP ${res.status}`);
-                }
+                if (!res.ok) throw new Error(`Communication error: HTTP ${res.status}`);
                 
                 const messages = await res.json();
                 threadContainer.innerHTML = '';
                 
-                if (messages.length === 0) {
+                // Filter messages visually if backend aggregates all
+                const filteredMessages = messages.filter(m => m.sender_id === activeChatReceiverId || m.receiver_id === activeChatReceiverId || activeChatReceiverId === 1);
+
+                if (filteredMessages.length === 0) {
                     threadContainer.innerHTML = `
-                        <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 opacity-80 py-16">
-                            <i class="fa-solid fa-envelope-open-text text-3xl mb-2 text-gray-300"></i>
-                            <p class="text-xs font-mono">Transmission clear.<br>Emit a message frame to initialize support.</p>
+                        <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 opacity-70">
+                            <i class="fa-solid fa-satellite-dish text-4xl mb-3 text-gray-300"></i>
+                            <p class="text-xs font-mono">Transmission channel is clear.<br>Send a message to initiate contact.</p>
                         </div>`;
                     return;
                 }
 
-                messages.forEach(msg => {
-                    const isClient = msg.sender_id === userNode.id;
-                    const alignment = isClient ? 'justify-end' : 'justify-start';
-                    const bubbleClass = isClient ? 'chat-user rounded-tl-xl rounded-tr-xl rounded-bl-xl' : 'chat-admin rounded-tl-xl rounded-tr-xl rounded-br-xl';
-                    const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    
-                    let attachmentHtml = '';
-                    if (msg.attachment_url) {
-                        const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
-                        if(isImage) {
-                            attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('${msg.attachment_url}')"></div>`;
-                        } else {
-                            attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-black/10 rounded-lg text-[11px] font-mono hover:bg-black/20 transition-colors text-white max-w-full truncate"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'Download Asset'}</a>`;
-                        }
-                    }
-
-                    threadContainer.innerHTML += `
-                        <div class="flex ${alignment} w-full">
-                            <div class="chat-bubble p-3 shadow-sm text-xs ${bubbleClass}">
-                                <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body}</p>
-                                ${attachmentHtml}
-                                <div class="text-[8px] mt-1 font-mono text-right opacity-70">${time}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-
+                filteredMessages.forEach(msg => appendMessageToThread(msg));
                 if (atBottom) threadContainer.scrollTop = threadContainer.scrollHeight;
 
             } catch (err) {
-                if (err.message.includes('Auth')) {
-                    console.error("Token compromised. Purging security frame.");
+                if (err.message.includes('Auth') || err.message.includes('401')) {
                     logout();
                 }
             }
         }
 
-        // Outbound Buffer Form Submit Transaction Handler Node
+        function appendMessageToThread(msg) {
+            const threadContainer = document.getElementById('chat-thread');
+            const isClient = msg.sender_id === userNode.id;
+            const alignment = isClient ? 'justify-end' : 'justify-start';
+            const bubbleClass = isClient ? 'chat-user rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'chat-admin rounded-tl-2xl rounded-tr-2xl rounded-br-2xl';
+            const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Render Status Ticks
+            let statusIcon = '<i class="fa-solid fa-clock status-pending msg-status"></i>';
+            if (msg.delivery_status === 'delivered') statusIcon = '<i class="fa-solid fa-check status-delivered msg-status"></i>';
+            if (msg.delivery_status === 'read' || msg.is_read) statusIcon = '<i class="fa-solid fa-check-double status-read msg-status"></i>';
+            if (!isClient) statusIcon = ''; // Hide receipt for incoming msgs
+
+            let attachmentHtml = '';
+            if (msg.attachment_url) {
+                const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
+                if(isImage) {
+                    attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm" onclick="window.open('${msg.attachment_url}')"></div>`;
+                } else {
+                    attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-2 bg-black/10 rounded-lg text-xs font-mono hover:bg-black/20 transition-colors"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'File'}</a>`;
+                }
+            }
+
+            threadContainer.innerHTML += `
+                <div class="flex ${alignment} w-full">
+                    <div class="chat-bubble p-3 shadow-sm text-sm ${bubbleClass}">
+                        <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body}</p>
+                        ${attachmentHtml}
+                        <div class="text-[9px] mt-1 font-mono text-right flex justify-end items-center gap-1 opacity-90">
+                            ${time} ${statusIcon}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         document.getElementById('client-message-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-send-chat');
@@ -546,40 +600,39 @@
             if (!text && !selectedFile) return;
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
 
             try {
+                // Ensure form targets rectified communication API with receiver ID
                 let formData = new FormData();
+                formData.append('receiver_id', activeChatReceiverId);
                 formData.append('message_body', text || 'Secure Asset Delivered');
                 if (selectedFile) formData.append('attachment', selectedFile);
 
-                const res = await fetch(`${API_BASE}/client-portal/send`, {
+                const res = await fetch(`${API_BASE}/communications/send`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${authToken}` },
                     body: formData
                 });
                 
                 if (res.ok) {
+                    const sentMsg = await res.json();
                     input.value = '';
                     removeAttachment();
-                    await loadChatThread();
+                    // Append locally immediately for fluid UI feel before socket roundtrip
+                    appendMessageToThread(sentMsg.data || sentMsg);
                     const thread = document.getElementById('chat-thread');
                     thread.scrollTop = thread.scrollHeight;
-                    pushSystemOperationalToast("Message stream successfully dispatched to core admin.", "success");
-                } else {
-                    const data = await res.json();
-                    pushSystemOperationalToast(data.error || "Failed to transmit message vector.", "error");
                 }
             } catch (err) {
-                console.error("Transmission Routing Error:", err);
-                pushSystemOperationalToast("Network timeout during transmission execution.", "error");
+                console.error("Transmission Error:", err);
+                alert("Message transmission failure. Target may be offline.");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs translate-x-[-0.5px] translate-y-[0.5px]"></i>';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px]"></i>';
             }
         });
 
-        // Binary Capture Listeners
         document.getElementById('chat-file-upload').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
