@@ -110,13 +110,14 @@
                 <div class="flex items-end gap-2">
                     <label class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-[#0044ff] transition-colors cursor-pointer flex-shrink-0">
                         <i class="fa-solid fa-paperclip"></i>
-                        <input type="file" id="chat-file-upload" class="hidden">
+                        <input type="file" id="chat-file-upload" class="hidden" accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.zip,.xlsx,.doc,.docx">
                     </label>
                     <textarea id="chat-input" rows="1" class="flex-1 bg-gray-100 border-none rounded-2xl px-4 py-3 text-sm text-gray-800 focus:ring-0 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
                     <button type="submit" id="btn-send-chat" class="w-10 h-10 rounded-full bg-[#0044ff] flex items-center justify-center text-white shadow-md hover:bg-blue-700 transition-colors flex-shrink-0">
                         <i class="fa-solid fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px]"></i>
                     </button>
                 </div>
+                <div id="file-error" class="text-[10px] text-red-500 font-mono mt-1 hidden">File exceeds 10MB transmission limit.</div>
             </form>
         </section>
 
@@ -184,6 +185,7 @@
         let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || localStorage.getItem('dan74_token'); 
         let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || localStorage.getItem('user_context') || 'null');
         let selectedFile = null;
+        let lastChatState = null;
 
         // Auth Enforcement Gate
         if (!authToken || !userNode) {
@@ -200,7 +202,7 @@
         });
 
         function populateUserData() {
-            const initials = userNode.name ? userNode.name.substring(0, 2).toUpperCase() : 'U';
+            const initials = (userNode.name || 'U').substring(0, 2).toUpperCase();
             document.getElementById('header-avatar').textContent = initials;
             document.getElementById('feed-avatar').textContent = initials;
             document.getElementById('profile-avatar-lg').textContent = initials;
@@ -235,6 +237,7 @@
             localStorage.removeItem('user_context');
             window.location.replace('login.html');
         }
+
         async function loadSocialFeed() {
             const container = document.getElementById('feed-container');
             try {
@@ -251,11 +254,11 @@
                         type: 'Blog Post',
                         icon: 'fa-newspaper text-blue-500',
                         author: 'DAN74TECH MEDIA',
-                        title: b.title,
-                        body: b.summary || b.content.substring(0, 150) + '...',
+                        title: b.title || 'Tech Update',
+                        body: b.summary || (b.content ? b.content.substring(0, 150) + '...' : ''),
                         image: b.image_url,
-                        date: new Date(b.created_at).getTime(),
-                        rawDate: b.created_at,
+                        date: b.created_at ? new Date(b.created_at).getTime() : Date.now(),
+                        rawDate: b.created_at || new Date().toISOString(),
                         likes: Math.floor(Math.random() * 50) + 10 
                     }));
                 }
@@ -265,11 +268,11 @@
                         type: 'Case Study',
                         icon: 'fa-chart-line text-red-500',
                         author: 'DAN74TECH MEDIA',
-                        title: c.title,
-                        body: `<b>Challenge:</b> ${c.challenge}<br><b>Result:</b> ${c.result}`,
+                        title: c.title || 'Project Overview',
+                        body: `<b>Challenge:</b> ${c.challenge || 'N/A'}<br><b>Result:</b> ${c.result || 'Success'}`,
                         image: c.image_url,
-                        date: new Date(c.created_at).getTime(),
-                        rawDate: c.created_at,
+                        date: c.created_at ? new Date(c.created_at).getTime() : Date.now(),
+                        rawDate: c.created_at || new Date().toISOString(),
                         likes: Math.floor(Math.random() * 80) + 20
                     }));
                 }
@@ -278,12 +281,12 @@
                     testimonials.forEach(t => feedItems.push({
                         type: 'Community Review',
                         icon: 'fa-star text-yellow-500',
-                        author: t.client_name + (t.company ? ` (${t.company})` : ''),
-                        title: `Rated us ${t.rating} Stars!`,
-                        body: `"${t.review}"`,
+                        author: (t.client_name || 'Client') + (t.company ? ` (${t.company})` : ''),
+                        title: `Rated us ${t.rating || 5} Stars!`,
+                        body: `"${t.review || ''}"`,
                         image: null,
-                        date: new Date(t.created_at).getTime(),
-                        rawDate: t.created_at,
+                        date: t.created_at ? new Date(t.created_at).getTime() : Date.now(),
+                        rawDate: t.created_at || new Date().toISOString(),
                         likes: Math.floor(Math.random() * 100) + 5
                     }));
                 }
@@ -345,25 +348,32 @@
 
         async function loadChatThread() {
             const threadContainer = document.getElementById('chat-thread');
+            // Determine if the user is near the bottom of the chat view
             const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 50;
 
-                    try {
-            const res = await fetch(`${API_BASE}/client-portal/thread`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            
-            // 1. Only trigger a hard logout on actual authentication rejections
-            if (res.status === 401 || res.status === 403) {
-                throw new Error('Auth failure');
-            }
-            
-            // 2. Prevent logout on database or server crashes (HTTP 500, 404, etc.)
-            if (!res.ok) {
-                throw new Error(`Server communication error: HTTP ${res.status}`);
-            }
-            
-            const messages = await res.json();
-                        
+            try {
+                const res = await fetch(`${API_BASE}/client-portal/thread`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                // 1. Only trigger a hard logout on actual authentication rejections
+                if (res.status === 401 || res.status === 403) {
+                    throw new Error('Auth failure');
+                }
+                
+                // 2. Prevent logout on database or server crashes (HTTP 500, 404, etc.)
+                if (!res.ok) {
+                    throw new Error(`Server communication error: HTTP ${res.status}`);
+                }
+                
+                const messages = await res.json();
+                
+                // Caching layer to prevent continuous DOM flicker on 15s intervals
+                const currentState = JSON.stringify(messages);
+                if (currentState === lastChatState) {
+                    return; // No new messages, skip redraw
+                }
+                lastChatState = currentState;
                 
                 threadContainer.innerHTML = '';
                 
@@ -380,13 +390,13 @@
                     const isClient = msg.sender_id === userNode.id;
                     const alignment = isClient ? 'justify-end' : 'justify-start';
                     const bubbleClass = isClient ? 'chat-user rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'chat-admin rounded-tl-2xl rounded-tr-2xl rounded-br-2xl';
-                    const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const time = msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
                     
                     let attachmentHtml = '';
                     if (msg.attachment_url) {
                         const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
                         if(isImage) {
-                            attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm" onclick="window.open('${msg.attachment_url}')"></div>`;
+                            attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm cursor-pointer" onclick="window.open('${msg.attachment_url}')"></div>`;
                         } else {
                             attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-2 bg-black/10 rounded-lg text-xs font-mono hover:bg-black/20 transition-colors"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'File'}</a>`;
                         }
@@ -395,7 +405,7 @@
                     threadContainer.innerHTML += `
                         <div class="flex ${alignment} w-full">
                             <div class="chat-bubble p-3 shadow-sm text-sm ${bubbleClass}">
-                                <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body}</p>
+                                <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body || ''}</p>
                                 ${attachmentHtml}
                                 <div class="text-[9px] mt-1 font-mono text-right opacity-80">${time}</div>
                             </div>
@@ -403,7 +413,10 @@
                     `;
                 });
 
-                if (atBottom) threadContainer.scrollTop = threadContainer.scrollHeight;
+                // Respect user scroll position; only auto-scroll if they were already at the bottom
+                if (atBottom || messages.length === 1) {
+                    threadContainer.scrollTop = threadContainer.scrollHeight;
+                }
 
             } catch (err) {
                 // Ignore transient network errors during background polling
@@ -413,6 +426,7 @@
                 }
             }
         }
+
         document.getElementById('client-message-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-send-chat');
@@ -451,8 +465,19 @@
         });
 
         document.getElementById('chat-file-upload').addEventListener('change', (e) => {
+            const errorMsg = document.getElementById('file-error');
             const file = e.target.files[0];
+            
+            errorMsg.classList.add('hidden');
+            
             if (file) {
+                // 10MB Strict Client-side ceiling to match production buffers
+                if (file.size > 10 * 1024 * 1024) {
+                    errorMsg.classList.remove('hidden');
+                    e.target.value = '';
+                    return;
+                }
+                
                 selectedFile = file;
                 document.getElementById('attachment-preview').classList.remove('hidden');
                 document.getElementById('attachment-name').innerText = file.name;
@@ -463,6 +488,7 @@
             selectedFile = null;
             document.getElementById('chat-file-upload').value = '';
             document.getElementById('attachment-preview').classList.add('hidden');
+            document.getElementById('file-error').classList.add('hidden');
         }
     </script>
 </body>
