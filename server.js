@@ -14,7 +14,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const nodemailer = require('nodemailer'); 
 const PDFDocument = require('pdfkit');
 const Brevo = require('@getbrevo/brevo');
 
@@ -85,9 +84,7 @@ const localStorage = multer.diskStorage({
     }
 });
 
-// Explicitly defining both naming conventions to prevent structural ReferenceErrors downstream
 const uploadLocal = multer({ storage: localStorage });
-const upload = uploadLocal; 
 const uploadMemory = multer({ storage: multer.memoryStorage() });
 
 // ================= ========================================= =================
@@ -96,7 +93,6 @@ const uploadMemory = multer({ storage: multer.memoryStorage() });
 
 // Middleware: Admin Access Verification
 const verifyAdminAccess = (req, res, next) => {
-    // Safely capture the header regardless of framework casing
     const authHeader = req.headers.authorization || req.headers['authorization'];
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -107,12 +103,9 @@ const verifyAdminAccess = (req, res, next) => {
     
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        
-        // Case-insensitive role validation
         if (String(decoded.role).trim().toLowerCase() !== 'admin') {
             return res.status(403).json({ error: "Unauthorized: Admin clearance required" });
         }
-        
         req.user = decoded;
         next();
     } catch (err) { 
@@ -120,7 +113,6 @@ const verifyAdminAccess = (req, res, next) => {
         return res.status(401).json({ error: "Invalid or Expired Token" }); 
     }
 };
-
 
 // Middleware: System Token Generic Verification
 const verifySystemToken = (req, res, next) => {
@@ -157,13 +149,12 @@ async function sendSystemNotificationEmail(to, subject, text, html) {
     }
 }
 
-
 // ================= MODULE 1: AUTHENTICATION & SECURITY DATA ENGINE =================
 
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, email, password, role, phone } = req.body;
-        const userRole = role || 'client'; // Explicitly enforcing role boundary
+        const userRole = role || 'client'; 
         
         const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (checkUser.rows.length > 0) {
@@ -182,30 +173,23 @@ app.post('/api/auth/register', async (req, res) => {
         
         const userNode = result.rows[0];
         
-        // FIX: Inject 'name' into the JWT payload for frontend context hydration
         const accessToken = jwt.sign(
             { id: userNode.id, name: userNode.name, email: userNode.email, role: userNode.role }, 
             JWT_SECRET, 
             { expiresIn: '24h' }
         );
 
-         // 1. Define your masked link variable first
-const maskedLink = '<a href="https://dan74techweb.onrender.com" style="color: #0044FF; text-decoration: none;">DAN74TECH MEDIA</a>';
-
-// 2. Construct the body using template literals
-const emailBody = `Hello ${userNode.name}, your Subscriber profile setup is successfully validated. 
+        const maskedLink = '<a href="https://dan74techweb.onrender.com" style="color: #0044FF; text-decoration: none;">DAN74TECH MEDIA</a>';
+        const emailBody = `Hello ${userNode.name}, your Subscriber profile setup is successfully validated. 
 We are glad you joined. 
 For more information you can reply to this email or reach us via our website ${maskedLink}. 
 ✨DAN74TECH MEDIA ✨.`;
 
-// 3. Execute the function call
-await sendSystemNotificationEmail(
-    userNode.email, 
-    "Welcome to DAN74TECH MEDIA", 
-    emailBody
-);
-        
-
+        await sendSystemNotificationEmail(
+            userNode.email, 
+            "Welcome to DAN74TECH MEDIA", 
+            emailBody
+        );
         
         res.json({ success: true, token: accessToken, user: userNode });
     } catch (err) {
@@ -229,13 +213,18 @@ app.post('/api/auth/login', async (req, res) => {
             isMatch = await bcrypt.compare(password, user.password);
         } else {
             isMatch = (user.password === password);
+            if (isMatch) {
+                // Auto-upgrade legacy plaintext to hashed
+                const salt = await bcrypt.genSalt(10);
+                const newHash = await bcrypt.hash(password, salt);
+                await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHash, user.id]);
+            }
         }
         
         if (!isMatch) {
             return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
         }
         
-        // FIX: Inject 'name' into the JWT payload 
         const accessToken = jwt.sign(
             { id: user.id, name: user.name, email: user.email, role: user.role }, 
             JWT_SECRET, 
@@ -247,76 +236,6 @@ app.post('/api/auth/login', async (req, res) => {
             token: accessToken,
             user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone }
         });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
-
-    }
-});
-
-// ================= MODULE 19: CLIENT-SIDE PORTAL OPERATIONS =================
-
-// Fetch Client's Own Chat Thread
-app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        
-        // Mark messages sent TO this client as read
-        await pool.query(
-            `UPDATE client_communications SET is_read = TRUE 
-             WHERE receiver_id = $1 AND is_read = FALSE AND is_deleted = FALSE`,
-            [userId]
-        );
-
-        const result = await pool.query(`
-            SELECT * FROM client_communications 
-            WHERE (sender_id = $1 OR receiver_id = $1)
-            AND is_deleted = FALSE 
-            ORDER BY created_at ASC
-        `, [userId]);
-        
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Client Sends Message to Admin Hub
-app.post('/api/client-portal/send', verifySystemToken, uploadMemory.single('attachment'), async (req, res) => {
-    try {
-        const { message_body } = req.body;
-        const sender_id = req.user.id;
-        
-        // Dynamically find the primary active Admin to route the message to
-        const adminRes = await pool.query("SELECT id FROM users WHERE role = 'admin' AND is_deleted = FALSE ORDER BY id ASC LIMIT 1");
-        const receiver_id = adminRes.rows.length > 0 ? adminRes.rows[0].id : null;
-
-        if (req.file) {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: "dan74tech_communications", resource_type: "auto" },
-                async (error, result) => {
-                    if (error) return res.status(500).json({ error: error.message });
-                    
-                    const savedMsg = await pool.query(
-                        `INSERT INTO client_communications (sender_id, receiver_id, message_body, attachment_url, attachment_name) 
-                         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-                        [sender_id, receiver_id, message_body, result.secure_url, req.file.originalname]
-                    );
-                    return res.json({ success: true, data: savedMsg.rows[0] });
-                }
-            );
-            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-        } else {
-            const savedMsg = await pool.query(
-                `INSERT INTO client_communications (sender_id, receiver_id, message_body) 
-                 VALUES ($1, $2, $3) RETURNING *`,
-                [sender_id, receiver_id, message_body]
-            );
-            res.json({ success: true, data: savedMsg.rows[0] });
-        }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -335,21 +254,6 @@ app.get('/api/users', verifyAdminAccess, async (req, res) => {
     }
 });
 
-app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1 AND is_deleted = FALSE',
-            [req.params.id]
-        );
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { name, email, role, phone, password } = req.body;
@@ -358,7 +262,8 @@ app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
 
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
-            query = `UPDATE usuers SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
+            // RECTIFIED: Typo 'usuers' changed to 'users'
+            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
             values = [name, email, role, phone, hashedPassword, req.params.id];
         } else {
             query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING id,name,email,role,phone`;
@@ -422,6 +327,8 @@ app.put('/api/services/:id', verifyAdminAccess, async (req, res) => {
 app.delete('/api/services/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('UPDATE services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        // RECTIFIED: Cascading soft-delete to associated sub_services
+        await pool.query('UPDATE sub_services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE service_id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -475,6 +382,19 @@ app.post('/api/sub-services', verifyAdminAccess, async (req, res) => {
     }
 });
 
+app.put('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { name, price, description, service_id } = req.body;
+        const result = await pool.query(
+            `UPDATE sub_services SET name=$1, price=$2, description=$3, service_id=COALESCE($4, service_id), updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING *`,
+            [name, price, description, service_id, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
 app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('UPDATE sub_services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
@@ -486,7 +406,6 @@ app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
 
 // ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE =================
 
-// Advanced Query Builder
 const buildAdvancedQuery = (tableName, queryParams, searchableColumns = []) => {
     let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = queryParams;
     
@@ -775,7 +694,6 @@ app.post('/api/testimonials', async (req, res) => {
     }
 });
 
-// Upgraded specific feature toggle handler matching database script
 app.put('/api/testimonials/:id', verifyAdminAccess, async (req, res) => {
     try {
         const { status, is_featured } = req.body;
@@ -791,7 +709,6 @@ app.put('/api/testimonials/:id', verifyAdminAccess, async (req, res) => {
     }
 });
 
-// Legacy handler retained for frontend button backward compatibility
 app.put('/api/testimonials/:id/approve', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query(`UPDATE testimonials SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`, [req.params.id]);
@@ -901,11 +818,10 @@ app.delete('/api/blog/:id', verifyAdminAccess, async (req, res) => {
 });
 
 // ================= MODULE 9: NEWSLETTER AUDIENCE SUBSCRIPTION REGISTER =================
-// POST: Add new subscriber
+
 app.post('/api/subscribers', async (req, res) => {
     const { email, status } = req.body;
     try {
-        // Check if exists
         const check = await pool.query('SELECT id FROM subscribers WHERE email = $1', [email]);
         if (check.rows.length > 0) {
             return res.status(400).json({ error: 'Email already subscribed.' });
@@ -921,7 +837,6 @@ app.post('/api/subscribers', async (req, res) => {
     }
 });
 
-// NEW: Fetch historical email campaigns
 app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM email_campaigns WHERE is_deleted = FALSE ORDER BY id DESC');
@@ -931,8 +846,16 @@ app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
     }
 });
 
-// RECTIFIED: Broadcast Route with logging
-app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
+app.delete('/api/email-campaigns/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        await pool.query('UPDATE email_campaigns SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
+app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
     const { subject, message, html } = req.body;
 
     if (!subject || (!message && !html)) {
@@ -940,6 +863,11 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     }
 
     try {
+      const attachments = req.files ? req.files.map(file => ({
+          name: file.originalname,
+          content: file.buffer.toString('base64')
+      })) : [];
+
       const dbResult = await pool.query("SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE");
       const subscribers = dbResult.rows.map(row => row.email);
 
@@ -951,15 +879,17 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
       const sendSmtpEmail = new Brevo.SendSmtpEmail();
       sendSmtpEmail.subject = subject;
       sendSmtpEmail.htmlContent = html || `<div style="font-family:sans-serif; line-height:1.6;"><p>${message}</p></div>`;
-      
-      sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-      sendSmtpEmail.to = [{ email: process.env.EMAIL_USER }]; 
+      sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER || "admin@dan74tech.com" };
+      sendSmtpEmail.to = [{ email: process.env.EMAIL_USER || "admin@dan74tech.com" }]; 
       sendSmtpEmail.bcc = formattedRecipients;               
+      
+      if (attachments.length > 0) {
+          sendSmtpEmail.attachment = attachments;
+      }
 
       const data = await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`Pipeline broadcast executed. Assigned MessageID Token: ${data.messageId}`);
       
-      // NEW: Log the campaign execution into the database
       await pool.query(
           `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by) VALUES ($1, $2, 'newsletter', $3, $4)`,
           [subject, html || message, subscribers.length, req.user ? req.user.id : null]
@@ -972,18 +902,17 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     }
 });
 
-// Locate this existing route:
 app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
-        // PASTE/UPDATE THE QUERY LINE HERE:
         const result = await pool.query(
             `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`, 
             [req.body.status, req.params.id]
         );
         res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
 });
-
 
 app.delete('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
@@ -1039,7 +968,7 @@ app.delete('/api/media/:id', verifyAdminAccess, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
-    }app.post
+    }
 });
 
 // ================= MODULE 11: FINANCIAL LOGISTICS & INVOICING =================
@@ -1087,13 +1016,27 @@ app.get('/api/invoices/:id/download', async (req, res) => {
         
         doc.rect(50, doc.y, 500, 2).fill('#ff2a2a').moveDown(1);
         
-        doc.fillColor('#1a1a1a').fontSize(12).text(`Billed Total: $${inv.amount}`, { bold: true });
+        // RECTIFIED: Aligned currency mapping to regional KSH specification to match application frontend inputs
+        doc.fillColor('#1a1a1a').fontSize(12).text(`Billed Total: KSH ${parseFloat(inv.amount).toLocaleString()}`, { bold: true });
         doc.text(`Status Manifest: ${inv.status.toUpperCase()}`).moveDown(2);
         
         doc.fontSize(10).fillColor('#666666').text('Thank you for partnering with DAN74TECH MEDIA. For queries, contact support via WhatsApp routing loops.', { italic: true });
         doc.end();
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/invoices/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await pool.query(
+            `UPDATE invoices SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
+            [status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
     }
 });
 
@@ -1127,6 +1070,28 @@ app.post('/api/notifications', verifyAdminAccess, async (req, res) => {
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status, title, message } = req.body;
+        const result = await pool.query(
+            `UPDATE notifications SET status=COALESCE($1, status), title=COALESCE($2, title), message=COALESCE($3, message), updated_at=CURRENT_TIMESTAMP WHERE id=$4 RETURNING *`, 
+            [status, title, message, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
+app.delete('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        await pool.query('UPDATE notifications SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
     }
 });
 
@@ -1198,6 +1163,19 @@ app.post('/api/messages', async (req, res) => {
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/messages/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await pool.query(
+            `UPDATE messages SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
+            [status, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
     }
 });
 
@@ -1299,6 +1277,19 @@ app.post('/api/file-deliveries', verifyAdminAccess, uploadLocal.single('attachme
     }
 });
 
+app.put('/api/file-deliveries/:id', verifyAdminAccess, async (req, res) => {
+    try {
+        const { status, file_name } = req.body;
+        const result = await pool.query(
+            `UPDATE file_deliveries SET status=COALESCE($1, status), file_name=COALESCE($2, file_name), updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING *`, 
+            [status, file_name, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
 app.delete('/api/file-deliveries/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('UPDATE file_deliveries SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
@@ -1330,238 +1321,6 @@ app.get('/api/admin/stats', verifyAdminAccess, async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-});
-
-// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
-
-app.put('/api/:table/:id/status', verifyAdminAccess, async (req, res) => {
-    const { is_deleted } = req.body;
-    try {
-        const table = req.params.table.replace(/[^a-z_]/g, '');
-        const result = await pool.query(
-            `UPDATE ${table} SET is_deleted = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
-            [is_deleted, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- THE TABLE ACCESS ROUTE ---
-app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
-    const allowedTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blogs', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns'
-    ];
-
-    if (!allowedTables.includes(req.params.table)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
-    }
-
-    try {
-        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// --- BROADCAST ROUTE ---
-app.post('/api/subscribers/broadcast', verifyAdminAccess, uploadMemory.array('attachments'), async (req, res) => {
-    try {
-        const { subject, html } = req.body;
-        const attachments = req.files ? req.files.map(file => ({
-            name: file.originalname,
-            content: file.buffer.toString('base64')
-        })) : [];
-
-        const subscribers = await pool.query(
-            "SELECT email FROM subscribers WHERE status = 'active' AND is_deleted = FALSE"
-        );
-
-        const emailList = subscribers.rows.map(subscriber => ({
-            email: subscriber.email
-        }));
-
-        if (emailList.length === 0) {
-            return res.status(400).json({ success: false, error: 'No active subscribers found' });
-        }
-
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html;
-        sendSmtpEmail.bcc = emailList;
-        sendSmtpEmail.sender = {
-            name: "DAN74TECH",
-            email: "admin@dan74tech.com"
-        };
-
-        if (attachments.length > 0) {
-            sendSmtpEmail.attachment = attachments;
-        }
-
-        const apiInstance = new Brevo.TransactionalEmailsApi();
-        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-        
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-        res.json({
-            success: true,
-            sent: emailList.length,
-            attachments: attachments.length
-        });
-    } catch (err) {
-        console.error('Broadcast Email Error:', err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-
-app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
-    const { ids, action } = req.body; 
-    const sanitizedTable = req.params.table.replace(/[^a-z_]/g, '');
-    
-    // STRICT SCHEMA WHITELIST
-    const allowedTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns'
-    ];
-
-    if (!allowedTables.includes(sanitizedTable)) {
-        return res.status(403).json({ error: "Unauthorized schema matrix table operation." });
-    }
-
-    if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ error: "No target IDs provided for bulk execution." });
-    }
-
-    try {
-        if (action === 'delete' || action === 'soft_delete') {
-            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
-        } else if (action === 'hard_delete') {
-            await pool.query(`DELETE FROM ${sanitizedTable} WHERE id = ANY($1::int[])`, [ids]);
-        } else if (action === 'restore') {
-            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
-        }
-        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records within ${sanitizedTable}.` });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-
-app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
-    const allowedTables = ['users', 'services', 'orders', 'portfolio', 'blog_posts', 'invoices', 'support_tickets', 'testimonials', 'consultations']; 
-    if (!allowedTables.includes(req.params.table)) return res.status(403).json({error: "Table access forbidden."});
-    
-    try {
-        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
-        if (result.rows.length === 0) return res.status(404).json({error: "Record not found"});
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 1. Missing Sub-Services Update Route
-app.put('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { name, price, description, service_id } = req.body;
-        const result = await pool.query(
-            `UPDATE sub_services SET name=$1, price=$2, description=$3, service_id=COALESCE($4, service_id), updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING *`,
-            [name, price, description, service_id, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// 2. Missing Messages Update Route
-app.put('/api/messages/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE messages SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// 3. Missing Invoices Update Route
-app.put('/api/invoices/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE invoices SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-
-// ================= MISSING ADMIN CRUD CONSOLIDATION BLOCK =================
-
-// Table 9 (Subscribers): Missing PUT Route for Status Toggles
-app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query(
-            `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`, 
-            [req.body.status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Table 12 (Notifications): Missing PUT & DELETE Routes
-app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status, title, message } = req.body;
-        const result = await pool.query(
-            `UPDATE notifications SET status=COALESCE($1, status), title=COALESCE($2, title), message=COALESCE($3, message), updated_at=CURRENT_TIMESTAMP WHERE id=$4 RETURNING *`, 
-            [status, title, message, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE notifications SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Table 16 (File Deliveries): Missing PUT Route for Expiry/Status Updates
-app.put('/api/file-deliveries/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status, file_name } = req.body;
-        const result = await pool.query(
-            `UPDATE file_deliveries SET status=COALESCE($1, status), file_name=COALESCE($2, file_name), updated_at=CURRENT_TIMESTAMP WHERE id=$3 RETURNING *`, 
-            [status, file_name, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Table 17 (Email Campaigns): Complete Integration
-app.get('/api/email-campaigns', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM email_campaigns WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/email-campaigns/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE email_campaigns SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ================= MODULE 18: CLIENT COMMUNICATION CENTER =================
@@ -1622,11 +1381,8 @@ app.get('/api/communications/thread/:userId', verifyAdminAccess, async (req, res
 app.post('/api/communications/send', verifyAdminAccess, uploadMemory.single('attachment'), async (req, res) => {
     try {
         const { receiver_id, message_body } = req.body;
-        const sender_id = req.user.id; // Admin ID from JWT token
-        let attachment_url = null;
-        let attachment_name = null;
-
-        // Process Cloudinary Upload if file exists
+        const sender_id = req.user.id; 
+        
         if (req.file) {
             const uploadStream = cloudinary.uploader.upload_stream(
                 { folder: "dan74tech_communications", resource_type: "auto" },
@@ -1643,7 +1399,6 @@ app.post('/api/communications/send', verifyAdminAccess, uploadMemory.single('att
             );
             streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
         } else {
-            // Text-only message
             const savedMsg = await pool.query(
                 `INSERT INTO client_communications (sender_id, receiver_id, message_body) 
                  VALUES ($1, $2, $3) RETURNING *`,
@@ -1653,30 +1408,152 @@ app.post('/api/communications/send', verifyAdminAccess, uploadMemory.single('att
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
-
-
-// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
-// --- THE TABLE ACCESS ROUTE (MOVED HERE TO PREVENT ROUTE SHADOWING) ---
-app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
-    const allowedTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blogs', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries'
-    ];
-
-    if (!allowedTables.includes(req.params.table)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
     }
+});
 
+// ================= MODULE 19: CLIENT-SIDE PORTAL OPERATIONS =================
+
+app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     try {
-        const result = await pool.query(`SELECT * FROM ${req.params.table} WHERE id = $1`, [req.params.id]);
-        res.json(result.rows[0]);
+        const userId = req.user.id;
+        
+        await pool.query(
+            `UPDATE client_communications SET is_read = TRUE 
+             WHERE receiver_id = $1 AND is_read = FALSE AND is_deleted = FALSE`,
+            [userId]
+        );
+
+        const result = await pool.query(`
+            SELECT * FROM client_communications 
+            WHERE (sender_id = $1 OR receiver_id = $1)
+            AND is_deleted = FALSE 
+            ORDER BY created_at ASC
+        `, [userId]);
+        
+        res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+app.post('/api/client-portal/send', verifySystemToken, uploadMemory.single('attachment'), async (req, res) => {
+    try {
+        const { message_body } = req.body;
+        const sender_id = req.user.id;
+        
+        const adminRes = await pool.query("SELECT id FROM users WHERE role = 'admin' AND is_deleted = FALSE ORDER BY id ASC LIMIT 1");
+        const receiver_id = adminRes.rows.length > 0 ? adminRes.rows[0].id : null;
+
+        if (req.file) {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "dan74tech_communications", resource_type: "auto" },
+                async (error, result) => {
+                    if (error) return res.status(500).json({ error: error.message });
+                    
+                    const savedMsg = await pool.query(
+                        `INSERT INTO client_communications (sender_id, receiver_id, message_body, attachment_url, attachment_name) 
+                         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                        [sender_id, receiver_id, message_body, result.secure_url, req.file.originalname]
+                    );
+                    return res.json({ success: true, data: savedMsg.rows[0] });
+                }
+            );
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        } else {
+            const savedMsg = await pool.query(
+                `INSERT INTO client_communications (sender_id, receiver_id, message_body) 
+                 VALUES ($1, $2, $3) RETURNING *`,
+                [sender_id, receiver_id, message_body]
+            );
+            res.json({ success: true, data: savedMsg.rows[0] });
+        }
+    // RECTIFIED: Correctly closed the catch block that was severed in previous iterations
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =================
+
+app.put('/api/:table/:id/status', verifyAdminAccess, async (req, res) => {
+    const { is_deleted } = req.body;
+    try {
+        const table = req.params.table.replace(/[^a-z_]/g, '');
+        const result = await pool.query(
+            `UPDATE ${table} SET is_deleted = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
+            [is_deleted, req.params.id]
+        );
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
+    const { ids, action } = req.body; 
+    const sanitizedTable = req.params.table.replace(/[^a-z_]/g, '');
+    
+    const allowedTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications'
+    ];
+
+    if (!allowedTables.includes(sanitizedTable)) {
+        return res.status(403).json({ error: "Unauthorized schema matrix table operation." });
+    }
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: "No target IDs provided for bulk execution." });
+    }
+
+    try {
+        if (action === 'delete' || action === 'soft_delete') {
+            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
+        } else if (action === 'hard_delete') {
+            await pool.query(`DELETE FROM ${sanitizedTable} WHERE id = ANY($1::int[])`, [ids]);
+        } else if (action === 'restore') {
+            await pool.query(`UPDATE ${sanitizedTable} SET is_deleted = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`, [ids]);
+        }
+        res.json({ success: true, message: `Bulk ${action} executed on ${ids.length} records within ${sanitizedTable}.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// RECTIFIED: Unified and Protected Central Table Access Route placed at absolute bottom to prevent shadowing
+app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
+    const adminTables = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications'
+    ];
+
+    const clientTables = [
+        'users', 'services', 'orders', 'portfolio', 'blog_posts', 
+        'invoices', 'support_tickets', 'testimonials', 'consultations', 'client_communications'
+    ]; 
+
+    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
+
+    if (req.user.role !== 'admin' && !clientTables.includes(requestedTable)) {
+        return res.status(403).json({ error: "Unauthorized Table Access" });
+    }
+
+    if (!adminTables.includes(requestedTable)) {
+        return res.status(403).json({ error: "Unknown Table Vector" });
+    }
+    
+    try {
+        const result = await pool.query(`SELECT * FROM ${requestedTable} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({error: "Record not found"});
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
 app.get('/', (req, res) => {
@@ -1687,5 +1564,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🌐 System Core Online. Framework operational on port parameter: ${PORT}`);
 });
-
-
