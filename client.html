@@ -14,7 +14,7 @@
             --brand-blue: #0044ff;
             --brand-red: #ff2a2a;
             --brand-yellow: #ffd700;
-            --bg-social: #f0f2f5;
+            --bg-social: #f8fafc;
         }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -22,556 +22,578 @@
             -webkit-tap-highlight-color: transparent;
         }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
         ::-webkit-scrollbar { display: none; }
         
-        .tab-content { display: none; animation: fadeIn 0.25s ease-out; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
+        
+        .nav-item { color: #64748b; transition: all 0.2s; }
+        .nav-item.active { color: var(--brand-blue); }
+        .nav-item.active i { transform: scale(1.1); color: var(--brand-blue); }
+        
+        .chat-bubble { max-width: 80%; animation: slideUp 0.3s ease-out forwards; }
+        .chat-user { background-color: var(--brand-blue); color: #fff; border-bottom-right-radius: 4px; }
+        .chat-admin { background-color: #fff; color: #0f172a; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fab-services {
+            background: linear-gradient(135deg, var(--brand-blue), var(--brand-red));
+            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
         }
 
-        .chat-container {
-            height: calc(100vh - 140px);
+        .toast-notification {
+            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        @media (max-width: 768px) {
-            .chat-container { height: calc(100vh - 120px); }
+        @keyframes slideInLeft {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
-<body class="text-slate-900 antialiased selection:bg-blue-500 selection:text-white">
+<body class="antialiased pb-20 selection:bg-[#0044ff] selection:text-white">
 
-    <div class="min-h-screen flex flex-col md:flex-row">
-        
-        <aside class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col shrink-0 z-30">
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-                        <i class="fa-solid fa-cubes text-sm"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-sm tracking-tight text-slate-900 uppercase">DAN74TECH</h1>
-                        <p class="text-[10px] font-bold text-blue-600 tracking-wider uppercase">Client Engine</p>
-                    </div>
-                </div>
-                <button onclick="handleSessionTermination()" class="md:hidden text-slate-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-slate-50">
-                    <i class="fa-solid fa-power-off text-base"></i>
-                </button>
-            </div>
+    <div id="applicationToastCenter" class="fixed bottom-20 right-4 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none md:max-w-md"></div>
 
-            <div class="p-4 mx-3 my-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-inner" id="user-avatar-placeholder">
-                    U
-                </div>
-                <div class="overflow-hidden">
-                    <h4 class="font-bold text-xs text-slate-800 truncate" id="client-display-name">Loading Profile...</h4>
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 mt-0.5 rounded-full text-[9px] font-medium bg-green-100 text-green-700">
-                        <span class="w-1 h-1 rounded-full bg-green-500"></span> Online Matrix
-                    </span>
+    <header class="fixed top-0 w-full bg-white border-b border-gray-200 z-40 shadow-sm h-14 flex items-center justify-between px-4 md:max-w-2xl md:mx-auto md:left-0 md:right-0">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px]">
+                <div class="w-full h-full bg-white rounded-md flex items-center justify-center overflow-hidden">
+                    <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=D74'">
                 </div>
             </div>
+            <span class="text-[15px] font-extrabold tracking-tight text-gray-900 font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+        </div>
+        <div class="flex items-center gap-4 text-gray-600">
+            <button onclick="toggleLedgerPanel()" class="relative hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none">
+                <i class="fa-solid fa-bell text-gray-700"></i>
+                <span id="ledger-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff2a2a] rounded-full border border-white hidden"></span>
+            </button>
+            <div id="header-avatar" class="w-8 h-8 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer border border-blue-200" onclick="switchTab('profile')">--</div>
+        </div>
+    </header>
 
-            <nav class="flex-1 px-3 space-y-1">
-                <button onclick="switchTabSelector('dashboard-view', this)" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50/70 transition-all duration-200">
-                    <i class="fa-solid fa-chart-pie text-base w-5"></i> Dashboard Node
-                </button>
-                <button onclick="switchTabSelector('orders-view', this)" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200">
-                    <i class="fa-solid fa-folder-open text-base w-5"></i> Service Orders
-                </button>
-                <button onclick="switchTabSelector('deliveries-view', this)" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200">
-                    <i class="fa-solid fa-cloud-arrow-down text-base w-5"></i> File Deliveries
-                </button>
-                <button onclick="switchTabSelector('comms-view', this)" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200 relative">
-                    <i class="fa-solid fa-message text-base w-5"></i> Security Chat Matrix
-                    <span id="global-chat-badge" class="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-                </button>
-            </nav>
-
-            <div class="p-3 border-t border-slate-100 hidden md:block">
-                <button onclick="handleSessionTermination()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50/50 transition-all duration-200">
-                    <i class="fa-solid fa-power-off text-base text-slate-400 w-5"></i> Terminate Session
-                </button>
+    <div id="ledger-drawer" class="fixed top-14 bottom-0 right-0 left-0 bg-black/40 z-40 hidden transition-opacity duration-300 md:max-w-2xl md:mx-auto">
+        <div class="bg-white w-full max-w-sm ml-auto h-full shadow-2xl p-4 flex flex-col overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 class="text-sm font-extrabold text-gray-900 tracking-tight font-mono uppercase"><i class="fa-solid fa-folder-open text-[#0044ff] mr-1.5"></i>Account Ledger Matrix</h3>
+                <button onclick="toggleLedgerPanel()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-        </aside>
-
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
             
-            <section id="dashboard-view" class="tab-content active p-4 md:p-8 space-y-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">System Node Status</h2>
-                    <p class="text-xs text-slate-500">Real-time overview of your infrastructure configurations.</p>
-                </div>
-
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-cubes text-base"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Actions</p>
-                            <h3 class="text-lg font-bold text-slate-800 mt-0.5" id="metric-total-orders">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0"><i class="fa-solid fa-bolt text-base"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active State</p>
-                            <h3 class="text-lg font-bold text-slate-800 mt-0.5" id="metric-active-orders">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"><i class="fa-solid fa-shield-halved text-base"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Deliveries</p>
-                            <h3 class="text-lg font-bold text-slate-800 mt-0.5" id="metric-total-deliveries">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0"><i class="fa-solid fa-clock text-base"></i></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security Sync</p>
-                            <h3 class="text-xs font-mono font-bold text-slate-700 mt-1" id="metric-sync-timestamp">00:00:00</h3>
-                        </div>
+            <div class="mt-4 space-y-6 flex-1">
+                <div>
+                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">Financial Statements</h4>
+                    <div id="invoice-ledger-container" class="space-y-2">
+                        <p class="text-xs text-gray-400 font-mono italic">No billing statements synced.</p>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">Operational Log Pipelines</h3>
-                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                    </div>
-                    <div class="divide-y divide-slate-100 max-h-[380px] overflow-y-auto" id="dashboard-recent-pipeline">
-                        <div class="p-8 text-center text-slate-400 text-xs">Awaiting orchestration telemetry query data...</div>
+                <div>
+                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono mb-2">Production Asset Handovers</h4>
+                    <div id="deliveries-ledger-container" class="space-y-2">
+                        <p class="text-xs text-gray-400 font-mono italic">No binary delivery handovers found.</p>
                     </div>
                 </div>
-            </section>
-
-            <section id="orders-view" class="tab-content p-4 md:p-8 space-y-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Active Deployment Queues</h2>
-                    <p class="text-xs text-slate-500">Verifying architecture runtime deployment pipelines.</p>
-                </div>
-                <div class="grid gap-4" id="orders-registry-target">
-                    </div>
-            </section>
-
-            <section id="deliveries-view" class="tab-content p-4 md:p-8 space-y-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Binary Resource Deliveries</h2>
-                    <p class="text-xs text-slate-500">Secure production build outputs and static platform asset registries.</p>
-                </div>
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                    <th class="p-4">Resource Signature Identifier</th>
-                                    <th class="p-4">Linked Engine Reference</th>
-                                    <th class="p-4">Timestamp Matrix</th>
-                                    <th class="p-4 text-right">Download Resource</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-xs text-slate-700" id="deliveries-registry-target">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="comms-view" class="tab-content hidden h-screen max-h-screen flex flex-col bg-white">
-                <div class="chat-container flex flex-col w-full">
-                    <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
-                                <i class="fa-solid fa-user-shield text-sm"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-xs text-slate-800">Platform Core Support Matrix</h3>
-                                <p class="text-[10px] font-medium text-slate-400">Direct encrypted secure bridge link to lead operations architect</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50" id="chat-thread-viewport">
-                        </div>
-
-                    <div class="p-3 border-t border-slate-200/60 bg-white shrink-0">
-                        <form id="chat-transmission-form" class="space-y-2">
-                            <div id="attachment-preview-box" class="hidden flex items-center justify-between bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs text-slate-600 mx-1 animate-fadeIn">
-                                <div class="flex items-center gap-2 truncate">
-                                    <i class="fa-solid fa-paperclip text-slate-400"></i>
-                                    <span id="attachment-name-string" class="truncate font-mono text-[11px]">filename.zip</span>
-                                </div>
-                                <button type="button" onclick="clearAttachmentField()" class="text-slate-400 hover:text-red-500 p-1">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-
-                            <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all duration-150">
-                                <label class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 cursor-pointer transition-colors shrink-0">
-                                    <input type="file" id="chat-binary-upload" class="hidden">
-                                    <i class="fa-solid fa-paperclip text-base"></i>
-                                </label>
-                                <input type="text" id="chat-message-payload" autocomplete="off" placeholder="Write message string parameter to platform core network..." class="w-full bg-transparent border-0 outline-none focus:ring-0 text-xs px-2 text-slate-800">
-                                <button type="submit" id="chat-dispatch-trigger" class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/10 hover:bg-blue-700 active:scale-95 transition-all shrink-0">
-                                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-        </main>
+            </div>
+        </div>
     </div>
 
+    <main class="pt-16 px-0 md:max-w-2xl md:mx-auto">
+        
+        <section id="view-feed" class="tab-content active space-y-3">
+            <div class="bg-white p-4 shadow-sm border-b border-gray-100 flex items-center gap-3 mx-2 rounded-xl mt-2 border">
+                <div id="feed-avatar" class="w-10 h-10 rounded-full bg-blue-50 text-[#0044ff] flex items-center justify-center font-bold flex-shrink-0 border border-blue-100">--</div>
+                <div class="flex-1 bg-gray-50 rounded-full px-4 py-2.5 text-xs text-gray-500 cursor-pointer hover:bg-gray-100 border border-gray-200 transition-colors" onclick="switchTab('chat')">
+                    Have a technical inquiry or project blueprint to map out?
+                </div>
+            </div>
+
+            <div id="feed-container" class="space-y-3 pb-6 px-2">
+                <div class="text-center py-12 text-gray-400 bg-white rounded-xl border border-gray-100">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-[#0044ff]"></i>
+                    <p class="text-xs font-mono mt-2 tracking-wide text-gray-500">Synchronizing Local Network Nodes...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-chat" class="tab-content h-[calc(100vh-7.5rem)] flex flex-col bg-white mx-2 mt-2 rounded-xl border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50 sticky top-0 z-30">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-[#ffd700] flex items-center justify-center text-black font-bold shadow-sm border border-yellow-400">
+                        <i class="fa-solid fa-headset text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold text-gray-900 tracking-tight">Admin Support Matrix</h3>
+                        <p class="text-[9px] text-emerald-600 font-mono font-bold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> SYSTEM CHANNEL ACTIVE
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chat-thread" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50"></div>
+
+            <form id="client-message-form" class="p-3 bg-white border-t border-gray-100 sticky bottom-0">
+                <div id="attachment-preview" class="hidden mb-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg w-max max-w-full overflow-hidden">
+                    <i class="fa-solid fa-paperclip text-[#0044ff] text-xs"></i>
+                    <span id="attachment-name" class="text-xs font-mono text-gray-700 truncate">asset_stream.pdf</span>
+                    <button type="button" onclick="removeAttachment()" class="text-[#ff2a2a] ml-2"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="flex items-end gap-2">
+                    <label class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-[#0044ff] border border-gray-200 transition-colors cursor-pointer flex-shrink-0">
+                        <i class="fa-solid fa-paperclip text-sm"></i>
+                        <input type="file" id="chat-file-upload" class="hidden">
+                    </label>
+                    <textarea id="chat-input" rows="1" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-800 focus:ring-1 focus:ring-[#0044ff] focus:bg-white focus:outline-none resize-none transition-all" placeholder="Transmit operational directive or message context..."></textarea>
+                    <button type="submit" id="btn-send-chat" class="w-10 h-10 rounded-full bg-[#0044ff] flex items-center justify-center text-white shadow-md hover:bg-blue-700 transition-colors flex-shrink-0 focus:outline-none">
+                        <i class="fa-solid fa-paper-plane text-xs translate-x-[-0.5px] translate-y-[0.5px]"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section id="view-profile" class="tab-content bg-white min-h-[calc(100vh-4rem)] mx-2 mt-2 rounded-xl border border-gray-200 overflow-hidden">
+            <div class="relative h-28 bg-gradient-to-r from-[#0044ff] to-[#ff2a2a]"></div>
+            <div class="px-4 pb-6 relative">
+                <div id="profile-avatar-lg" class="w-20 h-20 rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center text-2xl font-bold text-[#0044ff] -mt-10 mb-3 mx-auto relative z-10 font-mono">
+                    --
+                </div>
+                <div class="text-center space-y-1">
+                    <h2 id="profile-name" class="text-base font-extrabold text-gray-900 tracking-tight">Loading Client Frame...</h2>
+                    <p id="profile-role" class="text-[9px] font-mono font-bold text-[#0044ff] uppercase tracking-widest bg-blue-50 inline-block px-2.5 py-0.5 rounded border border-blue-100">Verified Client</p>
+                </div>
+
+                <div class="mt-6 space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3">
+                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Secure Identity Metadata Token</h4>
+                        <div class="flex items-center gap-3 text-xs">
+                            <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-100"><i class="fa-solid fa-envelope text-[10px]"></i></div>
+                            <span id="profile-email" class="text-gray-700 font-mono">--</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs">
+                            <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-gray-400 border border-gray-100"><i class="fa-solid fa-phone text-[10px]"></i></div>
+                            <span id="profile-phone" class="text-gray-700 font-mono">--</span>
+                        </div>
+                    </div>
+
+                    <button onclick="logout()" class="w-full py-2.5 rounded-xl border border-red-200 bg-red-50/50 text-[#ff2a2a] font-bold text-xs hover:bg-red-50 transition-colors tracking-wide font-mono uppercase">
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-1.5 text-[11px]"></i> Terminate Encrypted Session
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <a href="services.html" class="fab-services fixed bottom-20 right-4 w-12 h-12 rounded-full flex items-center justify-center text-white z-40 transition-transform active:scale-95 md:right-[calc(50vw-300px)]">
+        <i class="fa-solid fa-layer-group text-sm"></i>
+    </a>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 h-14 flex items-center justify-around px-2 z-50 md:max-w-2xl md:mx-auto md:left-0 md:right-0">
+        <button onclick="switchTab('feed')" class="nav-item active flex flex-col items-center justify-center w-16 gap-0.5 focus:outline-none" data-target="feed">
+            <i class="fa-solid fa-house text-base"></i>
+            <span class="text-[9px] font-bold">Feed</span>
+        </button>
+        <a href="services.html" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5">
+            <i class="fa-solid fa-store text-base"></i>
+            <span class="text-[9px] font-bold">Store</span>
+        </a>
+        <button onclick="switchTab('chat')" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5 relative focus:outline-none" data-target="chat">
+            <i class="fa-solid fa-comment-dots text-base"></i>
+            <span class="text-[9px] font-bold">Inbox</span>
+        </button>
+        <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center justify-center w-16 gap-0.5 focus:outline-none" data-target="profile">
+            <i class="fa-solid fa-user text-base"></i>
+            <span class="text-[9px] font-bold">Profile</span>
+        </button>
+    </nav>
+
     <script>
-        // System Domain Configuration Discovery
-        const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-            ? 'http://localhost:10000/api'
-            : window.location.origin + '/api';
+        // System API Base Calculation Logic
+        const hostname = window.location.hostname;
+        const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
+        const API_BASE = isLocalNetwork ? 'http://localhost:10000/api' : '/api';
+         
+        // Explicit Session Extraction Pipeline
+        let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || localStorage.getItem('dan74_token'); 
+        let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || localStorage.getItem('user_context') || 'null');
+        let selectedFile = null;
 
-        // Session State Store Definitions
-        let currentSessionUser = null;
-        let selectedAttachmentBlob = null;
-        let chatRefreshLoopInterval = null;
+        // Perimeter Authorization Gate Enforcer
+        if (!authToken || !userNode) {
+            window.location.replace('login.html');
+        }
 
-        /**
-         * Verifies current session tokens on initial load.
-         */
-        function checkSessionVerificationSignature() {
-            const token = localStorage.getItem('dan74tech_token');
-            const userString = localStorage.getItem('dan74tech_user');
+        // Global Visual Notification Injection Engine
+        function pushSystemOperationalToast(messageContext, messageType) {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
             
-            if (!token || !userString) {
-                handleSessionTermination();
-                return;
-            }
-
-            try {
-                currentSessionUser = JSON.parse(userString);
-                
-                // Set identity parameters in the UI
-                document.getElementById('client-display-name').innerText = currentSessionUser.name || 'Anonymous Node';
-                const avatar = document.getElementById('user-avatar-placeholder');
-                if (avatar && currentSessionUser.name) {
-                    avatar.innerText = currentSessionUser.name.charAt(0).toUpperCase();
-                }
-                
-                // Initialize core runtime loops
-                synchronizePlatformTelemetry();
-                
-            } catch (err) {
-                console.error("Critical Token Structural Read Failure:", err);
-                handleSessionTermination();
-            }
-        }
-
-        /**
-         * Switches active navigation views.
-         */
-        function switchTabSelector(targetId, buttonElement) {
-            // Deactivate existing visible viewports
-            document.querySelectorAll('.tab-content').forEach(view => {
-                view.classList.remove('active');
-                if (targetId === 'comms-view') {
-                    if (view.id === 'comms-view') view.classList.remove('hidden');
-                } else {
-                    document.getElementById('comms-view').classList.add('hidden');
-                }
-            });
-
-            // Toggle element configurations
-            document.getElementById(targetId).classList.add('active');
-
-            // Reset navigation status styles
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200";
-            });
-
-            buttonElement.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50/70 transition-all duration-200";
-
-            // Manage chat pooling intervals based on tab visibility
-            if (targetId === 'comms-view') {
-                loadSystemChatThreadLog();
-                if (!chatRefreshLoopInterval) {
-                    chatRefreshLoopInterval = setInterval(loadSystemChatThreadLog, 4500);
-                }
-            } else {
-                if (chatRefreshLoopInterval) {
-                    clearInterval(chatRefreshLoopInterval);
-                    chatRefreshLoopInterval = null;
-                }
-                synchronizePlatformTelemetry();
-            }
-        }
-
-        /**
-         * Standardized wrapper for authenticated API fetch requests.
-         */
-        async function runSecureApiQueryRequest(endpoint, parameters = {}) {
-            const token = localStorage.getItem('dan74tech_token');
-            if (!token) {
-                handleSessionTermination();
-                return null;
-            }
-
-            parameters.headers = {
-                ...(parameters.headers || {}),
-                'Authorization': `Bearer ${token}`
-            };
-
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`, parameters);
-                if (response.status === 401 || response.status === 403) {
-                    handleSessionTermination();
-                    return null;
-                }
-                return response;
-            } catch (err) {
-                console.error(`API Core Network Error Vector [${endpoint}]:`, err);
-                return null;
-            }
-        }
-
-        /**
-         * Fetches and refreshes data dashboards from the active cluster.
-         */
-        async function synchronizePlatformTelemetry() {
-            // Update timestamp
-            document.getElementById('metric-sync-timestamp').innerText = new Date().toTimeString().split(' ')[0];
-
-            // Resolve parallel arrays across primary structures
-            const [ordersRes, deliveriesRes] = await Promise.all([
-                runSecureApiQueryRequest(`/orders/user/${currentSessionUser.id}`),
-                runSecureApiQueryRequest(`/file-deliveries/client/${currentSessionUser.id}`)
-            ]);
-
-            let elementsOrderList = [];
-            let elementsDeliveryList = [];
-
-            if (ordersRes && ordersRes.ok) elementsOrderList = await ordersRes.json();
-            if (deliveriesRes && deliveriesRes.ok) elementsDeliveryList = await deliveriesRes.json();
-
-            // Populate calculations matrix metrics
-            document.getElementById('metric-total-orders').innerText = elementsOrderList.length;
-            document.getElementById('metric-total-deliveries').innerText = elementsDeliveryList.length;
+            const individualToastNode = document.createElement('div');
+            individualToastNode.className = 'toast-notification pointer-events-auto bg-white border p-3.5 rounded-xl shadow-xl flex items-center gap-3 text-xs font-medium transition-all duration-300 border-gray-100';
             
-            const countActivePending = elementsOrderList.filter(o => o.status === 'pending' || o.status === 'processing').length;
-            document.getElementById('metric-active-orders').innerText = countActivePending;
-
-            // Render operational dashboard pipeline logs
-            const pipelineContainer = document.getElementById('dashboard-recent-pipeline');
-            if (elementsOrderList.length === 0) {
-                pipelineContainer.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs">No active processes discovered in this user matrix profile</div>`;
+            if (messageType === 'success' || messageType === 'success-variant') {
+                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            } else if (messageType === 'error') {
+                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
             } else {
-                pipelineContainer.innerHTML = elementsOrderList.slice(0, 5).map(order => `
-                    <div class="p-4 flex items-center justify-between hover:bg-slate-50/80 transition-colors">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                <i class="fa-solid fa-terminal text-xs"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-xs font-bold text-slate-800 truncate">${order.service}</p>
-                                <p class="text-[10px] font-mono text-slate-400 truncate">#${order.id} - ${order.sub_service || 'Standard'}</p>
-                            </div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <span class="inline-block px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ${
-                                order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
-                            }">${order.status}</span>
-                            <p class="text-[10px] text-slate-400 mt-0.5 font-medium">${new Date(order.created_at).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                `).join('');
+                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
             }
-
-            // Render service order records
-            const ordersRegistry = document.getElementById('orders-registry-target');
-            if (elementsOrderList.length === 0) {
-                ordersRegistry.innerHTML = `
-                    <div class="bg-white p-12 text-center rounded-2xl border border-dashed border-slate-300 text-slate-400 text-xs">
-                        <i class="fa-solid fa-box-open text-2xl mb-2 text-slate-300 block"></i>
-                        No explicit deploy queues allocated to account. Contact management engine.
-                    </div>`;
-            } else {
-                ordersRegistry.innerHTML = elementsOrderList.map(order => `
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/70 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <h3 class="font-bold text-sm text-slate-900">${order.service}</h3>
-                                <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-500">ID: #${order.id}</span>
-                            </div>
-                            <p class="text-xs text-slate-500 max-w-xl">${order.project_details || 'No structural log overview comments provided.'}</p>
-                            <div class="flex items-center gap-4 text-[11px] font-medium text-slate-400 pt-1">
-                                <span><i class="fa-solid fa-layer-group mr-1"></i> Sub-module: ${order.sub_service || 'N/A'}</span>
-                                <span><i class="fa-solid fa-microchip mr-1"></i> Model: ${order.device_model || 'Cloud'}</span>
-                            </div>
-                        </div>
-                        <div class="flex sm:flex-col justify-between items-center sm:items-end gap-2 pt-3 sm:pt-0 border-t sm:border-0 border-slate-100">
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
-                            }">${order.status}</span>
-                            <div class="text-right">
-                                <p class="text-xs font-mono font-bold text-slate-700">$${parseFloat(order.price || 0).toFixed(2)}</p>
-                                <p class="text-[9px] font-bold uppercase tracking-wider mt-0.5 ${order.payment_status === 'paid' ? 'text-green-600' : 'text-red-500'}">${order.payment_status}</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Render asset deliveries
-            const deliveriesRegistry = document.getElementById('deliveries-registry-target');
-            if (elementsDeliveryList.length === 0) {
-                deliveriesRegistry.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="p-8 text-center text-slate-400 text-xs">
-                            No final target production binaries compiled to this channel profile yet.
-                        </td>
-                    </tr>`;
-            } else {
-                deliveriesRegistry.innerHTML = elementsDeliveryList.map(delivery => `
-                    <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="p-4 font-mono text-[11px] text-slate-900 font-bold max-w-[220px] truncate">
-                            <i class="fa-solid fa-file-shield text-blue-500 mr-2"></i>${delivery.file_name}
-                        </td>
-                        <td class="p-4 text-slate-500 text-[11px]">Order Reference Platform Pool: #${delivery.order_id || 'Global'}</td>
-                        <td class="p-4 text-slate-400 text-[11px]">${new Date(delivery.created_at).toLocaleString()}</td>
-                        <td class="p-4 text-right">
-                            <a href="${delivery.file_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-blue-600 shadow-sm transition-all">
-                                <i class="fa-solid fa-download"></i> Extract
-                            </a>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-        }
-
-        /**
-         * Processes communications pooling actions.
-         */
-        async function loadSystemChatThreadLog() {
-            const res = await runSecureApiQueryRequest('/client-portal/thread');
-            if (!res || !res.ok) return;
-
-            const trackingLogs = await res.json();
-            const viewport = document.getElementById('chat-thread-viewport');
             
-            // Check scroll positioning parameters before updating contents
-            const isScrolledToBottom = viewport.scrollHeight - viewport.clientHeight <= viewport.scrollTop + 40;
-
-            if (trackingLogs.length === 0) {
-                viewport.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-slate-400 text-xs p-6 text-center">
-                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 mb-2">
-                            <i class="fa-solid fa-comments text-xl"></i>
-                        </div>
-                        Secure channel open. Transmit message strings to begin platform configuration sync operations.
-                    </div>`;
-                return;
-            }
-
-            viewport.innerHTML = trackingLogs.map(msg => {
-                // Determine whether current profile initialized context execution
-                const isAgentSender = (msg.sender_id === currentSessionUser.id);
-                
-                return `
-                    <div class="flex w-full ${isAgentSender ? 'justify-end' : 'justify-start'} animate-fadeIn">
-                        <div class="max-w-[85%] md:max-w-[70%] rounded-2xl p-3 shadow-sm ${
-                            isAgentSender 
-                                ? 'bg-blue-600 text-white rounded-br-none' 
-                                : 'bg-white text-slate-800 border border-slate-200/60 rounded-bl-none'
-                        }">
-                            <p class="text-xs leading-relaxed break-words font-medium">${msg.message_body}</p>
-                            <div class="flex items-center justify-end gap-1.5 mt-1 text-[8px] uppercase tracking-wider font-bold ${isAgentSender ? 'text-blue-200' : 'text-slate-400'}">
-                                <span>${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                                ${isAgentSender ? `• <span>${msg.is_read ? 'Processed' : 'Dispatched'}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            if (isScrolledToBottom) {
-                viewport.scrollTop = viewport.scrollHeight;
-            }
+            toastCenter.appendChild(individualToastNode);
+            setTimeout(() => {
+                individualToastNode.style.opacity = '0';
+                individualToastNode.style.transform = 'translateY(10px)';
+                setTimeout(() => individualToastNode.remove(), 300);
+            }, 4000);
         }
 
-        /**
-         * Clears attachment parameters out of active state scopes.
-         */
-        function clearAttachmentField() {
-            selectedAttachmentBlob = null;
-            document.getElementById('chat-binary-upload').value = '';
-            document.getElementById('attachment-preview-box').classList.add('hidden');
-        }
-
-        /**
-         * Validates profile state actions on drop transitions.
-         */
-        function handleSessionTermination() {
-            localStorage.removeItem('dan74tech_token');
-            localStorage.removeItem('dan74tech_user');
-            if (chatRefreshLoopInterval) clearInterval(chatRefreshLoopInterval);
-            window.location.href = 'login.html';
-        }
-
-        // Initialize listener monitors for binary attachment streams
-        document.getElementById('chat-binary-upload').addEventListener('change', (e) => {
-            const binaryFile = e.target.files[0];
-            if (binaryFile) {
-                selectedAttachmentBlob = binaryFile;
-                document.getElementById('attachment-preview-box').classList.remove('hidden');
-                document.getElementById('attachment-name-string').innerText = binaryFile.name;
-            }
+        // Orchestrated Application Initialization Block
+        document.addEventListener('DOMContentLoaded', () => {
+            if (userNode) populateUserData();
+            loadSocialFeed();
+            loadChatThread();
+            syncLedgerRecords();
+            
+            // Continuous Background Socket Emulator Workloads
+            setInterval(loadChatThread, 15000); 
+            setInterval(syncLedgerRecords, 30000); 
         });
 
-        // Initialize interceptors for outbound communication form actions
-        document.getElementById('chat-transmission-form').addEventListener('submit', async (e) => {
+        function populateUserData() {
+            const initials = userNode.name ? userNode.name.substring(0, 2).toUpperCase() : 'U';
+            document.getElementById('header-avatar').textContent = initials;
+            document.getElementById('feed-avatar').textContent = initials;
+            document.getElementById('profile-avatar-lg').textContent = initials;
+            
+            document.getElementById('profile-name').textContent = userNode.name || 'Unknown Corporate Actor';
+            document.getElementById('profile-email').textContent = userNode.email || 'N/A';
+            document.getElementById('profile-phone').textContent = userNode.phone || 'No phone metric captured';
+            document.getElementById('profile-role').textContent = userNode.role === 'admin' ? 'System Administrator' : 'Verified Client Matrix';
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            const navBtn = document.querySelector(`.nav-item[data-target="${tabId}"]`);
+            if(navBtn) navBtn.classList.add('active');
+
+            if (tabId === 'chat') {
+                const thread = document.getElementById('chat-thread');
+                thread.scrollTop = thread.scrollHeight;
+            }
+        }
+
+        function toggleLedgerPanel() {
+            const drawer = document.getElementById('ledger-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('dan74_admin_token');
+            localStorage.removeItem('dan74_admin_user');
+            localStorage.removeItem('dan74_token');
+            localStorage.removeItem('user_context');
+            window.location.replace('login.html');
+        }
+
+        // Ledger Mapping Synchronization Framework Execution
+        async function syncLedgerRecords() {
+            const invoiceContainer = document.getElementById('invoice-ledger-container');
+            const deliveriesContainer = document.getElementById('deliveries-ledger-container');
+            const badge = document.getElementById('ledger-badge');
+
+            try {
+                const [invoicesRes, deliveriesRes] = await Promise.all([
+                    fetch(`${API_BASE}/invoices/client/${userNode.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } }).catch(() => null),
+                    fetch(`${API_BASE}/file-deliveries/client/${userNode.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } }).catch(() => null)
+                ]);
+
+                if (invoicesRes && invoicesRes.ok) {
+                    const invoices = await invoicesRes.json();
+                    if (Array.isArray(invoices) && invoices.length > 0) {
+                        badge.classList.remove('hidden');
+                        invoiceContainer.innerHTML = '';
+                        invoices.forEach(inv => {
+                            invoiceContainer.innerHTML += `
+                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between text-xs">
+                                    <div>
+                                        <p class="font-bold text-gray-900">${inv.invoice_number || 'INV-UNMAPPED'}</p>
+                                        <p class="text-[10px] text-gray-500 font-mono">${inv.service || 'General Engagement'}</p>
+                                        <p class="text-[10px] text-blue-600 font-bold font-mono">KES ${parseFloat(inv.amount || 0).toLocaleString()}</p>
+                                    </div>
+                                    <a href="${API_BASE}/invoices/stream/${inv.id}" target="_blank" class="px-2 py-1 bg-[#0044ff] text-white font-mono text-[10px] font-bold rounded hover:bg-blue-700 transition-colors"><i class="fa-solid fa-file-pdf"></i> Stream</a>
+                                </div>`;
+                        });
+                    }
+                }
+
+                if (deliveriesRes && deliveriesRes.ok) {
+                    const deliveries = await deliveriesRes.json();
+                    if (Array.isArray(deliveries) && deliveries.length > 0) {
+                        badge.classList.remove('hidden');
+                        deliveriesContainer.innerHTML = '';
+                        deliveries.forEach(file => {
+                            deliveriesContainer.innerHTML += `
+                                <div class="p-2.5 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between text-xs">
+                                    <div class="truncate max-w-[180px]">
+                                        <p class="font-bold text-gray-900 truncate">${file.file_name || 'Production Asset'}</p>
+                                        <p class="text-[9px] text-gray-400 font-mono">${new Date(file.created_at).toLocaleDateString()}</p>
+                                    </div>
+                                    <a href="${file.file_url}" target="_blank" class="px-2 py-1 bg-emerald-600 text-white font-mono text-[10px] font-bold rounded hover:bg-emerald-700 transition-colors"><i class="fa-solid fa-download"></i> Get</a>
+                                </div>`;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn("Ledger Sync Throttle Exception Block:", err.message);
+            }
+        }
+
+        // Asynchronous Network Synchronization Pipeline (Feed Aggregation Layer)
+        async function loadSocialFeed() {
+            const container = document.getElementById('feed-container');
+            try {
+                const [blogs, caseStudies, testimonials] = await Promise.all([
+                    fetch(`${API_BASE}/blogs`).then(res => res.json()).catch(() => []),
+                    fetch(`${API_BASE}/case-studies`).then(res => res.json()).catch(() => []),
+                    fetch(`${API_BASE}/testimonials/approved`).then(res => res.json()).catch(() => [])
+                ]);
+
+                let feedItems = [];
+
+                if (Array.isArray(blogs)) {
+                    blogs.forEach(b => feedItems.push({
+                        type: 'Blog Post',
+                        icon: 'fa-newspaper text-blue-500',
+                        author: 'DAN74TECH MEDIA',
+                        title: b.title,
+                        body: b.summary || (b.content ? b.content.substring(0, 150) + '...' : 'No programmatic summary recorded.'),
+                        image: b.image_url,
+                        date: new Date(b.created_at || Date.now()).getTime(),
+                        rawDate: b.created_at || new Date().toISOString(),
+                        likes: Math.floor(Math.random() * 50) + 12 
+                    }));
+                }
+
+                if (Array.isArray(caseStudies)) {
+                    caseStudies.forEach(c => feedItems.push({
+                        type: 'Case Study',
+                        icon: 'fa-chart-line text-red-500',
+                        author: 'DAN74TECH MEDIA',
+                        title: c.title,
+                        body: `<b>Challenge Paradigm:</b> ${c.challenge || 'N/A'}<br><b class="text-emerald-600">Resolution Execution:</b> ${c.result || 'N/A'}`,
+                        image: c.image_url,
+                        date: new Date(c.created_at || Date.now()).getTime(),
+                        rawDate: c.created_at || new Date().toISOString(),
+                        likes: Math.floor(Math.random() * 80) + 24
+                    }));
+                }
+
+                if (Array.isArray(testimonials)) {
+                    testimonials.forEach(t => feedItems.push({
+                        type: 'Client Review',
+                        icon: 'fa-star text-yellow-500',
+                        author: t.client_name + (t.company ? ` (${t.company})` : ''),
+                        title: `Performance Assessment: ${t.rating || 5} Stars!`,
+                        body: `"${t.review || ''}"`,
+                        image: null,
+                        date: new Date(t.created_at || Date.now()).getTime(),
+                        rawDate: t.created_at || new Date().toISOString(),
+                        likes: Math.floor(Math.random() * 100) + 35
+                    }));
+                }
+
+                feedItems.sort((a, b) => b.date - a.date);
+
+                container.innerHTML = '';
+                if (feedItems.length === 0) {
+                    container.innerHTML = `<div class="text-center p-8 bg-white rounded-xl border text-gray-400 font-mono text-xs">No active pipeline feed data found in the master domain matrix.</div>`;
+                    return;
+                }
+
+                feedItems.forEach(item => {
+                    const timeStr = new Date(item.rawDate).toLocaleDateString();
+                    const card = document.createElement('div');
+                    card.className = "bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm mb-3";
+                    card.innerHTML = `
+                        <div class="px-4 py-3 flex items-center justify-between bg-gray-50/50 border-b border-gray-50">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-gray-200 flex-shrink-0">
+                                    <i class="fa-solid ${item.icon} text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-900">${item.author}</h4>
+                                    <div class="text-[9px] text-gray-500 font-mono flex items-center gap-1">
+                                        <span>${timeStr}</span> • <i class="fa-solid fa-earth-africa"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-2 py-0.5 bg-white border rounded font-mono">${item.type}</span>
+                        </div>
+
+                        <div class="px-4 py-3">
+                            <h3 class="text-sm font-extrabold text-gray-900 leading-snug mb-1.5">${item.title}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed font-sans">${item.body}</p>
+                        </div>
+                        
+                        ${item.image ? `<img src="${item.image}" class="w-full max-h-56 object-cover bg-gray-50 border-y border-gray-100">` : ''}
+
+                        <div class="px-4 py-1.5 border-t border-gray-50 flex items-center justify-between bg-gray-50/30">
+                            <div class="flex gap-1 py-1 text-[10px] text-gray-500 font-bold">
+                                <div class="flex items-center justify-center w-4 h-4 rounded-full bg-[#0044ff] text-white"><i class="fa-solid fa-thumbs-up text-[8px]"></i></div>
+                                <span class="font-mono">${item.likes}</span>
+                            </div>
+                            <div class="flex items-center text-gray-500 gap-4 text-xs font-bold">
+                                <button onclick="pushSystemOperationalToast('Telemetry transaction verified. Feedback recorded.', 'success')" class="flex items-center gap-1 hover:text-[#0044ff] text-[11px] font-sans transition-colors"><i class="fa-regular fa-thumbs-up"></i> Like</button>
+                                <button onclick="switchTab('chat')" class="flex items-center gap-1 hover:text-[#0044ff] text-[11px] font-sans transition-colors"><i class="fa-regular fa-message"></i> Connect</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                container.innerHTML = `<div class="p-6 text-center text-[#ff2a2a] text-xs font-mono bg-white rounded-xl border">Critical Stream Sync Abort: ${err.message}</div>`;
+            }
+        }
+
+        // Real-Time Core Messaging Polling Engine Interface
+        async function loadChatThread() {
+            const threadContainer = document.getElementById('chat-thread');
+            if (!threadContainer) return;
+
+            const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 60;
+
+            try {
+                const res = await fetch(`${API_BASE}/client-portal/thread`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                // Immediate Boundary Enforcement Gate
+                if (res.status === 401 || res.status === 403) {
+                    throw new Error('Auth failure');
+                }
+                
+                if (!res.ok) {
+                    throw new Error(`Server Operational Communication Exception: HTTP ${res.status}`);
+                }
+                
+                const messages = await res.json();
+                threadContainer.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    threadContainer.innerHTML = `
+                        <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 opacity-80 py-16">
+                            <i class="fa-solid fa-envelope-open-text text-3xl mb-2 text-gray-300"></i>
+                            <p class="text-xs font-mono">Transmission clear.<br>Emit a message frame to initialize support.</p>
+                        </div>`;
+                    return;
+                }
+
+                messages.forEach(msg => {
+                    const isClient = msg.sender_id === userNode.id;
+                    const alignment = isClient ? 'justify-end' : 'justify-start';
+                    const bubbleClass = isClient ? 'chat-user rounded-tl-xl rounded-tr-xl rounded-bl-xl' : 'chat-admin rounded-tl-xl rounded-tr-xl rounded-br-xl';
+                    const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    let attachmentHtml = '';
+                    if (msg.attachment_url) {
+                        const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
+                        if(isImage) {
+                            attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('${msg.attachment_url}')"></div>`;
+                        } else {
+                            attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-black/10 rounded-lg text-[11px] font-mono hover:bg-black/20 transition-colors text-white max-w-full truncate"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'Download Asset'}</a>`;
+                        }
+                    }
+
+                    threadContainer.innerHTML += `
+                        <div class="flex ${alignment} w-full">
+                            <div class="chat-bubble p-3 shadow-sm text-xs ${bubbleClass}">
+                                <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body}</p>
+                                ${attachmentHtml}
+                                <div class="text-[8px] mt-1 font-mono text-right opacity-70">${time}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (atBottom) threadContainer.scrollTop = threadContainer.scrollHeight;
+
+            } catch (err) {
+                if (err.message.includes('Auth')) {
+                    console.error("Token compromised. Purging security frame.");
+                    logout();
+                }
+            }
+        }
+
+        // Outbound Buffer Form Submit Transaction Handler Node
+        document.getElementById('client-message-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('btn-send-chat');
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
             
-            const textInput = document.getElementById('chat-message-payload');
-            const submitBtn = document.getElementById('chat-dispatch-trigger');
-            const messageBodyString = textInput.value.trim();
+            if (!text && !selectedFile) return;
 
-            if (!messageBodyString && !selectedAttachmentBlob) return;
-
-            // Block multiple submission streams
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-xs"></i>`;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-xs"></i>';
 
             try {
-                // Ensure text elements exist when dispatching data payloads
-                const bodyPayload = JSON.stringify({
-                    receiver_id: 1, // Routes directly to core system management admin account
-                    message_body: messageBodyString
-                });
+                let formData = new FormData();
+                formData.append('message_body', text || 'Secure Asset Delivered');
+                if (selectedFile) formData.append('attachment', selectedFile);
 
-                const res = await runSecureApiQueryRequest('/communications/send', {
+                const res = await fetch(`${API_BASE}/client-portal/send`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: bodyPayload
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    body: formData
                 });
-
-                if (res && res.ok) {
-                    textInput.value = '';
-                    clearAttachmentField();
-                    await loadSystemChatThreadLog();
-                    const view = document.getElementById('chat-thread-viewport');
-                    view.scrollTop = view.scrollHeight;
+                
+                if (res.ok) {
+                    input.value = '';
+                    removeAttachment();
+                    await loadChatThread();
+                    const thread = document.getElementById('chat-thread');
+                    thread.scrollTop = thread.scrollHeight;
+                    pushSystemOperationalToast("Message stream successfully dispatched to core admin.", "success");
+                } else {
+                    const data = await res.json();
+                    pushSystemOperationalToast(data.error || "Failed to transmit message vector.", "error");
                 }
             } catch (err) {
-                console.error("Transmission Interface Failure Fault Trace:", err);
+                console.error("Transmission Routing Error:", err);
+                pushSystemOperationalToast("Network timeout during transmission execution.", "error");
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane text-xs"></i>`;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs translate-x-[-0.5px] translate-y-[0.5px]"></i>';
             }
         });
 
-        // Start execution sequence on script evaluation
-        document.addEventListener('DOMContentLoaded', checkSessionVerificationSignature);
+        // Binary Capture Listeners
+        document.getElementById('chat-file-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('attachment-preview').classList.remove('hidden');
+                document.getElementById('attachment-name').innerText = file.name;
+            }
+        });
+
+        function removeAttachment() {
+            selectedFile = null;
+            document.getElementById('chat-file-upload').value = '';
+            document.getElementById('attachment-preview').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
