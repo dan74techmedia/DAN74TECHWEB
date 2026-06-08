@@ -1,6 +1,6 @@
 {
   "name": "dan74tech-media-platform",
-  "version": "1.0.0",
+  "version": "4.0.0",
   "description": "Unified Production Backend Server & Digital Agency Management Platform for DAN74TECH MEDIA",
   "main": "server.js",
   "engines": {
@@ -22,9 +22,11 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.13",
     "pdfkit": "^0.15.0",
     "pg": "^8.11.5",
+    "socket.io": "^4.7.5",
     "streamifier": "^0.1.1"
   },
   "devDependencies": {
@@ -37,6 +39,7 @@
     "express",
     "postgres",
     "neon"
+    
   ],
   "author": "DAN74TECH MEDIA",
   "license": "ISC",
