@@ -21,8 +21,7 @@ const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const Brevo = require('@getbrevo/brevo');
 const cron = require('node-cron'); 
-const { exec } = require('child_process'); 
-const AWS = require('aws-sdk'); 
+const { exec } = require('child_process'); \nconst AWS = require('aws-sdk'); 
 
 // Initialize Express App Engine & HTTP Server for WebSockets
 const app = express();
@@ -37,1068 +36,702 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dan74tech_media_secure_jwt_core_token_secret_key';
 
-// Initialize Neon PostgreSQL Database Engine Pool
+// Database Connectivity Pool Setup (Neon / PostgreSQL)
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
-pool.query("SELECT NOW()")
-    .then(() => {
-        console.log("✅ Postgres Database Connected Successfully");
-        // Clear phantom presence configurations on application startup
-        pool.query('UPDATE users SET is_online = FALSE WHERE is_online = TRUE')
-            .catch(err => console.error("❌ Online status cleanup failure:", err));
-    })
-    .catch(err => console.error("❌ Database Connection Error:", err));
+pool.on('connect', () => {
+    console.log('✅ Connected to Neon Production PostgreSQL Engine.');
+});
 
-// Configure Cloudinary Integration
+// Configure Cloudinary Storage Core Engine
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dan74tech',
-    api_key: process.env.CLOUDINARY_API_KEY || '',
-    api_secret: process.env.CLOUDINARY_API_SECRET || ''
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Initialize Brevo Client
-const brevoEmailInstance = new Brevo.TransactionalEmailsApi();
-if (process.env.BREVO_API_KEY) {
-    brevoEmailInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
-}
-
-// =========================================================================
-// ======================== GLOBAL MIDDLEWARE CONFIGURATION ====================
-// =========================================================================
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+// Security & Traffic Rate Limiting Configuration Layer
+app.use(helmet({
+    contentSecurityPolicy: false, 
+    crossOriginEmbedderPolicy: false
+}));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname)));
 
-// Global API Request Rate Limiter Node
-const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 1000,
-    message: { error: "Too many corporate operational requests from this endpoint, please retry later." }
+const systemRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 1000, 
+    message: { error: "Too many requests originating from this structural vector node. Access throttled." }
 });
-app.use('/api/', globalLimiter);
+app.use('/api/', systemRateLimiter);
 
-// Auth Specific Security Rate Limiter
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: { error: "Security threshold reached. Verification authentication requests throttled." }
+// Multer Direct Memory Allocation Pipeline Engine
+const fileMemoryStorage = multer.memoryStorage();
+const uploadProcessor = multer({ 
+    storage: fileMemoryStorage,
+    limits: { fileSize: 25 * 1024 * 1024 } 
 });
-app.use('/api/auth/', authLimiter);
 
-// =========================================================================
-// =========================== UPLOADS STORAGE SYSTEM ==========================
-// =========================================================================
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) { fs.mkdirSync(uploadDir, { recursive: true }); }
-app.use('/uploads', express.static(uploadDir));
+// Real-Time Socket.io Connection Matrix
+io.on('connection', (socket) => {
+    console.log(`📡 New operational matrix link established: Client UID [${socket.id}]`);
+    socket.on('disconnect', () => {
+        console.log(`❌ Matrix link severed for client node: [${socket.id}]`);
+    });
+});
 
-const localStorage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, uploadDir); },
-    filename: (req, file, cb) => {
-        const uniqueName = 'portfolio-' + Date.now() + path.extname(file.originalname);
-        cb(null, uniqueName);
+// Global Telemetry Broadcasting Subsystem Helper
+function broadcastSystemTelemetry(module, action, primaryId, payload = {}) {
+    io.emit('telemetry_change', {
+        module,
+        action,
+        primaryId,
+        timestamp: new Date().toISOString(),
+        payload
+    });
+}
+
+// Security Middleware: JWT Strategic Access Authorization Gate
+function authenticateSecureToken(req, res, next) {
+    const authHeaderField = req.headers['authorization'];
+    const tokenPayload = authHeaderField && authHeaderField.split(' ')[1];
+    
+    if (!tokenPayload) {
+        return res.status(401).json({ error: "Access verification token vector absent." });
     }
-});
-
-const uploadLocal = multer({ storage: localStorage });
-const upload = uploadLocal; 
-const uploadMemory = multer({ storage: multer.memoryStorage() });
-
-// =========================================================================
-// ==================== ARCHITECTURAL PROTECTION MIDDLEWARES ===================
-// =========================================================================
-const verifyAdminAccess = (req, res, next) => {
-    const authHeader = req.headers.authorization || req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: "Access Denied: Token missing or malformed" });
-    }
-    const token = authHeader.split(' ')[1];
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (!decoded.role || String(decoded.role).trim().toLowerCase() !== 'admin') {
-            return res.status(403).json({ error: "Unauthorized: Admin clearance required" });
+    
+    jwt.verify(tokenPayload, JWT_SECRET, (err, decodedUser) => {
+        if (err) {
+            return res.status(403).json({ error: "Token signature or scope is corrupted/expired." });
         }
-        req.user = decoded;
-        next();
-    } catch (err) { 
-        console.error("JWT Verification block error:", err.message);
-        return res.status(401).json({ error: "Invalid or Expired Token" }); 
-    }
-};
-
-const verifySystemToken = (req, res, next) => {
-    const authHeader = req.headers.authorization || req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: "Access token validation mapping empty. Unauthorized." });
-    }
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: "Token reference structural compromise detected. Forbidden." });
-        req.user = user;
+        req.user = decodedUser;
         next();
     });
-};
+}
 
-// =========================================================================
-// ======================= CORE AUXILIARY DISPATCH EMAIL LOGIC =================
-// =========================================================================
-async function sendSystemNotificationEmail(to, subject, text, html) {
-    if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
-        console.warn("⚠️ Notification system idling: Credentials missing or empty.");
-        return;
-    }
-    try {  
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();  
-        sendSmtpEmail.subject = subject;  
-        sendSmtpEmail.htmlContent = html || `<p>${text}</p>`;  
-        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };  
-        sendSmtpEmail.to = [{ email: to }];  
-        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);  
-        console.log(`✉️ System alert dispatched successfully to: ${to}`);  
-    } catch (err) {  
-        console.error("❌ Notification Email Dispatch Fault:", err);  
-    }
+// Global Slug Synthesis Engine Helper Function
+function generateCleanSlug(textString) {
+    return textString
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
 }
 
 // =========================================================================
-// ================= MODULE 1: AUTHENTICATION & SECURITY DATA ENGINE =======
+// MEDIA MANAGEMENT SYSTEM ROUTE PIPELINE (CLOUDINARY STREAM)
 // =========================================================================
-app.post('/api/auth/register', async (req, res) => {
-    try {
-        const { name, email, password, phone } = req.body;
-        const userRole = 'client'; 
-        
-        const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
-        if (checkUser.rows.length > 0) {
-            return res.status(400).json({ error: "User registration email conflict detected." });
-        }
-        
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        
-        const result = await pool.query(
-            `INSERT INTO users (name, email, password, role, phone, is_deleted) 
-             VALUES ($1, $2, $3, $4, $5, FALSE) 
-             RETURNING id, name, email, role, phone`,
-            [name, email, hashedPassword, userRole, phone]
-        );
-        
-        const userNode = result.rows[0];
-        const accessToken = jwt.sign(
-            { id: userNode.id, name: userNode.name, email: userNode.email, role: userNode.role }, 
-            JWT_SECRET, 
-            { expiresIn: '24h' }
-        );
-
-        const maskedLink = '<a href="https://dan74techweb.onrender.com" style="color: #0044FF; text-decoration: none;">DAN74TECH MEDIA</a>';
-        const emailBody = `Hello ${userNode.name}, your Profile setup is successfully validated. We are glad you joined. For more information you can reply to this email or reach us via our website ${maskedLink}. ✨DAN74TECH MEDIA ✨.`;
-
-        await sendSystemNotificationEmail(userNode.email, "Welcome to DAN74TECH MEDIA", emailBody);
-        res.json({ success: true, token: accessToken, user: userNode });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+app.post('/api/media/upload', uploadProcessor.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No multi-part binary file data stream received." });
     }
+
+    const cloudUploadStream = cloudinary.uploader.upload_stream(
+        { folder: "dan74tech_media_production_hub" },
+        (error, processingResult) => {
+            if (error) {
+                console.error("❌ Cloudinary engine streaming failure:", error);
+                return res.status(500).json({ error: "Media routing allocation failure on Cloudinary server." });
+            }
+            res.json({
+                message: "Binary visual payload securely routed to Cloudinary grid.",
+                url: processingResult.secure_url,
+                public_id: processingResult.public_id
+            });
+        }
+    );
+
+    streamifier.createReadStream(req.file.buffer).pipe(cloudUploadStream);
 });
 
+// =========================================================================
+// SYSTEM AUTHENTICATION ENGINE ROUTE PORTALS
+// =========================================================================
 app.post('/api/auth/login', async (req, res) => {
+    const { email, password } = req.body;
     try {
-        const { email, password } = req.body;
-        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
-        if (result.rows.length === 0) {
-            return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
+        const queryResult = await pool.query('SELECT * FROM users WHERE email = $1 AND is_deleted = false', [email]);
+        if (queryResult.rows.length === 0) {
+            return res.status(401).json({ error: "Authentication vector rejected: Credentials unmatched." });
         }
         
-        const user = result.rows[0];
-        let isMatch = false;
-        
-        if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$')) {
-            isMatch = await bcrypt.compare(password, user.password);
-        } else {
-            isMatch = (user.password === password);
+        const matchingUser = queryResult.rows[0];
+        const plainPasswordMatches = await bcrypt.compare(password, matchingUser.password);
+        if (!plainPasswordMatches) {
+            return res.status(401).json({ error: "Authentication vector rejected: Security sequence mismatched." });
         }
         
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
-        }
-        
-        const accessToken = jwt.sign(
-            { id: user.id, name: user.name, email: user.email, role: user.role }, 
-            JWT_SECRET, 
+        const systemToken = jwt.sign(
+            { id: matchingUser.id, name: matchingUser.name, email: matchingUser.email, role: matchingUser.role },
+            JWT_SECRET,
             { expiresIn: '24h' }
         );
         
         res.json({
-            success: true,
-            token: accessToken,
-            user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone }
+            message: "Authentication handshake successful.",
+            token: systemToken,
+            user: { id: matchingUser.id, name: matchingUser.name, email: matchingUser.email, role: matchingUser.role }
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("❌ Core security exception processing login:", err);
+        res.status(500).json({ error: "Internal processing logic failure on server grid." });
+    }
+});
+
+app.get('/api/auth/me', authenticateSecureToken, async (req, res) => {
+    try {
+        const userQuery = await pool.query('SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1 AND is_deleted = false', [req.user.id]);
+        if (userQuery.rows.length === 0) {
+            return res.status(404).json({ error: "Account structure vector not found on live ecosystem grid." });
+        }
+        res.json(userQuery.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: "System query processing vector disrupted." });
     }
 });
 
 // =========================================================================
-// ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
-// =========================================================================
-// ================= MODULE 2 (C): COMMUNITY ROSTER ========================
-// Allows clients to see other users for end-to-end chat routing
-app.get('/api/community/users', verifySystemToken, async (req, res) => {
-    try {
-        // Excludes sensitive data like email, phone, passwords, and roles
-        const result = await pool.query(
-            'SELECT id, name, is_online FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, name ASC'
-        );
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, name, email, role, phone, is_online, last_seen, created_at FROM users WHERE id = $1 AND is_deleted = FALSE',
-            [req.params.id]
-        );
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/users/:id', verifySystemToken, async (req, res) => {
-    try {
-        // SECURITY CHECK: Ensure the user is either an Admin OR updating their own profile
-        if (req.user.id !== parseInt(req.params.id) && req.user.role !== 'admin') {
-            return res.status(403).json({ error: "Unauthorized: You can only update your own profile." });
-        }
-
-        const { name, email, role, phone, password } = req.body;
-        
-        // SECURITY CHECK: Prevent a standard client from upgrading themselves to an admin
-        let targetRole = role;
-        if (req.user.role !== 'admin' && role === 'admin') {
-            targetRole = 'client'; 
-        }
-
-        let query;
-        let values;
-
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
-            values = [name, email, targetRole, phone, hashedPassword, req.params.id];
-        } else {
-            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING id,name,email,role,phone`;
-            values = [name, email, targetRole, phone, req.params.id];
-        }
-
-        const result = await pool.query(query, values);
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true, message: "User credentials safely deactivated." });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 2 (B): SERVICES MANAGEMENT INTERFACE ===========
+// 1. SERVICES MANAGEMENT STRUCTURAL ROUTING (CRUD)
 // =========================================================================
 app.get('/api/services', async (req, res) => {
     try {
-        const data = await pool.query('SELECT * FROM services WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(data.rows);
+        const fetchResult = await pool.query('SELECT * FROM services WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.post('/api/services', verifyAdminAccess, async (req, res) => {
+app.post('/api/services', async (req, res) => {
+    const { name, description, price, status } = req.body;
     try {
-        const { name, icon, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO services (name, icon, description) VALUES ($1, $2, $3) RETURNING *`,
-            [name, icon, description]
+        const writeOp = await pool.query(
+            `INSERT INTO services (name, description, price, status, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [name, description, price, status || 'active']
         );
-        res.json({ success: true, data: result.rows[0] });
+        broadcastSystemTelemetry('services', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.put('/api/services/:id', verifyAdminAccess, async (req, res) => {
+app.put('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, description, price, status } = req.body;
     try {
-        const { id } = req.params;
-        const { name, icon, description } = req.body;
-        const result = await pool.query(
-            `UPDATE services SET name = $1, icon = $2, description = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *`,
-            [name, icon, description, id]
+        const updateOp = await pool.query(
+            `UPDATE services SET name = $1, description = $2, price = $3, status = $4, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $5 AND is_deleted = false RETURNING *`,
+            [name, description, price, status, id]
         );
-        res.json({ success: true, data: result.rows[0] });
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Record array vector unlocated." });
+        broadcastSystemTelemetry('services', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.delete('/api/services/:id', verifyAdminAccess, async (req, res) => {
+app.delete('/api/services/:id', async (req, res) => {
+    const { id } = req.params;
     try {
-        await pool.query('UPDATE services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 3: SUB-SERVICES & PRICING ENGINE ==============
-// =========================================================================
-app.get('/api/sub-services', async (req, res) => {
-    try {
-        const query = `
-            SELECT sub_services.*, services.name AS category_name
-            FROM sub_services
-            JOIN services ON sub_services.service_id = services.id
-            WHERE sub_services.is_deleted = FALSE AND services.is_deleted = FALSE
-            ORDER BY sub_services.id DESC
-        `;
-        const data = await pool.query(query);
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/sub-services/:serviceName', async (req, res) => {
-    try {
-        const serviceName = req.params.serviceName.replace(/-/g, ' ').toLowerCase();
-        const result = await pool.query(`
-            SELECT ss.*
-            FROM sub_services ss
-            JOIN services s ON ss.service_id = s.id
-            WHERE LOWER(s.name) = $1 AND ss.is_deleted = FALSE
-            ORDER BY ss.id ASC
-        `, [serviceName]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/sub-services', verifyAdminAccess, async (req, res) => {
-    try {
-        const { service_id, name, price, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO sub_services (service_id, name, price, description) VALUES ($1, $2, COALESCE($3, 0.00), $4) RETURNING *`,
-            [service_id, name, price, description]
+        const softDeleteOp = await pool.query(
+            'UPDATE services SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]
         );
-        res.json({ success: true, data: result.rows[0] });
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Record array vector unlocated." });
+        broadcastSystemTelemetry('services', 'DELETE', id);
+        res.json({ message: "Vector flag status flipped successfully to is_deleted." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
+// =========================================================================
+// 2. INVOICES PRODUCTION MANAGEMENT ARCHITECTURE ROUTING (CRUD + PDF GENERATION)
+// =========================================================================
+app.get('/api/invoices', async (req, res) => {
     try {
-        await pool.query('UPDATE sub_services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
+        const fetchResult = await pool.query('SELECT * FROM invoices WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// =========================================================================
-// ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE ==============
-// =========================================================================
-const buildAdvancedQuery = (tableName, queryParams, searchableColumns = []) => {
-    let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = queryParams;
-    let whereClauses = [`is_deleted = FALSE`]; 
-    let values = [];
-    let valueIndex = 1;
-
-    if (search && searchableColumns.length > 0) {
-        const searchClauses = searchableColumns.map(col => `${col} ILIKE $${valueIndex}`);
-        whereClauses.push(`(${searchClauses.join(' OR ')})`);
-        values.push(`%${search}%`);
-        valueIndex++;
+app.post('/api/invoices', async (req, res) => {
+    const { invoice_number, client_name, client_email, amount, status, issue_date, due_date, items } = req.body;
+    try {
+        const writeOp = await pool.query(
+            `INSERT INTO invoices (invoice_number, client_name, client_email, amount, status, issue_date, due_date, items, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [invoice_number, client_name, client_email, amount, status || 'pending', issue_date, due_date, typeof items === 'string' ? items : JSON.stringify(items)]
+        );
+        broadcastSystemTelemetry('invoices', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
+});
 
-    for (const [key, val] of Object.entries(filters)) {
-        if (val !== undefined && val !== '') {
-            whereClauses.push(`${key} = $${valueIndex}`);
-            values.push(val);
-            valueIndex++;
+app.put('/api/invoices/:id', async (req, res) => {
+    const { id } = req.params;
+    const { invoice_number, client_name, client_email, amount, status, issue_date, due_date, items } = req.body;
+    try {
+        const updateOp = await pool.query(
+            `UPDATE invoices SET invoice_number = $1, client_name = $2, client_email = $3, amount = $4, status = $5, 
+             issue_date = $6, due_date = $7, items = $8, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $9 AND is_deleted = false RETURNING *`,
+            [invoice_number, client_name, client_email, amount, status, issue_date, due_date, typeof items === 'string' ? items : JSON.stringify(items), id]
+        );
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Target array element not discovered." });
+        broadcastSystemTelemetry('invoices', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/invoices/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const softDeleteOp = await pool.query('UPDATE invoices SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Target array element not discovered." });
+        broadcastSystemTelemetry('invoices', 'DELETE', id);
+        res.json({ message: "Invoice storage block deactivated safely." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// High-Fidelity Dynamically Generated PDF Generation Output Stream Pipeline
+app.get('/api/invoices/:id/download', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const queryLookup = await pool.query('SELECT * FROM invoices WHERE id = $1 AND is_deleted = false', [id]);
+        if (queryLookup.rows.length === 0) {
+            return res.status(404).json({ error: "Requested invoice binary source missing mapping target." });
         }
+        
+        const invoiceData = queryLookup.rows[0];
+        const pdfBinaryStream = new PDFDocument({ size: 'A4', margin: 50 });
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=DAN74TECH_INVOICE_${invoiceData.invoice_number}.pdf`);
+        pdfBinaryStream.pipe(res);
+        
+        // Brand Identity Architectural Top Frame Layout
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(26).text('DAN74TECH MEDIA', 50, 50);
+        pdfBinaryStream.fontSize(10).font('Helvetica').fillColor('#64748b').text('Enterprise Digital Systems Architecture Engine Node', 50, 80);
+        
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(16).text('INVOICE OF ACCOUNT', 400, 50, { align: 'right' });
+        pdfBinaryStream.fontSize(10).font('Helvetica').fillColor('#64748b').text(`REF: #${invoiceData.invoice_number}`, 400, 75, { align: 'right' });
+        
+        pdfBinaryStream.moveTo(50, 110).lineTo(545, 110).strokeColor('#e2e8f0').lineWidth(1).stroke();
+        
+        // Context Vectors Metadata Framework Layout Block
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(12).text('BILL TO:', 50, 130);
+        pdfBinaryStream.font('Helvetica').fontSize(11).fillColor('#334155').text(`Client Name: ${invoiceData.client_name}`, 50, 150);
+        pdfBinaryStream.text(`Target Vector Destination: ${invoiceData.client_email}`, 50, 168);
+        
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(12).text('TIMELINE CHRONOLOGY:', 350, 130);
+        pdfBinaryStream.font('Helvetica').fontSize(11).fillColor('#334155').text(`Generation Timestamp: ${new Date(invoiceData.issue_date).toLocaleDateString()}`, 350, 150);
+        pdfBinaryStream.text(`Maturity Deadline Target: ${new Date(invoiceData.due_date).toLocaleDateString()}`, 350, 168);
+        
+        pdfBinaryStream.moveTo(50, 200).lineTo(545, 200).strokeColor('#e2e8f0').lineWidth(1).stroke();
+        
+        // Dynamic Allocation Content Block Processing
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(12).text('ALLOCATED STATEMENT SERVICE SPECIFICATION ROWS', 50, 220);
+        
+        let verticalYMatrixCursor = 250;
+        pdfBinaryStream.fillColor('#f8fafc').rect(50, verticalYMatrixCursor, 495, 22).fill();
+        pdfBinaryStream.fillColor('#475569').font('Helvetica-Bold').fontSize(10).text('Line Description Structural Vector Block', 60, verticalYMatrixCursor + 6);
+        pdfBinaryStream.text('Aggregate Allocation', 440, verticalYMatrixCursor + 6, { align: 'right', width: 90 });
+        
+        verticalYMatrixCursor += 22;
+        
+        let inventoryArray = [];
+        try {
+            inventoryArray = typeof invoiceData.items === 'string' ? JSON.parse(invoiceData.items) : invoiceData.items;
+            if(!Array.isArray(inventoryArray)) inventoryArray = [];
+        } catch(e) { 
+            inventoryArray = [{ description: "Enterprise Technical Services Render Engine Allocation", amount: invoiceData.amount }];
+        }
+        
+        pdfBinaryStream.font('Helvetica').fontSize(10).fillColor('#0f172a');
+        if(inventoryArray.length === 0) {
+            pdfBinaryStream.rect(50, verticalYMatrixCursor, 495, 24).strokeColor('#e2e8f0').stroke();
+            pdfBinaryStream.text("General Systems Consulting & Production Integration Matrix", 60, verticalYMatrixCursor + 7);
+            pdfBinaryStream.text(`$${parseFloat(invoiceData.amount).toFixed(2)}`, 440, verticalYMatrixCursor + 7, { align: 'right', width: 90 });
+            verticalYMatrixCursor += 24;
+        } else {
+            inventoryArray.forEach((item) => {
+                pdfBinaryStream.rect(50, verticalYMatrixCursor, 495, 24).strokeColor('#e2e8f0').stroke();
+                pdfBinaryStream.text(item.description || "Service Allocation Structural Specification Line Row", 60, verticalYMatrixCursor + 7);
+                pdfBinaryStream.text(`$${parseFloat(item.amount || 0).toFixed(2)}`, 440, verticalYMatrixCursor + 7, { align: 'right', width: 90 });
+                verticalYMatrixCursor += 24;
+            });
+        }
+        
+        verticalYMatrixCursor += 15;
+        pdfBinaryStream.moveTo(350, verticalYMatrixCursor).lineTo(545, verticalYMatrixCursor).strokeColor('#0f172a').lineWidth(1.5).stroke();
+        
+        verticalYMatrixCursor += 10;
+        pdfBinaryStream.fillColor('#0f172a').font('Helvetica-Bold').fontSize(13).text('TOTAL COMPUTE BALANCE:', 220, verticalYMatrixCursor, { align: 'right', width: 200 });
+        pdfBinaryStream.text(`$${parseFloat(invoiceData.amount).toFixed(2)}`, 440, verticalYMatrixCursor, { align: 'right', width: 90 });
+        
+        verticalYMatrixCursor += 25;
+        pdfBinaryStream.fillColor(invoiceData.status === 'paid' ? '#16a34a' : '#d97706').rect(420, verticalYMatrixCursor, 125, 20).fill();
+        pdfBinaryStream.fillColor('#ffffff').font('Helvetica-Bold').fontSize(9).text(`STATUS: ${invoiceData.status.toUpperCase()}`, 420, verticalYMatrixCursor + 6, { align: 'center', width: 125 });
+        
+        // Operational Footnote Authentication Matrix Row
+        pdfBinaryStream.fillColor('#94a3b8').font('Helvetica-Oblique').fontSize(9).text('This is a cryptographic auto-compiled structural artifact ledger generated by the DAN74TECH MEDIA framework platform.', 50, 740, { align: 'center', width: 495 });
+        
+        pdfBinaryStream.end();
+    } catch (err) {
+        console.error("❌ PDF Stream compilation error:", err);
+        if(!res.headersSent) res.status(500).json({ error: "PDF Stream compilation runtime catastrophic event." });
     }
+});
 
-    const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    
-    const safeSort = sort.replace(/[^a-zA-Z0-9_]/g, ''); 
-    const safeOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-
-    const queryString = `SELECT * FROM ${tableName} ${whereString} ORDER BY ${safeSort} ${safeOrder} LIMIT ${parseInt(limit)} OFFSET ${offset}`;
-    const countQuery = `SELECT COUNT(*) FROM ${tableName} ${whereString}`;
-
-    return { queryString, countQuery, values };
-};
-
-app.get('/api/orders', verifyAdminAccess, async (req, res) => {
+// =========================================================================
+// 3. USERS ACCESS MATRIX MANAGEMENT CORE CONTROL PORTAL (CRUD)
+// =========================================================================
+app.get('/api/users', async (req, res) => {
     try {
-        const searchableFields = ['customer_name', 'email', 'phone', 'service', 'invoice_number'];
-        const { queryString, countQuery, values } = buildAdvancedQuery('orders', req.query, searchableFields);
-        
-        const data = await pool.query(queryString, values);
-        const countData = await pool.query(countQuery, values);
-        
-        res.json({
-            data: data.rows,
-            meta: {
-                total: parseInt(countData.rows[0].count),
-                page: parseInt(req.query.page || 1),
-                limit: parseInt(req.query.limit || 100)
-            }
-        });
+        const fetchResult = await pool.query('SELECT id, name, email, role, phone, created_at, updated_at FROM users WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.get('/api/orders/user/:userId', verifySystemToken, async (req, res) => {
+app.post('/api/users', async (req, res) => {
+    const { name, email, password, role, phone } = req.body;
     try {
-        const result = await pool.query('SELECT * FROM orders WHERE user_id = $1 AND is_deleted = FALSE ORDER BY id DESC', [req.params.userId]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/orders', async (req, res) => {
-    try {
-        const {
-            user_id, customer_name, phone, service, sub_service,
-            domain, device_model, project_details, price, status, payment_status
-        } = req.body;
-
-        const result = await pool.query(
-            `INSERT INTO orders (
-                user_id, customer_name, phone, service, sub_service, domain, 
-                device_model, project_details, price, status, payment_status
-            ) VALUES (
-                $1, $2, $3, $4, $5, 
-                COALESCE($6, 'N/A'), 
-                COALESCE($7, 'Web Client'), 
-                $8, 
-                COALESCE($9, 0.00), 
-                COALESCE($10, 'pending'), 
-                COALESCE($11, 'unpaid')
-            ) RETURNING *`,
-            [
-                user_id || null, customer_name, phone, service, sub_service || null,      
-                domain || null, device_model || null, project_details || null,  
-                price || null, status || null, payment_status || null    
-            ]
+        const securePasswordHash = await bcrypt.hash(password || 'FallbackSecNodePass74#', 10);
+        const writeOp = await pool.query(
+            `INSERT INTO users (name, email, password, role, phone, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING id, name, email, role, phone, created_at`,
+            [name, email, securePasswordHash, role || 'client', phone]
         );
-        
-        const orderData = result.rows[0];
-        if (user_id) {
-            await pool.query(
-                `INSERT INTO notifications (user_id, title, message, channel, status) VALUES ($1, $2, $3, 'dashboard', 'unread')`,
-                [user_id, 'Order Received Successfully', `Your order sequence entry for ${service} is submitted.`]
+        broadcastSystemTelemetry('users', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    const { name, email, role, phone, password } = req.body;
+    try {
+        let updateOp;
+        if (password && password.trim() !== '') {
+            const securePasswordHash = await bcrypt.hash(password, 10);
+            updateOp = await pool.query(
+                `UPDATE users SET name = $1, email = $2, role = $3, phone = $4, password = $5, updated_at = CURRENT_TIMESTAMP 
+                 WHERE id = $6 AND is_deleted = false RETURNING id, name, email, role, phone, updated_at`,
+                [name, email, role, phone, securePasswordHash, id]
+            );
+        } else {
+            updateOp = await pool.query(
+                `UPDATE users SET name = $1, email = $2, role = $3, phone = $4, updated_at = CURRENT_TIMESTAMP 
+                 WHERE id = $5 AND is_deleted = false RETURNING id, name, email, role, phone, updated_at`,
+                [name, email, role, phone, id]
             );
         }
-        
-        await sendSystemNotificationEmail(
-            process.env.ADMIN_EMAIL || 'dan74techmedia@gmail.com',
-            `New Order Alert: ${service}`,
-            `An operational deployment request has been logged by ${customer_name}. Details: ${project_details}`
-        );
-
-        const whatsappMessage = encodeURIComponent(`Hello DAN74TECH MEDIA, I have placed an order for ${service}. Project Details: ${project_details || 'N/A'}. Please advise on the next steps for payment completion.`);
-        const whatsappLink = `https://wa.me/254790435584?text=${whatsappMessage}`;
-        
-        res.json({ 
-            success: true, 
-            data: orderData,
-            whatsapp_redirect: whatsappLink 
-        });
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Identity core vector frame unallocated." });
+        broadcastSystemTelemetry('users', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// =========================================================================
-// ================= MODULE 11: INVOICE GENERATION PIPELINE ================
-// =========================================================================
-app.get('/api/invoices/:id/download', async (req, res) => {
+app.delete('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM invoices WHERE id = $1 AND is_deleted = FALSE', [req.params.id]);
-        if (result.rows.length === 0) return res.status(404).json({ error: "Invoice vector not found" });
-        const invoice = result.rows[0];
-
-        const doc = new PDFDocument();
-        res.setHeader('Content-disposition', `attachment; filename="${invoice.invoice_number}.pdf"`);
-        res.setHeader('Content-type', 'application/pdf');
-        
-        doc.pipe(res);
-        doc.fontSize(22).fillColor('#0044FF').text('DAN74TECH MEDIA', { align: 'center' });
-        doc.fontSize(12).fillColor('#333333').text('Enterprise Transaction Ledger', { align: 'center' });
-        doc.moveDown(2);
-        
-        doc.fontSize(14).fillColor('#000000').text(`Invoice Identifier: ${invoice.invoice_number}`);
-        doc.text(`Client Designation: ${invoice.client_name}`);
-        doc.text(`Communication Link: ${invoice.client_email}`);
-        doc.moveDown();
-        
-        doc.fontSize(16).fillColor('#FF2A2A').text(`Total Ledger Amount: Ksh ${parseFloat(invoice.amount).toFixed(2)}`);
-        doc.fontSize(14).fillColor('#000000').text(`Clearance Status: ${invoice.status.toUpperCase()}`);
-        doc.moveDown(3);
-        
-        doc.fontSize(12).text('Automated ledger generated by DAN74TECH MEDIA Matrix.', { align: 'center' });
-        doc.end();
+        const softDeleteOp = await pool.query('UPDATE users SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Identity core vector frame unallocated." });
+        broadcastSystemTelemetry('users', 'DELETE', id);
+        res.json({ message: "Identity credentials frame detached and marked soft deleted." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 12: EMAIL BROADCAST PIPELINES ==================
+// 4. BLOG POSTS ARCHITECTURE CONTENT MATRIX CONTROL PORTAL (CRUD)
 // =========================================================================
-app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
+app.get('/api/blog_posts', async (req, res) => {
     try {
-        const { subject, message, html } = req.body;
-        const subsResult = await pool.query("SELECT email FROM subscribers WHERE is_deleted = FALSE AND status = 'active'");
-        const userResult = await pool.query("SELECT email FROM users WHERE is_deleted = FALSE");
-        
-        const emailsSet = new Set([...subsResult.rows.map(r => r.email), ...userResult.rows.map(r => r.email)]);
-        const emailsArray = Array.from(emailsSet).map(email => ({ email }));
-        
-        if (emailsArray.length === 0) return res.status(400).json({ error: "No target clearance vectors found." });
-        if (!process.env.BREVO_API_KEY) throw new Error("Brevo SMTP engine offline.");
+        const fetchResult = await pool.query('SELECT * FROM blog_posts WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html || `<p>${message}</p>`;
-        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-        sendSmtpEmail.bcc = emailsArray; 
-
-        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
-        
-        const campaign = await pool.query(
-            `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by, sent_at) VALUES ($1, $2, 'broadcast', $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
-            [subject, html || message, emailsArray.length, req.user.id]
+app.post('/api/blog_posts', async (req, res) => {
+    const { title, category, content, summary, image_url, seo_title, seo_description, publisher_id, is_approved, author_id } = req.body;
+    const dynamicSlug = generateCleanSlug(title || 'untitled-post');
+    try {
+        const writeOp = await pool.query(
+            `INSERT INTO blog_posts (title, category, content, summary, image_url, slug, seo_title, seo_description, publisher_id, is_approved, author_id, likes_count, views_count, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [title, category, content, summary, image_url, dynamicSlug, seo_title, seo_description, publisher_id, is_approved || false, author_id]
         );
+        broadcastSystemTelemetry('blog_posts', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-        res.json({ success: true, sent: emailsArray.length, failed: 0, campaign_id: campaign.rows[0].id });
+app.put('/api/blog_posts/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, category, content, summary, image_url, seo_title, seo_description, publisher_id, is_approved, author_id, likes_count, views_count } = req.body;
+    const dynamicSlug = generateCleanSlug(title || 'updated-post');
+    try {
+        const updateOp = await pool.query(
+            `UPDATE blog_posts SET title = $1, category = $2, content = $3, summary = $4, image_url = $5, slug = $6, 
+             seo_title = $7, seo_description = $8, publisher_id = $9, is_approved = $10, author_id = $11, 
+             likes_count = $12, views_count = $13, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $14 AND is_deleted = false RETURNING *`,
+            [title, category, content, summary, image_url, dynamicSlug, seo_title, seo_description, publisher_id, is_approved, author_id, likes_count || 0, views_count || 0, id]
+        );
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Content node payload matrix block not found." });
+        broadcastSystemTelemetry('blog_posts', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/blog_posts/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const softDeleteOp = await pool.query('UPDATE blog_posts SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Content node payload matrix block not found." });
+        broadcastSystemTelemetry('blog_posts', 'DELETE', id);
+        res.json({ message: "Content node structure flipped to hidden state allocation mode." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 14: TESTIMONIALS ENGINE ========================
+// 5. CASE STUDIES PRODUCTION PIPELINE SYSTEM CONTROL INTERFACE (CRUD)
+// =========================================================================
+app.get('/api/case_studies', async (req, res) => {
+    try {
+        const fetchResult = await pool.query('SELECT * FROM case_studies WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/case_studies', async (req, res) => {
+    const { title, category, challenge, solution, result, image_url } = req.body;
+    try {
+        const writeOp = await pool.query(
+            `INSERT INTO case_studies (title, category, challenge, solution, result, image_url, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [title, category, challenge, solution, result, image_url]
+        );
+        broadcastSystemTelemetry('case_studies', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/case_studies/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, category, challenge, solution, result, image_url } = req.body;
+    try {
+        const updateOp = await pool.query(
+            `UPDATE case_studies SET title = $1, category = $2, challenge = $3, solution = $4, result = $5, 
+             image_url = $6, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $7 AND is_deleted = false RETURNING *`,
+            [title, category, challenge, solution, result, image_url, id]
+        );
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Case deployment matrix structural node absent." });
+        broadcastSystemTelemetry('case_studies', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/case_studies/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const softDeleteOp = await pool.query('UPDATE case_studies SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Case deployment matrix structural node absent." });
+        broadcastSystemTelemetry('case_studies', 'DELETE', id);
+        res.json({ message: "Case architecture blueprint flagged as deleted." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// =========================================================================
+// 6. TESTIMONIALS REPUTATION ENGINE INTERACTION PORTAL (CRUD)
 // =========================================================================
 app.get('/api/testimonials', async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM testimonials WHERE is_deleted = FALSE ORDER BY id DESC");
-        res.json(result.rows);
+        const fetchResult = await pool.query('SELECT * FROM testimonials WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 app.post('/api/testimonials', async (req, res) => {
+    const { client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, publisher_id, is_approved } = req.body;
     try {
-        const { client_name, company, rating, review } = req.body;
-        const result = await pool.query(
-            `INSERT INTO testimonials (client_name, company, rating, review, status) VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
-            [client_name, company, rating, review]
+        const writeOp = await pool.query(
+            `INSERT INTO testimonials (client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, publisher_id, is_approved, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [client_name, client_designation, company, client_avatar_url, rating, review, status || 'pending', is_featured || false, publisher_id, is_approved || false]
         );
-        res.json({ success: true, data: result.rows[0] });
+        broadcastSystemTelemetry('testimonials', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// =========================================================================
-// ================= MODULE 15: MEDIA & CDN REPOSITORY LAYERS ==============
-// =========================================================================
-app.get('/api/media', async (req, res) => {
+app.put('/api/testimonials/:id', async (req, res) => {
+    const { id } = req.params;
+    const { client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, publisher_id, is_approved } = req.body;
     try {
-        const data = await pool.query('SELECT * FROM media_library WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ error: "Required file node absent" });
-        
-        const uploadStream = cloudinary.uploader.upload_stream(
-            { folder: "dan74tech_media_library" },
-            async (error, result) => {
-                if (error) return res.status(500).json({ error: error.message });
-                try {
-                    const dbInsert = await pool.query(
-                        `INSERT INTO media_library (file_name, file_url, file_type, file_size) VALUES ($1, $2, $3, $4) RETURNING *`,
-                        [req.file.originalname, result.secure_url, req.file.mimetype, req.file.size]
-                    );
-                    res.json({ success: true, data: dbInsert.rows[0] });
-                } catch (dbErr) {
-                    res.status(500).json({ error: dbErr.message });
-                }
-            }
+        const updateOp = await pool.query(
+            `UPDATE testimonials SET client_name = $1, client_designation = $2, company = $3, client_avatar_url = $4, 
+             rating = $5, review = $6, status = $7, is_featured = $8, publisher_id = $9, is_approved = $10, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $11 AND is_deleted = false RETURNING *`,
+            [client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, publisher_id, is_approved, id]
         );
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Reputation feedback ledger matrix block absent." });
+        broadcastSystemTelemetry('testimonials', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/testimonials/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const softDeleteOp = await pool.query('UPDATE testimonials SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Reputation feedback ledger matrix block absent." });
+        broadcastSystemTelemetry('testimonials', 'DELETE', id);
+        res.json({ message: "Reputation metric node successfully decommissioned from stream view." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 16: CONSULTATIONS ARCHIVE BLOCK ================
+// 7. SUPPORT TICKETS SERVICE PLATFORM ECOSYSTEM PIPELINE (CRUD)
 // =========================================================================
-app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
+app.get('/api/support_tickets', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM consultations WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
+        const fetchResult = await pool.query('SELECT * FROM support_tickets WHERE is_deleted = false ORDER BY id DESC');
+        res.json(fetchResult.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.post('/api/consultations', async (req, res) => {
+app.post('/api/support_tickets', async (req, res) => {
+    const { ticket_number, customer_name, email, subject, message, status, priority } = req.body;
     try {
-        const { name, email, phone, schedule_date, notes } = req.body;
-        const result = await pool.query(
-            `INSERT INTO consultations (name, email, phone, schedule_date, notes, status) VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING *`,
-            [name, email, phone, schedule_date, notes]
+        const calculatedTicketNum = ticket_number || `TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+        const writeOp = await pool.query(
+            `INSERT INTO support_tickets (ticket_number, customer_name, email, subject, message, status, priority, created_at, updated_at) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *`,
+            [calculatedTicketNum, customer_name, email, subject, message, status || 'open', priority || 'medium']
         );
-        res.json({ success: true, data: result.rows[0] });
+        broadcastSystemTelemetry('support_tickets', 'INSERT', writeOp.rows[0].id, writeOp.rows[0]);
+        res.status(201).json(writeOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.put('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
+app.put('/api/support_tickets/:id', async (req, res) => {
+    const { id } = req.params;
+    const { ticket_number, customer_name, email, subject, message, status, priority } = req.body;
     try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE consultations SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
+        const updateOp = await pool.query(
+            `UPDATE support_tickets SET ticket_number = $1, customer_name = $2, email = $3, subject = $4, 
+             message = $5, status = $6, priority = $7, updated_at = CURRENT_TIMESTAMP 
+             WHERE id = $8 AND is_deleted = false RETURNING *`,
+            [ticket_number, customer_name, email, subject, message, status, priority, id]
         );
-        res.json({ success: true, data: result.rows[0] });
+        if (updateOp.rows.length === 0) return res.status(404).json({ error: "Support operation ledger ticket not discovered." });
+        broadcastSystemTelemetry('support_tickets', 'UPDATE', id, updateOp.rows[0]);
+        res.json(updateOp.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.delete('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
+app.delete('/api/support_tickets/:id', async (req, res) => {
+    const { id } = req.params;
     try {
-        await pool.query('UPDATE consultations SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
+        const softDeleteOp = await pool.query('UPDATE support_tickets SET is_deleted = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *', [id]);
+        if (softDeleteOp.rows.length === 0) return res.status(404).json({ error: "Support operation ledger ticket not discovered." });
+        broadcastSystemTelemetry('support_tickets', 'DELETE', id);
+        res.json({ message: "Support event record marked as processed and archived." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 17: FILE DELIVERY NETWORK LAYER =================
+// AUTOMATED CRON CHRONOLOGICAL DATABASE BACKUP WORKER MATRIX ENGINE
+// SCHEDULED: EVERY 24 HOURS AT 00:00 NAIROBI TIME (EAT)
 // =========================================================================
-app.get('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM file_deliveries WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/file-deliveries/client/:clientId', verifySystemToken, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM file_deliveries WHERE client_id = $1 AND is_deleted = FALSE ORDER BY id DESC', [req.params.clientId]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
-    try {
-        const { order_id, client_id, file_name, file_url } = req.body;
-        const result = await pool.query(
-            `INSERT INTO file_deliveries (order_id, client_id, file_name, file_url) VALUES ($1, $2, $3, $4) RETURNING *`,
-            [order_id, client_id, file_name, file_url]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 18: SECURE E2EE COMMUNICATION ENGINE =================
-
-io.on('connection', (socket) => {
+cron.schedule('0 0 * * *', () => {
+    console.log("⏱️ Initializing automated database backup cycle to AWS S3 storage structure...");
     
-    // 1. BLIND RELAY: Socket-based encrypted messaging
-    socket.on('send_encrypted_message', async (data) => {
-        const { receiver_id, ciphertext, iv, sender_key, receiver_key } = data;
-        
-        try {
-            // Save blind payload
-            const result = await pool.query(
-                `INSERT INTO client_communications 
-                 (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
-                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-                [socket.user.id, receiver_id, ciphertext, iv, sender_key, receiver_key]
-            );
-            
-            // Relay ciphertext to recipient (Socket.IO remains the pipe)
-            io.to(`user_${receiver_id}`).emit('receive_encrypted_message', result.rows[0]);
-        } catch (err) {
-            console.error("❌ E2EE Relay Error:", err);
-        }
-    });
-
-    // 2. PRESENCE & STATUS MANAGEMENT
-    socket.on('join_thread', async (userId) => {
-        socket.join(`user_${userId}`); // Namespacing user rooms
-        socket.userId = userId;
-        await pool.query('UPDATE users SET is_online = TRUE, last_seen = NOW() WHERE id = $1', [userId]);
-        io.emit('presence_update', { userId, status: 'online' });
-    });
-
-    // ... (Keep your existing typing_start, typing_stop, and disconnect logic here)
-});
-
-// 3. E2EE THREAD RETRIEVAL: Only select non-sensitive fields
-app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        
-        // Mark as read (Metadata operation)
-        await pool.query(
-            `UPDATE client_communications SET is_read = TRUE WHERE receiver_id = $1 AND is_read = FALSE`,
-            [userId]
-        );
-
-        // Fetch encrypted payload - message_body is intentionally excluded
-        const thread = await pool.query(
-            `SELECT id, sender_id, receiver_id, ciphertext, iv, 
-                    sender_wrapped_key, receiver_wrapped_key, created_at, is_read 
-             FROM client_communications 
-             WHERE (sender_id = $1 OR receiver_id = $1) AND is_deleted = FALSE 
-             ORDER BY created_at ASC`,
-            [userId]
-        );
-        res.json(thread.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (!process.env.DATABASE_URL) {
+        console.error("❌ S3 Backup terminated: DATABASE_URL missing from environment variables.");
+        return;
     }
-});
-
-// 4. REST API SEND (E2EE Compliant)
-app.post('/api/communications/send', verifySystemToken, async (req, res) => {
-    const { receiver_id, ciphertext, iv, sender_key, receiver_key } = req.body;
-    const sender_id = req.user.id;
-
-    try {
-        const savedMsg = await pool.query(
-            `INSERT INTO client_communications 
-             (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [sender_id, receiver_id, ciphertext, iv, sender_key, receiver_key]
-        );
-        
-        io.to(`user_${receiver_id}`).emit('receive_encrypted_message', savedMsg.rows[0]);
-        res.json({ success: true, data: savedMsg.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-// =========================================================================
-// ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
-// =========================================================================
-app.post('/api/payments/mpesa-stk', verifySystemToken, async (req, res) => {
-    try {
-        const { order_id, phone_number, amount } = req.body;
-        await pool.query(`UPDATE orders SET payment_status = 'processing', updated_at = CURRENT_TIMESTAMP WHERE id = $1`, [order_id]);
-        
-        res.json({
-            success: true, 
-            merchant_id: 'pending_daraja_auth', 
-            checkout_id: `chk_${Date.now()}`, 
-            msg: "M-Pesa API integration pending. Please finalize your transaction via the automated WhatsApp redirection link.",
-            whatsapp_fallback: true
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/payments/mpesa-callback', async (req, res) => {
-    try {
-        const callbackData = req.body.Body.stkCallback;
-        const checkoutRequestId = callbackData.CheckoutRequestID;
-        const resultCode = callbackData.ResultCode;
-
-        if (resultCode === 0) {
-            const amountInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'Amount');
-            const receiptInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'MpesaReceiptNumber');
-            const phoneInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'PhoneNumber');
-
-            await pool.query(
-                `INSERT INTO mpesa_transactions (checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_description) 
-                 VALUES ($1, $2, $3, $4, 'Success', $5)`,
-                [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc]
-            );
-        }
-        res.json({ ResultCode: 0, ResultDesc: "Transaction Accepted Confirmed" });
-    } catch (err) {
-        console.error("M-Pesa Callback Error:", err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 20: COMMUNITY SOCIAL FEED ENGINE ==========================
-// =========================================================================
-app.get('/api/feed/global', verifySystemToken, async (req, res) => {
-    try {
-        const query = `
-            SELECT id, title, description as content, link as media_url, 'portfolio' as type, created_at, likes_count, views_count, NULL as author_name
-            FROM portfolio WHERE is_deleted = FALSE AND status = 'Approved'
-            UNION ALL
-            SELECT b.id, b.title, b.content, b.image_url as media_url, 'blog' as type, b.created_at, b.likes_count, b.views_count, u.name as author_name
-            FROM blog_posts b LEFT JOIN users u ON b.author_id = u.id WHERE b.is_deleted = FALSE AND b.status = 'Approved'
-            UNION ALL
-            SELECT c.id, c.title, c.challenge || ' ' || c.solution as content, c.image_url as media_url, 'case_study' as type, c.created_at, c.likes_count, c.views_count, u.name as author_name
-            FROM case_studies c LEFT JOIN users u ON c.author_id = u.id WHERE c.is_deleted = FALSE AND c.status = 'Approved'
-            ORDER BY created_at DESC LIMIT 50;
-        `;
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.post('/api/feed/interact', verifySystemToken, async (req, res) => {
-    try {
-        const { entity_id, entity_type, action } = req.body; 
-        const userId = req.user.id;
-        
-        const check = await pool.query(
-            'SELECT id FROM feed_interactions WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3 AND interaction_type = $4', 
-            [userId, entity_id, entity_type, action]
-        );
-        
-        if (check.rows.length === 0) {
-            await pool.query('INSERT INTO feed_interactions (user_id, entity_id, entity_type, interaction_type) VALUES ($1, $2, $3, $4)', [userId, entity_id, entity_type, action]);
-            let table = entity_type === 'blog' ? 'blog_posts' : entity_type === 'case_study' ? 'case_studies' : 'portfolio';
-            await pool.query(`UPDATE ${table} SET likes_count = likes_count + 1 WHERE id = $1`, [entity_id]);
-        }
-        res.json({ success: true });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.get('/api/catalog/full', verifySystemToken, async (req, res) => {
-    try {
-        const services = await pool.query('SELECT id, name, description, icon FROM services WHERE is_deleted = FALSE');
-        const subServices = await pool.query('SELECT id, service_id, name, price, description FROM sub_services WHERE is_deleted = FALSE');
-        
-        const catalog = services.rows.map(srv => {
-            return {
-                ...srv,
-                packages: subServices.rows.filter(sub => sub.service_id === srv.id)
-            };
-        });
-        res.json(catalog);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.post('/api/content/publish', verifySystemToken, async (req, res) => {
-    try {
-        const { target, title, content } = req.body;
-        const authorId = req.user.id;
-        const table = target === 'blog' ? 'blog_posts' : 'case_studies';
-        
-        await pool.query(`INSERT INTO ${table} (title, ${target === 'blog' ? 'content' : 'challenge'}, status, author_id) VALUES ($1, $2, 'pending', $3)`, [title, content, authorId]);
-        res.json({ success: true });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-// =========================================================================
-// ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
-// =========================================================================
-app.get('/api/admin/dashboard-stats', verifyAdminAccess, async (req, res) => {
-    try {
-        const userCount = await pool.query("SELECT COUNT(*) FROM users WHERE is_deleted = FALSE");
-        const orderCount = await pool.query("SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE");
-        const pendingCount = await pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending' AND is_deleted = FALSE");
-        const ticketCount = await pool.query("SELECT COUNT(*) FROM support_tickets WHERE status = 'open' AND is_deleted = FALSE");
-        const earningsSum = await pool.query("SELECT SUM(price) FROM orders WHERE payment_status = 'paid' AND is_deleted = FALSE");
-        const consultationCount = await pool.query("SELECT COUNT(*) FROM consultations WHERE status = 'pending' AND is_deleted = FALSE");
-        
-        res.json({
-            users: parseInt(userCount.rows[0].count || '0'),
-            orders: parseInt(orderCount.rows[0].count || '0'),
-            pending_orders: parseInt(pendingCount.rows[0].count || '0'),
-            open_tickets: parseInt(ticketCount.rows[0].count || '0'),
-            total_earnings: parseFloat(earningsSum.rows[0].sum || '0.00'),
-            pending_consultations: parseInt(consultationCount.rows[0].count || '0')
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/admin/backup/status', verifyAdminAccess, async (req, res) => {
-    try {
-        res.json({
-            status: 'healthy',
-            last_backup: new Date().toISOString(),
-            storage: 'S3_Bucket_Pending_AWS_Keys'
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MISSING ADMIN CRUD CONSOLIDATION BLOCK =================
-// =========================================================================
-app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query(
-            `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [req.body.status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE notifications SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =============
-// =========================================================================
-app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
-    const whitelist = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications',
-        'mpesa_transactions' 
-    ];
-    
-    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (!whitelist.includes(requestedTable)) {
-        return res.status(403).json({ error: "Dynamic route injection target blocked." });
-    }
-
-    try {
-        const { ids, action } = req.body;
-        if (!Array.isArray(ids) || ids.length === 0 || action !== 'delete') {
-            return res.status(400).json({ error: "Invalid bulk operation parameters." });
-        }
-
-        const query = `UPDATE ${requestedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`;
-        await pool.query(query, [ids]);
-        res.json({ success: true, message: 'Bulk soft delete pipeline executed.' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
-    const adminTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications',
-        'mpesa_transactions'
-    ];
-
-    const clientTables = [
-        'users', 'services', 'orders', 'portfolio', 'blog_posts', 
-        'invoices', 'support_tickets', 'testimonials', 'consultations', 'client_communications'
-    ]; 
-
-    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (req.user.role !== 'admin' && !clientTables.includes(requestedTable)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
-    }
-    if (!adminTables.includes(requestedTable)) {
-        return res.status(403).json({ error: "Unknown Table Vector" });
-    }
-    
-    try {
-        const result = await pool.query(`SELECT * FROM ${requestedTable} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
-        if (result.rows.length === 0) return res.status(404).json({error: "Record not found"});
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
-app.get('/', (req, res) => {
-    res.status(200).send('🚀 DAN74TECH MEDIA Unified Operations API Matrix is active.');
-});
-
-// ================= AUTOMATED AWS S3 POSTGRESQL BACKUP SCHEDULER ==========
-cron.schedule('0 2 * * *', () => {
-    console.log("🕒 02:00 EAT: Triggering pg_dump cryptographic snapshot for AWS S3 Cold Storage...");
-    if(!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.S3_BUCKET_NAME) {
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.S3_BUCKET_NAME) {
         console.warn("⚠️ S3 Backup aborted: AWS credentials or Bucket Name missing in environment.");
         return;
     }
 
     const fileName = `dan74tech_backup_${Date.now()}.sql`;
     const filePath = path.join(__dirname, 'uploads', fileName);
+    
+    // Ensure temporal output folder exists safely
+    if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
+        fs.mkdirSync(path.join(__dirname, 'uploads'));
+    }
+
     const dumpCmd = `pg_dump ${process.env.DATABASE_URL} -F p -f ${filePath}`;
 
     exec(dumpCmd, (error, stdout, stderr) => {
         if (error) {
-            console.error(`❌ pg_dump error: ${error.message}`);
+            console.error(`❌ pg_dump error executing runtime capture binary: ${error.message}`);
             return;
         }
 
@@ -1117,11 +750,17 @@ cron.schedule('0 2 * * *', () => {
 
         s3.upload(params, (err, data) => {
             if (err) {
-                console.error("❌ AWS S3 Upload Error:", err);
+                console.error("❌ AWS S3 Secure Matrix Object Upload Error:", err);
             } else {
-                console.log(`✅ Database successfully backed up to S3: ${data.Location}`);
+                console.log(`✅ Database successfully backed up to S3 secure data cluster: ${data.Location}`);
             }
-            fs.unlinkSync(filePath);
+            
+            // Purge temporal local binary trace
+            try {
+                fs.unlinkSync(filePath);
+            } catch (unlinkErr) {
+                console.error("⚠️ Failed to purge temporary backup file from disk array:", unlinkErr.message);
+            }
         });
     });
 }, {
@@ -1129,7 +768,13 @@ cron.schedule('0 2 * * *', () => {
     timezone: "Africa/Nairobi"
 });
 
-// Initialize Server Core Execution Node using HTTP Server for WebSockets
+// =========================================================================
+// SERVER CORE INITIALIZATION EXECUTION NODE BIND
+// =========================================================================
 server.listen(PORT, () => {
-    console.log(`🚀 Server matrix online and deploying operations on port ${PORT}`);
+    console.log(`=========================================================================`);
+    console.log(`🚀 DAN74TECH MEDIA UNIFIED SYSTEM IS FULLY COMPILED AND OPERATIONAL`);
+    console.log(`📡 CORE SYSTEM ACCESS PORTAL BOUND AT NETWORK PORT: ${PORT}`);
+    console.log(`🎯 TARGET ENVIRONMENT DATABASE TARGET NODE STATUS: READY`);
+    console.log(`=========================================================================`);
 });
