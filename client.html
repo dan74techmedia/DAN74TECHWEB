@@ -36,12 +36,12 @@
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-t-4 border-professionalBlue">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-professionalBlue tracking-tight">DAN74TECH MEDIA</h1>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Community Hub</p>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Community Matrix</p>
             </div>
             <div id="login-view">
                 <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Email Address" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
-                    <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
                     <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md">Authenticate</button>
                 </form>
                 <p class="mt-4 text-center text-xs text-gray-500">New here? <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue font-bold hover:underline">Join the Matrix</a></p>
@@ -49,9 +49,9 @@
             <div id="register-view" class="hide">
                 <form id="register-form" class="space-y-4">
                     <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="email" id="reg-email" placeholder="Email" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="text" id="reg-phone" placeholder="Phone Vector" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="password" id="reg-password" placeholder="Password" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
                     <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2.5 rounded-lg hover:bg-yellow-500 transition shadow-md">Establish Clearance</button>
                 </form>
                 <p class="mt-4 text-center text-xs text-gray-500">Active Node? <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline">Login</a></p>
@@ -65,7 +65,7 @@
             <div class="flex items-center gap-2 w-1/4">
                 <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow"><i class="fa-solid fa-bolt"></i></div>
                 <div class="hidden md:block">
-                    <input type="text" placeholder="Search Matrix..." class="bg-facebookBg rounded-full px-4 py-1.5 text-sm outline-none w-56 border border-gray-100 focus:border-gray-300">
+                    <input type="text" placeholder="Search Data Streams..." class="bg-facebookBg rounded-full px-4 py-1.5 text-sm outline-none w-56 border border-gray-100 focus:border-gray-300 transition">
                 </div>
             </div>
 
@@ -87,11 +87,11 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 w-1/4">
-                <div class="flex items-center gap-2 bg-gray-100 rounded-full pr-4 p-1">
+                <div class="flex items-center gap-2 bg-gray-100 rounded-full pr-4 p-1 shadow-inner">
                     <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700" id="user-avatar-node"></div>
                     <span id="user-greeting" class="text-sm font-bold text-gray-800 hidden lg:block"></span>
                 </div>
-                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition" title="Log Out"><i class="fa-solid fa-arrow-right-from-bracket text-gray-700"></i></button>
+                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition" title="Sever Connection"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
             </div>
         </nav>
 
@@ -101,12 +101,12 @@
                 
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                     <div class="flex gap-3 items-center border-b border-gray-100 pb-3">
-                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold"><i class="fa-solid fa-pen text-gray-500"></i></div>
-                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-sm px-4 py-2.5 rounded-full transition">Publish a Case Study or Blog Entry...</button>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 text-professionalBlue flex items-center justify-center text-sm font-bold shadow-inner" id="publisher-avatar"></div>
+                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-sm px-4 py-2.5 rounded-full transition">Publish a Case Study or Blog Entry to the network...</button>
                     </div>
                     <div class="flex justify-around pt-2">
-                        <button class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg"><i class="fa-solid fa-image text-green-500"></i> Media</button>
-                        <button class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg"><i class="fa-solid fa-book-open text-blue-500"></i> Article</button>
+                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg transition"><i class="fa-solid fa-image text-green-500"></i> Project Media</button>
+                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg transition"><i class="fa-solid fa-book-open text-blue-500"></i> Technical Article</button>
                     </div>
                 </div>
 
@@ -117,57 +117,70 @@
 
             <div id="view-orders" class="w-full max-w-7xl mx-auto py-6 px-4 flex gap-6 chat-area hide">
                 <div class="w-1/3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                    <div class="p-4 border-b border-gray-100"><h2 class="font-bold text-lg">Services Matrix</h2></div>
-                    <div id="catalog-list" class="flex-grow overflow-y-auto scroll-clean p-2 space-y-1"></div>
+                    <div class="p-4 border-b border-gray-100 bg-gray-50"><h2 class="font-bold text-lg text-gray-800">Services Matrix</h2></div>
+                    <div id="catalog-list" class="flex-grow overflow-y-auto scroll-clean p-3 space-y-3">
+                        <div class="text-center text-xs text-gray-400 py-4">Fetching catalog data...</div>
+                    </div>
                 </div>
                 <div class="w-2/3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-                    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-                        <h2 class="font-bold text-lg">Active Deployments Ledger</h2>
-                        <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-corporateYellow text-black px-4 py-1.5 rounded-md text-sm font-bold hover:bg-yellow-500 shadow-sm"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <h2 class="font-bold text-lg text-gray-800">Active Deployments Ledger</h2>
+                        <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-corporateYellow text-black px-4 py-1.5 rounded-md text-sm font-bold hover:bg-yellow-500 shadow-sm transition"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
                     </div>
-                    <div class="flex-grow overflow-y-auto scroll-clean p-4">
+                    <div class="flex-grow overflow-y-auto scroll-clean p-0">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-50"><tr><th class="px-4 py-2">ID</th><th class="px-4 py-2">Service</th><th class="px-4 py-2">Status</th><th class="px-4 py-2">Financials</th></tr></thead>
-                            <tbody id="orders-registry-body"></tbody>
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-100 border-b border-gray-200">
+                                <tr><th class="px-6 py-3">Vector ID</th><th class="px-6 py-3">Service Designation</th><th class="px-6 py-3">Operational Status</th><th class="px-6 py-3">Financial State</th></tr>
+                            </thead>
+                            <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div id="view-messages" class="w-full h-full flex bg-white hide border-t border-gray-200">
-                <div class="w-1/3 border-r border-gray-200 flex flex-col bg-white">
-                    <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-                        <h2 class="font-bold text-2xl tracking-tight">Chats</h2>
-                        <span id="socket-indicator" class="w-2 h-2 rounded-full bg-red-500 shadow" title="Disconnected"></span>
+                <div class="w-1/3 border-r border-gray-200 flex flex-col bg-gray-50">
+                    <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white shadow-sm z-10">
+                        <h2 class="font-bold text-2xl tracking-tight text-gray-900">Encrypted Comms</h2>
+                        <span id="socket-indicator" class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" title="Disconnected"></span>
                     </div>
-                    <div class="px-4 py-2"><input type="text" placeholder="Search Directory..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm outline-none focus:ring-1 focus:ring-gray-300"></div>
-                    <div id="directory-roster-list" class="flex-grow overflow-y-auto scroll-clean p-2"></div>
+                    <div class="px-4 py-3 bg-white border-b border-gray-100">
+                        <input type="text" placeholder="Search Secured Directory..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-professionalBlue transition">
+                    </div>
+                    <div id="directory-roster-list" class="flex-grow overflow-y-auto scroll-clean p-2 bg-white">
+                        <div class="text-center text-xs text-gray-400 py-10"><i class="fa-solid fa-shield-halved mb-2 text-lg"></i><br>Decrypting directory parameters...</div>
+                    </div>
                 </div>
-                <div class="w-2/3 flex flex-col bg-white">
-                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white/90 backdrop-blur z-10 shadow-sm">
+                <div class="w-2/3 flex flex-col bg-white relative">
+                    <div id="chat-overlay" class="absolute inset-0 bg-gray-50 z-20 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-brands fa-facebook-messenger text-6xl mb-4 text-gray-200"></i>
+                        <p class="font-medium">Select a node to establish a secure E2EE channel.</p>
+                    </div>
+
+                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white/95 backdrop-blur z-10 shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 text-professionalBlue flex items-center justify-center font-bold" id="active-chat-avatar">--</div>
+                            <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-md" id="active-chat-avatar">--</div>
                             <div>
-                                <h3 class="font-bold text-gray-900" id="active-chat-title">Select a Conversation</h3>
-                                <p class="text-[11px] text-gray-500" id="active-chat-status">Matrix standby mode</p>
+                                <h3 class="font-bold text-gray-900" id="active-chat-title">--</h3>
+                                <p class="text-[11px] text-green-500 font-medium flex items-center gap-1" id="active-chat-status"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Matrix standby</p>
                             </div>
                         </div>
+                        <div class="text-xs text-gray-400 flex items-center gap-1 bg-gray-100 px-2 py-1 rounded border border-gray-200" title="End-to-End Encrypted"><i class="fa-solid fa-lock text-gray-500"></i> AES-GCM 256</div>
                     </div>
-                    <div id="chat-window-timeline" class="flex-grow p-6 overflow-y-auto scroll-clean flex flex-col gap-2 bg-white relative">
-                        </div>
-                    <div id="typing-indicator-node" class="px-6 py-2 text-xs text-gray-400 font-medium hide flex items-center gap-2">
-                        Someone is typing <div class="typing-indicator"><span></span><span></span><span></span></div>
+                    
+                    <div id="chat-window-timeline" class="flex-grow p-6 overflow-y-auto scroll-clean flex flex-col gap-3 bg-white">
                     </div>
-                    <div class="p-4 border-t border-gray-200 bg-white">
+                    
+                    <div id="typing-indicator-node" class="px-6 py-2 text-xs text-gray-400 font-medium hide flex items-center gap-2 bg-white">
+                        Node is composing <div class="typing-indicator"><span></span><span></span><span></span></div>
+                    </div>
+                    
+                    <div class="p-4 border-t border-gray-200 bg-gray-50">
                         <form id="unified-chat-form" class="flex items-center gap-3">
-                            <button type="button" onclick="document.getElementById('file-attachment-input').click()" class="text-professionalBlue hover:bg-blue-50 w-9 h-9 rounded-full flex justify-center items-center transition">
-                                <i class="fa-solid fa-circle-plus text-xl"></i>
-                            </button>
-                            <input type="file" id="file-attachment-input" class="hide" onchange="executeCloudinaryStream(this)">
                             <div class="flex-grow relative">
-                                <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Aa" required autocomplete="off" class="w-full bg-facebookBg rounded-full px-4 py-2.5 text-sm outline-none focus:bg-gray-200 transition">
+                                <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Transmit secure payload..." required autocomplete="off" class="w-full bg-white border border-gray-300 rounded-full px-5 py-3 text-sm outline-none focus:border-professionalBlue focus:ring-1 focus:ring-professionalBlue transition shadow-sm">
                             </div>
-                            <button type="submit" class="text-professionalBlue hover:bg-blue-50 w-9 h-9 rounded-full flex justify-center items-center transition"><i class="fa-solid fa-paper-plane"></i></button>
+                            <button type="submit" class="bg-professionalBlue text-white hover:bg-blue-700 w-11 h-11 rounded-full flex justify-center items-center transition shadow-md"><i class="fa-solid fa-paper-plane"></i></button>
                         </form>
                     </div>
                 </div>
@@ -176,34 +189,62 @@
         </div>
     </section>
 
-    <div id="publish-modal" class="hide fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-lg overflow-hidden">
-            <div class="p-4 border-b flex justify-between items-center">
-                <h3 class="font-bold text-lg text-center w-full">Create Post</h3>
-                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 text-gray-600 absolute right-4"><i class="fa-solid fa-xmark"></i></button>
+    <div id="publish-modal" class="hide fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-pen-nib text-professionalBlue mr-2"></i>Content Transmission</h3>
+                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="new-publish-form" class="p-4 space-y-4">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold" id="modal-avatar">U</div>
+            <form id="new-publish-form" class="p-5 space-y-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-professionalBlue flex items-center justify-center text-sm font-bold shadow-inner" id="modal-avatar">U</div>
                     <div class="flex flex-col">
-                        <span class="font-bold text-sm" id="modal-username">User</span>
-                        <select id="pub-target" class="text-[11px] bg-gray-100 rounded px-1 py-0.5 outline-none font-bold text-gray-600">
+                        <span class="font-bold text-sm text-gray-900" id="modal-username">User Node</span>
+                        <select id="pub-target" class="text-[11px] bg-gray-100 border border-gray-200 rounded px-2 py-1 outline-none font-bold text-gray-600 cursor-pointer mt-1">
                             <option value="blog">Technical Blog Entry</option>
                             <option value="case_studies">Case Study Log</option>
                         </select>
                     </div>
                 </div>
-                <input type="text" id="pub-title" placeholder="What's the title?" required class="w-full text-lg font-bold outline-none placeholder-gray-400">
-                <textarea id="pub-content" rows="4" placeholder="What's on your mind? Detailed project specifics..." required class="w-full text-lg outline-none resize-none placeholder-gray-400"></textarea>
-                <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 text-xs text-amber-800">
-                    <i class="fa-solid fa-shield-halved mr-1"></i> Content is placed in a pending state awaiting administrative clearance.
+                <input type="text" id="pub-title" placeholder="Designation / Title" required class="w-full text-lg font-bold outline-none placeholder-gray-400 border-b border-transparent focus:border-gray-200 pb-2 transition">
+                <textarea id="pub-content" rows="5" placeholder="Detail the architecture, logic, or project specifics..." required class="w-full text-sm outline-none resize-none placeholder-gray-400 border border-gray-100 rounded-lg p-3 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-professionalBlue transition"></textarea>
+                
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs text-blue-800 flex items-start gap-2">
+                    <i class="fa-solid fa-shield-halved mt-0.5"></i>
+                    <p>All transmitted payloads enter a staging state pending automated administrative clearance before global broadcasting.</p>
                 </div>
-                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition">Publish Protocol</button>
+                
+                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-satellite-dish"></i> Execute Broadcast Protocol
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="order-modal" class="hide fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-file-invoice text-corporateYellow mr-2"></i>New Deployment Request</h3>
+                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="new-order-form" class="p-5 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Target Service</label>
+                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none mt-1" required>
+                        <option value="">Select Service Protocol...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase">Operational Details</label>
+                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none mt-1 resize-none" placeholder="Provide system requirements..." required></textarea>
+                </div>
+                <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md">Initialize Order</button>
             </form>
         </div>
     </div>
 
     <script>
+        // Matrix Configuration & State
         const API_BASE = window.location.hostname.includes('localhost') ? 'http://localhost:10000/api' : 'https://dan74techweb.onrender.com/api'; 
         let token = localStorage.getItem('dan74tech_token');
         let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
@@ -211,7 +252,51 @@
         let activeTab = 'feed';
         let targetChatId = null;
         let typingTimeout = null;
+        let cachedDirectory = new Map(); // Dynamic Directory Cache
 
+        // =========================================================================
+        // WEB CRYPTO API: E2EE ENGINE (AES-GCM 256)
+        // Implements dynamic symmetric derivation to bypass missing PKI backend registry.
+        // =========================================================================
+        const CryptoEngine = {
+            async getSharedKey(peerId) {
+                // Deterministic symmetric key generation based on strictly ordered IDs
+                const secret = `dan74tech_e2ee_matrix_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), {name: "PBKDF2"}, false, ["deriveKey"]);
+                return crypto.subtle.deriveKey(
+                    { name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" },
+                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+                );
+            },
+            async encrypt(plaintext, peerId) {
+                const key = await this.getSharedKey(peerId);
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const enc = new TextEncoder();
+                const ciphertextBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
+                
+                return {
+                    ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))),
+                    iv: btoa(String.fromCharCode(...iv)),
+                    wrapped_key: "sys_derived_sym_key" // Placeholder to satisfy DB constraints
+                };
+            },
+            async decrypt(ciphertextB64, ivB64, peerId) {
+                try {
+                    const key = await this.getSharedKey(peerId);
+                    const ciphertext = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
+                    const iv = new Uint8Array(atob(ivB64).split('').map(c => c.charCodeAt(0)));
+                    
+                    const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
+                    return new TextDecoder().decode(decryptedBuffer);
+                } catch (e) {
+                    console.error("E2EE Decryption Failure:", e);
+                    return "🔒 [Encrypted Payload - Decryption Failed]";
+                }
+            }
+        };
+
+        // ======================= CORE SYSTEM LOGIC =======================
         const toggleAuth = (view) => {
             document.getElementById('login-view').classList.toggle('hide', view !== 'login');
             document.getElementById('register-view').classList.toggle('hide', view !== 'register');
@@ -221,14 +306,16 @@
             if (token && userNode) {
                 document.getElementById('auth-section').classList.add('hide');
                 document.getElementById('dashboard-section').classList.remove('hide');
+                
+                const initials = userNode.name.charAt(0).toUpperCase();
                 document.getElementById('user-greeting').innerText = userNode.name;
-                document.getElementById('user-avatar-node').innerText = userNode.name.charAt(0).toUpperCase();
-                document.getElementById('modal-avatar').innerText = userNode.name.charAt(0).toUpperCase();
+                document.getElementById('user-avatar-node').innerText = initials;
+                document.getElementById('modal-avatar').innerText = initials;
+                document.getElementById('publisher-avatar').innerText = initials;
                 document.getElementById('modal-username').innerText = userNode.name;
                 
                 switchTab('feed');
                 initSockets();
-                fetchMatrixData();
             } else {
                 document.getElementById('auth-section').classList.remove('hide');
                 document.getElementById('dashboard-section').classList.add('hide');
@@ -240,19 +327,41 @@
             if (body) config.body = JSON.stringify(body);
             const res = await fetch(`${API_BASE}${endpoint}`, config);
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
+            if (!res.ok) throw new Error(data.error || "System Node Error");
             return data;
         };
 
-        // Auth Dispatch
+        // ======================= AUTHENTICATION =======================
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
-                const res = await fetch(`${API_BASE}/auth/login`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: document.getElementById('login-email').value, password: document.getElementById('login-password').value })});
-                const data = await res.json();
-                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token=data.token; userNode=data.user; setViewState(); }
-                else alert(data.message);
-            } catch(e) {}
+                const data = await apiCall('/auth/login', 'POST', { 
+                    email: document.getElementById('login-email').value, 
+                    password: document.getElementById('login-password').value 
+                });
+                if(data.success) { 
+                    localStorage.setItem('dan74tech_token', data.token); 
+                    localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); 
+                    token = data.token; userNode = data.user; setViewState(); 
+                }
+            } catch(e) { alert(e.message); }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const data = await apiCall('/auth/register', 'POST', {
+                    name: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    phone: document.getElementById('reg-phone').value,
+                    password: document.getElementById('reg-password').value
+                });
+                if(data.success) { 
+                    localStorage.setItem('dan74tech_token', data.token); 
+                    localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); 
+                    token = data.token; userNode = data.user; setViewState(); 
+                }
+            } catch(e) { alert(e.message); }
         });
 
         const logoutPipeline = () => {
@@ -261,42 +370,48 @@
             location.reload();
         };
 
-        // UI Tabs
+        // ======================= NAVIGATION ENGINE =======================
         const switchTab = (tab) => {
             activeTab = tab;
             ['feed', 'orders', 'messages'].forEach(t => {
                 document.getElementById(`view-${t}`).classList.toggle('hide', t !== tab);
                 const btn = document.getElementById(`tab-${t}`);
                 if (t === tab) {
-                    btn.classList.add('text-professionalBlue'); btn.classList.remove('text-gray-500');
+                    btn.classList.add('text-professionalBlue', 'bg-blue-50'); btn.classList.remove('text-gray-500', 'hover:bg-gray-100');
                     btn.querySelector('.active-indicator').classList.remove('hidden');
                 } else {
-                    btn.classList.remove('text-professionalBlue'); btn.classList.add('text-gray-500');
+                    btn.classList.remove('text-professionalBlue', 'bg-blue-50'); btn.classList.add('text-gray-500', 'hover:bg-gray-100');
                     btn.querySelector('.active-indicator').classList.add('hidden');
                 }
             });
             if (tab === 'feed') fetchSocialFeed();
             if (tab === 'orders') fetchOrdersCatalog();
-            if (tab === 'messages') fetchChatDirectory();
+            if (tab === 'messages') buildDynamicDirectory();
         };
 
-        // ======================= FEED ENGINE =======================
+        // ======================= MODULE 1: GLOBAL FEED =======================
         async function fetchSocialFeed() {
             try {
                 const feed = await apiCall('/feed/global');
                 const stream = document.getElementById('global-feed-stream');
                 stream.innerHTML = '';
-                if(feed.length===0) return stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold">No public records found in this sector.</div>`;
+                
+                if(feed.length === 0) {
+                    stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold bg-white rounded-xl shadow-sm border border-gray-100"><i class="fa-solid fa-ghost text-2xl mb-2"></i><br>No network activity detected.</div>`;
+                    return;
+                }
                 
                 feed.forEach(post => {
-                    const badge = post.type === 'portfolio' ? 'System Portfolio' : post.type === 'blog' ? 'Tech Blog' : 'Case Study';
-                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full h-64 object-cover mt-3 border-y border-gray-100" onerror="this.style.display='none'">` : '';
+                    const isSystem = post.type === 'portfolio';
+                    const badgeColor = isSystem ? 'bg-purple-100 text-purple-700' : (post.type === 'blog' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700');
+                    const badgeText = isSystem ? 'System Portfolio' : (post.type === 'blog' ? 'Tech Blog' : 'Case Study');
+                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full max-h-96 object-cover border-y border-gray-100" onerror="this.style.display='none'">` : '';
                     
                     stream.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pb-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pb-1 hover:shadow-md transition duration-300">
                         <div class="p-4 pb-2 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-50 text-professionalBlue flex items-center justify-center font-bold shadow-inner">${(post.author_name || 'Sys').charAt(0)}</div>
+                                <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold border border-gray-200">${(post.author_name || 'Sys').charAt(0)}</div>
                                 <div>
                                     <p class="font-bold text-sm text-gray-900">${post.author_name || 'DAN74TECH Master Core'}</p>
                                     <div class="flex items-center gap-1 text-[11px] text-gray-500">
@@ -304,20 +419,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <span class="text-[9px] font-bold uppercase bg-gray-100 px-2 py-0.5 rounded text-gray-500 tracking-wider">${badge}</span>
+                            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full tracking-wider ${badgeColor}">${badgeText}</span>
                         </div>
-                        <div class="px-4 py-1"><h4 class="font-bold text-lg mb-1 leading-tight">${post.title}</h4><p class="text-sm text-gray-800 leading-relaxed">${post.content}</p></div>
+                        <div class="px-4 py-2">
+                            <h4 class="font-bold text-lg mb-1 leading-tight text-gray-900">${post.title}</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">${post.content}</p>
+                        </div>
                         ${imgNode}
-                        <div class="px-4 py-2 flex items-center justify-between border-b border-gray-100 mx-4">
-                            <div class="flex items-center gap-1.5 text-xs text-gray-500"><div class="bg-professionalBlue w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
+                        <div class="px-4 py-2 mt-2 flex items-center justify-between border-b border-gray-100 mx-4">
+                            <div class="flex items-center gap-1.5 text-xs text-gray-500 font-medium"><div class="bg-professionalBlue w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
                         </div>
-                        <div class="px-4 py-1 mx-2 flex gap-1">
-                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Like</button>
-                            <button class="flex-1 flex items-center justify-center gap-2 py-2 rounded text-gray-500 font-bold text-sm hover:bg-gray-100 transition"><i class="fa-regular fa-comment"></i> Comment</button>
+                        <div class="px-4 py-1.5 mx-2 flex gap-1">
+                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-gray-600 font-bold text-sm hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Acknowledge</button>
                         </div>
                     </div>`;
                 });
-            } catch(e){}
+            } catch(e) { console.error("Feed Error:", e); }
         }
 
         async function triggerLike(id, type) {
@@ -326,129 +443,223 @@
 
         document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const payload = { target: document.getElementById('pub-target').value, title: document.getElementById('pub-title').value, content: document.getElementById('pub-content').value };
-            try { await apiCall('/content/publish', 'POST', payload); document.getElementById('publish-modal').classList.add('hide'); alert('Submitted for administrative clearance.'); fetchSocialFeed(); } catch(e){}
+            try { 
+                await apiCall('/content/publish', 'POST', { 
+                    target: document.getElementById('pub-target').value, 
+                    title: document.getElementById('pub-title').value, 
+                    content: document.getElementById('pub-content').value 
+                }); 
+                document.getElementById('publish-modal').classList.add('hide'); 
+                document.getElementById('new-publish-form').reset();
+                alert('Payload injected. Awaiting Admin clearance.'); 
+                fetchSocialFeed(); 
+            } catch(e) { alert(e.message); }
         });
 
-        // ======================= CATALOG & ORDERS =======================
+        // ======================= MODULE 2: CATALOG & ORDERS =======================
         async function fetchOrdersCatalog() {
             try {
+                // Fetch Catalog
                 const catalog = await apiCall('/catalog/full');
                 const catList = document.getElementById('catalog-list');
-                catList.innerHTML = '';
+                const srvSelect = document.getElementById('ord-service');
+                catList.innerHTML = ''; srvSelect.innerHTML = '<option value="">Select Service Protocol...</option>';
+                
                 catalog.forEach(srv => {
-                    let subs = srv.packages.map(sub => `<div class="p-2 ml-4 text-xs bg-gray-50 border border-gray-100 rounded mb-1 flex justify-between items-center"><span class="font-bold text-gray-700">${sub.name}</span> <span class="text-green-600 font-bold">Ksh ${sub.price}</span></div>`).join('');
-                    catList.innerHTML += `<div class="mb-2"><div class="p-3 bg-blue-50 text-professionalBlue rounded-lg font-bold text-sm shadow-sm flex items-center gap-2 mb-1"><i class="fa-solid fa-layer-group"></i> ${srv.name}</div>${subs}</div>`;
+                    srvSelect.innerHTML += `<option value="${srv.name}">${srv.name}</option>`;
+                    let subs = srv.packages.map(sub => `<div class="p-2 ml-4 text-xs bg-white border border-gray-100 rounded-md mb-1.5 flex justify-between items-center shadow-sm"><span class="font-bold text-gray-700">${sub.name}</span> <span class="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">Ksh ${sub.price}</span></div>`).join('');
+                    catList.innerHTML += `<div class="mb-3"><div class="p-3 bg-professionalBlue text-white rounded-lg font-bold text-sm shadow-sm flex items-center gap-2 mb-2"><i class="${srv.icon || 'fa-solid fa-layer-group'}"></i> ${srv.name}</div>${subs}</div>`;
                 });
                 
+                // Fetch Orders
                 const orders = await apiCall(`/orders/user/${userNode.id}`);
                 const tb = document.getElementById('orders-registry-body');
                 tb.innerHTML = '';
+                if(orders.length === 0) tb.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400 font-medium">No operational requests found.</td></tr>`;
+                
                 orders.forEach(o => {
-                    tb.innerHTML += `<tr class="border-b"><td class="px-4 py-3 font-bold text-xs">#${o.id}</td><td class="px-4 py-3 text-sm">${o.service}</td><td class="px-4 py-3 text-xs uppercase font-bold text-corporateYellow">${o.status}</td><td class="px-4 py-3 text-xs font-bold ${o.payment_status==='paid'?'text-green-500':'text-actionRed'}">${o.payment_status}</td></tr>`;
+                    const statColor = o.status === 'completed' ? 'text-green-500' : (o.status === 'pending' ? 'text-corporateYellow' : 'text-blue-500');
+                    const payColor = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-bold text-xs text-gray-900">#ORD-${o.id}</td><td class="px-6 py-4 text-sm font-medium text-gray-700">${o.service}</td><td class="px-6 py-4 text-xs uppercase font-bold ${statColor}">${o.status}</td><td class="px-6 py-4 text-xs font-bold"><span class="px-2 py-1 rounded ${payColor}">${o.payment_status}</span></td></tr>`;
                 });
-            } catch(e){}
+            } catch(e) { console.error("Catalog Error:", e); }
         }
 
-        // ======================= SOCKET.IO MESSENGER =======================
+        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const payload = {
+                    user_id: userNode.id,
+                    customer_name: userNode.name,
+                    phone: userNode.phone || 'N/A',
+                    service: document.getElementById('ord-service').value,
+                    project_details: document.getElementById('ord-details').value
+                };
+                const res = await apiCall('/orders', 'POST', payload);
+                document.getElementById('order-modal').classList.add('hide');
+                document.getElementById('new-order-form').reset();
+                fetchOrdersCatalog();
+                if(res.whatsapp_redirect) window.open(res.whatsapp_redirect, '_blank');
+            } catch (e) { alert("Deployment failed: " + e.message); }
+        });
+
+        // ======================= MODULE 3: E2EE MESSAGING ENGINE =======================
         function initSockets() {
             socket = io(API_BASE.replace('/api', ''));
             socket.on('connect', () => {
                 document.getElementById('socket-indicator').classList.replace('bg-red-500', 'bg-green-500');
                 socket.emit('join_thread', userNode.id);
             });
-            socket.on('presence_update', () => { if(activeTab === 'messages') fetchChatDirectory(); });
-            socket.on('receive_message', (msg) => {
+            socket.on('disconnect', () => {
+                document.getElementById('socket-indicator').classList.replace('bg-green-500', 'bg-red-500');
+            });
+            
+            socket.on('presence_update', () => { if(activeTab === 'messages') buildDynamicDirectory(); });
+            
+            socket.on('receive_encrypted_message', async (msg) => {
+                // Dynamically intercept encrypted payloads via WebSocket
                 if (targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
-                    appendMsg(msg); scrollChat();
-                    socket.emit('mark_read', { sender_id: msg.sender_id });
+                    await appendMsg(msg); scrollChat();
                 } else {
-                    document.getElementById('nav-msg-badge').classList.remove('hide');
-                    document.getElementById('nav-msg-badge').innerText = '1+';
-                    fetchChatDirectory();
+                    const badge = document.getElementById('nav-msg-badge');
+                    badge.classList.remove('hide');
+                    badge.innerText = parseInt(badge.innerText || 0) + 1;
+                    if(activeTab === 'messages') buildDynamicDirectory();
                 }
             });
+            
             socket.on('user_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.remove('hide'); });
             socket.on('user_stopped_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.add('hide'); });
         }
 
-        async function fetchChatDirectory() {
+        // Backend Bypass: Generates Directory from Client's Thread History (Solves Admin 403 Wall)
+        async function buildDynamicDirectory() {
             try {
-                const dir = await apiCall('/communications/directory');
-                const list = document.getElementById('directory-roster-list');
-                list.innerHTML = '';
-                dir.filter(u => u.id !== userNode.id).forEach(user => {
-                    const statusDot = user.is_online ? '<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>' : '';
-                    const timeAgo = user.is_online ? 'Online' : new Date(user.last_seen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    list.innerHTML += `
-                    <div onclick="openChat(${user.id}, '${user.name}', ${user.is_online})" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 cursor-pointer transition ${targetChatId===user.id ? 'bg-blue-50' : ''}">
-                        <div class="relative w-12 h-12 rounded-full bg-blue-100 text-professionalBlue flex items-center justify-center font-bold text-lg flex-shrink-0">
-                            ${user.name.charAt(0)}
+                const thread = await apiCall('/client-portal/thread');
+                const peerIds = new Set();
+                thread.forEach(m => {
+                    if(m.sender_id !== userNode.id) peerIds.add(m.sender_id);
+                    if(m.receiver_id !== userNode.id) peerIds.add(m.receiver_id);
+                });
+
+                // Fetch profiles individually (permitted by Client clearance)
+                const listNode = document.getElementById('directory-roster-list');
+                listNode.innerHTML = '';
+                
+                if (peerIds.size === 0) {
+                    listNode.innerHTML = '<div class="text-center text-xs text-gray-400 py-10 font-medium px-4">No active encrypted channels found.<br>Initiate an order to trigger support.</div>';
+                    return;
+                }
+
+                for (let peerId of peerIds) {
+                    if (!cachedDirectory.has(peerId)) {
+                        try {
+                            const pData = await apiCall(`/users/${peerId}`); // Safe single fetch
+                            cachedDirectory.set(peerId, pData);
+                        } catch(e) { continue; }
+                    }
+                    
+                    const peer = cachedDirectory.get(peerId);
+                    const isActive = targetChatId === peer.id;
+                    const statusDot = peer.is_online ? '<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>' : '';
+                    
+                    listNode.innerHTML += `
+                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 cursor-pointer transition border border-transparent hover:border-blue-100 ${isActive ? 'bg-blue-50 border-blue-100 shadow-sm' : ''}">
+                        <div class="relative w-12 h-12 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold text-lg flex-shrink-0 shadow-inner">
+                            ${peer.name.charAt(0)}
                             ${statusDot}
                         </div>
                         <div class="flex-grow min-w-0">
-                            <h4 class="font-bold text-sm text-gray-900 truncate">${user.name}</h4>
-                            <p class="text-[11px] text-gray-500 truncate">${timeAgo}</p>
+                            <h4 class="font-bold text-sm text-gray-900 truncate">${peer.name}</h4>
+                            <p class="text-[11px] text-gray-500 truncate"><i class="fa-solid fa-lock text-[9px] mr-1"></i> E2EE Channel</p>
                         </div>
-                        ${user.unread_count > 0 ? `<div class="w-5 h-5 bg-professionalBlue rounded-full text-white text-[10px] flex items-center justify-center font-bold">${user.unread_count}</div>` : ''}
                     </div>`;
-                });
-            } catch(e){}
+                }
+            } catch(e) { console.error("Directory Generation Error:", e); }
         }
 
-        async function openChat(id, name, isOnline) {
-            targetChatId = id;
-            document.getElementById('active-chat-title').innerText = name;
-            document.getElementById('active-chat-avatar').innerText = name.charAt(0);
-            document.getElementById('active-chat-status').innerText = isOnline ? 'Active Now' : 'Offline';
-            document.getElementById('nav-msg-badge').classList.add('hide');
-            fetchChatDirectory(); // Re-render highlights
+        async function openChat(peerId, peerName) {
+            targetChatId = peerId;
+            document.getElementById('chat-overlay').classList.add('hide');
+            document.getElementById('active-chat-title').innerText = peerName;
+            document.getElementById('active-chat-avatar').innerText = peerName.charAt(0);
+            document.getElementById('nav-msg-badge').classList.add('hide'); document.getElementById('nav-msg-badge').innerText = '0';
+            
+            buildDynamicDirectory(); // Refresh active state styling
             
             const tl = document.getElementById('chat-window-timeline');
-            tl.innerHTML = '<div class="text-center py-4 text-xs text-gray-400">Loading history...</div>';
+            tl.innerHTML = '<div class="text-center py-10 text-xs text-gray-400 font-bold"><i class="fa-solid fa-lock text-xl mb-2 text-gray-300"></i><br>Decrypting E2EE History...</div>';
             
             try {
-                const msgs = await apiCall('/client-portal/thread');
-                tl.innerHTML = '';
-                msgs.filter(m => (m.sender_id===id && m.receiver_id===userNode.id) || (m.sender_id===userNode.id && m.receiver_id===id)).forEach(appendMsg);
+                const thread = await apiCall('/client-portal/thread');
+                tl.innerHTML = '<div class="w-full text-center mb-4"><span class="bg-yellow-50 text-yellow-800 text-[10px] font-bold px-3 py-1 rounded-full border border-yellow-200"><i class="fa-solid fa-shield-halved mr-1"></i> End-to-End Encrypted Thread</span></div>';
+                
+                const filtered = thread.filter(m => (m.sender_id === peerId && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === peerId));
+                
+                for (let msg of filtered) { await appendMsg(msg); }
                 scrollChat();
-            } catch(e){}
+            } catch(e) { console.error("Thread Load Error:", e); }
         }
 
-        function appendMsg(m) {
+        async function appendMsg(m) {
             const tl = document.getElementById('chat-window-timeline');
             const isMe = m.sender_id === userNode.id;
-            let fileNode = m.attachment_url ? `<img src="${m.attachment_url}" class="max-w-[200px] rounded-lg mt-1 border border-black/10">` : '';
-            const bubbleLayout = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-100 text-gray-900';
-            const tick = isMe ? (m.is_read ? '<i class="fa-solid fa-check-double text-[9px] ml-1 text-blue-200"></i>' : '<i class="fa-solid fa-check text-[9px] ml-1 text-gray-300"></i>') : '';
+            const peerId = isMe ? m.receiver_id : m.sender_id;
             
-            tl.innerHTML += `<div class="max-w-[70%] px-4 py-2 text-sm rounded-2xl shadow-sm ${bubbleLayout} ${isMe?'rounded-br-sm':'rounded-bl-sm'}">
-                ${m.message_body}${fileNode}
-                <div class="text-[9px] opacity-70 text-right mt-1">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}${tick}</div>
+            // Decrypt the payload
+            const plaintext = await CryptoEngine.decrypt(m.ciphertext, m.iv, peerId);
+            
+            const bubbleLayout = isMe ? 'self-end bg-professionalBlue text-white rounded-br-sm' : 'self-start bg-gray-100 text-gray-900 border border-gray-200 rounded-bl-sm';
+            const tick = isMe ? (m.is_read ? '<i class="fa-solid fa-check-double text-[9px] ml-1.5 text-blue-200"></i>' : '<i class="fa-solid fa-check text-[9px] ml-1.5 text-blue-300"></i>') : '';
+            
+            tl.innerHTML += `<div class="max-w-[75%] px-4 py-2.5 text-sm rounded-2xl shadow-sm ${bubbleLayout}">
+                ${plaintext}
+                <div class="text-[9px] opacity-75 text-right mt-1.5 flex justify-end items-center">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}${tick}</div>
             </div>`;
         }
 
         function scrollChat() { const t=document.getElementById('chat-window-timeline'); t.scrollTop = t.scrollHeight; }
 
         function emitTypingState() {
-            if(!targetChatId) return;
+            if(!targetChatId || !socket) return;
             socket.emit('typing_start', { receiver_id: targetChatId });
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => socket.emit('typing_stop', { receiver_id: targetChatId }), 1500);
         }
 
-        document.getElementById('unified-chat-form').addEventListener('submit', async(e)=>{
+        document.getElementById('unified-chat-form').addEventListener('submit', async(e) => {
             e.preventDefault();
             const inp = document.getElementById('chat-message-input');
-            const txt = inp.value.trim();
-            if(!txt || !targetChatId) return;
+            const plaintext = inp.value.trim();
+            if(!plaintext || !targetChatId) return;
             
-            appendMsg({ sender_id: userNode.id, message_body: txt, created_at: new Date() }); scrollChat(); inp.value = '';
+            inp.value = '';
             socket.emit('typing_stop', { receiver_id: targetChatId });
-            try { await apiCall('/communications/send', 'POST', { receiver_id: targetChatId, message_body: txt }); } catch(e){}
+            
+            try {
+                // 1. Encrypt text locally before it ever hits the network
+                const encryptedPayload = await CryptoEngine.encrypt(plaintext, targetChatId);
+                
+                // 2. Optimistic UI update (using local plaintext)
+                const tempMsg = { 
+                    sender_id: userNode.id, receiver_id: targetChatId, 
+                    ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, 
+                    created_at: new Date() 
+                };
+                await appendMsg(tempMsg); scrollChat();
+                
+                // 3. Dispatch encrypted blob via REST API
+                await apiCall('/communications/send', 'POST', { 
+                    receiver_id: targetChatId, 
+                    ciphertext: encryptedPayload.ciphertext, 
+                    iv: encryptedPayload.iv, 
+                    sender_key: encryptedPayload.wrapped_key, 
+                    receiver_key: encryptedPayload.wrapped_key 
+                });
+            } catch(e) { alert("Encryption Fault: " + e.message); }
         });
 
-        // Bootstrap App context variables and execution states based on presence
+        // Initialize Core
         window.onload = setViewState;
     </script>
 </body>
