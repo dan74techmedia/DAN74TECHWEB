@@ -274,19 +274,31 @@ app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
     }
 });
 
-app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
+app.put('/api/users/:id', verifySystemToken, async (req, res) => {
     try {
+        // SECURITY CHECK: Ensure the user is either an Admin OR updating their own profile
+        if (req.user.id !== parseInt(req.params.id) && req.user.role !== 'admin') {
+            return res.status(403).json({ error: "Unauthorized: You can only update your own profile." });
+        }
+
         const { name, email, role, phone, password } = req.body;
+        
+        // SECURITY CHECK: Prevent a standard client from upgrading themselves to an admin
+        let targetRole = role;
+        if (req.user.role !== 'admin' && role === 'admin') {
+            targetRole = 'client'; 
+        }
+
         let query;
         let values;
 
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
-            values = [name, email, role, phone, hashedPassword, req.params.id];
+            values = [name, email, targetRole, phone, hashedPassword, req.params.id];
         } else {
             query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING id,name,email,role,phone`;
-            values = [name, email, role, phone, req.params.id];
+            values = [name, email, targetRole, phone, req.params.id];
         }
 
         const result = await pool.query(query, values);
