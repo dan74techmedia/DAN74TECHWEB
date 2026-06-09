@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&family=JetBrains+Mono:wght=400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -26,7 +26,10 @@
                             borderSlate: '#e2e8f0',
                             textDark: '#0f172a',
                             textMuted: '#64748b'
-                        }
+                        },
+                        brandBlue: '#0044ff',
+                        brandRed: '#ff2a2a',
+                        facebookBg: '#f0f2f5'
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
@@ -36,1963 +39,578 @@
             }
         }
     </script>
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .mono-text { font-family: 'JetBrains Mono', monospace; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .view-hidden { display: none !important; }
+        .view-flex { display: flex !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="h-screen overflow-hidden flex bg-brand-slateBg w-full antialiased">
 
-    <div id="operationalToastNotificationContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-5 right-5 z-[200] flex flex-col gap-3 max-w-sm pointer-events-none"></div>
 
-    <header class="bg-brand-panelWhite border-b border-brand-borderSlate sticky top-0 z-40 px-6 py-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="bg-brand-blue text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-blue-200">D</div>
-            <div>
-                <h1 class="text-base font-extrabold tracking-tight text-brand-textDark">DAN74TECH MEDIA</h1>
-                <p class="text-xs font-semibold text-brand-blue uppercase tracking-wider">Enterprise Execution Matrix v4.1.0</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <div id="systemClockDisplay" class="mono-text font-bold text-sm bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200">
-                00:00:00 UTC
-            </div>
-            <div class="flex items-center gap-2 border-l pl-4 border-slate-200">
-                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center uppercase" id="adminAvatarPlaceholder">A</div>
-                <div class="hidden md:block">
-                    <p class="text-xs font-bold text-brand-textDark" id="adminUserDisplayName">System Administrator</p>
-                    <p class="text-[10px] text-emerald-500 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> Live Core Mode</p>
+    <div id="admin-login-view" class="fixed inset-0 z-[100] flex flex-col min-h-screen bg-[#0b0f19] font-sans view-flex">
+        <header class="w-full relative z-10 border-b border-gray-800 bg-[#0b0f19]/80 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3 group focus:outline-none">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brandBlue to-brandRed p-[2px]">
+                        <div class="w-full h-full bg-[#0b0f19] rounded-[10px] flex items-center justify-center overflow-hidden">
+                            <span class="text-white font-black text-lg font-mono">D74</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-lg font-extrabold text-white font-mono tracking-wider">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Control Login</span>
+                    </div>
                 </div>
-                <button onclick="terminateOperationalSession()" class="ml-2 p-2 text-slate-400 hover:text-brand-red transition-colors rounded-lg hover:bg-red-50" title="Sign Out of Terminal">
-                    <i class="fa-solid fa-power-off text-sm"></i>
+                <a href="index.html" class="text-sm font-bold text-gray-300 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
+            </div>
+        </header>
+
+        <section class="flex-grow flex items-center justify-center p-6">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-4 border-brandBlue relative overflow-hidden">
+                <div class="text-center mb-8 flex flex-col items-center">
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h1>
+                    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Admin Operations Matrix</p>
+                </div>
+                
+                <form id="login-form" class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Administrator Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <button type="submit" id="admin-login-btn" class="w-full bg-brandBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-[15px]">Initialize Secure Session</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div id="admin-dashboard-view" class="w-full h-full flex view-hidden">
+        
+        <aside class="w-72 bg-brand-panelWhite border-r border-brand-borderSlate flex flex-col justify-between h-full flex-shrink-0">
+            <div>
+                <div class="p-6 border-b border-brand-borderSlate flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center shadow-md shadow-blue-200">
+                        <i class="fa-solid fa-layer-group text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold tracking-tight text-brand-textDark font-mono uppercase">DAN74TECH MEDIA</h1>
+                        <p class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Enterprise Matrix v4.1.0</p>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-1 overflow-y-auto h-[calc(100vh-120px)] pb-12">
+                    <button onclick="switchModule('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm">
+                        <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard
+                    </button>
+                    
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">1. Core Identity</div>
+                    <button onclick="switchModule('users')" id="nav-users" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-user-shield"></i> Users Directory
+                    </button>
+                    <button onclick="switchModule('clients')" id="nav-clients" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-address-book"></i> Legacy Clients
+                    </button>
+                    <button onclick="switchModule('public_keys')" id="nav-public_keys" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-key"></i> Encryption Keys
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">2. Services Engine</div>
+                    <button onclick="switchModule('services')" id="nav-services" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-cubes"></i> Core Services
+                    </button>
+                    <button onclick="switchModule('sub_services')" id="nav-sub_services" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-tags"></i> Service Packages
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">3. Workflow Matrix</div>
+                    <button onclick="switchModule('orders')" id="nav-orders" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-cart-shopping"></i> Client Orders
+                    </button>
+                    <button onclick="switchModule('projects')" id="nav-projects" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-diagram-project"></i> Production Projects
+                    </button>
+                    <button onclick="switchModule('file_deliveries')" id="nav-file_deliveries" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-file-shield"></i> File Deliveries
+                    </button>
+                    <button onclick="switchModule('project_files')" id="nav-project_files" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-folder-open"></i> Project Assets
+                    </button>
+                    <button onclick="switchModule('mpesa_transactions')" id="nav-mpesa_transactions" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-mobile-screen"></i> M-Pesa Ledgers
+                    </button>
+                    <button onclick="switchModule('invoices')" id="nav-invoices" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> System Invoices
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">4. Social Feed Matrix</div>
+                    <button onclick="switchModule('feed_posts')" id="nav-feed_posts" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-rss"></i> Post Nodes
+                    </button>
+                    <button onclick="switchModule('feed_interactions')" id="nav-feed_interactions" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-heart-circle-check"></i> Engagement Hub
+                    </button>
+                    <button onclick="switchModule('feed_reactions')" id="nav-feed_reactions" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-face-smile"></i> Quick Reactions
+                    </button>
+                    <button onclick="switchModule('comments')" id="nav-comments" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-comments"></i> Post Comments
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">5. Publishing Core</div>
+                    <button onclick="switchModule('blog_posts')" id="nav-blog_posts" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-pen-nib"></i> Editorial Blogs
+                    </button>
+                    <button onclick="switchModule('case_studies')" id="nav-case_studies" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-chalkboard-user"></i> Case Studies
+                    </button>
+                    <button onclick="switchModule('portfolio')" id="nav-portfolio" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-briefcase"></i> Work Portfolios
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">6. CRM & Support</div>
+                    <button onclick="switchModule('client_communications')" id="nav-client_communications" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-user-lock"></i> Encrypted Comms
+                    </button>
+                    <button onclick="switchModule('messages')" id="nav-messages" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-envelope-open-text"></i> Form Inquiries
+                    </button>
+                    <button onclick="switchModule('support_tickets')" id="nav-support_tickets" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-ticket"></i> Support Tickets
+                    </button>
+                    <button onclick="switchModule('testimonials')" id="nav-testimonials" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-star-half-stroke"></i> Testimonials
+                    </button>
+
+                    <div class="pt-3 pb-1 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">7. Utilities Cloud</div>
+                    <button onclick="switchModule('notifications')" id="nav-notifications" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-bell"></i> System Alerts
+                    </button>
+                    <button onclick="switchModule('email_campaigns')" id="nav-email_campaigns" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-bullhorn"></i> Mail Broadcasts
+                    </button>
+                    <button onclick="switchModule('subscribers')" id="nav-subscribers" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-mail-bulk"></i> Subscribers List
+                    </button>
+                    <button onclick="switchModule('media_library')" id="nav-media_library" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-photo-film"></i> Media Vault
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-brand-borderSlate bg-slate-50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-xs">A</div>
+                    <div>
+                        <p class="text-xs font-bold text-brand-textDark font-mono">Aura Core</p>
+                        <p class="text-[10px] text-brand-textMuted">Admin Security</p>
+                    </div>
+                </div>
+                <button onclick="logoutAdminSession()" class="text-brand-red hover:bg-red-50 p-2 rounded-lg transition-colors text-sm">
+                    <i class="fa-solid fa-power-off"></i>
                 </button>
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <div class="flex flex-1 flex-col lg:flex-row min-h-0">
-        <nav class="w-full lg:w-72 bg-brand-panelWhite border-b lg:border-b-0 lg:border-r border-brand-borderSlate p-4 flex flex-col gap-1 overflow-y-auto shrink-0">
-            <p class="text-[10px] font-bold text-brand-textMuted uppercase tracking-wider px-3 mb-2">Operational Command Center</p>
+        <main class="flex-grow h-full overflow-y-auto bg-brand-slateBg p-8 relative">
             
-            <button onclick="switchActiveOperationalTab('dashboardOverviewTab')" id="btn-dashboardOverviewTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all bg-brand-blue text-white shadow-sm shadow-blue-100">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-chart-pie text-base"></i> Infrastructure Overview</div>
-                <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('ordersWorkflowTab')" id="btn-ordersWorkflowTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-receipt text-base text-slate-400"></i> Service Orders & Pipings</div>
-                <span id="badge-orders-count" class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('projectsTrackingTab')" id="btn-projectsTrackingTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-bars-progress text-base text-slate-400"></i> Project Production Tracks</div>
-                <span id="badge-projects-count" class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('financialLedgerTab')" id="btn-financialLedgerTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-money-check-dollar text-base text-slate-400"></i> Payments & Invoices</div>
-                <span id="badge-finance-count" class="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded-full">M-Pesa</span>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('servicesCatalogTab')" id="btn-servicesCatalogTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-cubes text-base text-slate-400"></i> Primary Catalog Configuration</div>
-            </button>
-
-            <p class="text-[10px] font-bold text-brand-textMuted uppercase tracking-wider px-3 mt-5 mb-2">Content Lifecycle Node</p>
-
-            <button onclick="switchActiveOperationalTab('editorialBlogTab')" id="btn-editorialBlogTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-newspaper text-base text-slate-400"></i> Editorial Blog Entries</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('caseStudiesTab')" id="btn-caseStudiesTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-briefcase text-base text-slate-400"></i> Corporate Case Studies</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('portfolioShowcaseTab')" id="btn-portfolioShowcaseTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-folder-open text-base text-slate-400"></i> Systems Work Portfolios</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('socialEngagementTab')" id="btn-socialEngagementTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-comments text-base text-slate-400"></i> Social Feed Hub</div>
-            </button>
-
-            <p class="text-[10px] font-bold text-brand-textMuted uppercase tracking-wider px-3 mt-5 mb-2">Communications & Security</p>
-
-            <button onclick="switchActiveOperationalTab('crmCommunicationsTab')" id="btn-crmCommunicationsTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-user-shield text-base text-slate-400"></i> Encrypted CRM & Key Matrix</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('supportTicketsTab')" id="btn-supportTicketsTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-ticket text-base text-slate-400"></i> Support Tickets</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('marketingCampaignsTab')" id="btn-marketingCampaignsTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-paper-plane text-base text-slate-400"></i> Marketing Blast Campaigns</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('mediaLibraryTab')" id="btn-mediaLibraryTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-images text-base text-slate-400"></i> Cloud Media Registries</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('systemSubscribersTab')" id="btn-systemSubscribersTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-users text-base text-slate-400"></i> Subscribers & Testimonials</div>
-            </button>
-            
-            <div class="mt-auto pt-6 border-t border-slate-100">
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0"></div>
-                    <div class="overflow-hidden">
-                        <p class="text-[11px] font-bold text-slate-700 truncate">S3 Backup Scheduled</p>
-                        <p class="text-[9px] text-slate-400 uppercase tracking-wide font-medium">Zone: Africa/Nairobi</p>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <main class="flex-1 p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6 max-w-[1600px] w-full mx-auto">
-            
-            <section id="dashboardOverviewTab" class="operational-view-panel flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Systems Infrastructure Health Matrix</h2>
-                    <p class="text-sm font-medium text-brand-textMuted">Real-time status configurations from cluster endpoints, database schemas, and media clouds.</p>
+            <div id="module-viewport-content" class="w-full space-y-6">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate p-5 rounded-2xl shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">Active Client Channels</p>
-                            <h3 class="text-3xl font-extrabold text-brand-textDark mt-1" id="statActiveUsersCount">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-brand-blue text-xl"><i class="fa-solid fa-users-gear"></i></div>
+            <div id="universalCRUDModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] flex items-center justify-center view-hidden">
+                <div class="bg-white w-full max-w-2xl rounded-2xl shadow-xl border border-brand-borderSlate overflow-hidden transform scale-95 transition-all duration-200">
+                    <div class="px-6 py-4 border-b border-brand-borderSlate bg-slate-50 flex items-center justify-between">
+                        <h3 id="modalTitleNode" class="text-xs font-bold font-mono uppercase text-brand-textDark tracking-wider">Configure Data Sequence</h3>
+                        <button onclick="closeUniversalCRUDModal()" class="text-brand-textMuted hover:text-brand-textDark"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate p-5 rounded-2xl shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">Gross Orders Pipeline</p>
-                            <h3 class="text-3xl font-extrabold text-brand-textDark mt-1" id="statGrossOrdersCount">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-brand-orange text-xl"><i class="fa-solid fa-folder-tree"></i></div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate p-5 rounded-2xl shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">M-Pesa Collections</p>
-                            <h3 class="text-3xl font-extrabold text-emerald-600 mt-1" id="statFinancialVolume">KES 0.00</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 text-xl"><i class="fa-solid fa-sterling-sign"></i></div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate p-5 rounded-2xl shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">Media Registries Tracked</p>
-                            <h3 class="text-3xl font-extrabold text-brand-textDark mt-1" id="statCloudAssetsCount">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500 text-xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm xl:col-span-2 flex flex-col gap-4">
-                        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
-                            <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-blue"></i> Live Global Infrastructure Activities</h4>
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 mono-text">Real-time (Socket.io)</span>
-                        </div>
-                        <div class="overflow-y-auto max-h-[350px] custom-scrollbar pr-1 flex flex-col gap-3" id="infrastructureLiveLogStack">
-                            <div class="p-3 rounded-xl border border-dashed border-slate-200 text-center text-xs font-medium text-brand-textMuted py-8">Listening for inbound WebSocket server parameters...</div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
-                            <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-server text-brand-orange"></i> Cloud Runtime Matrix</h4>
-                        </div>
-                        <div class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                                <span class="text-brand-textMuted">Database Engine Provider</span>
-                                <span class="mono-text bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md border border-blue-100">PostgreSQL (Neon)</span>
+                    <form id="universalModalPayloadForm" onsubmit="handleModalSubmitExecution(event)" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                        <div id="modalFormDynamicInputs" class="grid grid-cols-2 gap-4">
                             </div>
-                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                                <span class="text-brand-textMuted">Media Optimization Pipeline</span>
-                                <span class="mono-text bg-purple-50 text-purple-700 px-2 py-0.5 rounded-md border border-purple-100">Cloudinary SDK v2</span>
-                            </div>
-                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                                <span class="text-brand-textMuted">Web Messaging Transport</span>
-                                <span class="mono-text bg-orange-50 text-orange-700 px-2 py-0.5 rounded-md border border-orange-100">Brevo REST APIs</span>
-                            </div>
-                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                                <span class="text-brand-textMuted">Secure Key Engine</span>
-                                <span class="mono-text bg-slate-900 text-slate-100 px-2 py-0.5 rounded-md">End-to-End PEM / Crypto</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="ordersWorkflowTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex flex-col gap-1">
-                        <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Service Requests & Orders Routing</h2>
-                        <p class="text-sm font-medium text-brand-textMuted">Direct administrative overrides on order states, metadata mapping, and provisioning pipelines.</p>
-                    </div>
-                </div>
-
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                    <th class="px-6 py-3.5">ID / Client Data</th>
-                                    <th class="px-6 py-3.5">Target Line / Infrastructure Specs</th>
-                                    <th class="px-6 py-3.5">Environment Logs</th>
-                                    <th class="px-6 py-3.5">Financial Metrics</th>
-                                    <th class="px-6 py-3.5">Workflow Status</th>
-                                    <th class="px-6 py-3.5 text-center">Execution Controls</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableOrdersContainerBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="projectsTrackingTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex flex-col gap-1">
-                        <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Project Production Tracking Tracks</h2>
-                        <p class="text-sm font-medium text-brand-textMuted">Monitor structural operational alignment, progression timelines, and deploy internal project resource files.</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm xl:col-span-2 overflow-hidden">
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                        <th class="px-6 py-3.5">Project Tracking Info</th>
-                                        <th class="px-6 py-3.5">Progress Matrix</th>
-                                        <th class="px-6 py-3.5">Status Flag</th>
-                                        <th class="px-6 py-3.5 text-center">Resource Controls</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableProjectsContainerBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up text-brand-blue"></i> Attach Internal Resource File</h4>
-                        <form id="projectInternalResourceAttachmentForm" onsubmit="executeProjectFileRegistryAttachment(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Select Target Track Engine ID *</label>
-                                <input type="number" name="project_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none font-bold text-sm text-brand-textDark shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Resource File Descriptor Asset Name *</label>
-                                <input type="text" name="file_name" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">External File Storage URL / Link Endpoint *</label>
-                                <input type="url" name="file_url" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <button type="submit" id="btnSubmitProjectResourceAttachment" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-link"></i> Bind Internal Resource File
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="financialLedgerTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">M-Pesa API Audit Trail Ledger</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Immutable incoming hooks and response structures straight from Safaricom STK Push logs.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">M-Pesa Core Tracking Keys</th>
-                                            <th class="px-6 py-3.5">Source Node / User</th>
-                                            <th class="px-6 py-3.5">Volume</th>
-                                            <th class="px-6 py-3.5">State Desc</th>
-                                            <th class="px-6 py-3.5">Transaction Timestamp</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableMpesaAuditContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-1 mt-4">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Corporate Billing Invoices</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Generated document manifests mapping pricing packages to explicit client scopes.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Invoice Serial Code</th>
-                                            <th class="px-6 py-3.5">Client Profile Scope</th>
-                                            <th class="px-6 py-3.5">Invoice Volume</th>
-                                            <th class="px-6 py-3.5">Payment State</th>
-                                            <th class="px-6 py-3.5 text-center">PDF Asset Artifact</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableInvoicesContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                            <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-file-invoice text-brand-blue"></i> Dispatch Dynamic System Invoice</h4>
-                            <form id="billingInvoiceAssemblyForm" onsubmit="executeInvoiceGenerationEngine(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Associated Order Database ID *</label>
-                                    <input type="number" name="order_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Invoice Identity Designation Name *</label>
-                                    <input type="text" name="client_name" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Client Correspondence Routing Email *</label>
-                                    <input type="email" name="client_email" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Billing Allocation Invoicing Amount (KES/USD) *</label>
-                                    <input type="number" step="0.01" name="amount" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <button type="submit" id="btnSubmitBillingInvoiceAssembly" class="bg-brand-blue text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-bolt"></i> Generate & Compile PDF Engine Invoice
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="servicesCatalogTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Services Portfolio Base Architecture</h2>
-                    <p class="text-sm font-medium text-brand-textMuted">Configure top-tier enterprise catalogs alongside specific packages and pricing variations within the core engine matrix.</p>
-                </div>
-
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm">
-                            <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider mb-4 border-b pb-2 border-slate-100"><i class="fa-solid fa-cubes text-brand-blue"></i> Base Catalog Services</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="servicesBaseEngineCatalogGrid"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-plus text-brand-blue"></i> Register Primary Core Service Category</h4>
-                            <form id="newServiceRegistryForm" onsubmit="executePrimaryServiceCatalogCreation(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Service Category Name *</label>
-                                    <input type="text" name="name" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">FontAwesome Vector Icon Class *</label>
-                                    <input type="text" name="icon" placeholder="fa-solid fa-server" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Structural Contextual Description *</label>
-                                    <textarea name="description" rows="3" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewServiceRegistry" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                                    Deploy Service Architecture Node
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-tags text-brand-orange"></i> Build Specific Service Package</h4>
-                            <form id="subServicePricingPackageForm" onsubmit="executeSubServicePricingPackageCreation(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Parent Service Category Catalog Mapping ID *</label>
-                                    <input type="number" name="service_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Sub-Service Package Title Name *</label>
-                                    <input type="text" name="name" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Package Allocation Pricing Price (NUMERIC) *</label>
-                                    <input type="number" step="0.01" name="price" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Package Feature Breakdown Outline *</label>
-                                    <textarea name="description" rows="3" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitSubServicePricingPackage" class="bg-brand-orange text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
-                                    Affiliate Sub-Pricing Category
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="editorialBlogTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Editorial Blog Repository Matrix</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Manage system publications, track structural view allocations, and toggle approval lifecycle nodes.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Blog Structural Content Parameters</th>
-                                            <th class="px-6 py-3.5">Category Node</th>
-                                            <th class="px-6 py-3.5">Audit Metrics</th>
-                                            <th class="px-6 py-3.5">Lifecycle State</th>
-                                            <th class="px-6 py-3.5 text-center">Operational Flags</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableBlogEntriesContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-feather-pointed text-brand-blue"></i> Draft Professional Blog Entry</h4>
-                        <form id="editorialBlogAssemblyForm" onsubmit="executeEditorialBlogPostDeployment(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Blog Publication Title Heading *</label>
-                                <input type="text" name="title" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Category / Cluster *</label>
-                                    <input type="text" name="category" placeholder="Tech, Security" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">URL Reference Slug *</label>
-                                    <input type="text" name="slug" placeholder="slugified-url-path" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Cloud Image Asset URL / CDN Link *</label>
-                                <input type="url" name="image_url" placeholder="https://res.cloudinary.com/..." class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Summarized Abstract Fragment *</label>
-                                <input type="text" name="summary" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">SEO Anchor Title</label>
-                                    <input type="text" name="seo_title" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Author Identity ID *</label>
-                                    <input type="number" name="author_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Meta SEO Description Payload</label>
-                                <input type="text" name="seo_description" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Full Comprehensive Markdown/Text Content *</label>
-                                <textarea name="content" rows="5" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitEditorialBlogAssembly" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                                Register Editorial Blog Entry
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="caseStudiesTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Corporate Case Studies Infrastructure</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Publish structural system architectural problem resolutions to showcase functional outcomes.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Case Study Title Breakdown</th>
-                                            <th class="px-6 py-3.5">Vertical Domain Category</th>
-                                            <th class="px-6 py-3.5">Interactions Trail</th>
-                                            <th class="px-6 py-3.5">Status Flag</th>
-                                            <th class="px-6 py-3.5 text-center">Lifecycle Toggles</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableCaseStudiesContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-briefcase text-brand-orange"></i> Append Enterprise Case Study</h4>
-                        <form id="caseStudyAssemblyForm" onsubmit="executeCorporateCaseStudyDeployment(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Case Study Dynamic Heading *</label>
-                                <input type="text" name="title" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Operational Category *</label>
-                                    <input type="text" name="category" placeholder="Infrastructure" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Author User ID Identification *</label>
-                                    <input type="number" name="author_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Header Banner Media URL Link</label>
-                                <input type="url" name="image_url" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Operational Challenge Context Outline *</label>
-                                <textarea name="challenge" rows="2" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">System Solution Implementation Architecture *</label>
-                                <textarea name="solution" rows="2" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Measurable Functional Outcomes / Results *</label>
-                                <textarea name="result" rows="2" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitCaseStudyAssembly" class="bg-brand-orange text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-orange-600 transition-colors shadow-sm">
-                                Register Corporate Case Study
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="portfolioShowcaseTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Systems Work Portfolio Matrix</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Control the showcases exposed publicly on the core framework landing screens.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Showcase Project Framework Details</th>
-                                            <th class="px-6 py-3.5">Operational Tracking Domain</th>
-                                            <th class="px-6 py-3.5">Progression Matrix</th>
-                                            <th class="px-6 py-3.5">Status Flag</th>
-                                            <th class="px-6 py-3.5 text-center">Lifecycle Toggles</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tablePortfolioShowcasesContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-folder-plus text-brand-blue"></i> Append System Portfolio Target</h4>
-                        <form id="portfolioAssetAssemblyForm" onsubmit="executeSystemPortfolioShowcaseDeployment(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Portfolio Project Title Heading *</label>
-                                <input type="text" name="title" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Domain Category Field *</label>
-                                    <input type="text" name="category" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Associated Order Database ID</label>
-                                    <input type="number" name="order_id" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">External Production Deployment Live Link URL</label>
-                                <input type="url" name="link" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Publisher Author Name Designation</label>
-                                    <input type="text" name="publisher_name" placeholder="Anonymous Team" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Progression Completion Metrics (%)</label>
-                                    <input type="number" name="progress" min="0" max="100" default="0" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Framework Structural Scope Description *</label>
-                                <textarea name="description" rows="3" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitPortfolioAssetAssembly" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                                Register Systems Portfolio Showcase
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="socialEngagementTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Social Platform Engagement Core</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Monitor internal post streams, view user metrics tracking channels, and regulate comments.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm p-5 flex flex-col gap-4">
-                            <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100"><i class="fa-solid fa-rss text-brand-blue"></i> Standalone Platform Feed Stream</h3>
-                            <div class="flex flex-col gap-4 overflow-y-auto max-h-[500px] custom-scrollbar pr-1" id="socialFeedPostsDisplayNode"></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-bullhorn text-brand-blue"></i> Broadcast Platform Stream Post</h4>
-                        <form id="socialFeedPublicationForm" onsubmit="executeSocialFeedStreamPublication(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Author Identity ID *</label>
-                                    <input type="number" name="author_id" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm bg-slate-50 focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Post Type Categorization *</label>
-                                    <input type="text" name="post_type" placeholder="announcement, logic" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Embedded Cloud Media URL</label>
-                                <input type="url" name="media_url" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Broadcast Stream Content Text Payload *</label>
-                                <textarea name="content" rows="4" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitSocialFeedPublication" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                                Inject Post Into Platform Feed
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="crmCommunicationsTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Encrypted Client Communications Log Matrix</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Secure database tracking for end-to-end encrypted parameters, IV configurations, and asymmetric keys wrappers.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Message Node Parameters</th>
-                                            <th class="px-6 py-3.5">Source & Receiver Targets</th>
-                                            <th class="px-6 py-3.5">Asymmetric Key Wrapping Specs</th>
-                                            <th class="px-6 py-3.5">Cipher Data Block Log</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableEncryptedCrmContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-1 mt-4">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Inbound Public Contact Form Queries</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">General public communication inquiries dispatched directly via core portal forms.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Sender Profile Core</th>
-                                            <th class="px-6 py-3.5">Subject Heading</th>
-                                            <th class="px-6 py-3.5">Message Query Payload Text</th>
-                                            <th class="px-6 py-3.5 text-center">Lifecycle Status Controls</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tablePublicQueriesContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-key text-brand-blue"></i> End-to-End Key Allocation Registry</h4>
-                        <div class="flex flex-col gap-4 text-xs font-medium">
-                            <p class="text-brand-textMuted leading-relaxed">This view monitors RSA public keys PEM blocks associated with device identities to orchestrate structural authentication layers.</p>
-                            <div class="flex flex-col gap-2 overflow-y-auto max-h-[400px] custom-scrollbar" id="devicePublicCryptoKeysStackNode"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="supportTicketsTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">System Assistance Support Tickets</h2>
-                    <p class="text-sm font-medium text-brand-textMuted">Triage critical application disruptions, align operational priority levels, and track client request parameters.</p>
-                </div>
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                    <th class="px-6 py-3.5">Ticket ID / User Ref</th>
-                                    <th class="px-6 py-3.5">Disruption Subject Heading</th>
-                                    <th class="px-6 py-3.5">Description Outline Context</th>
-                                    <th class="px-6 py-3.5">Priority Core</th>
-                                    <th class="px-6 py-3.5">Ticket Workflow Status</th>
-                                    <th class="px-6 py-3.5 text-center">State Modifications</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableSupportTicketsContainerBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="marketingCampaignsTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Newsletter Marketing Campaigns</h2>
-                    <p class="text-sm font-medium text-brand-textMuted">Trigger transactional mail configurations over structural Brevo automation engines.</p>
-                </div>
-
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-base font-bold text-brand-textDark uppercase tracking-wider mb-4 border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-brand-blue"></i> Assembly Campaign Blast Pipeline</h3>
-                    <form id="campaignBroadcastMailAssemblyForm" onsubmit="executeMassBroadcastOperation(event)" class="grid grid-cols-1 gap-5 text-sm font-semibold">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-xs uppercase text-brand-textMuted">Campaign Subject Line Heading *</label>
-                                <input type="text" name="subject" required class="p-3 rounded-xl border border-brand-borderSlate outline-none font-medium focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-xs uppercase text-brand-textMuted">Campaign Tracking Type Categorization</label>
-                                <input type="text" name="campaign_type" placeholder="newsletter" class="p-3 rounded-xl border border-brand-borderSlate outline-none font-medium focus:border-brand-blue transition-colors">
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs uppercase text-brand-textMuted">HTML / Context Content Payload Structure *</label>
-                            <textarea name="content" rows="8" required class="p-3 rounded-xl border border-brand-borderSlate outline-none font-medium font-sans focus:border-brand-blue transition-colors" placeholder=""></textarea>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" id="broadcastSubmissionButtonText" class="bg-brand-blue hover:bg-blue-700 text-white font-bold tracking-wider px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm">
-                                <i class="fa-solid fa-paper-plane"></i> Initialize Broadcast Pipeline Execution
-                            </button>
+                        <div class="pt-4 border-t border-brand-borderSlate flex justify-end gap-3">
+                            <button type="button" onclick="closeUniversalCRUDModal()" class="px-4 py-2 text-xs font-bold font-mono uppercase tracking-wider bg-slate-100 text-brand-textMuted rounded-xl hover:bg-slate-200">Cancel</button>
+                            <button type="submit" class="px-5 py-2 text-xs font-bold font-mono uppercase tracking-wider bg-brand-blue text-white rounded-xl hover:bg-blue-700 shadow-sm">Save Transaction</button>
                         </div>
                     </form>
                 </div>
-            </section>
+            </div>
 
-            <section id="mediaLibraryTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Cloud Media Assets Tracking Matrix</h2>
-                    <p class="text-sm font-medium text-brand-textMuted">Active asset maps tracking public Cloudinary storage optimization keys.</p>
-                </div>
-
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm">
-                    <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider mb-4 border-b pb-2 border-slate-100"><i class="fa-solid fa-images text-brand-blue"></i> Cloudinary Optimization Track Registry</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="mediaCloudAssetsLayoutGrid"></div>
-                </div>
-            </section>
-
-            <section id="systemSubscribersTab" class="operational-view-panel hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div class="xl:col-span-2 flex flex-col gap-6">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Platform Newsletter Subscriber Registry</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Immutable mailing listings tracking structural tracking hooks.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Subscriber Identity Endpoint Email</th>
-                                            <th class="px-6 py-3.5">Mailing Workflow Status</th>
-                                            <th class="px-6 py-3.5">Creation Trace</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableSubscribersContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-1 mt-4">
-                            <h2 class="text-2xl font-extrabold tracking-tight text-brand-textDark">Approved Reviews & Testimonials Modifiers</h2>
-                            <p class="text-sm font-medium text-brand-textMuted">Regulate corporate reviews, featured states, and structural platform metrics.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-brand-borderSlate text-xs font-bold uppercase text-brand-textMuted tracking-wider">
-                                            <th class="px-6 py-3.5">Client Profile Core</th>
-                                            <th class="px-6 py-3.5">Review Analysis Outline Text</th>
-                                            <th class="px-6 py-3.5">Score Mapping</th>
-                                            <th class="px-6 py-3.5">State Node</th>
-                                            <th class="px-6 py-3.5 text-center">Lifecycle Toggles</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-brand-borderSlate text-sm font-medium text-brand-textDark" id="tableTestimonialsContainerBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-sm font-bold text-brand-textDark uppercase tracking-wider border-b pb-2 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-quote-left text-brand-blue"></i> Inject Corporate Testimonial</h4>
-                        <form id="testimonialInputRegistryForm" onsubmit="executeCorporateTestimonialDeployment(event)" class="flex flex-col gap-4 text-xs font-semibold">
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Client Full Name *</label>
-                                <input type="text" name="client_name" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Designation / Role</label>
-                                    <input type="text" name="client_designation" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Company Node</label>
-                                    <input type="text" name="company" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Avatar Media URL</label>
-                                    <input type="url" name="client_avatar_url" class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-brand-textMuted">Rating Score (1-5) *</label>
-                                    <input type="number" name="rating" min="1" max="5" default="5" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors">
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-brand-textMuted">Review Content Text Payload *</label>
-                                <textarea name="review" rows="4" required class="p-2.5 rounded-xl border border-brand-borderSlate outline-none text-brand-textDark font-medium text-sm shadow-sm focus:border-brand-blue transition-colors"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitTestimonialInput" class="bg-slate-900 text-white font-bold text-sm tracking-wider px-5 py-3 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">
-                                Register Corporate Testimonial Node
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 
     <script>
-        const MASTER_LOCAL_TOKEN_KEY = 'dan74tech_access_token_v4';
-        
-        // Automated Clock Instrumentation
-        setInterval(() => {
-            document.getElementById('systemClockDisplay').innerText = new Date().toUTCString().replace('GMT', 'UTC');
-        }, 1000);
+        let currentActiveModule = 'dashboard';
+        let entityDataRegistryMap = [];
+        let currentlySelectedRecordId = null;
 
-        // Core Authentication Integrity Interceptor
-        function getSecurityAuthorizationToken() {
-            const signature = localStorage.getItem(MASTER_LOCAL_TOKEN_KEY);
-            if (!signature) {
-                pushSystemOperationalToast("Terminal signature expired. Re-routing initialization flow...", "error");
-                setTimeout(() => window.location.href = '/login.html', 1500);
-                return null;
-            }
-            return signature;
-        }
+        // Definition structure of full mapping parameters representing all 26 relational database entities
+        const schemaEntityDefinitions = {
+            users: { fields: ['name', 'email', 'password', 'role', 'phone'], defaults: {role: 'client'} },
+            clients: { fields: ['full_name', 'email', 'phone', 'password_hash'] },
+            public_keys: { fields: ['user_id', 'public_key_pem', 'device_id'] },
+            services: { fields: ['name', 'icon', 'description'] },
+            sub_services: { fields: ['service_id', 'name', 'price', 'description'] },
+            orders: { fields: ['user_id', 'customer_name', 'phone', 'service', 'sub_service', 'domain', 'device_model', 'project_details', 'price', 'status', 'payment_status', 'staging_environment', 'domain_criteria', 'hardware_serial', 'cyber_tracking_key'] },
+            projects: { fields: ['client_id', 'order_id', 'project_name', 'progress', 'status', 'notes'] },
+            file_deliveries: { fields: ['order_id', 'client_id', 'file_name', 'file_url', 'file_size', 'expiry_date', 'status'] },
+            project_files: { fields: ['project_id', 'file_name', 'file_url'] },
+            mpesa_transactions: { fields: ['order_id', 'user_id', 'phone_number', 'amount', 'mpesa_receipt_number', 'merchant_request_id', 'checkout_request_id', 'result_code', 'result_desc', 'status'] },
+            invoices: { fields: ['order_id', 'invoice_number', 'client_name', 'client_email', 'amount', 'pdf_url', 'status'] },
+            feed_posts: { fields: ['author_id', 'content', 'media_url', 'post_type'] },
+            feed_interactions: { fields: ['user_id', 'entity_id', 'entity_type', 'interaction_type', 'comment_text'] },
+            feed_reactions: { fields: ['user_id', 'entity_id', 'reaction_type'] },
+            comments: { fields: ['user_id', 'entity_id', 'content'] },
+            blog_posts: { fields: ['title', 'category', 'content', 'summary', 'image_url', 'slug', 'seo_title', 'seo_description', 'publisher_id', 'author_id', 'status'] },
+            case_studies: { fields: ['title', 'category', 'challenge', 'solution', 'result', 'image_url', 'publisher_id', 'author_id', 'status'] },
+            portfolio: { fields: ['order_id', 'title', 'category', 'description', 'link', 'progress', 'status', 'publisher_id', 'publisher_name'] },
+            client_communications: { fields: ['sender_id', 'receiver_id', 'message_body', 'attachment_url', 'attachment_name', 'delivery_status', 'message_type', 'channel', 'ciphertext', 'iv', 'sender_wrapped_key', 'receiver_wrapped_key'] },
+            messages: { fields: ['name', 'email', 'subject', 'message', 'status'] },
+            support_tickets: { fields: ['user_id', 'subject', 'description', 'status', 'priority'] },
+            testimonials: { fields: ['client_name', 'client_designation', 'company', 'client_avatar_url', 'rating', 'review', 'status', 'publisher_id'] },
+            notifications: { fields: ['user_id', 'title', 'message', 'channel', 'status'] },
+            email_campaigns: { fields: ['subject', 'content', 'campaign_type', 'recipients_count', 'sent_by'] },
+            subscribers: { fields: ['email', 'status'] },
+            media_library: { fields: ['public_id', 'url', 'filename', 'format', 'bytes'] }
+        };
 
-        function terminateOperationalSession() {
-            localStorage.removeItem(MASTER_LOCAL_TOKEN_KEY);
-            pushSystemOperationalToast("Administrative connection dropped successfully.", "success");
-            setTimeout(() => window.location.href = '/login.html', 1000);
-        }
-
-        // Centralized Operational Error Handler Toast Notification UI Injection
-        function pushSystemOperationalToast(msg, level = 'success') {
-            const container = document.getElementById('operationalToastNotificationContainer');
-            const alertNode = document.createElement('div');
-            alertNode.className = `p-4 rounded-xl shadow-xl flex items-center gap-3 transition-all duration-300 transform translate-y-2 pointer-events-auto text-xs font-bold ${
-                level === 'success' ? 'bg-slate-900 text-emerald-400 border border-emerald-900/30' : 'bg-red-950 text-red-400 border border-red-900/40'
-            }`;
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem('admin_token');
+            if (token) { showDashboardViewFramework(); }
             
-            const icon = level === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            alertNode.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <div class="flex-1">${msg}</div>`;
-            container.appendChild(alertNode);
-            
-            setTimeout(() => { alertNode.classList.remove('translate-y-2'); }, 10);
-            setTimeout(() => {
-                alertNode.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => alertNode.remove(), 300);
-            }, 4500);
-        }
-
-        // Generic API Fetch Wrapper Integration
-        async function fetchSecure(urlEndpoint, methodType = 'GET', dataPayloadObj = null, expectsJson = true) {
-            const token = localStorage.getItem(MASTER_LOCAL_TOKEN_KEY);
-            const requestHeaders = { 'Authorization': `Bearer ${token}` };
-            if (dataPayloadObj && !(dataPayloadObj instanceof FormData)) {
-                requestHeaders['Content-Type'] = 'application/json';
-            }
-
-            const optionsConfig = {
-                method: methodType,
-                headers: requestHeaders
-            };
-
-            if (dataPayloadObj) {
-                optionsConfig.body = dataPayloadObj instanceof FormData ? dataPayloadObj : JSON.stringify(dataPayloadObj);
-            }
-
-            const apiResponse = await fetch(urlEndpoint, optionsConfig);
-            if (!apiResponse.ok) {
-                const faultBody = await apiResponse.json().catch(() => ({ message: 'System communication collapse' }));
-                throw new Error(faultBody.message || `HTTP Execution Failure: ${apiResponse.status}`);
-            }
-            return expectsJson ? await apiResponse.json() : null;
-        }
-
-        // Navigation Controller Switch Layout Node Matrix
-        function switchActiveOperationalTab(targetPanelId) {
-            document.querySelectorAll('.operational-view-panel').forEach(block => block.classList.add('hidden'));
-            document.getElementById(targetPanelId).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-control-element').forEach(btn => {
-                btn.classList.remove('bg-brand-blue', 'text-white', 'shadow-sm', 'shadow-blue-100');
-                btn.classList.add('text-brand-textDark', 'hover:bg-slate-50');
-                const dynamicIcon = btn.querySelector('i');
-                if (dynamicIcon) dynamicIcon.classList.replace('text-white', 'text-slate-400');
-            });
-
-            const activeTrigger = document.getElementById(`btn-${targetPanelId}`);
-            if (activeTrigger) {
-                activeTrigger.classList.remove('text-brand-textDark', 'hover:bg-slate-50');
-                activeTrigger.classList.add('bg-brand-blue', 'text-white', 'shadow-sm', 'shadow-blue-100');
-                const dynamicActiveIcon = activeTrigger.querySelector('i');
-                if (dynamicActiveIcon) dynamicActiveIcon.classList.replace('text-slate-400', 'text-white');
-            }
-        }
-
-        // Core App Lifecycle Matrix Loader
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeMasterClusterState();
-            setupWebSocketStreamChannel();
+            document.getElementById('login-form').addEventListener('submit', handleSecurityAccessInitialization);
         });
 
-        function initializeMasterClusterState() {
-            synchronizeDashboardStatistics();
-            synchronizeOrdersPipeline();
-            synchronizeProjectsTrack();
-            synchronizeFinancialLedger();
-            synchronizePrimaryServicesCatalog();
-            synchronizeEditorialBlogEntries();
-            synchronizeCorporateCaseStudies();
-            synchronizeSystemPortfolioShowcases();
-            synchronizeSocialPlatformFeedStream();
-            synchronizeEncryptedCrmMatrix();
-            synchronizeSupportTicketsEngine();
-            synchronizeMediaAssetsCloudRegistry();
-            synchronizeSubscribersMailingList();
+        function pushSystemOperationalToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const element = document.createElement('div');
+            element.className = `p-4 rounded-xl shadow-lg pointer-events-auto flex items-center gap-3 transition-all transform translate-y-2 opacity-0 duration-300 ${type === 'success' ? 'bg-slate-900 border-l-4 border-brand-blue text-white' : 'bg-rose-900 text-white border-l-4 border-brand-red'}`;
+            element.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-brand-blue' : 'fa-circle-exclamation text-brand-red'} text-sm"></i>
+                <span class="text-xs font-bold font-mono tracking-wide">${msg}</span>
+            `;
+            container.appendChild(element);
+            setTimeout(() => { element.classList.remove('translate-y-2', 'opacity-0'); }, 5);
+            setTimeout(() => {
+                element.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => { element.remove(); }, 300);
+            }, 4000);
         }
 
-        // Dynamic State Refresher Pipeline Updates
-        async function synchronizeDashboardStatistics() {
-            try {
-                const logs = await fetchSecure('/analytics/overview');
-                document.getElementById('statActiveUsersCount').innerText = logs.activeUsers || 0;
-                document.getElementById('statGrossOrdersCount').innerText = logs.grossOrders || 0;
-                document.getElementById('statFinancialVolume').innerText = `KES ${(logs.financialVolume || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                document.getElementById('statCloudAssetsCount').innerText = logs.mediaAssetsCount || 0;
-            } catch (err) { console.error("Cluster stats sync drop:", err.message); }
-        }
-
-        // 1. Service Orders Mapping
-        async function synchronizeOrdersPipeline() {
-            try {
-                const listing = await fetchSecure('/orders');
-                document.getElementById('badge-orders-count').innerText = listing.length;
-                const rootBody = document.getElementById('tableOrdersContainerBody');
-                rootBody.innerHTML = '';
-
-                if(listing.length === 0) {
-                    rootBody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-xs font-semibold text-brand-textMuted">No structural orders mapped in core engine registry.</td></tr>`;
-                    return;
+        async function fetchSecure(endpoint, method = 'GET', dataPayload = null, multiPartFormFlag = false) {
+            const token = localStorage.getItem('admin_token');
+            const connectionHeaders = {};
+            if (!multiPartFormFlag) { connectionHeaders['Content-Type'] = 'application/json'; }
+            if (token) { connectionHeaders['Authorization'] = `Bearer ${token}`; }
+            
+            const pipelineConfigurations = { method, headers: connectionHeaders };
+            if (dataPayload) { pipelineConfigurations.body = multiPartFormFlag ? dataPayload : JSON.stringify(dataPayload); }
+            
+            const networkResponse = await fetch(endpoint, pipelineConfigurations);
+            const JSONData = await networkResponse.json();
+            if (!networkResponse.ok) {
+                if (networkResponse.status === 401 || networkResponse.status === 403) {
+                    logoutAdminSession();
                 }
-
-                listing.forEach(record => {
-                    const trackingData = record.service_metadata ? JSON.stringify(record.service_metadata) : '{}';
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-bold text-slate-900">${record.customer_name}</div>
-                            <div class="text-xs text-slate-500 mono-text">${record.phone}</div>
-                            <div class="text-[10px] text-slate-400 mono-text">UID: ${record.user_id || 'N/A'} | ID: ${record.id}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-0.5 rounded-md bg-blue-50 text-brand-blue font-bold text-xs border border-blue-100">${record.service}</span>
-                            <div class="text-xs text-slate-600 mt-1 font-medium">${record.sub_service || 'Standard Allocation'}</div>
-                            <div class="text-[10px] text-slate-400 font-medium">Model: ${record.device_model} | Serial: ${record.hardware_serial}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-xs font-semibold text-slate-700">Domain: ${record.domain}</div>
-                            <div class="text-[11px] text-slate-500">Criteria: ${record.domain_criteria}</div>
-                            <div class="text-[10px] text-purple-600 font-mono truncate max-w-[180px]" title='${trackingData}'>Meta: ${trackingData}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-bold text-slate-900">KES ${parseFloat(record.price).toFixed(2)}</div>
-                            <div class="text-[11px] font-bold ${record.payment_status === 'paid' ? 'text-emerald-600':'text-amber-600'} uppercase">${record.payment_status}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-extrabold border ${
-                                record.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                record.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-slate-100 text-slate-700 border-slate-200'
-                            }">${record.status}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center justify-center gap-2">
-                                <select onchange="updateOrderWorkflowStateNode(${record.id}, this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-brand-borderSlate bg-white outline-none">
-                                    <option value="">-- Shift --</option>
-                                    <option value="pending" ${record.status === 'pending' ? 'selected':''}>Pending</option>
-                                    <option value="processing" ${record.status === 'processing' ? 'selected':''}>Processing</option>
-                                    <option value="completed" ${record.status === 'completed' ? 'selected':''}>Completed</option>
-                                    <option value="cancelled" ${record.status === 'cancelled' ? 'selected':''}>Cancelled</option>
-                                </select>
-                                <button onclick="triggerProjectProductionSpawning(${record.id}, ${record.user_id || 'null'}, '${record.service}')" class="p-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-colors" title="Spawn Track Production Node">
-                                    <i class="fa-solid fa-square-plus"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function updateOrderWorkflowStateNode(id, statusValue) {
-            if(!statusValue) return;
-            try {
-                await fetchSecure(`/orders/${id}/status`, 'PUT', { status: statusValue });
-                pushSystemOperationalToast(`Order matrix execution code [${id}] advanced to state: ${statusValue}`);
-                synchronizeOrdersPipeline();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function triggerProjectProductionSpawning(orderId, clientId, serviceName) {
-            if(!clientId) {
-                pushSystemOperationalToast("Cannot anchor production track to an unauthenticated client target profile.", "error");
-                return;
+                throw new Error(JSONData.error || 'System operation threshold execution exception.');
             }
-            try {
-                await fetchSecure('/projects', 'POST', {
-                    order_id: orderId,
-                    client_id: clientId,
-                    project_name: `${serviceName} Deployment Engine Track`,
-                    notes: `Automated architecture tracking node generated via system interface order conversion processes.`
-                });
-                pushSystemOperationalToast("Project pipeline tracking node spawned cleanly.");
-                synchronizeProjectsTrack();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
+            return JSONData;
         }
 
-        // 2. Production Projects Track Mapping
-        async function synchronizeProjectsTrack() {
+        async function handleSecurityAccessInitialization(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const targetBtn = document.getElementById('admin-login-btn');
+            
+            targetBtn.disabled = true;
+            targetBtn.innerText = "Authorizing Operations Command Matrix...";
+            
             try {
-                const tracks = await fetchSecure('/projects');
-                document.getElementById('badge-projects-count').innerText = tracks.length;
-                const rootBody = document.getElementById('tableProjectsContainerBody');
-                rootBody.innerHTML = '';
-
-                if(tracks.length === 0) {
-                    rootBody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-xs font-semibold text-brand-textMuted">No track components operational.</td></tr>`;
-                    return;
+                // Pointing directly to production login configuration mapping
+                const response = await fetchSecure('/api/auth/login', 'POST', { email, password });
+                if (response.user && response.user.role === 'admin') {
+                    localStorage.setItem('admin_token', response.token);
+                    pushSystemOperationalToast("Security session clearance initialized.", "success");
+                    showDashboardViewFramework();
+                } else {
+                    throw new Error("Clearance denied: Account profile lacks admin tier permissions.");
                 }
-
-                tracks.forEach(track => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-bold text-slate-900">${track.project_name}</div>
-                            <div class="text-xs text-slate-500 font-mono">Track ID: ${track.id} | Order Match Reference: ${track.order_id}</div>
-                            <div class="text-[11px] text-slate-400 font-medium truncate max-w-[240px] mt-0.5">${track.notes || 'No notes defined.'}</div>
-                        </td>
-                        <td class="px-6 py-4 w-1/4">
-                            <div class="flex items-center gap-2">
-                                <input type="number" value="${track.progress}" min="0" max="100" onchange="executeUpdateProjectProgressMetric(${track.id}, this.value)" class="w-14 p-1 rounded-lg border border-brand-borderSlate text-center text-xs font-bold mono-text bg-slate-50">
-                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
-                                    <div class="bg-brand-blue h-full transition-all duration-300" style="width: ${track.progress}%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <select onchange="executeUpdateProjectStateFlag(${track.id}, this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-brand-borderSlate bg-white outline-none">
-                                <option value="Pending" ${track.status === 'Pending' ? 'selected':''}>Pending</option>
-                                <option value="In Progress" ${track.status === 'In Progress' ? 'selected':''}>In Progress</option>
-                                <option value="Suspended" ${track.status === 'Suspended' ? 'selected':''}>Suspended</option>
-                                <option value="Finished" ${track.status === 'Finished' ? 'selected':''}>Finished</option>
-                            </select>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="executeTerminalProjectTrackPurge(${track.id})" class="p-1.5 bg-red-50 text-brand-red rounded-lg text-xs hover:bg-red-100 transition-colors border border-red-200" title="Purge Track">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { console.error("Projects validation fault: ", err.message); }
-        }
-
-        async function executeUpdateProjectProgressMetric(id, progressValue) {
-            try {
-                await fetchSecure(`/projects/${id}/progress`, 'PUT', { progress: parseInt(progressValue) });
-                pushSystemOperationalToast(`Project tracking progress adjusted to structural step: ${progressValue}%`);
-                synchronizeProjectsTrack();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function executeUpdateProjectStateFlag(id, statusValue) {
-            try {
-                await fetchSecure(`/projects/${id}/status`, 'PUT', { status: statusValue });
-                pushSystemOperationalToast(`Project track state updated to status: ${statusValue}`);
-                synchronizeProjectsTrack();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function executeProjectFileRegistryAttachment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitProjectResourceAttachment');
-            const targetForm = document.getElementById('projectInternalResourceAttachmentForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/projects/files', 'POST', payload);
-                pushSystemOperationalToast("Internal resource file binary bound successfully into project cluster mapping.");
-                targetForm.reset();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeTerminalProjectTrackPurge(id) {
-            if(!confirm("Purge tracking node alignment entirely from cluster log registry?")) return;
-            try {
-                await fetchSecure(`/projects/${id}`, 'DELETE');
-                pushSystemOperationalToast("Project track node alignment purged.");
-                synchronizeProjectsTrack();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 3. Financial Logs, M-Pesa Ledger, and Invoices Matrix
-        async function synchronizeFinancialLedger() {
-            try {
-                const mpesaLogs = await fetchSecure('/mpesa/transactions');
-                const rootMpesa = document.getElementById('tableMpesaAuditContainerBody');
-                rootMpesa.innerHTML = '';
-                
-                mpesaLogs.forEach(tx => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 text-xs transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3 font-medium">
-                            <div class="font-bold text-slate-900 text-sm mono-text">${tx.mpesa_receipt_number || 'STK-PENDING'}</div>
-                            <div class="text-[10px] text-slate-400 font-mono">CheckoutID: ${tx.checkout_request_id}</div>
-                        </td>
-                        <td class="px-6 py-3 font-semibold text-slate-700">
-                            <div>Phone: ${tx.phone_number}</div>
-                            <div class="text-[10px] text-slate-400">UserRef: ${tx.user_id || 'Guest Log'} | Order ID: ${tx.order_id || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-3 font-bold text-emerald-600 text-sm">KES ${parseFloat(tx.amount).toFixed(2)}</td>
-                        <td class="px-6 py-3">
-                            <span class="px-2 py-0.5 rounded-md text-[10px] uppercase font-bold tracking-wider ${tx.status === 'completed' ? 'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'}">${tx.status}</span>
-                            <div class="text-[9px] text-slate-400 font-medium truncate max-w-[140px] mt-0.5">${tx.result_desc || 'Inbound execution pipeline processing'}</div>
-                        </td>
-                        <td class="px-6 py-3 text-slate-500 font-mono font-medium">${new Date(tx.created_at).toLocaleString()}</td>
-                    `;
-                    rootMpesa.appendChild(tr);
-                });
-
-                const invoices = await fetchSecure('/invoices');
-                const rootInvoices = document.getElementById('tableInvoicesContainerBody');
-                rootInvoices.innerHTML = '';
-
-                invoices.forEach(inv => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5 mono-text font-bold text-brand-blue">${inv.invoice_number}</td>
-                        <td class="px-6 py-3.5">
-                            <div class="font-bold text-slate-900">${inv.client_name}</div>
-                            <div class="text-xs text-slate-500">${inv.client_email}</div>
-                        </td>
-                        <td class="px-6 py-3.5 font-bold text-slate-900 text-sm">KES ${parseFloat(inv.amount).toFixed(2)}</td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${inv.status === 'paid' ? 'bg-emerald-100 text-emerald-800':'bg-red-100 text-red-800'}">${inv.status}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            ${inv.pdf_url ? `<a href="${inv.pdf_url}" target="_blank" class="text-brand-blue text-base hover:text-blue-800" title="Review PDF Document File Source"><i class="fa-solid fa-file-pdf"></i></a>` : '<span class="text-xs text-slate-400">No Asset Blob</span>'}
-                        </td>
-                    `;
-                    rootInvoices.appendChild(tr);
-                });
-            } catch (err) { console.error("Finance log sync failure: ", err.message); }
-        }
-
-        async function executeInvoiceGenerationEngine(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitBillingInvoiceAssembly');
-            const targetForm = document.getElementById('billingInvoiceAssemblyForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Launching PDF Document Assembler Engine...';
-
-            try {
-                await fetchSecure('/invoices', 'POST', payload);
-                pushSystemOperationalToast("Invoice matrix element generated. PDF dynamic build successfully written to cloud servers.");
-                targetForm.reset();
-                synchronizeFinancialLedger();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-bolt mr-1"></i> Generate & Compile PDF Engine Invoice';
-            }
-        }
-
-        // 4. Base Core Services Catalog Matrix
-        async function synchronizePrimaryServicesCatalog() {
-            try {
-                const primaryCatalog = await fetchSecure('/services');
-                const rootGrid = document.getElementById('servicesBaseEngineCatalogGrid');
-                rootGrid.innerHTML = '';
-
-                primaryCatalog.forEach(srv => {
-                    const div = document.createElement('div');
-                    div.className = "p-4 rounded-xl border border-brand-borderSlate bg-slate-50 flex items-start gap-3 relative overflow-hidden group";
-                    div.innerHTML = `
-                        <div class="w-10 h-10 rounded-lg bg-blue-100 text-brand-blue flex items-center justify-center text-lg shadow-sm border border-blue-200 shrink-0"><i class="${srv.icon}"></i></div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-900 truncate flex items-center gap-1.5">${srv.name} <span class="mono-text text-[10px] text-slate-400 font-bold">#${srv.id}</span></h4>
-                            <p class="text-xs text-slate-500 font-medium leading-relaxed mt-1 line-clamp-3">${srv.description}</p>
-                        </div>
-                        <button onclick="executeServiceCategoryDecommission(${srv.id})" class="absolute right-2 top-2 p-1 text-slate-300 hover:text-brand-red opacity-0 group-hover:opacity-100 transition-opacity" title="Decommission Service Category Blueprint From System Layout">
-                            <i class="fa-solid fa-circle-xmark text-sm"></i>
-                        </button>
-                    `;
-                    rootGrid.appendChild(div);
-                });
-            } catch (err) { console.error("Services metadata validation collapse: ", err.message); }
-        }
-
-        async function executePrimaryServiceCatalogCreation(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitNewServiceRegistry');
-            const targetForm = document.getElementById('newServiceRegistryForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/services', 'POST', payload);
-                pushSystemOperationalToast("Primary category catalog configuration node injected successfully into service models mapping framework.");
-                targetForm.reset();
-                synchronizePrimaryServicesCatalog();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeSubServicePricingPackageCreation(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitSubServicePricingPackage');
-            const targetForm = document.getElementById('subServicePricingPackageForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/sub-services', 'POST', payload);
-                pushSystemOperationalToast("Affiliated sub-pricing package injected successfully.");
-                targetForm.reset();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeServiceCategoryDecommission(id) {
-            if(!confirm("Flag structural category catalog entity blueprint as deleted within system configuration scopes?")) return;
-            try {
-                await fetchSecure(`/services/${id}`, 'DELETE');
-                pushSystemOperationalToast("Service classification blueprint deactivated from matrix configuration maps.");
-                synchronizePrimaryServicesCatalog();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 5. Editorial Blog Entries Matrix Mapping
-        async function synchronizeEditorialBlogEntries() {
-            try {
-                const logs = await fetchSecure('/blogs');
-                const rootBody = document.getElementById('tableBlogEntriesContainerBody');
-                rootBody.innerHTML = '';
-
-                logs.forEach(post => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="text-sm font-bold text-slate-900">${post.title}</div>
-                            <div class="text-xs text-brand-blue font-mono mt-0.5">Slug: ${post.slug}</div>
-                            <div class="text-[10px] text-slate-400 font-medium mt-0.5">AuthorID ID Target: ${post.author_id || 'N/A'} | Publisher UID Mapping: ${post.publisher_id || 'Unassigned Node'}</div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 border rounded border-slate-200 text-slate-600">${post.category || 'General Context'}</span>
-                        </td>
-                        <td class="px-6 py-3.5 font-mono text-xs font-semibold text-slate-600">
-                            <div>Views: ${post.views_count || 0}</div>
-                            <div>Likes: ${post.likes_count || 0}</div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                                post.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                            }">${post.status || 'pending'}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="toggleBlogPostLifecycleState(${post.id}, '${post.status === 'Approved' ? 'pending' : 'Approved'}')" class="px-2 py-1 ${post.status === 'Approved' ? 'bg-amber-50 text-amber-600 border-amber-200':'bg-emerald-50 text-emerald-600 border-emerald-200'} border text-xs font-bold rounded-lg transition-colors">
-                                    ${post.status === 'Approved' ? 'Revoke' : 'Approve'}
-                                </button>
-                                <button onclick="executeEditorialBlogPurge(${post.id})" class="p-1 text-slate-400 hover:text-brand-red transition-colors">
-                                    <i class="fa-solid fa-trash-can text-sm"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { console.error("Blog processing layout error: ", err.message); }
-        }
-
-        async function toggleBlogPostLifecycleState(id, targetStatus) {
-            try {
-                await fetchSecure(`/blogs/${id}/status`, 'PUT', { status: targetStatus });
-                pushSystemOperationalToast(`Editorial structural entry lifecycle shifted to target state: ${targetStatus}`);
-                synchronizeEditorialBlogEntries();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function executeEditorialBlogPostDeployment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitEditorialBlogAssembly');
-            const targetForm = document.getElementById('editorialBlogAssemblyForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/blogs', 'POST', payload);
-                pushSystemOperationalToast("Editorial blog entry successfully committed.");
-                targetForm.reset();
-                synchronizeEditorialBlogEntries();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeEditorialBlogPurge(id) {
-            if(!confirm("Purge editorial component entirely from layout registry?")) return;
-            try {
-                await fetchSecure(`/blogs/${id}`, 'DELETE');
-                pushSystemOperationalToast("Editorial content row block shifted to soft-deleted state matrix.");
-                synchronizeEditorialBlogEntries();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 6. Corporate Case Studies Mapping Log Matrix
-        async function synchronizeCorporateCaseStudies() {
-            try {
-                const tracking = await fetchSecure('/case-studies');
-                const rootBody = document.getElementById('tableCaseStudiesContainerBody');
-                rootBody.innerHTML = '';
-
-                tracking.forEach(study => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="text-sm font-bold text-slate-900">${study.title}</div>
-                            <div class="text-[10px] font-medium text-slate-400 mt-0.5">AuthorID Reference: ${study.author_id || 'Unspecified'} | Publisher UID Map: ${study.publisher_id || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded border border-slate-200">${study.category || 'Infrastructure'}</span>
-                        </td>
-                        <td class="px-6 py-3.5 font-mono text-xs font-semibold text-slate-600">
-                            <div>Views Allocation: ${study.views_count || 0}</div>
-                            <div>Likes Tracking: ${study.likes_count || 0}</div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                                study.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                            }">${study.status || 'pending'}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="toggleCorporateCaseStudyState(${study.id}, '${study.status === 'Approved' ? 'pending' : 'Approved'}')" class="px-2 py-1 ${study.status === 'Approved' ? 'bg-amber-50 text-amber-600 border-amber-200':'bg-emerald-50 text-emerald-600 border-emerald-200'} border text-xs font-bold rounded-lg transition-colors">
-                                    ${study.status === 'Approved' ? 'Revoke' : 'Approve'}
-                                </button>
-                                <button onclick="executeCorporateCaseStudyPurge(${study.id})" class="p-1 text-slate-400 hover:text-brand-red transition-colors">
-                                    <i class="fa-solid fa-trash-can text-sm"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { console.error("Case studies structural log synchronization break: ", err.message); }
-        }
-
-        async function toggleCorporateCaseStudyState(id, targetStatus) {
-            try {
-                await fetchSecure(`/case-studies/${id}/status`, 'PUT', { status: targetStatus });
-                pushSystemOperationalToast(`Case study lifecycle updated to state: ${targetStatus}`);
-                synchronizeCorporateCaseStudies();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function executeCorporateCaseStudyDeployment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitCaseStudyAssembly');
-            const targetForm = document.getElementById('caseStudyAssemblyForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/case-studies', 'POST', payload);
-                pushSystemOperationalToast("Corporate case study blueprint written securely to main database cluster structures.");
-                targetForm.reset();
-                synchronizeCorporateCaseStudies();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeCorporateCaseStudyPurge(id) {
-            if(!confirm("Purge corporate study row context entirely from layout logs database?")) return;
-            try {
-                await fetchSecure(`/case-studies/${id}`, 'DELETE');
-                pushSystemOperationalToast("Corporate case study structural entity removed from view scopes mapping.");
-                synchronizeCorporateCaseStudies();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 7. Systems Work Portfolios Matrix Showcases Configuration
-        async function synchronizeSystemPortfolioShowcases() {
-            try {
-                const logs = await fetchSecure('/portfolio');
-                const rootBody = document.getElementById('tablePortfolioShowcasesContainerBody');
-                rootBody.innerHTML = '';
-
-                logs.forEach(asset => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="text-sm font-bold text-slate-900">${asset.title}</div>
-                            ${asset.link ? `<a href="${asset.link}" target="_blank" class="text-xs text-brand-blue hover:underline block truncate max-w-[250px] font-mono mt-0.5"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> ${asset.link}</a>`:''}
-                            <div class="text-[10px] font-medium text-slate-400 mt-0.5">Author Designation Profile Name: ${asset.publisher_name} | Order ID: ${asset.order_id || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded border border-slate-200">${asset.category}</span>
-                        </td>
-                        <td class="px-6 py-3.5 w-1/5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-slate-700 mono-text">${asset.progress}%</span>
-                                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border">
-                                    <div class="bg-brand-blue h-full" style="width: ${asset.progress}%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                                asset.is_approved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                            }">${asset.status || (asset.is_approved ? 'Approved' : 'pending')}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="toggleSystemPortfolioShowcaseApproval(${asset.id}, ${!asset.is_approved})" class="px-2 py-1 ${asset.is_approved ? 'bg-amber-50 text-amber-600 border-amber-200':'bg-emerald-50 text-emerald-600 border-emerald-200'} border text-xs font-bold rounded-lg transition-colors">
-                                    ${asset.is_approved ? 'Revoke' : 'Approve'}
-                                </button>
-                                <button onclick="executeSystemPortfolioPurge(${asset.id})" class="p-1 text-slate-400 hover:text-brand-red transition-colors">
-                                    <i class="fa-solid fa-trash-can text-sm"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { console.error("Portfolio components grid visualization break: ", err.message); }
-        }
-
-        async function toggleSystemPortfolioShowcaseApproval(id, approvalBooleanState) {
-            try {
-                await fetchSecure(`/portfolio/${id}/approve`, 'PUT', { is_approved: approvalBooleanState });
-                pushSystemOperationalToast(`Portfolio framework component validation configuration toggled to flag: ${approvalBooleanState}`);
-                synchronizeSystemPortfolioShowcases();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        async function executeSystemPortfolioShowcaseDeployment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitPortfolioAssetAssembly');
-            const targetForm = document.getElementById('portfolioAssetAssemblyForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-            if(payload.progress) payload.progress = parseInt(payload.progress);
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/portfolio', 'POST', payload);
-                pushSystemOperationalToast("Systems showcase portfolio item committed into core content matrix blueprints.");
-                targetForm.reset();
-                synchronizeSystemPortfolioShowcases();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeSystemPortfolioPurge(id) {
-            if(!confirm("Purge asset allocation block completely from portfolio framework storage nodes?")) return;
-            try {
-                await fetchSecure(`/portfolio/${id}`, 'DELETE');
-                pushSystemOperationalToast("Showcase element decoupled completely.");
-                synchronizeSystemPortfolioShowcases();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 8. Standalone Social Platform Feed Stream Logs Processing
-        async function synchronizeSocialPlatformFeedStream() {
-            try {
-                const logging = await fetchSecure('/feed');
-                const containerNode = document.getElementById('socialFeedPostsDisplayNode');
-                containerNode.innerHTML = '';
-
-                if(logging.length === 0) {
-                    containerNode.innerHTML = `<div class="p-4 rounded-xl border border-dashed border-slate-200 text-center text-xs font-medium text-brand-textMuted py-8">No standalone post stream models logged inside platform engines.</div>`;
-                    return;
-                }
-
-                logging.forEach(post => {
-                    const outerDiv = document.createElement('div');
-                    outerDiv.className = "p-4 rounded-xl border border-brand-borderSlate bg-slate-50/50 flex flex-col gap-3 relative group transition-colors hover:bg-slate-50";
-                    outerDiv.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full bg-slate-900 text-white font-bold text-[10px] flex items-center justify-center font-mono">U${post.author_id}</div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Author Database Reference Target ID: ${post.author_id}</p>
-                                    <p class="text-[10px] font-mono text-slate-400 font-medium">${new Date(post.created_at).toLocaleString()}</p>
-                                </div>
-                            </div>
-                            <span class="text-[10px] font-extrabold uppercase bg-blue-50 text-brand-blue border border-blue-100 px-2 py-0.5 rounded-md">${post.post_type || 'General'}</span>
-                        </div>
-                        <p class="text-xs font-medium text-slate-700 leading-relaxed font-sans whitespace-pre-wrap">${post.content}</p>
-                        ${post.media_url ? `<a href="${post.media_url}" target="_blank" class="text-[11px] font-semibold text-brand-blue font-mono hover:underline truncate max-w-full block"><i class="fa-solid fa-photo-film"></i> Linked Media Attachment URL Asset: ${post.media_url}</a>`:''}
-                        <button onclick="executePlatformFeedPostPurge(${post.id})" class="absolute right-3 bottom-3 text-slate-300 hover:text-brand-red opacity-0 group-hover:opacity-100 transition-opacity" title="Purge Post Row Node From Database Logs">
-                            <i class="fa-solid fa-trash-can text-xs"></i>
-                        </button>
-                    `;
-                    containerNode.appendChild(outerDiv);
-                });
-            } catch (err) { console.error("Social hub validation framework processing exception: ", err.message); }
-        }
-
-        async function executeSocialFeedStreamPublication(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitSocialFeedPublication');
-            const targetForm = document.getElementById('socialFeedPublicationForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/feed', 'POST', payload);
-                pushSystemOperationalToast("Social post payload executed onto public streams cluster mapping.");
-                targetForm.reset();
-                synchronizeSocialPlatformFeedStream();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executePlatformFeedPostPurge(id) {
-            if(!confirm("Purge row post item completely from public social streams?")) return;
-            try {
-                await fetchSecure(`/feed/${id}`, 'DELETE');
-                pushSystemOperationalToast("Social content payload item discarded.");
-                synchronizeSocialPlatformFeedStream();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 9. Encrypted CRM Configuration, Message Interceptors, and Key Management
-        async function synchronizeEncryptedCrmMatrix() {
-            try {
-                const metrics = await fetchSecure('/communications');
-                const rootBody = document.getElementById('tableEncryptedCrmContainerBody');
-                rootBody.innerHTML = '';
-
-                metrics.forEach(msg => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 text-xs transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3">
-                            <div class="font-bold text-slate-900">ID Reference: ${msg.id}</div>
-                            <div class="text-[10px] text-slate-500">Channel Tracking Node: ${msg.channel} | Type: ${msg.message_type}</div>
-                            <div class="text-[9px] text-slate-400 font-mono mt-0.5">${new Date(msg.created_at).toLocaleString()}</div>
-                        </td>
-                        <td class="px-6 py-3 font-medium">
-                            <div class="text-slate-700">Sender ID Identity: <span class="font-bold mono-text text-brand-blue">${msg.sender_id || 'System Process'}</span></div>
-                            <div class="text-slate-700 mt-0.5">Receiver Identity ID Target: <span class="font-bold mono-text text-brand-orange">${msg.receiver_id || 'System Broadcast'}</span></div>
-                        </td>
-                        <td class="px-6 py-3 font-mono text-[10px] text-slate-500 max-w-[200px] overflow-hidden">
-                            <div class="truncate" title="${msg.sender_wrapped_key}">Sender Key: ${msg.sender_wrapped_key || 'N/A'}</div>
-                            <div class="truncate mt-0.5" title="${msg.receiver_wrapped_key}">Receiver Key: ${msg.receiver_wrapped_key || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-3 font-mono text-[10px] text-slate-600 max-w-[240px] overflow-hidden">
-                            <div class="truncate font-bold" title="${msg.iv}">IV Vector Block: ${msg.iv || 'N/A'}</div>
-                            <div class="truncate mt-0.5 text-slate-400" title="${msg.ciphertext}">Cipher Block: ${msg.ciphertext || (msg.message_body ? 'Plaintext Native Fallback' : 'N/A')}</div>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-
-                const queries = await fetchSecure('/messages');
-                const rootQueriesBody = document.getElementById('tablePublicQueriesContainerBody');
-                rootQueriesBody.innerHTML = '';
-
-                queries.forEach(query => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="text-sm font-bold text-slate-900">${query.name || 'Anonymous User'}</div>
-                            <div class="text-xs text-slate-500 font-mono">${query.email}</div>
-                        </td>
-                        <td class="px-6 py-3.5 text-xs font-bold text-slate-700">${query.subject}</td>
-                        <td class="px-6 py-3.5 text-xs font-medium text-slate-600 max-w-sm font-sans whitespace-pre-wrap">${query.message}</td>
-                        <td class="px-6 py-3.5 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <span class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded ${query.status === 'unread' ? 'bg-amber-50 text-amber-700 border border-amber-200':'bg-slate-100 text-slate-600'}">${query.status}</span>
-                                <button onclick="executePublicQueryPurge(${query.id})" class="p-1 text-slate-300 hover:text-brand-red transition-colors" title="Purge Message Inbound Node">
-                                    <i class="fa-solid fa-trash text-xs"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootQueriesBody.appendChild(tr);
-                });
-
-                const keys = await fetchSecure('/crypto/public-keys');
-                const rootKeysStack = document.getElementById('devicePublicCryptoKeysStackNode');
-                rootKeysStack.innerHTML = '';
-
-                keys.forEach(keyBlock => {
-                    const div = document.createElement('div');
-                    div.className = "p-3 rounded-xl border border-brand-borderSlate bg-slate-50 flex flex-col gap-1.5 font-mono text-[10px]";
-                    div.innerHTML = `
-                        <div class="flex items-center justify-between font-sans font-bold text-slate-700 border-b pb-1 border-slate-200">
-                            <span>User Engine ID Account Target: #${keyBlock.user_id}</span>
-                            <span class="text-slate-400">Device Target Signature Key: ${keyBlock.device_id || 'Default Terminal'}</span>
-                        </div>
-                        <textarea readonly class="w-full h-12 bg-white rounded border border-slate-200 p-1 text-slate-500 resize-none outline-none font-mono text-[9px] select-all">${keyBlock.public_key_pem}</textarea>
-                    `;
-                    rootKeysStack.appendChild(div);
-                });
-            } catch (err) { console.error("Communications core processing error: ", err.message); }
-        }
-
-        async function executePublicQueryPurge(id) {
-            if(!confirm("Purge general public dynamic contact form row entry frame from logs?")) return;
-            try {
-                await fetchSecure(`/messages/${id}`, 'DELETE');
-                pushSystemOperationalToast("Inbound request record cleared from operational tracking matrix screens.");
-                synchronizeEncryptedCrmMatrix();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 10. System Assistance Support Tickets Engine Matrix
-        async function synchronizeSupportTicketsEngine() {
-            try {
-                const listings = await fetchSecure('/support/tickets');
-                const rootBody = document.getElementById('tableSupportTicketsContainerBody');
-                rootBody.innerHTML = '';
-
-                listings.forEach(ticket => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="text-sm font-bold text-slate-900">Ticket Serial Reference: #${ticket.id}</div>
-                            <div class="text-[11px] font-mono font-semibold text-brand-blue">User Account Node Association ID: ${ticket.user_id}</div>
-                            <div class="text-[10px] text-slate-400 font-mono font-medium mt-0.5">${new Date(ticket.created_at).toLocaleString()}</div>
-                        </td>
-                        <td class="px-6 py-3.5 text-xs font-bold text-slate-800">${ticket.subject}</td>
-                        <td class="px-6 py-3.5 text-xs font-medium text-slate-600 max-w-xs font-sans whitespace-pre-wrap">${ticket.description}</td>
-                        <td class="px-6 py-3.5">
-                            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 border rounded ${
-                                ticket.priority === 'high' ? 'bg-red-50 text-brand-red border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'
-                            }">${ticket.priority}</span>
-                        </td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-extrabold border ${
-                                ticket.status === 'open' ? 'bg-amber-50 text-amber-700 border-amber-200':'bg-slate-100 text-slate-600 border-slate-200'
-                            }">${ticket.status}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            <select onchange="executeUpdateSupportTicketStateNode(${ticket.id}, this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-brand-borderSlate bg-white outline-none">
-                                <option value="">-- Toggle --</option>
-                                <option value="open" ${ticket.status === 'open' ? 'selected':''}>Open</option>
-                                <option value="resolved" ${ticket.status === 'resolved' ? 'selected':''}>Resolved</option>
-                                <option value="closed" ${ticket.status === 'closed' ? 'selected':''}>Closed</option>
-                            </select>
-                        </td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-            } catch (err) { console.error("Support system context interface triage fault: ", err.message); }
-        }
-
-        async function executeUpdateSupportTicketStateNode(id, ticketStateTargetValue) {
-            if(!ticketStateTargetValue) return;
-            try {
-                await fetchSecure(`/support/tickets/${id}/status`, 'PUT', { status: ticketStateTargetValue });
-                pushSystemOperationalToast(`Support ticket core identifier mapping [#${id}] shifted to state logic node: ${ticketStateTargetValue}`);
-                synchronizeSupportTicketsEngine();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 11. Marketing Mass Broadcast Campaign Engine Operations
-        async function executeMassBroadcastOperation(e) {
-            e.preventDefault();
-            const btn = document.getElementById('broadcastSubmissionButtonText');
-            const targetForm = document.getElementById('campaignBroadcastMailAssemblyForm');
-            const formData = new FormData(targetForm);
-            const dataPayloadObj = Object.fromEntries(formData.entries());
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Deploying API Sequences...';
-
-            try {
-                await fetchSecure('/broadcast/send', 'POST', dataPayloadObj, false);
-                pushSystemOperationalToast("Mass campaign pipeline fully dispatched via remote mail servers.", "success");
-                targetForm.reset();
             } catch (err) {
                 pushSystemOperationalToast(err.message, "error");
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1.5"></i> Initialize Broadcast Pipeline Execution';
+                targetBtn.disabled = false;
+                targetBtn.innerText = "Initialize Secure Session";
             }
         }
 
-        // 12. Cloud Media Assets Mapping Cloudinary Optimization Library Registries
-        async function synchronizeMediaAssetsCloudRegistry() {
-            try {
-                const catalog = await fetchSecure('/media-library');
-                const rootGrid = document.getElementById('mediaCloudAssetsLayoutGrid');
-                rootGrid.innerHTML = '';
+        function showDashboardViewFramework() {
+            document.getElementById('admin-login-view').classList.replace('view-flex', 'view-hidden');
+            document.getElementById('admin-dashboard-view').classList.replace('view-hidden', 'view-flex');
+            switchModule('dashboard');
+        }
 
-                if(catalog.length === 0) {
-                    rootGrid.innerHTML = `<div class="p-4 text-center text-xs font-semibold text-brand-textMuted col-span-full">No optimization logs registered.</div>`;
-                    return;
+        function logoutAdminSession() {
+            localStorage.removeItem('admin_token');
+            document.getElementById('admin-dashboard-view').classList.replace('view-flex', 'view-hidden');
+            document.getElementById('admin-login-view').classList.replace('view-hidden', 'view-flex');
+            pushSystemOperationalToast("Security session cleared.", "success");
+        }
+
+        function switchModule(moduleTarget) {
+            currentActiveModule = moduleTarget;
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark";
+            });
+            
+            const activeNavNode = document.getElementById(`nav-${moduleTarget}`);
+            if (activeNavNode) {
+                activeNavNode.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm";
+            }
+
+            if (moduleTarget === 'dashboard') {
+                renderAnalyticalSummaryMetrics();
+            } else {
+                fetchAndRenderModuleTableRecords(moduleTarget);
+            }
+        }
+
+        async function renderAnalyticalSummaryMetrics() {
+            const contentNode = document.getElementById('module-viewport-content');
+            contentNode.innerHTML = `
+                <div class="flex items-center justify-between border-b border-brand-borderSlate pb-5">
+                    <div>
+                        <h2 class="text-xl font-extrabold font-mono text-brand-textDark tracking-tight uppercase">Operational Control Command Center</h2>
+                        <p class="text-xs text-brand-textMuted mt-1">Real-time processing parameters metrics monitoring pipeline hub.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-brand-borderSlate shadow-sm">
+                        <div class="flex items-center justify-between mb-2"><span class="text-[10px] font-bold uppercase tracking-wider text-brand-textMuted font-mono">System Nodes Registered</span><i class="fa-solid fa-server text-brand-blue"></i></div>
+                        <p class="text-2xl font-black text-brand-textDark font-mono">26 Tables</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-brand-borderSlate shadow-sm">
+                        <div class="flex items-center justify-between mb-2"><span class="text-[10px] font-bold uppercase tracking-wider text-brand-textMuted font-mono">Operations Framework</span><i class="fa-solid fa-microchip text-brand-orange"></i></div>
+                        <p class="text-2xl font-black text-brand-textDark font-mono">CRUD v4.1</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-brand-borderSlate shadow-sm">
+                        <div class="flex items-center justify-between mb-2"><span class="text-[10px] font-bold uppercase tracking-wider text-brand-textMuted font-mono">Security Safeguard</span><i class="fa-solid fa-shield-halved text-emerald-500"></i></div>
+                        <p class="text-2xl font-black text-brand-textDark font-mono">Active</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-brand-borderSlate shadow-sm">
+                        <div class="flex items-center justify-between mb-2"><span class="text-[10px] font-bold uppercase tracking-wider text-brand-textMuted font-mono">Database Connection Tiers</span><i class="fa-solid fa-database text-brand-red"></i></div>
+                        <p class="text-2xl font-black text-brand-textDark font-mono">Live PostgreSQL</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function fetchAndRenderModuleTableRecords(tableName) {
+            const contentNode = document.getElementById('module-viewport-content');
+            contentNode.innerHTML = `
+                <div class="flex justify-center items-center py-12">
+                    <i class="fa-solid fa-circle-notch animate-spin text-2xl text-brand-blue"></i>
+                    <span class="ml-3 font-mono text-xs font-bold uppercase tracking-widest text-brand-textMuted">Accessing System Relational Rows...</span>
+                </div>
+            `;
+
+            try {
+                const dataResponse = await fetchSecure(`/api/admin/${tableName}`, 'GET');
+                entityDataRegistryMap = Array.isArray(dataResponse) ? dataResponse : [];
+                
+                let systemAttributesColumns = schemaEntityDefinitions[tableName]?.fields || [];
+                
+                let headersHTML = `<th class="px-6 py-3 text-left text-[10px] font-bold tracking-wider font-mono uppercase text-brand-textMuted">ID</th>`;
+                systemAttributesColumns.forEach(col => {
+                    headersHTML += `<th class="px-6 py-3 text-left text-[10px] font-bold tracking-wider font-mono uppercase text-brand-textMuted">${col.replace('_', ' ')}</th>`;
+                });
+                headersHTML += `<th class="px-6 py-3 text-right text-[10px] font-bold tracking-wider font-mono uppercase text-brand-textMuted">Actions</th>`;
+
+                let rowsHTML = '';
+                if (entityDataRegistryMap.length === 0) {
+                    rowsHTML = `<tr><td colspan="${systemAttributesColumns.length + 2}" class="px-6 py-12 text-center text-xs font-mono font-bold uppercase tracking-wider text-brand-textMuted bg-white">Zero relational sequence records returned in table block.</td></tr>`;
+                } else {
+                    entityDataRegistryMap.forEach(record => {
+                        rowsHTML += `<tr class="border-b border-brand-borderSlate hover:bg-slate-50 transition-colors bg-white">`;
+                        rowsHTML += `<td class="px-6 py-4 whitespace-nowrap text-xs font-bold font-mono text-brand-textDark">#${record.id}</td>`;
+                        systemAttributesColumns.forEach(col => {
+                            let value = record[col];
+                            if (value && typeof value === 'object') { value = JSON.stringify(value); }
+                            if (value === null || value === undefined) { value = '<span class="text-slate-300 font-mono">NULL</span>'; }
+                            rowsHTML += `<td class="px-6 py-4 whitespace-nowrap text-xs text-brand-textDark font-medium max-w-xs truncate">${value}</td>`;
+                        });
+                        rowsHTML += `
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold font-mono space-x-1">
+                                <button onclick="triggerCRUDModalRecordModification(${record.id})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-brand-blue hover:text-white rounded-lg text-brand-textMuted transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="executeCRUDRecordDeletion(${record.id})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-brand-red hover:text-white rounded-lg text-brand-red transition-all"><i class="fa-solid fa-trash-can"></i></button>
+                            </td>
+                        </tr>`;
+                    });
                 }
 
-                catalog.forEach(media => {
-                    const card = document.createElement('div');
-                    card.className = "p-3 rounded-xl border border-brand-borderSlate bg-slate-50 flex flex-col gap-2 relative group overflow-hidden transition-all hover:bg-slate-100";
-                    card.innerHTML = `
-                        <div class="w-full h-24 bg-white rounded-lg border border-slate-200 overflow-hidden flex items-center justify-center relative">
-                            ${['jpg','jpeg','png','webp','gif'].includes(media.format?.toLowerCase()) ? 
-                                `<img src="${media.url}" class="w-full h-full object-cover">` : 
-                                `<i class="fa-solid fa-file-code text-3xl text-slate-300"></i>`
-                            }
-                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <a href="${media.url}" target="_blank" class="w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-md hover:scale-105 transition-transform"><i class="fa-solid fa-expand text-xs"></i></a>
-                            </div>
+                contentNode.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-brand-borderSlate pb-5">
+                        <div>
+                            <h2 class="text-xl font-extrabold font-mono text-brand-textDark tracking-tight uppercase">Table Hub Matrix: ${tableName.replace('_', ' ')}</h2>
+                            <p class="text-xs text-brand-textMuted mt-1">Direct system abstraction handling CRUD transactions engine for relation layer blocks.</p>
                         </div>
-                        <div class="min-w-0 font-mono text-[10px]">
-                            <p class="font-bold text-slate-800 truncate" title="${media.filename}">${media.filename}</p>
-                            <p class="text-slate-400 mt-0.5">Format: ${media.format || 'unknown'} | Size: ${(media.bytes / 1024).toFixed(1)} KB</p>
-                            <p class="text-[9px] text-brand-blue truncate mt-0.5" title="${media.public_id}">PID: ${media.public_id}</p>
-                        </div>
-                        <button onclick="executeCloudMediaRegistryDecouple(${media.id})" class="absolute top-2 right-2 p-1 bg-white/90 rounded-md text-slate-400 hover:text-brand-red opacity-0 group-hover:opacity-100 transition-opacity border" title="Remove Asset Map Registry">
-                            <i class="fa-solid fa-trash-can text-[10px]"></i>
+                        <button onclick="triggerCRUDModalRecordCreation()" class="px-4 py-2.5 bg-brand-blue text-white rounded-xl text-xs font-bold font-mono uppercase tracking-wider hover:bg-blue-700 shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-circle-plus"></i> Append Row Record
                         </button>
-                    `;
-                    rootGrid.appendChild(card);
-                });
-            } catch (err) { console.error("Media libraries layout registry sync failed: ", err.message); }
+                    </div>
+                    <div class="w-full overflow-hidden rounded-2xl border border-brand-borderSlate shadow-sm bg-white">
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full min-w-full divide-y divide-brand-borderSlate">
+                                <thead class="bg-slate-50"><tr>${headersHTML}</tr></thead>
+                                <tbody class="divide-y divide-brand-borderSlate bg-white">${rowsHTML}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+                contentNode.innerHTML = `<div class="p-6 bg-red-50 text-brand-red font-mono text-xs font-bold rounded-xl border border-red-200 uppercase tracking-wide">Error compiling table data: ${err.message}</div>`;
+            }
         }
 
-        async function executeCloudMediaRegistryDecouple(id) {
-            if(!confirm("Decouple image optimization record from cluster catalog index tracking maps? (Does not wipe core Cloudinary binary storage instances)")) return;
-            try {
-                await fetchSecure(`/media-library/${id}`, 'DELETE');
-                pushSystemOperationalToast("Cloud optimized media registry index component discarded.");
-                synchronizeMediaAssetsCloudRegistry();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
+        function triggerCRUDModalRecordCreation() {
+            currentlySelectedRecordId = null;
+            document.getElementById('modalTitleNode').innerText = `APPEND NEW RECORD ENTRY INTO ${currentActiveModule.toUpperCase()}`;
+            document.getElementById('universalModalPayloadForm').reset();
+            
+            buildDynamicModalFormFields({});
+            document.getElementById('universalCRUDModal').classList.replace('view-hidden', 'view-flex');
         }
 
-        // 13. System Subscribers List Configuration and Testimonials Regulators
-        async function synchronizeSubscribersMailingList() {
-            try {
-                const listing = await fetchSecure('/subscribers');
-                const rootBody = document.getElementById('tableSubscribersContainerBody');
-                rootBody.innerHTML = '';
-
-                listing.forEach(sub => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3 text-sm font-bold text-slate-900 font-mono">${sub.email}</td>
-                        <td class="px-6 py-3 text-xs">
-                            <span class="px-2 py-0.5 rounded font-extrabold uppercase ${sub.status === 'active' ? 'bg-emerald-50 text-emerald-700':'bg-slate-100 text-slate-500'}">${sub.status}</span>
-                        </td>
-                        <td class="px-6 py-3 text-xs text-slate-400 font-mono font-medium">${new Date(sub.created_at).toLocaleString()}</td>
-                    `;
-                    rootBody.appendChild(tr);
-                });
-
-                const feedback = await fetchSecure('/testimonials');
-                const rootTestimonials = document.getElementById('tableTestimonialsContainerBody');
-                rootTestimonials.innerHTML = '';
-
-                feedback.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition-colors";
-                    tr.innerHTML = `
-                        <td class="px-6 py-3.5">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                                    ${row.client_avatar_url ? `<img src="${row.client_avatar_url}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase">${row.client_name[0]}</div>`}
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-slate-900">${row.client_name}</div>
-                                    <div class="text-[10px] text-slate-400 font-medium">${row.client_designation || 'Client'} @ ${row.company || 'Enterprise'}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-3.5 text-xs font-medium text-slate-600 max-w-xs truncate font-sans" title="${row.review}">${row.review}</td>
-                        <td class="px-6 py-3.5 text-xs font-bold text-amber-500 mono-text"><i class="fa-solid fa-star text-[10px]"></i> ${row.rating}/5</td>
-                        <td class="px-6 py-3.5">
-                            <span class="px-2 py-0.5 rounded text-xs font-bold uppercase ${row.is_approved ? 'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'}">${row.status || (row.is_approved ? 'Approved':'pending')}</span>
-                        </td>
-                        <td class="px-6 py-3.5 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick="toggleCorporateReviewApprovalNode(${row.id}, ${!row.is_approved})" class="px-2 py-1 ${row.is_approved ? 'bg-amber-50 text-amber-600 border-amber-200':'bg-emerald-50 text-emerald-600 border-emerald-200'} border text-xs font-bold rounded-lg transition-colors">
-                                    ${row.is_approved ? 'Revoke' : 'Approve'}
-                                </button>
-                                <button onclick="executeCorporateReviewPurge(${row.id})" class="p-1 text-slate-400 hover:text-brand-red transition-colors">
-                                    <i class="fa-solid fa-trash-can text-sm"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    rootTestimonials.appendChild(tr);
-                });
-            } catch (err) { console.error("Subscribers matrix validation loop processing hit fault: ", err.message); }
+        function triggerCRUDModalRecordModification(id) {
+            currentlySelectedRecordId = id;
+            document.getElementById('modalTitleNode').innerText = `UPDATE TRANSACTION ROW ENTRY #${id} IN ${currentActiveModule.toUpperCase()}`;
+            
+            const targetRecord = entityDataRegistryMap.find(r => r.id === id);
+            if (!targetRecord) return;
+            
+            buildDynamicModalFormFields(targetRecord);
+            document.getElementById('universalCRUDModal').classList.replace('view-hidden', 'view-flex');
         }
 
-        async function toggleCorporateReviewApprovalNode(id, approvalBooleanState) {
-            try {
-                await fetchSecure(`/testimonials/${id}/approve`, 'PUT', { is_approved: approvalBooleanState });
-                pushSystemOperationalToast(`Review operational authorization vector set to value: ${approvalBooleanState}`);
-                synchronizeSubscribersMailingList();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
+        function closeUniversalCRUDModal() {
+            document.getElementById('universalCRUDModal').classList.replace('view-flex', 'view-hidden');
         }
 
-        async function executeCorporateTestimonialDeployment(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitTestimonialInput');
-            const targetForm = document.getElementById('testimonialInputRegistryForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-            if(payload.rating) payload.rating = parseInt(payload.rating);
-
-            btn.disabled = true;
-            try {
-                await fetchSecure('/testimonials', 'POST', payload);
-                pushSystemOperationalToast("Corporate review testimonial element committed into cloud index matrices.");
-                targetForm.reset();
-                synchronizeSubscribersMailingList();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-            finally { btn.disabled = false; }
-        }
-
-        async function executeCorporateReviewPurge(id) {
-            if(!confirm("Wipe review data row segment entirely from cloud systems logs?")) return;
-            try {
-                await fetchSecure(`/testimonials/${id}`, 'DELETE');
-                pushSystemOperationalToast("Review testimonial removed from database storage rows.");
-                synchronizeSubscribersMailingList();
-            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
-        }
-
-        // 14. Real-Time WebSockets Synchronization Channels (Socket.io Runtime)
-        function setupWebSocketStreamChannel() {
-            try {
-                const socket = io(window.location.origin);
+        function buildDynamicModalFormFields(recordDataInstance) {
+            const fieldsContainer = document.getElementById('modalFormDynamicInputs');
+            fieldsContainer.innerHTML = '';
+            
+            const activeTargetFields = schemaEntityDefinitions[currentActiveModule]?.fields || [];
+            
+            activeTargetFields.forEach(fieldKey => {
+                const formCellWrapper = document.createElement('div');
+                formCellWrapper.className = "flex flex-col gap-1.5";
                 
-                socket.on('connect', () => {
-                    const stack = document.getElementById('infrastructureLiveLogStack');
-                    if(stack.children[0]?.classList.contains('border-dashed')) stack.innerHTML = '';
-                    appendSocketEventRowToLiveStack("System Link Engine", "WebSocket channel successfully synchronized with production cluster routing nodes.", "success");
-                });
+                const labelNode = document.createElement('label');
+                labelNode.className = "text-[10px] font-bold uppercase tracking-wider text-brand-textMuted font-mono";
+                labelNode.innerText = fieldKey.replace('_', ' ');
+                
+                let dynamicInputNode;
+                const valueData = recordDataInstance[fieldKey] !== undefined ? recordDataInstance[fieldKey] : '';
 
-                socket.on('orderCreated', (data) => {
-                    appendSocketEventRowToLiveStack("Inbound Request Hook", `New transaction received from consumer gateway: KES ${(data.price || 0)}. Executing parsing routines...`);
-                    synchronizeOrdersPipeline();
-                    synchronizeDashboardStatistics();
-                });
+                if (fieldKey === 'password' || fieldKey === 'password_hash') {
+                    dynamicInputNode = document.createElement('input');
+                    dynamicInputNode.type = 'password';
+                    dynamicInputNode.placeholder = 'Secure authentication sequence...';
+                } else if (fieldKey === 'description' || fieldKey === 'content' || fieldKey === 'challenge' || fieldKey === 'solution' || fieldKey === 'result' || fieldKey === 'notes' || fieldKey === 'public_key_pem' || fieldKey === 'ciphertext') {
+                    dynamicInputNode = document.createElement('textarea');
+                    dynamicInputNode.rows = 3;
+                    dynamicInputNode.placeholder = `Provide string content description for ${fieldKey}...`;
+                } else if (fieldKey === 'status' || fieldKey === 'payment_status' || fieldKey === 'role' || fieldKey === 'priority') {
+                    dynamicInputNode = document.createElement('select');
+                    let optionArrayOptions = ['pending', 'active', 'unpaid', 'paid', 'client', 'admin', 'open', 'closed', 'Approved', 'medium', 'high', 'requested', 'available'];
+                    
+                    // Direct programmatic filtering ensuring selection matches column schema requirements
+                    optionArrayOptions.forEach(opt => {
+                        const cellOption = document.createElement('option');
+                        cellOption.value = opt;
+                        cellOption.innerText = opt.toUpperCase();
+                        dynamicInputNode.appendChild(cellOption);
+                    });
+                } else {
+                    dynamicInputNode = document.createElement('input');
+                    dynamicInputNode.type = 'text';
+                    dynamicInputNode.placeholder = `Provide data input value for ${fieldKey}...`;
+                }
 
-                socket.on('projectUpdated', (data) => {
-                    appendSocketEventRowToLiveStack("Track Vector Event", `Production project tracker operational context ID [${data.id}] mutated fields. Updating pipelines.`);
-                    synchronizeProjectsTrack();
-                });
-
-                socket.on('transactionLogged', (data) => {
-                    appendSocketEventRowToLiveStack("M-Pesa API Trigger", `STK Push response handshake evaluated for checkout trace ID: ${data.checkoutRequestId || 'N/A'}`);
-                    synchronizeFinancialLedger();
-                    synchronizeDashboardStatistics();
-                });
-
-                socket.on('disconnect', () => {
-                    appendSocketEventRowToLiveStack("Link Channel Alert", "Connection matrix dropped. Re-attempting WebSocket cluster sync sequences...", "error");
-                });
-            } catch(e) { console.error("Real-time telemetry initialization skipped: connection endpoint unavailable."); }
+                dynamicInputNode.name = fieldKey;
+                dynamicInputNode.id = `form_field_node_${fieldKey}`;
+                dynamicInputNode.value = typeof valueData === 'object' ? JSON.stringify(valueData) : valueData;
+                dynamicInputNode.className = "w-full px-4 py-2.5 bg-slate-50 border border-brand-borderSlate rounded-xl focus:ring-2 focus:ring-brand-blue outline-none text-xs font-semibold font-mono text-brand-textDark tracking-wide transition";
+                
+                formCellWrapper.appendChild(labelNode);
+                formCellWrapper.appendChild(dynamicInputNode);
+                fieldsContainer.appendChild(formCellWrapper);
+            });
         }
 
-        function appendSocketEventRowToLiveStack(eventTypeTitle, eventBodyText, statusLevel = 'info') {
-            const stack = document.getElementById('infrastructureLiveLogStack');
-            const div = document.createElement('div');
-            div.className = `p-3 rounded-xl border text-xs leading-relaxed flex flex-col gap-1 transition-all duration-300 transform translate-x-1 ${
-                statusLevel === 'error' ? 'bg-red-50/60 border-red-200 text-red-950' :
-                statusLevel === 'success' ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950' : 'bg-slate-50 border-slate-200 text-slate-800'
-            }`;
-            div.innerHTML = `
-                <div class="flex items-center justify-between font-bold text-[10px] uppercase tracking-wide">
-                    <span class="${statusLevel === 'error' ? 'text-brand-red' : statusLevel === 'success' ? 'text-emerald-600' : 'text-brand-blue'}">${eventTypeTitle}</span>
-                    <span class="text-slate-400 font-mono">${new Date().toLocaleTimeString()}</span>
-                </div>
-                <div class="font-medium">${eventBodyText}</div>
-            `;
-            stack.insertBefore(div, stack.firstChild);
-            if (stack.children.length > 25) stack.removeChild(stack.lastChild);
+        async function handleModalSubmitExecution(event) {
+            event.preventDefault();
+            const formPayloadObj = new FormData(event.target);
+            const bodyPayloadData = Object.fromEntries(formPayloadObj.entries());
+            
+            // Automation wrapper validating complex column configurations safely
+            if (bodyPayloadData.price) bodyPayloadData.price = parseFloat(bodyPayloadData.price) || 0;
+            if (bodyPayloadData.amount) bodyPayloadData.amount = parseFloat(bodyPayloadData.amount) || 0;
+            if (bodyPayloadData.progress) bodyPayloadData.progress = parseInt(bodyPayloadData.progress) || 0;
+            if (bodyPayloadData.user_id) bodyPayloadData.user_id = parseInt(bodyPayloadData.user_id) || null;
+            if (bodyPayloadData.client_id) bodyPayloadData.client_id = parseInt(bodyPayloadData.client_id) || null;
+            if (bodyPayloadData.order_id) bodyPayloadData.order_id = parseInt(bodyPayloadData.order_id) || null;
+            if (bodyPayloadData.service_id) bodyPayloadData.service_id = parseInt(bodyPayloadData.service_id) || null;
+            if (bodyPayloadData.project_id) bodyPayloadData.project_id = parseInt(bodyPayloadData.project_id) || null;
+            if (bodyPayloadData.author_id) bodyPayloadData.author_id = parseInt(bodyPayloadData.author_id) || null;
+            if (bodyPayloadData.publisher_id) bodyPayloadData.publisher_id = parseInt(bodyPayloadData.publisher_id) || null;
+
+            const requestTargetEndpoint = currentlySelectedRecordId 
+                ? `/api/admin/${currentActiveModule}/${currentlySelectedRecordId}` 
+                : `/api/admin/${currentActiveModule}`;
+                
+            const dynamicHTTPMethod = currentlySelectedRecordId ? 'PUT' : 'POST';
+
+            try {
+                await fetchSecure(requestTargetEndpoint, dynamicHTTPMethod, bodyPayloadData);
+                pushSystemOperationalToast("Database transaction execution committed successfully.", "success");
+                closeUniversalCRUDModal();
+                switchModule(currentActiveModule);
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            }
+        }
+
+        async function executeCRUDRecordDeletion(id) {
+            if (!confirm(`Are you certain you want to purge entry record row #${id} from ${currentActiveModule}?`)) return;
+            
+            try {
+                await fetchSecure(`/api/admin/${currentActiveModule}/${id}`, 'DELETE');
+                pushSystemOperationalToast("Record state row dropped successfully.", "success");
+                switchModule(currentActiveModule);
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            }
         }
     </script>
 </body>
