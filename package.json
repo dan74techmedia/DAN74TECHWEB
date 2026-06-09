@@ -27,12 +27,11 @@
     "pdfkit": "^0.15.0",
     "pg": "^8.11.5",
     "socket.io": "^4.7.5",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
     "aws-sdk": "^2.1500.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
-    
   },
   "keywords": [
     "dan74tech",
@@ -41,7 +40,6 @@
     "express",
     "postgres",
     "neon"
-    
   ],
   "author": "DAN74TECH MEDIA",
   "license": "ISC",
