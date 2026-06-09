@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2 family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -19,7 +19,6 @@
                         brand: {
                             blue: '#0044ff',
                             red: '#ff2a2a',
-                            yellow: '#ffd700',
                             orange: '#FB8C00',
                             slateBg: '#f8fafc',
                             panelWhite: '#ffffff',
@@ -36,1445 +35,685 @@
             }
         }
     </script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .mono-text { font-family: 'JetBrains Mono', monospace; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Loader Animation */
+        .loader-ring { border: 3px solid #f3f3f3; border-top: 3px solid #0044ff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="h-screen overflow-hidden flex bg-brand-slateBg">
 
-    <div id="operationalToastNotificationContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 max-w-sm pointer-events-none"></div>
 
-    <header class="bg-brand-panelWhite border-b border-brand-borderSlate sticky top-0 z-40 px-6 py-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="bg-brand-blue text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-blue-200">D</div>
-            <div>
-                <h1 class="text-base font-extrabold tracking-tight text-brand-textDark">DAN74TECH MEDIA</h1>
-                <p class="text-xs font-semibold text-brand-blue uppercase tracking-wider">Enterprise Execution Matrix v4.1.0</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <div id="systemClockDisplay" class="mono-text font-bold text-sm bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200">
-                00:00:00 UTC
-            </div>
-            <div class="flex items-center gap-2 border-l pl-4 border-slate-200">
-                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center uppercase" id="adminAvatarPlaceholder">A</div>
-                <div class="hidden md:block">
-                    <p class="text-xs font-bold text-brand-textDark" id="adminUserDisplayName">System Administrator</p>
-                    <p class="text-[10px] text-emerald-500 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span> Live Core Mode</p>
+    <div id="loginOverlay" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-transform duration-500 scale-100" id="loginBox">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-brand-blue rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30 mb-4">
+                    <i class="fa-solid fa-fingerprint text-white text-3xl"></i>
                 </div>
-                <button onclick="terminateOperationalSession()" class="ml-2 p-2 text-slate-400 hover:text-brand-red transition-colors rounded-lg hover:bg-red-50" title="Sign Out of Terminal">
+                <h1 class="text-xl font-extrabold text-slate-900 font-mono tracking-tight">DAN74TECH SECURE</h1>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Admin Authorization</p>
+            </div>
+            
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-1">Clearance Email</label>
+                    <input type="email" name="email" required class="w-full bg-slate-50 border border-slate-200 text-sm px-4 py-3 rounded-xl focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none transition-all font-mono">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-extrabold uppercase text-slate-500 tracking-wider mb-1">Cryptographic Key</label>
+                    <input type="password" name="password" required class="w-full bg-slate-50 border border-slate-200 text-sm px-4 py-3 rounded-xl focus:border-brand-blue focus:ring-1 focus:ring-brand-blue outline-none transition-all font-mono">
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold font-mono text-xs uppercase tracking-widest py-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 mt-4">
+                    <i class="fa-solid fa-lock text-emerald-400"></i> Authenticate Session
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboardInterface" class="flex w-full h-full opacity-0 pointer-events-none transition-opacity duration-500">
+        
+        <aside class="w-72 bg-brand-panelWhite border-r border-brand-borderSlate flex flex-col justify-between h-full flex-shrink-0">
+            <div>
+                <div class="p-6 border-b border-brand-borderSlate flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center shadow-md shadow-blue-200">
+                        <i class="fa-solid fa-layer-group text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold tracking-tight text-brand-textDark font-mono uppercase">DAN74TECH MEDIA</h1>
+                        <p class="text-[10px] font-bold text-brand-orange uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Matrix v4.1
+                        </p>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-1 overflow-y-auto custom-scrollbar max-h-[calc(100vh-160px)]">
+                    <button onclick="switchModule('dashboard')" id="nav-dashboard" class="nav-btn active-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm">
+                        <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard Hub
+                    </button>
+                    
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Identity & Commerce</div>
+                    <button onclick="switchModule('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-users text-sm"></i> Global Users</button>
+                    <button onclick="switchModule('services')" id="nav-services" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-cubes text-sm"></i> Base Services</button>
+                    <button onclick="switchModule('sub_services')" id="nav-sub_services" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-tags text-sm"></i> Sub-Pricing Packages</button>
+
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Pipelines & Finance</div>
+                    <button onclick="switchModule('orders')" id="nav-orders" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-basket-shopping text-sm"></i> Client Orders</button>
+                    <button onclick="switchModule('projects')" id="nav-projects" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-bars-progress text-sm"></i> Production Tracks</button>
+                    <button onclick="switchModule('mpesa_transactions')" id="nav-mpesa_transactions" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-mobile-screen text-sm"></i> M-Pesa Ledgers</button>
+                    <button onclick="switchModule('invoices')" id="nav-invoices" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-file-invoice-dollar text-sm"></i> Billing Invoices</button>
+                    
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Content Ecosystem</div>
+                    <button onclick="switchModule('blog_posts')" id="nav-blog_posts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-newspaper text-sm"></i> Editorial Blogs</button>
+                    <button onclick="switchModule('case_studies')" id="nav-case_studies" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-briefcase text-sm"></i> Case Studies</button>
+                    <button onclick="switchModule('portfolio')" id="nav-portfolio" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-folder-open text-sm"></i> Portfolios</button>
+                    <button onclick="switchModule('media_library')" id="nav-media_library" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-photo-film text-sm"></i> CDN Media Maps</button>
+                    
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Engagement & Support</div>
+                    <button onclick="switchModule('client_communications')" id="nav-client_communications" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-comments text-sm"></i> E2EE CRM Threads</button>
+                    <button onclick="switchModule('support_tickets')" id="nav-support_tickets" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-ticket text-sm"></i> Support Tickets</button>
+                    <button onclick="switchModule('testimonials')" id="nav-testimonials" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-star text-sm"></i> Testimonials</button>
+                    <button onclick="switchModule('subscribers')" id="nav-subscribers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-envelope-open-text text-sm"></i> Mailing List</button>
+                    <button onclick="switchModule('broadcast')" id="nav-broadcast" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark"><i class="fa-solid fa-satellite-dish text-sm"></i> Mass Broadcast</button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-brand-borderSlate bg-slate-50 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-slate-900 flex items-center justify-center">
+                        <i class="fa-solid fa-user-shield text-emerald-400 text-xs"></i>
+                    </div>
+                    <div>
+                        <h4 id="authAdminName" class="text-xs font-bold text-brand-textDark font-mono truncate max-w-[120px]">Admin</h4>
+                        <p class="text-[10px] text-emerald-600 font-mono font-bold">Secure Session</p>
+                    </div>
+                </div>
+                <button onclick="executeLogoutSequence()" class="p-2 text-slate-400 hover:text-brand-red transition-colors bg-white border border-slate-200 rounded-lg shadow-sm" title="Terminate Secure Session">
                     <i class="fa-solid fa-power-off text-sm"></i>
                 </button>
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <div class="flex flex-1 flex-col lg:flex-row min-h-0">
-        
-        <nav class="w-full lg:w-72 bg-brand-panelWhite border-b lg:border-b-0 lg:border-r border-brand-borderSlate p-4 flex flex-col gap-1 overflow-y-auto shrink-0">
-            <p class="text-[10px] font-bold text-brand-textMuted uppercase tracking-wider px-3 mb-2">Operational Command Center</p>
-            
-            <button onclick="switchActiveOperationalTab('dashboardOverviewTab')" id="btn-dashboardOverviewTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all bg-brand-blue text-white shadow-sm shadow-blue-100">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-chart-pie text-base"></i> Infrastructure Overview</div>
-                <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('ordersWorkflowTab')" id="btn-ordersWorkflowTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-receipt text-base text-slate-400"></i> Service Orders & Pipings</div>
-                <span id="badge-orders-count" class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('projectsTrackingTab')" id="btn-projectsTrackingTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-list-check text-base text-slate-400"></i> Production Trackers</div>
-                <span id="badge-projects-count" class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('financialLedgerTab')" id="btn-financialLedgerTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-wallet text-base text-slate-400"></i> Financial M-Pesa Logs</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('servicesCatalogTab')" id="btn-servicesCatalogTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-cubes text-base text-slate-400"></i> Service Definitions</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('editorialPublishingTab')" id="btn-editorialPublishingTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-newspaper text-base text-slate-400"></i> Content & Showcases</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('usersDirectoryTab')" id="btn-usersDirectoryTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-users text-base text-slate-400"></i> Users & Legacy Clients</div>
-            </button>
-
-            <button onclick="switchActiveOperationalTab('engagementHubTab')" id="btn-engagementHubTab" class="nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                <div class="flex items-center gap-2.5"><i class="fa-solid fa-comments text-base text-slate-400"></i> CRM Inquiries & Tickets</div>
-            </button>
-
-            <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-2">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] font-semibold text-brand-textMuted leading-relaxed">
-                    <div class="text-brand-textDark font-bold mb-1 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-blue"></i> Security Clearance</div>
-                    <span id="activeTokenRoleBadge" class="bg-blue-50 text-brand-blue border border-blue-200 px-1.5 py-0.5 rounded uppercase font-mono tracking-wider font-bold">Admin Node</span>
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            <header class="h-20 bg-brand-panelWhite border-b border-brand-borderSlate flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
+                <div>
+                    <h2 id="activeWorkspaceTitle" class="text-base font-extrabold text-brand-textDark font-mono uppercase tracking-wider">Dashboard Hub</h2>
+                    <p id="activeWorkspaceSubtitle" class="text-xs font-medium text-brand-textMuted">System telemetry and active matrix operational nodes.</p>
                 </div>
-            </div>
-        </nav>
-
-        <main class="flex-1 p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6">
-
-            <section id="dashboardOverviewTab" class="operational-view-segment flex flex-col gap-6">
-                <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-extrabold tracking-tight">System Status Map</h2>
-                    <p class="text-xs text-brand-textMuted font-medium">Real-time system health and operation status.</p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider">Gross Pipeline Funds</p>
-                            <h3 id="metricGrossFinancialVolume" class="text-2xl font-black text-brand-textDark tracking-tight mt-1">KES 0.00</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center text-xl"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider">Active Service Orders</p>
-                            <h3 id="metricActiveOrdersVolume" class="text-2xl font-black text-brand-textDark tracking-tight mt-1">0 Records</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-brand-orange flex items-center justify-center text-xl"><i class="fa-solid fa-box-archive"></i></div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider">Tracked Users</p>
-                            <h3 id="metricRegisteredUsersVolume" class="text-2xl font-black text-brand-textDark tracking-tight mt-1">0 Accounts</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl"><i class="fa-solid fa-user-shield"></i></div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-[11px] font-bold text-brand-textMuted uppercase tracking-wider">Operational Integrity</p>
-                            <h3 class="text-2xl font-black text-emerald-600 tracking-tight mt-1 flex items-center gap-1.5">100% <span class="text-xs font-bold text-emerald-400">SECURE</span></h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-red-50 text-brand-red flex items-center justify-center text-xl"><i class="fa-solid fa-heart-pulse"></i></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-network-wired text-brand-blue"></i> Live Telemetry Stream</h4>
-                            <span class="bg-slate-100 text-slate-700 font-mono text-[10px] px-2 py-0.5 rounded-md font-bold">Node Listening</span>
-                        </div>
-                        <div id="infrastructureLiveLogStack" class="flex flex-col gap-2 h-[320px] overflow-y-auto custom-scrollbar pr-1 font-mono">
-                            <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 text-[11px] font-medium text-slate-500 text-center py-12">
-                                Awaiting data connection stream...
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-file-invoice text-brand-blue"></i> Create Invoice</h4>
-                        <form id="billingInvoiceAssemblyForm" onsubmit="executeInvoiceGenerationEngine(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Order Lookup ID *</label>
-                                <input type="number" name="order_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Invoice Code Reference *</label>
-                                <input type="text" name="invoice_number" placeholder="INV-2026-001" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Client Full Name *</label>
-                                <input type="text" name="client_name" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Client Communications Email *</label>
-                                <input type="email" name="client_email" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Settlement Value Amount (KES) *</label>
-                                <input type="number" step="0.01" name="amount" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <button type="submit" id="btnSubmitInvoiceCreation" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-all mt-2">
-                                Generate Document
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="ordersWorkflowTab" class="operational-view-segment hidden flex flex-col gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-extrabold tracking-tight">Service Orders Matrix</h2>
-                        <p class="text-xs text-brand-textMuted font-medium">Manage client service orders and technical metrics.</p>
-                    </div>
-                </div>
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                    <th class="p-4">ID / Metadata</th>
-                                    <th class="p-4">Client Detail</th>
-                                    <th class="p-4">Target Service</th>
-                                    <th class="p-4">Staging Environment</th>
-                                    <th class="p-4">Value</th>
-                                    <th class="p-4">Status Map</th>
-                                    <th class="p-4 text-right">Operations</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ordersRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                <tr>
-                                    <td colspan="7" class="p-8 text-center text-brand-textMuted">Fetching order logs...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="projectsTrackingTab" class="operational-view-segment hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 flex flex-col gap-4">
-                        <div>
-                            <h2 class="text-xl font-extrabold tracking-tight">Active Production Project Trackers</h2>
-                            <p class="text-xs text-brand-textMuted font-medium">Monitor and manage the milestones and progression of ongoing projects.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                            <th class="p-4">Track ID</th>
-                                            <th class="p-4">Project Workspace</th>
-                                            <th class="p-4">Milestone Progress</th>
-                                            <th class="p-4">Status</th>
-                                            <th class="p-4 text-right">Operations</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="projectsRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                        <tr>
-                                            <td colspan="5" class="p-8 text-center text-brand-textMuted">Polling live pipeline maps...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm h-fit flex flex-col gap-4">
-                        <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-diagram-project text-brand-blue"></i> Deploy Production Track</h4>
-                        <form id="projectTrackingDeploymentForm" onsubmit="executeProjectTrackProvisioning(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Associated Client Account ID *</label>
-                                <input type="number" name="client_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Order Mapping Reference ID *</label>
-                                <input type="number" name="order_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Project Label / Title *</label>
-                                <input type="text" name="project_name" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Initial Completion Weight (%)</label>
-                                <input type="number" name="progress" min="0" max="100" value="0" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Status Vector Category</label>
-                                <select name="status" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                    <option value="Pending">Pending</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Review Phase">Review Phase</option>
-                                    <option value="Completed">Completed</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <label class="text-brand-textMuted">Developer Notes</label>
-                                <textarea name="notes" rows="3" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                            </div>
-                            <button type="submit" id="btnSubmitNewProjectTrack" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-all mt-1">
-                                Initialize Track Node
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <section id="financialLedgerTab" class="operational-view-segment hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 flex flex-col gap-4">
-                        <div>
-                            <h2 class="text-xl font-extrabold tracking-tight">M-Pesa API Audit Ledger</h2>
-                            <p class="text-xs text-brand-textMuted font-medium">Review payment verifications and API callbacks from M-Pesa transactions.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                            <th class="p-4">Receipt</th>
-                                            <th class="p-4">Source Device Phone</th>
-                                            <th class="p-4">Transacted Value</th>
-                                            <th class="p-4">API Verification Status</th>
-                                            <th class="p-4">Timestamp</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="mpesaLedgerRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                        <tr>
-                                            <td colspan="5" class="p-8 text-center text-brand-textMuted">Polling mobile network logs...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-receipt text-emerald-600"></i> Issued Billing Invoices</h4>
-                            <div id="invoicesListRenderRack" class="flex flex-col gap-3 max-h-[480px] overflow-y-auto custom-scrollbar pr-1">
-                                <p class="text-[11px] text-brand-textMuted font-medium text-center py-6">Loading active invoicing register...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="servicesCatalogTab" class="operational-view-segment hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 flex flex-col gap-4">
-                        <div>
-                            <h2 class="text-xl font-extrabold tracking-tight">Active Corporate Service Catalogs</h2>
-                            <p class="text-xs text-brand-textMuted font-medium">Configure primary service offerings and assign service sub-packages.</p>
-                        </div>
-                        <div id="servicesFrameworkFlexGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p class="text-xs text-brand-textMuted font-medium py-12 text-center col-span-2">Polling corporate directories...</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-square-plus text-brand-blue"></i> Register Primary Service</h4>
-                            <form id="primaryServiceRegistryForm" onsubmit="executePrimaryServiceDeployment(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Service Category Name *</label>
-                                    <input type="text" name="name" placeholder="Cyber Security Suite" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">FontAwesome Vector Icon Class *</label>
-                                    <input type="text" name="icon" placeholder="fa-shield-halved" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Comprehensive Structural Summary</label>
-                                    <textarea name="description" rows="3" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewServiceRegistry" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
-                                    Deploy Service Node
-                                </button>
-                            </form>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-tags text-brand-orange"></i> Append Package Pricing</h4>
-                            <form id="subServicePricingRegistryForm" onsubmit="executeSubServicePricingDeployment(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Parent Catalog Category ID *</label>
-                                    <input type="number" name="service_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Package Level Designation *</label>
-                                    <input type="text" name="name" placeholder="Enterprise Perimeter Audit" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Standard Service Fee (KES) *</label>
-                                    <input type="number" step="0.01" name="price" value="0.00" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Package Scope Parameters</label>
-                                    <textarea name="description" rows="2" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewSubServiceRegistry" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
-                                    Inject Package Node
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="editorialPublishingTab" class="operational-view-segment hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 flex flex-col gap-4">
-                        <div>
-                            <h2 class="text-xl font-extrabold tracking-tight">Editorial Hub & Systems Showcase</h2>
-                            <p class="text-xs text-brand-textMuted font-medium">Manage editorial blogs, corporate case studies, and public system showcases.</p>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                            <th class="p-4">Resource Vector</th>
-                                            <th class="p-4">Content Title</th>
-                                            <th class="p-4">Lifecycle State</th>
-                                            <th class="p-4 text-right">Operations</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="editorialAssetsRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                        <tr>
-                                            <td colspan="4" class="p-8 text-center text-brand-textMuted">Parsing cross-entity indexes...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-6">
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-brand-blue"></i> Deploy Editorial Blog</h4>
-                            <form id="blogPostAssemblyForm" onsubmit="executeEditorialBlogPostDeployment(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Author User ID *</label>
-                                    <input type="number" name="author_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Blog Article Title *</label>
-                                    <input type="text" name="title" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Dynamic URL Route Slug *</label>
-                                    <input type="text" name="slug" placeholder="future-of-cyber-ops" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Cluster Category Title</label>
-                                    <input type="text" name="category" placeholder="Network Engineering" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Summary Brief</label>
-                                    <input type="text" name="summary" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Primary Image URL Resource</label>
-                                    <input type="text" name="image_url" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Full Body Text Content *</label>
-                                    <textarea name="content" rows="4" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewBlogPost" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
-                                    Publish Article Track
-                                </button>
-                            </form>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-briefcase text-brand-orange"></i> Deploy Case Study</h4>
-                            <form id="caseStudyAssemblyForm" onsubmit="executeCorporateCaseStudyDeployment(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Publisher Identity ID *</label>
-                                    <input type="number" name="publisher_id" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Case Study Title *</label>
-                                    <input type="text" name="title" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Operational Challenge Statement</label>
-                                    <textarea name="challenge" rows="2" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Applied Solution Architecture</label>
-                                    <textarea name="solution" rows="2" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Quantifiable Results Matrix</label>
-                                    <textarea name="result" rows="2" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewCaseStudy" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
-                                    Deploy Case Study Node
-                                </button>
-                            </form>
-                        </div>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-4">
-                            <h4 class="text-xs font-bold text-brand-textDark uppercase tracking-wider border-b pb-3 border-slate-100 flex items-center gap-2"><i class="fa-solid fa-folder-plus text-brand-blue"></i> Append Portfolio Target</h4>
-                            <form id="portfolioAssetAssemblyForm" onsubmit="executeSystemPortfolioShowcaseDeployment(event)" class="flex flex-col gap-3 text-xs font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Linked Order ID Reference</label>
-                                    <input type="number" name="order_id" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Showcase Title Designation *</label>
-                                    <input type="text" name="title" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Category Group *</label>
-                                    <input type="text" name="category" placeholder="Web Engines" required class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Live Production URL Link</label>
-                                    <input type="url" name="link" placeholder="https://..." class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-brand-textMuted">Project Summary / Scope</label>
-                                    <textarea name="description" rows="2" class="p-2 rounded-lg border border-brand-borderSlate bg-slate-50 font-medium custom-scrollbar"></textarea>
-                                </div>
-                                <button type="submit" id="btnSubmitNewPortfolioAsset" class="bg-slate-900 text-white font-bold tracking-wide py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
-                                    Inject Portfolio Asset
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="usersDirectoryTab" class="operational-view-segment hidden flex flex-col gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-extrabold tracking-tight">Identity & Directory Matrices</h2>
-                        <p class="text-xs text-brand-textMuted font-medium">Review credentials for active deployment nodes and read historical user records.</p>
-                    </div>
-                    <div class="flex items-center bg-white border border-brand-borderSlate p-1 rounded-xl shadow-sm self-start">
-                        <button id="toggleScopeUserDirectoryBtn" onclick="toggleDirectoryCatalogTarget('users')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-blue text-white shadow-sm">
-                            System Users Registry
-                        </button>
-                        <button id="toggleScopeLegacyDirectoryBtn" onclick="toggleDirectoryCatalogTarget('clients')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-brand-textDark hover:bg-slate-50">
-                            Legacy Client Directory
-                        </button>
-                    </div>
-                </div>
-                <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                    <th class="p-4">Account ID</th>
-                                    <th class="p-4">Profile Identity Name</th>
-                                    <th class="p-4">Communications Channel (Email)</th>
-                                    <th class="p-4">Security Access Role</th>
-                                    <th class="p-4 text-right">Operations</th>
-                                </tr>
-                            </thead>
-                            <tbody id="directoryTargetRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                <tr>
-                                    <td colspan="5" class="p-8 text-center text-brand-textMuted">Scanning primary data structures...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="engagementHubTab" class="operational-view-segment hidden flex flex-col gap-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="flex flex-col gap-4">
-                        <h3 class="text-base font-extrabold tracking-tight flex items-center gap-2"><i class="fa-solid fa-envelope-open-text text-brand-blue"></i> Public Contact Inquiries</h3>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                            <th class="p-4">Inquirer</th>
-                                            <th class="p-4">Subject Vector</th>
-                                            <th class="p-4">State</th>
-                                            <th class="p-4 text-right">Operations</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="publicInquiriesRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                        <tr>
-                                            <td colspan="4" class="p-6 text-center text-brand-textMuted">Polling customer messages...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-4">
-                        <h3 class="text-base font-extrabold tracking-tight flex items-center gap-2"><i class="fa-solid fa-ticket text-brand-orange"></i> Technical Support Tickets</h3>
-                        <div class="bg-brand-panelWhite border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50/70 border-b border-brand-borderSlate text-[10px] font-bold uppercase tracking-wider text-brand-textMuted">
-                                            <th class="p-4">ID / User ID</th>
-                                            <th class="p-4">Subject Parameter</th>
-                                            <th class="p-4">Priority / Status</th>
-                                            <th class="p-4 text-right">Operations</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="supportTicketsRenderGridTarget" class="text-xs divide-y divide-slate-100 font-medium">
-                                        <tr>
-                                            <td colspan="4" class="p-6 text-center text-brand-textMuted">Reading active ticket files...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <div id="workspaceContextualActions" class="flex items-center gap-3"></div>
+            </header>
+            <div id="workspaceContentViewport" class="flex-1 p-8 overflow-y-auto custom-scrollbar"></div>
         </main>
     </div>
 
-    <div id="masterTelemetryInspectionModalDrawer" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-brand-panelWhite w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[85vh]">
-            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-                <div>
-                    <h3 id="modalTelemetryHeaderTitle" class="text-sm font-bold uppercase tracking-wider">Object Telemetry Viewer</h3>
-                    <p id="modalTelemetryHeaderSubtitle" class="text-[10px] text-slate-400 font-mono mt-0.5">ID: NULL</p>
-                </div>
-                <button onclick="dismissTelemetryInspectionModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
-                    <i class="fa-solid fa-xmark"></i>
+    <div id="structuralActionModalPortal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+        <div class="bg-brand-panelWhite w-full max-w-3xl rounded-2xl shadow-2xl border border-brand-borderSlate overflow-hidden transform scale-95 transition-all duration-300 flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-brand-borderSlate bg-slate-50 flex items-center justify-between shrink-0">
+                <h3 id="modalInterfaceTitle" class="text-xs font-extrabold font-mono uppercase text-brand-textDark tracking-wider"><i class="fa-solid fa-database text-brand-blue mr-2"></i> Modify Structure Entry</h3>
+                <button type="button" onclick="closeActiveModalWindow()" class="text-slate-400 hover:text-brand-red transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div id="modalTelemetryCoreBodyPayload" class="p-6 overflow-y-auto custom-scrollbar flex flex-col gap-4 text-xs font-semibold">
+            <form id="dynamicMatrixDataAssemblyForm" onsubmit="executeWriteSubmitPipeline(event)" class="flex flex-col overflow-hidden">
+                <div id="dynamicFormFieldsStack" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5 overflow-y-auto custom-scrollbar"></div>
+                <div class="p-5 border-t border-brand-borderSlate bg-slate-50 flex items-center justify-end gap-3 shrink-0">
+                    <button type="button" onclick="closeActiveModalWindow()" class="px-5 py-2.5 text-xs font-bold font-mono uppercase border border-slate-300 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors">Cancel</button>
+                    <button type="submit" id="submitActionButtonText" class="px-6 py-2.5 text-xs font-bold font-mono uppercase bg-brand-blue text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200 flex items-center gap-2">
+                        <i class="fa-solid fa-hard-drive"></i> Commit Data Write
+                    </button>
                 </div>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button onclick="dismissTelemetryInspectionModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:bg-slate-300 transition-colors">
-                    Dismiss Inspector
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 
     <script>
-        // System Wide Global Variable Configuration States
-        const SYSTEM_SECURE_API_HOST_ADDRESS = ""; 
-        let activeDirectoryScopeTarget = "users";
+        const API_BASE = window.location.origin;
+        const TOKEN_KEY = 'dan74tech_admin_token_v5';
+        
+        let appState = {
+            module: 'dashboard',
+            mode: 'list',
+            activeId: null,
+            cachedRecords: []
+        };
 
-        // Application Lifecyle Control Execution Engine
-        document.addEventListener("DOMContentLoaded", () => {
-            enforceOperationalAccessClearance();
-            initializeSystemHardwareClock();
-            executeTelemetryMonitoringStreamRefresh();
+        // ==========================================
+        // SCHEMA-STRICT METADATA REGISTRY
+        // Mapped exactly to your PostgreSQL schema fields
+        // ==========================================
+        const MODULE_REGISTRY = {
+            users: {
+                endpoint: 'users', label: 'Global Users', hasFiles: false, columns: ['id', 'name', 'email', 'role', 'is_online'],
+                fields: [
+                    { name: 'name', label: 'Full Name', type: 'text', required: true },
+                    { name: 'email', label: 'Email Address', type: 'email', required: true },
+                    { name: 'password', label: 'Password (Leave blank on edit to retain)', type: 'password', required: false },
+                    { name: 'role', label: 'System Role', type: 'select', options: ['admin', 'client'], required: true },
+                    { name: 'phone', label: 'Phone Number', type: 'text', required: false }
+                ]
+            },
+            services: {
+                endpoint: 'services', label: 'Base Services', hasFiles: false, columns: ['id', 'name', 'icon'],
+                fields: [
+                    { name: 'name', label: 'Service Name', type: 'text', required: true },
+                    { name: 'icon', label: 'FA Icon Class (e.g. fa-solid fa-code)', type: 'text', required: true },
+                    { name: 'description', label: 'Description', type: 'textarea', required: true }
+                ]
+            },
+            sub_services: {
+                endpoint: 'sub-services', label: 'Sub-Pricing Packages', hasFiles: false, columns: ['id', 'service_id', 'name', 'price'],
+                fields: [
+                    { name: 'service_id', label: 'Parent Service ID', type: 'number', required: true },
+                    { name: 'name', label: 'Package Name', type: 'text', required: true },
+                    { name: 'price', label: 'Price (KES)', type: 'number', required: true },
+                    { name: 'description', label: 'Description', type: 'textarea', required: true }
+                ]
+            },
+            orders: {
+                endpoint: 'orders', label: 'Client Orders', hasFiles: false, columns: ['id', 'customer_name', 'service', 'price', 'status', 'payment_status'],
+                fields: [
+                    { name: 'user_id', label: 'User ID (Client)', type: 'number', required: false },
+                    { name: 'customer_name', label: 'Customer Name', type: 'text', required: true },
+                    { name: 'phone', label: 'Phone Number', type: 'text', required: true },
+                    { name: 'service', label: 'Service Name', type: 'text', required: true },
+                    { name: 'sub_service', label: 'Sub Service', type: 'text', required: false },
+                    { name: 'domain', label: 'Domain/URL', type: 'text', required: false },
+                    { name: 'device_model', label: 'Device Model', type: 'text', required: false },
+                    { name: 'project_details', label: 'Project Details', type: 'textarea', required: false },
+                    { name: 'price', label: 'Total Price', type: 'number', required: true },
+                    { name: 'status', label: 'Order Status', type: 'select', options: ['pending', 'processing', 'completed', 'cancelled'], required: true },
+                    { name: 'payment_status', label: 'Payment Status', type: 'select', options: ['unpaid', 'processing', 'paid'], required: true },
+                    { name: 'staging_environment', label: 'Staging Env Link', type: 'text', required: false },
+                    { name: 'domain_criteria', label: 'Domain Criteria', type: 'text', required: false },
+                    { name: 'hardware_serial', label: 'Hardware Serial', type: 'text', required: false },
+                    { name: 'cyber_tracking_key', label: 'Cyber Tracking Key', type: 'text', required: false }
+                ]
+            },
+            projects: {
+                endpoint: 'projects', label: 'Production Tracks', hasFiles: false, columns: ['id', 'order_id', 'project_name', 'progress', 'status'],
+                fields: [
+                    { name: 'client_id', label: 'Client User ID', type: 'number', required: false },
+                    { name: 'order_id', label: 'Order Reference ID', type: 'number', required: true },
+                    { name: 'project_name', label: 'Project Tracking Name', type: 'text', required: true },
+                    { name: 'progress', label: 'Progress (%)', type: 'number', required: true },
+                    { name: 'status', label: 'Track Status', type: 'select', options: ['Pending', 'In Progress', 'Suspended', 'Finished'], required: true },
+                    { name: 'notes', label: 'Internal Notes', type: 'textarea', required: false }
+                ]
+            },
+            mpesa_transactions: {
+                endpoint: 'mpesa_transactions', label: 'M-Pesa Ledgers', hasFiles: false, columns: ['id', 'order_id', 'mpesa_receipt_number', 'amount', 'status'],
+                fields: [
+                    { name: 'order_id', label: 'Order ID', type: 'number', required: false },
+                    { name: 'user_id', label: 'User ID', type: 'number', required: false },
+                    { name: 'phone_number', label: 'M-Pesa Phone', type: 'text', required: true },
+                    { name: 'amount', label: 'Amount Processed', type: 'number', required: true },
+                    { name: 'mpesa_receipt_number', label: 'Receipt/Txn String', type: 'text', required: true },
+                    { name: 'checkout_request_id', label: 'Checkout Request ID', type: 'text', required: true },
+                    { name: 'merchant_request_id', label: 'Merchant Request ID', type: 'text', required: true },
+                    { name: 'status', label: 'Status', type: 'text', required: true },
+                    { name: 'result_desc', label: 'Result Description', type: 'textarea', required: false }
+                ]
+            },
+            invoices: {
+                endpoint: 'invoices', label: 'Billing Invoices', hasFiles: false, columns: ['id', 'invoice_number', 'client_name', 'amount', 'status'],
+                fields: [
+                    { name: 'order_id', label: 'Order ID', type: 'number', required: false },
+                    { name: 'invoice_number', label: 'Invoice Serial', type: 'text', required: true },
+                    { name: 'client_name', label: 'Client Name', type: 'text', required: true },
+                    { name: 'client_email', label: 'Client Email', type: 'email', required: false },
+                    { name: 'amount', label: 'Amount (KES)', type: 'number', required: true },
+                    { name: 'status', label: 'Payment Status', type: 'select', options: ['unpaid', 'paid'], required: true },
+                    { name: 'pdf_url', label: 'Remote PDF URL', type: 'text', required: false }
+                ]
+            },
+            blog_posts: {
+                endpoint: 'blogs', label: 'Editorial Blogs', hasFiles: true, columns: ['id', 'title', 'category', 'status', 'is_approved'],
+                fields: [
+                    { name: 'title', label: 'Blog Title', type: 'text', required: true },
+                    { name: 'slug', label: 'URL Slug', type: 'text', required: true },
+                    { name: 'category', label: 'Category', type: 'text', required: false },
+                    { name: 'summary', label: 'Abstract Summary', type: 'textarea', required: false },
+                    { name: 'content', label: 'Markdown/HTML Content', type: 'textarea', required: true },
+                    { name: 'image_url', label: 'Cover Image URL', type: 'text', required: false }, // Text mapping fallback due to standard server setup vs direct cloudinary upload
+                    { name: 'seo_title', label: 'SEO Anchor Title', type: 'text', required: false },
+                    { name: 'seo_description', label: 'SEO Description', type: 'textarea', required: false },
+                    { name: 'author_id', label: 'Author ID', type: 'number', required: false },
+                    { name: 'status', label: 'Lifecycle Status', type: 'select', options: ['pending', 'Approved'], required: true },
+                    { name: 'is_approved', label: 'Public Approval Flag', type: 'select', options: ['true', 'false'], required: true }
+                ]
+            },
+            case_studies: {
+                endpoint: 'case-studies', label: 'Case Studies', hasFiles: true, columns: ['id', 'title', 'category', 'status'],
+                fields: [
+                    { name: 'title', label: 'Case Study Title', type: 'text', required: true },
+                    { name: 'category', label: 'Category', type: 'text', required: false },
+                    { name: 'challenge', label: 'The Challenge', type: 'textarea', required: false },
+                    { name: 'solution', label: 'The Solution', type: 'textarea', required: false },
+                    { name: 'result', label: 'The Outcome/Result', type: 'textarea', required: false },
+                    { name: 'image_url', label: 'Cover Image URL', type: 'text', required: false },
+                    { name: 'author_id', label: 'Author ID', type: 'number', required: false },
+                    { name: 'status', label: 'Lifecycle Status', type: 'select', options: ['pending', 'Approved'], required: true },
+                    { name: 'is_approved', label: 'Public Approval Flag', type: 'select', options: ['true', 'false'], required: true }
+                ]
+            },
+            portfolio: {
+                endpoint: 'portfolio', label: 'Portfolios', hasFiles: false, columns: ['id', 'title', 'category', 'progress', 'status'],
+                fields: [
+                    { name: 'order_id', label: 'Order ID Reference', type: 'number', required: false },
+                    { name: 'title', label: 'Portfolio Project Title', type: 'text', required: true },
+                    { name: 'category', label: 'Category Domain', type: 'text', required: true },
+                    { name: 'description', label: 'Project Description', type: 'textarea', required: false },
+                    { name: 'link', label: 'Live Deploy URL', type: 'text', required: false },
+                    { name: 'progress', label: 'Completion %', type: 'number', required: false },
+                    { name: 'status', label: 'Current State', type: 'select', options: ['In Progress', 'Completed'], required: true },
+                    { name: 'publisher_name', label: 'Author/Publisher Name', type: 'text', required: false },
+                    { name: 'is_approved', label: 'Approved for Public?', type: 'select', options: ['true', 'false'], required: true }
+                ]
+            },
+            media_library: {
+                endpoint: 'media-library', label: 'CDN Media Maps', hasFiles: false, columns: ['id', 'filename', 'format', 'bytes'],
+                fields: [
+                    { name: 'public_id', label: 'Cloudinary Public ID', type: 'text', required: true },
+                    { name: 'url', label: 'Direct Image Asset URL', type: 'text', required: true },
+                    { name: 'filename', label: 'Original Filename', type: 'text', required: true },
+                    { name: 'format', label: 'File Format', type: 'text', required: false },
+                    { name: 'bytes', label: 'Size (Bytes)', type: 'number', required: false }
+                ]
+            },
+            client_communications: {
+                endpoint: 'client_communications', label: 'E2EE CRM Threads', hasFiles: false, columns: ['id', 'sender_id', 'receiver_id', 'channel', 'delivery_status'],
+                fields: [
+                    { name: 'sender_id', label: 'Sender User ID', type: 'number', required: false },
+                    { name: 'receiver_id', label: 'Receiver User ID', type: 'number', required: false },
+                    { name: 'message_body', label: 'Unencrypted Fallback Text', type: 'textarea', required: false },
+                    { name: 'ciphertext', label: 'E2EE Cipher Block', type: 'textarea', required: false },
+                    { name: 'iv', label: 'Initialization Vector', type: 'text', required: false },
+                    { name: 'sender_wrapped_key', label: 'Sender Wrapped Key', type: 'textarea', required: false },
+                    { name: 'receiver_wrapped_key', label: 'Receiver Wrapped Key', type: 'textarea', required: false },
+                    { name: 'channel', label: 'Routing Channel', type: 'text', required: true },
+                    { name: 'delivery_status', label: 'Delivery Status', type: 'text', required: true }
+                ]
+            },
+            support_tickets: {
+                endpoint: 'support/tickets', label: 'Support Tickets', hasFiles: false, columns: ['id', 'user_id', 'subject', 'priority', 'status'],
+                fields: [
+                    { name: 'user_id', label: 'Filing Client ID', type: 'number', required: true },
+                    { name: 'subject', label: 'Subject Heading', type: 'text', required: true },
+                    { name: 'description', label: 'Incident Description Context', type: 'textarea', required: true },
+                    { name: 'priority', label: 'Priority Escalation', type: 'select', options: ['low', 'medium', 'high', 'critical'], required: true },
+                    { name: 'status', label: 'Triage Status', type: 'select', options: ['open', 'in_progress', 'resolved', 'closed'], required: true }
+                ]
+            },
+            testimonials: {
+                endpoint: 'testimonials', label: 'Testimonials', hasFiles: false, columns: ['id', 'client_name', 'company', 'rating', 'status'],
+                fields: [
+                    { name: 'client_name', label: 'Client Full Name', type: 'text', required: true },
+                    { name: 'client_designation', label: 'Client Title/Role', type: 'text', required: false },
+                    { name: 'company', label: 'Company Affiliation', type: 'text', required: false },
+                    { name: 'client_avatar_url', label: 'Avatar Asset URL', type: 'text', required: false },
+                    { name: 'rating', label: 'Rating (1-5)', type: 'number', required: true },
+                    { name: 'review', label: 'Testimonial Review Body', type: 'textarea', required: true },
+                    { name: 'status', label: 'Operational Status', type: 'select', options: ['pending', 'Approved'], required: true },
+                    { name: 'is_featured', label: 'Is Featured Highlight?', type: 'select', options: ['true', 'false'], required: true },
+                    { name: 'is_approved', label: 'Globally Approved?', type: 'select', options: ['true', 'false'], required: true }
+                ]
+            },
+            subscribers: {
+                endpoint: 'subscribers', label: 'Mailing List', hasFiles: false, columns: ['id', 'email', 'status'],
+                fields: [
+                    { name: 'email', label: 'Target Email Box', type: 'email', required: true },
+                    { name: 'status', label: 'Subscription State', type: 'select', options: ['active', 'unsubscribed'], required: true }
+                ]
+            }
+        };
+
+        // ==========================================
+        // NOTIFICATIONS & UTILITIES
+        // ==========================================
+        function pushSystemOperationalToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = { success: 'fa-circle-check text-emerald-500', error: 'fa-triangle-exclamation text-brand-red', info: 'fa-circle-info text-brand-blue' };
+            const borders = { success: 'border-emerald-200 bg-emerald-50 text-emerald-900', error: 'border-red-200 bg-red-50 text-red-900', info: 'border-blue-200 bg-blue-50 text-blue-900' };
             
-            // Loop telemetry refresh triggers every 60 seconds
-            setInterval(executeTelemetryMonitoringStreamRefresh, 60000);
+            toast.className = `p-4 rounded-xl shadow-lg border text-xs font-mono font-bold flex items-center gap-3 transition-all transform translate-y-2 opacity-0 duration-300 ${borders[type]}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type]} text-lg"></i> <span class="flex-1">${msg}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+            setTimeout(() => { toast.classList.add('translate-y-[-10px]', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
+        }
+
+        // ==========================================
+        // AUTHENTICATION PROTOCOLS
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) {
+                // Decode JWT Base64 blindly (Validation happens via APIs)
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    if (payload.role !== 'admin') throw new Error("Clearance denied.");
+                    document.getElementById('authAdminName').innerText = payload.name || 'Admin';
+                    unlockDashboard();
+                } catch (e) {
+                    executeLogoutSequence(false);
+                }
+            } else {
+                document.getElementById('loginOverlay').classList.remove('hidden');
+            }
         });
 
-        function enforceOperationalAccessClearance() {
-            const token = localStorage.getItem("dan74tech_enc_admin_jwt");
-            if (!token) { window.location.href = "login.html"; return; }
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const form = new FormData(e.target);
+            btn.innerHTML = '<div class="loader-ring w-4 h-4 mr-2"></div> Processing...';
+            btn.disabled = true;
+
             try {
-                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-                if (!tokenPayload.role || String(tokenPayload.role).trim().toLowerCase() !== 'admin') {
-                    throw new Error("Access clearance tracking signature invalid.");
-                }
-                document.getElementById("adminUserDisplayName").innerText = tokenPayload.name || "System Admin";
-                document.getElementById("adminAvatarPlaceholder").innerText = (tokenPayload.name || "A").charAt(0).toUpperCase();
-            } catch (e) {
-                localStorage.removeItem("dan74tech_enc_admin_jwt");
-                window.location.href = "login.html";
+                const res = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(form.entries()))
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.message || data.error || "Authentication blocked.");
+                
+                if (data.user.role !== 'admin') throw new Error("Clearance Level Insufficient. Admin privileges required.");
+
+                localStorage.setItem(TOKEN_KEY, data.token);
+                document.getElementById('authAdminName').innerText = data.user.name;
+                pushSystemOperationalToast("Administrative session lock established.", "success");
+                
+                unlockDashboard();
+            } catch (err) {
+                pushSystemOperationalToast(err.message, "error");
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-lock text-emerald-400"></i> Authenticate Session';
+                btn.disabled = false;
             }
         }
 
-        function terminateOperationalSession() {
-            localStorage.removeItem("dan74tech_enc_admin_jwt");
-            displayOperationalToastMessage("Terminal session revoked. Re-routing to entry verification node.", "info");
-            setTimeout(() => { window.location.href = "login.html"; }, 1000);
+        function unlockDashboard() {
+            const overlay = document.getElementById('loginOverlay');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                document.getElementById('dashboardInterface').classList.remove('opacity-0', 'pointer-events-none');
+                switchModule('dashboard');
+            }, 500);
         }
 
-        function initializeSystemHardwareClock() {
-            const clockNode = document.getElementById("systemClockDisplay");
-            setInterval(() => {
-                const now = new Date();
-                clockNode.innerText = now.toUTCString().replace("GMT", "UTC");
-            }, 1000);
+        function executeLogoutSequence(showToast = true) {
+            localStorage.removeItem(TOKEN_KEY);
+            if(showToast) pushSystemOperationalToast("Terminating secure connection...", "info");
+            setTimeout(() => { window.location.reload(); }, 800);
         }
 
-        function displayOperationalToastMessage(messageText, messageLevel = "success") {
-            const container = document.getElementById("operationalToastNotificationContainer");
-            const toast = document.createElement("div");
-            toast.className = `p-4 rounded-xl border shadow-lg text-xs font-bold leading-relaxed flex items-center gap-3 transition-all duration-300 transform translate-y-2 pointer-events-auto ${
-                messageLevel === "error" ? "bg-red-50 border-red-200 text-red-950" :
-                messageLevel === "info" ? "bg-blue-50 border-blue-200 text-brand-blue" : "bg-emerald-50 border-emerald-200 text-emerald-950"
-            }`;
+        // ==========================================
+        // SECURE API FETCHER
+        // ==========================================
+        async function fetchSecure(endpoint, method = 'GET', body = null, isMultipart = false) {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) { executeLogoutSequence(); throw new Error("Unauthorized"); }
+
+            let headers = { 'Authorization': `Bearer ${token}` };
+            if (!isMultipart && body) headers['Content-Type'] = 'application/json';
+
+            const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}/api/${endpoint.replace(/^\//, '')}`;
             
-            const icon = messageLevel === "error" ? "fa-circle-exclamation text-brand-red" :
-                         messageLevel === "info" ? "fa-circle-info text-brand-blue" : "fa-circle-check text-emerald-600";
+            const config = { method, headers };
+            if (body) config.body = isMultipart ? body : JSON.stringify(body);
+
+            const res = await fetch(url, config);
             
-            toast.innerHTML = `<i class="fa-solid ${icon} text-base shrink-0"></i><div>${messageText}</div>`;
-            container.appendChild(toast);
+            if (res.status === 401 || res.status === 403) { executeLogoutSequence(); throw new Error("Clearance breach."); }
+            if (!res.ok) {
+                const fault = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+                throw new Error(fault.error || fault.message || "Pipeline execution failed.");
+            }
+            if (method === 'DELETE' || res.status === 204) return { success: true };
+            if (res.headers.get("content-type")?.includes("application/pdf")) return await res.blob();
             
-            setTimeout(() => { toast.classList.remove("translate-y-2"); toast.classList.add("opacity-0", "-translate-y-2"); setTimeout(() => toast.remove(), 300); }, 4000);
+            return await res.json();
         }
 
-        function getClearanceRequestHeaders() {
-            const token = localStorage.getItem("dan74tech_enc_admin_jwt");
-            return {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            };
+        // ==========================================
+        // MODULE ROUTING & UI SWITCHER
+        // ==========================================
+        function switchModule(moduleKey) {
+            appState.module = moduleKey;
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.className = "nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-50 hover:text-brand-textDark";
+            });
+            const activeNav = document.getElementById(`nav-${moduleKey}`);
+            if(activeNav) activeNav.className = "nav-btn active-nav w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm shadow-blue-200";
+
+            const title = document.getElementById('activeWorkspaceTitle');
+            const subtitle = document.getElementById('activeWorkspaceSubtitle');
+            const actions = document.getElementById('workspaceContextualActions');
+            actions.innerHTML = '';
+
+            if (moduleKey === 'dashboard') {
+                title.innerText = "Dashboard Hub";
+                subtitle.innerText = "System telemetry and active matrix operational nodes.";
+                renderDashboardAnalytics();
+            } else if (moduleKey === 'broadcast') {
+                title.innerText = "Mass Broadcast Pipeline";
+                subtitle.innerText = "Deploy mass marketing configurations via Brevo SMTP Engine.";
+                renderBroadcastInterface();
+            } else {
+                const meta = MODULE_REGISTRY[moduleKey];
+                title.innerText = `${meta.label} Control Matrix`;
+                subtitle.innerText = `Full schema-driven CRUD operations for the ${moduleKey} structural domain.`;
+                actions.innerHTML = `
+                    <button onclick="openActionModal('create')" class="bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-[10px] uppercase tracking-widest px-5 py-3 rounded-xl flex items-center gap-2 transition-all shadow-md">
+                        <i class="fa-solid fa-plus text-emerald-400"></i> Append Record
+                    </button>
+                `;
+                refreshDataGrid();
+            }
         }
 
-        // Operational Command Central View Tab Switching Infrastructure
-        function switchActiveOperationalTab(targetTabId) {
-            document.querySelectorAll(".operational-view-segment").forEach(section => section.classList.add("hidden"));
-            document.getElementById(targetTabId).classList.remove("hidden");
+        // ==========================================
+        // DASHBOARD & CUSTOM RENDERERS
+        // ==========================================
+        async function renderDashboardAnalytics() {
+            const vp = document.getElementById('workspaceContentViewport');
+            vp.innerHTML = `<div class="flex items-center justify-center py-20"><div class="loader-ring"></div></div>`;
+            try {
+                const stats = await fetchSecure('admin/dashboard-stats');
+                vp.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        ${[
+                            { l: 'Users Matrix', v: stats.users, i: 'fa-users', c: 'text-brand-blue' },
+                            { l: 'Total Orders', v: stats.orders, i: 'fa-basket-shopping', c: 'text-brand-orange' },
+                            { l: 'Open Tickets', v: stats.open_tickets, i: 'fa-ticket', c: 'text-brand-red' },
+                            { l: 'Yield Volume', v: 'KES ' + stats.total_earnings.toLocaleString(), i: 'fa-money-bill-wave', c: 'text-emerald-500' }
+                        ].map(s => `
+                            <div class="bg-brand-panelWhite p-6 rounded-2xl border border-brand-borderSlate shadow-sm flex items-center justify-between">
+                                <div><p class="text-[10px] font-extrabold uppercase font-mono tracking-widest text-slate-400 mb-1">${s.l}</p><h3 class="text-2xl font-black font-mono text-slate-900 tracking-tight">${s.v}</h3></div>
+                                <div class="w-12 h-12 rounded-xl border border-slate-100 flex items-center justify-center bg-slate-50 ${s.c}"><i class="fa-solid ${s.i} text-xl"></i></div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (err) {
+                vp.innerHTML = `<div class="p-6 bg-red-50 text-brand-red rounded-xl text-xs font-mono border border-red-200">Error fetching dashboard metrics.</div>`;
+            }
+        }
+
+        function renderBroadcastInterface() {
+            const vp = document.getElementById('workspaceContentViewport');
+            vp.innerHTML = `
+                <div class="bg-white border border-brand-borderSlate rounded-2xl shadow-sm p-8 max-w-4xl mx-auto">
+                    <form onsubmit="executeBroadcast(event)" id="broadcastForm" class="space-y-5 font-mono text-xs">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Campaign Subject Header <span class="text-brand-red">*</span></label>
+                            <input type="text" name="subject" required class="w-full bg-slate-50 border border-brand-borderSlate rounded-xl px-4 py-3 text-xs text-brand-textDark focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all">
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">HTML Payload Body <span class="text-brand-red">*</span></label>
+                            <textarea name="html" required class="w-full bg-slate-50 border border-brand-borderSlate rounded-xl px-4 py-3 text-xs text-brand-textDark focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all h-64 font-sans"></textarea>
+                        </div>
+                        <button type="submit" id="broadcastBtn" class="bg-brand-blue text-white font-bold font-mono text-[10px] uppercase tracking-widest px-6 py-3.5 rounded-xl shadow-md w-full sm:w-auto hover:bg-blue-700 transition-colors">
+                            <i class="fa-solid fa-satellite-dish mr-2"></i> Deploy Email Payload Configuration
+                        </button>
+                    </form>
+                </div>
+            `;
+        }
+
+        async function executeBroadcast(e) {
+            e.preventDefault();
+            const btn = document.getElementById('broadcastBtn');
+            const data = Object.fromEntries(new FormData(e.target).entries());
+            btn.disabled = true; btn.innerHTML = '<div class="loader-ring w-4 h-4 mr-2 inline-block align-middle"></div> Executing...';
+            try {
+                await fetchSecure('subscribers/broadcast', 'POST', data);
+                pushSystemOperationalToast("Broadcast pipeline successfully flushed to remote SMTP nodes.");
+                e.target.reset();
+            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-satellite-dish mr-2"></i> Deploy Email Payload Configuration'; }
+        }
+
+        // ==========================================
+        // DYNAMIC CRUD GRID PIPELINES
+        // ==========================================
+        async function refreshDataGrid() {
+            const vp = document.getElementById('workspaceContentViewport');
+            const meta = MODULE_REGISTRY[appState.module];
+            vp.innerHTML = `<div class="flex items-center justify-center py-20"><div class="loader-ring"></div></div>`;
             
-            document.querySelectorAll(".nav-control-element").forEach(btn => {
-                btn.className = "nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all text-brand-textDark hover:bg-slate-50";
-                const icon = btn.querySelector("i");
-                if (icon) icon.classList.replace("text-white", "text-slate-400");
+            try {
+                const response = await fetchSecure(meta.endpoint);
+                appState.cachedRecords = Array.isArray(response) ? response : (response.data || []);
+                
+                if (appState.cachedRecords.length === 0) {
+                    vp.innerHTML = `<div class="text-center p-12 border border-dashed border-slate-300 rounded-2xl bg-slate-50 text-xs font-mono text-slate-400">Database table array index returned empty for this domain node.</div>`;
+                    return;
+                }
+
+                let html = `<div class="bg-white border border-brand-borderSlate rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto custom-scrollbar"><table class="w-full text-left whitespace-nowrap"><thead><tr class="bg-slate-50 border-b border-brand-borderSlate">`;
+                meta.columns.forEach(col => { html += `<th class="px-6 py-4 text-[10px] font-extrabold font-mono uppercase tracking-widest text-slate-500">${col.replace(/_/g, ' ')}</th>`; });
+                html += `<th class="px-6 py-4 text-[10px] font-extrabold font-mono uppercase tracking-widest text-slate-500 text-right">Node Controls</th></tr></thead><tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">`;
+
+                appState.cachedRecords.forEach(r => {
+                    html += `<tr class="hover:bg-slate-50/70 transition-colors">`;
+                    meta.columns.forEach(col => {
+                        let val = r[col] !== undefined && r[col] !== null ? r[col] : '-';
+                        if (typeof val === 'boolean') val = val ? `<span class="text-emerald-500 font-bold uppercase tracking-wider text-[10px]">TRUE</span>` : `<span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">FALSE</span>`;
+                        else if (col.includes('price') || col.includes('amount')) val = `KES ${Number(val).toLocaleString()}`;
+                        else if (String(val).length > 35) val = String(val).substring(0, 35) + '...';
+                        html += `<td class="px-6 py-3 font-sans">${val}</td>`;
+                    });
+                    html += `<td class="px-6 py-3 text-right flex justify-end gap-2">
+                        ${appState.module === 'invoices' ? `<button onclick="downloadPDF(${r.id})" class="w-8 h-8 rounded-lg bg-blue-50 text-brand-blue hover:bg-brand-blue hover:text-white transition-colors" title="Download Invoice"><i class="fa-solid fa-file-pdf"></i></button>` : ''}
+                        <button onclick="openActionModal('edit', ${r.id})" class="w-8 h-8 rounded-lg bg-orange-50 text-brand-orange hover:bg-brand-orange hover:text-white transition-colors" title="Modify Node"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="executeDelete(${r.id})" class="w-8 h-8 rounded-lg bg-red-50 text-brand-red hover:bg-brand-red hover:text-white transition-colors" title="Purge Record"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+                vp.innerHTML = html;
+            } catch (err) { vp.innerHTML = `<div class="p-6 bg-red-50 text-brand-red rounded-xl text-xs font-mono border border-red-200">Grid fetch block failure: ${err.message}</div>`; }
+        }
+
+        // ==========================================
+        // DYNAMIC FORM MODAL ENGINE
+        // ==========================================
+        function openActionModal(mode, id = null) {
+            appState.mode = mode; appState.activeId = id;
+            const meta = MODULE_REGISTRY[appState.module];
+            const record = mode === 'edit' ? appState.cachedRecords.find(x => x.id === id) : null;
+            
+            document.getElementById('modalInterfaceTitle').innerHTML = `<i class="fa-solid fa-database text-brand-blue mr-2"></i> ${mode === 'create' ? 'Append' : 'Modify'} ${meta.label} Schema Node ${id ? '#'+id : ''}`;
+            const stack = document.getElementById('dynamicFormFieldsStack');
+            stack.innerHTML = '';
+            
+            meta.fields.forEach(f => {
+                let val = record && record[f.name] !== undefined && record[f.name] !== null ? record[f.name] : '';
+                let req = (f.required && mode === 'create') ? 'required' : '';
+                if (f.type === 'password' && mode === 'edit') req = ''; // Prevent forcing password updates on user edit
+
+                let inputHtml = '';
+                const baseClass = "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all";
+
+                if (f.type === 'textarea') inputHtml = `<textarea name="${f.name}" ${req} class="${baseClass} h-24 font-sans">${val}</textarea>`;
+                else if (f.type === 'select') {
+                    inputHtml = `<select name="${f.name}" ${req} class="${baseClass} font-mono">` + 
+                        f.options.map(o => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${o}</option>`).join('') + 
+                    `</select>`;
+                } else {
+                    inputHtml = `<input type="${f.type}" name="${f.name}" value="${f.type==='password'?'':val}" ${req} class="${baseClass} font-mono">`;
+                }
+
+                stack.insertAdjacentHTML('beforeend', `<div class="${f.type === 'textarea' ? 'md:col-span-2' : ''} flex flex-col gap-1.5"><label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">${f.label} ${req ? '<span class="text-brand-red">*</span>':''}</label>${inputHtml}</div>`);
             });
 
-            const activeBtn = document.getElementById(`btn-${targetTabId}`);
-            if (activeBtn) {
-                activeBtn.className = "nav-control-element flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-sm font-bold transition-all bg-brand-blue text-white shadow-sm shadow-blue-100";
-                const icon = activeBtn.querySelector("i");
-                if (icon) icon.classList.replace("text-slate-400", "text-white");
-            }
-
-            // Route dynamic fetch initializations based on tab visibility parameters
-            if (targetTabId === "ordersWorkflowTab") executeServiceOrdersDataGridRefresh();
-            if (targetTabId === "projectsTrackingTab") executeProductionTrackersDataGridRefresh();
-            if (targetTabId === "financialLedgerTab") executeFinancialLedgerDataGridRefresh();
-            if (targetTabId === "servicesCatalogTab") executeServicesCatalogStructureRefresh();
-            if (targetTabId === "editorialPublishingTab") executeEditorialPublishingMatrixRefresh();
-            if (targetTabId === "usersDirectoryTab") executeIdentityDirectoryMatrixRefresh();
-            if (targetTabId === "engagementHubTab") executeEngagementHubCRMDataRefresh();
+            const portal = document.getElementById('structuralActionModalPortal');
+            portal.classList.remove('hidden'); setTimeout(() => { portal.classList.remove('opacity-0'); portal.firstElementChild.classList.remove('scale-95'); }, 10);
         }
 
-        // Live Telemetry Monitoring Stream Logic Engine
-        function executeTelemetryMonitoringStreamRefresh() {
-            try {
-                // Poll global dynamic counter metadata from fallback query endpoint
-                fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/query?table=users&limit=1`, { headers: getClearanceRequestHeaders() })
-                .then(res => res.json())
-                .then(() => {
-                    appendSocketEventRowToLiveStack("SYSTEM_HEARTBEAT", "Enterprise security clearance loop validation verification successful.", "success");
-                }).catch(() => {
-                    appendSocketEventRowToLiveStack("TELEMETRY_WARN", "API endpoint structure tracking unreachable. Simulation engine fallback initiated.", "info");
-                });
-            } catch(e) { console.error("Telemetry validation skipped."); }
+        function closeActiveModalWindow() {
+            const portal = document.getElementById('structuralActionModalPortal');
+            portal.classList.add('opacity-0'); portal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => { portal.classList.add('hidden'); document.getElementById('dynamicMatrixDataAssemblyForm').reset(); }, 300);
         }
 
-        function appendSocketEventRowToLiveStack(eventTypeTitle, eventBodyText, statusLevel = 'info') {
-            const stack = document.getElementById('infrastructureLiveLogStack');
-            if (stack.innerHTML.includes("Awaiting data connection stream...")) { stack.innerHTML = ""; }
-            
-            const div = document.createElement('div');
-            div.className = `p-3 rounded-xl border text-xs leading-relaxed flex flex-col gap-1 transition-all duration-300 transform translate-x-1 ${
-                statusLevel === 'error' ? 'bg-red-50/60 border-red-200 text-red-950' :
-                statusLevel === 'success' ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950' : 'bg-slate-50 border-slate-200 text-slate-800'
-            }`;
-            div.innerHTML = `
-                <div class="flex items-center justify-between font-bold text-[10px] uppercase tracking-wide">
-                    <span class="${statusLevel === 'error' ? 'text-brand-red' : statusLevel === 'success' ? 'text-emerald-600' : 'text-brand-blue'}">${eventTypeTitle}</span>
-                    <span class="text-slate-400 font-mono">${new Date().toLocaleTimeString()}</span>
-                </div>
-                <div class="font-medium">${eventBodyText}</div>
-            `;
-            stack.insertBefore(div, stack.firstChild);
-            if (stack.children.length > 30) stack.removeChild(stack.lastChild);
-        }
-
-        // Modal Presentation Management Actions
-        function presentTelemetryInspectionModal(title, subtitle, formPayloadHtml) {
-            document.getElementById("modalTelemetryHeaderTitle").innerText = title;
-            document.getElementById("modalTelemetryHeaderSubtitle").innerText = subtitle;
-            document.getElementById("modalTelemetryCoreBodyPayload").innerHTML = formPayloadHtml;
-            
-            const modal = document.getElementById("masterTelemetryInspectionModalDrawer");
-            modal.classList.remove("hidden");
-            setTimeout(() => { modal.classList.remove("opacity-0"); modal.querySelector(".transform").classList.remove("scale-95"); }, 50);
-        }
-
-        function dismissTelemetryInspectionModal() {
-            const modal = document.getElementById("masterTelemetryInspectionModalDrawer");
-            modal.classList.add("opacity-0");
-            modal.querySelector(".transform").classList.add("scale-95");
-            setTimeout(() => { modal.classList.add("hidden"); }, 300);
-        }
-
-        // =========================================================================
-        // DATA GRID POLLERS & DATA ASSEMBLY EXECUTION AGENTS
-        // =========================================================================
-
-        // Invoice Generation Core Submissions
-        async function executeInvoiceGenerationEngine(event) {
-            event.preventDefault();
-            const btn = document.getElementById('btnSubmitInvoiceCreation');
-            const targetForm = document.getElementById('billingInvoiceAssemblyForm');
-            const payload = Object.fromEntries(new FormData(targetForm).entries());
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Assembly Node Compiling...';
+        async function executeWriteSubmitPipeline(e) {
+            e.preventDefault();
+            const meta = MODULE_REGISTRY[appState.module];
+            const btn = document.getElementById('submitActionButtonText');
+            btn.disabled = true; btn.innerHTML = '<div class="loader-ring w-4 h-4 mr-2 inline-block align-middle"></div> Writing...';
             
             try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/invoices`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.error || "Invoice registration compromise.");
+                // Ensure correct HTTP Method and endpoint per explicit definition logic in server.js
+                let method = appState.mode === 'create' ? 'POST' : 'PUT';
+                let endpoint = appState.mode === 'create' ? meta.endpoint : `${meta.endpoint}/${appState.activeId}`;
                 
-                displayOperationalToastMessage("PDF Document compilation successful. Ledger record appended.");
-                targetForm.reset();
-                if (!document.getElementById("financialLedgerTab").classList.contains("hidden")) { executeFinancialLedgerDataGridRefresh(); }
-            } catch(err) {
-                displayOperationalToastMessage(err.message, "error");
-                appendSocketEventRowToLiveStack("INVOICE_ERR", err.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Generate Document";
-            }
+                const formData = new FormData(e.target);
+                const jsonPayload = Object.fromEntries(formData.entries());
+
+                if (appState.mode === 'edit' && jsonPayload.password === '') delete jsonPayload.password;
+
+                await fetchSecure(endpoint, method, jsonPayload);
+                pushSystemOperationalToast(`Row node schema operation successful.`, "success");
+                closeActiveModalWindow(); refreshDataGrid();
+            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-hard-drive mr-2"></i> Commit Data Write'; }
         }
 
-        // Tab 2: Service Orders Data Grid Sync Processing
-        async function executeServiceOrdersDataGridRefresh() {
-            const gridTarget = document.getElementById("ordersRenderGridTarget");
+        async function executeDelete(id) {
+            if(!confirm("Initialize bulk array target purge for this row?")) return;
+            const meta = MODULE_REGISTRY[appState.module];
             try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/orders`, { headers: getClearanceRequestHeaders() });
-                if (!response.ok) throw new Error("Order pipeline registry poll failure.");
-                const data = await response.json();
-                
-                document.getElementById("badge-orders-count").innerText = data.length;
-                document.getElementById("metricActiveOrdersVolume").innerText = `${data.length} Records`;
-                
-                if (data.length === 0) {
-                    gridTarget.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-brand-textMuted">No active service records located in data structures.</td></tr>`;
-                    return;
-                }
-
-                gridTarget.innerHTML = "";
-                data.forEach(order => {
-                    const tr = document.createElement("tr");
-                    tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";
-                    tr.innerHTML = `
-                        <td class="p-4 font-mono font-bold text-slate-700">ORD-${order.id}<br><span class="text-[9px] text-slate-400">${order.device_model || 'N/A'}</span></td>
-                        <td class="p-4"><div class="font-bold text-brand-textDark">${order.customer_name}</div><div class="text-[10px] text-brand-textMuted">${order.phone}</div></td>
-                        <td class="p-4"><span class="bg-blue-50 text-brand-blue border border-blue-100 px-2 py-0.5 rounded-lg font-bold text-[11px]">${order.service}</span><div class="text-[10px] text-slate-400 mt-0.5">${order.sub_service || 'Standard'}</div></td>
-                        <td class="p-4 font-mono text-slate-600 text-[11px]">${order.staging_environment || 'N/A'}</td>
-                        <td class="p-4 font-bold text-slate-900">KES ${(parseFloat(order.price) || 0).toLocaleString()}</td>
-                        <td class="p-4">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
-                                order.status === 'Completed' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-brand-orange'
-                            }">${order.status.toUpperCase()}</span>
-                        </td>
-                        <td class="p-4 text-right">
-                            <button onclick="launchOrderDetailedTelemetryInspector(${JSON.stringify(order).replace(/"/g, '&quot;')})" class="p-1.5 bg-slate-100 hover:bg-brand-blue hover:text-white rounded-lg transition-all text-slate-600" title="Inspect Telemetry Metrics"><i class="fa-solid fa-gauge-high"></i></button>
-                        </td>
-                    `;
-                    gridTarget.appendChild(tr);
-                });
-            } catch(err) {
-                gridTarget.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-brand-red font-bold">${err.message}</td></tr>`;
-            }
+                // Implementing specific DELETE routes or using the bulk handler
+                // `server.js` contains `app.delete('/api/users/:id')`, `/api/services/:id`, etc.
+                await fetchSecure(`${meta.endpoint}/${id}`, 'DELETE');
+                pushSystemOperationalToast("Structural vector safely decommissioned.");
+                refreshDataGrid();
+            } catch (err) { pushSystemOperationalToast(err.message, "error"); }
         }
 
-        function launchOrderDetailedTelemetryInspector(order) {
-            const metaString = typeof order.service_metadata === 'object' ? JSON.stringify(order.service_metadata, null, 4) : order.service_metadata;
-            const formHtml = `
-                <div class="grid grid-cols-2 gap-4 border-b pb-4 border-slate-100">
-                    <div><span class="text-brand-textMuted block text-[10px] uppercase">Domain Scope</span><p class="font-bold font-mono text-sm">${order.domain || 'N/A'}</p></div>
-                    <div><span class="text-brand-textMuted block text-[10px] uppercase">Domain Criteria Verification</span><p class="font-bold text-slate-700">${order.domain_criteria || 'N/A'}</p></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 border-b pb-4 border-slate-100">
-                    <div><span class="text-brand-textMuted block text-[10px] uppercase">Hardware Serial Mapping</span><p class="font-bold font-mono text-slate-700">${order.hardware_serial || 'N/A'}</p></div>
-                    <div><span class="text-brand-textMuted block text-[10px] uppercase">Cyber Tracking Reference Key</span><p class="font-bold font-mono text-blue-600">${order.cyber_tracking_key || 'N/A'}</p></div>
-                </div>
-                <div class="flex flex-col gap-1 border-b pb-4 border-slate-100">
-                    <span class="text-brand-textMuted text-[10px] uppercase">Client Project Scope Request</span>
-                    <p class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-slate-700 leading-relaxed text-[11px] font-medium">${order.project_details || 'No structural details supplied.'}</p>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                    <span class="text-brand-textMuted text-[10px] uppercase">Service Metadata Structure (JSONB Payload)</span>
-                    <pre class="bg-slate-900 text-emerald-400 p-4 rounded-xl border border-slate-800 font-mono text-[11px] overflow-x-auto custom-scrollbar">${metaString || '{}'}</pre>
-                </div>
-                <form onsubmit="executeOrderStatusUpdateStateChange(event, ${order.id})" class="flex items-end gap-3 mt-2 pt-2 border-t border-slate-100">
-                    <div class="flex flex-col gap-1 flex-1">
-                        <label class="text-brand-textMuted text-[10px] uppercase">Modify Project Workspace State Status</label>
-                        <select id="updateOrderStatusSelectInput" class="p-2 border border-brand-borderSlate bg-slate-50 rounded-lg font-bold">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending Verification</option>
-                            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed Node Deployment</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="bg-brand-blue text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors">Update State</button>
-                </form>
-            `;
-            presentTelemetryInspectionModal("Service Order High Fidelity Telemetry", `Tracking Core Matrix: ORD-${order.id}`, formHtml);
-        }
-
-        async function executeOrderStatusUpdateStateChange(event, orderId) {
-            event.preventDefault();
-            const newState = document.getElementById("updateOrderStatusSelectInput").value;
+        async function downloadPDF(id) {
+            pushSystemOperationalToast("Retrieving PDF binary chunks...", "info");
             try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/orders/${orderId}`, {
-                    method: "PUT",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify({ status: newState })
-                });
-                if (!response.ok) throw new Error("Order lifecycle amendment rejection.");
-                displayOperationalToastMessage(`ORD-${orderId} update state verified successfully.`);
-                dismissTelemetryInspectionModal();
-                executeServiceOrdersDataGridRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        // Tab 3: Production trackers Deployment & Rendering Management
-        async function executeProductionTrackersDataGridRefresh() {
-            const gridTarget = document.getElementById("projectsRenderGridTarget");
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/projects`, { headers: getClearanceRequestHeaders() });
-                if (!response.ok) throw new Error("Production engine tracker maps unavailable.");
-                const data = await response.json();
-                
-                document.getElementById("badge-projects-count").innerText = data.length;
-                if (data.length === 0) {
-                    gridTarget.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-brand-textMuted">No tracking pipelines active.</td></tr>`;
-                    return;
-                }
-
-                gridTarget.innerHTML = "";
-                data.forEach(project => {
-                    const tr = document.createElement("tr");
-                    tr.className = "hover:bg-slate-50/80 border-b border-slate-100";
-                    tr.innerHTML = `
-                        <td class="p-4 font-mono font-bold text-slate-500">TRK-${project.id}</td>
-                        <td class="p-4"><div class="font-bold text-brand-textDark">${project.project_name}</div><div class="text-[10px] text-brand-textMuted">Client Node ID Mapping: ${project.client_id || 'N/A'}</div></td>
-                        <td class="p-4">
-                            <div class="flex items-center gap-2 max-w-xs">
-                                <div class="w-full bg-slate-100 rounded-full h-2 border border-slate-200 overflow-hidden">
-                                    <div class="bg-brand-blue h-full rounded-full transition-all duration-500" style="width: ${project.progress}%"></div>
-                                </div>
-                                <span class="font-mono text-[11px] font-bold text-slate-700">${project.progress}%</span>
-                            </div>
-                        </td>
-                        <td class="p-4"><span class="px-2 py-0.5 rounded-md border text-[10px] font-extrabold ${project.status === 'Completed' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-blue-50 border-blue-200 text-brand-blue'}">${project.status.toUpperCase()}</span></td>
-                        <td class="p-4 text-right">
-                            <button onclick="launchProjectTrackModifierInspector(${JSON.stringify(project).replace(/"/g, '&quot;')})" class="px-2 py-1 bg-slate-900 text-white font-bold rounded-md hover:bg-slate-800 transition-colors text-[11px]">Modify</button>
-                        </td>
-                    `;
-                    gridTarget.appendChild(tr);
-                });
-            } catch(err) { gridTarget.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-brand-red font-bold">${err.message}</td></tr>`; }
-        }
-
-        async function executeProjectTrackProvisioning(event) {
-            event.preventDefault();
-            const btn = document.getElementById("btnSubmitNewProjectTrack");
-            const form = document.getElementById("projectTrackingDeploymentForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            
-            btn.disabled = true;
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/projects`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Project tracking parameters rejected by core engine.");
-                displayOperationalToastMessage("Project track tracking node appended.");
-                form.reset();
-                executeProductionTrackersDataGridRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-            finally { btn.disabled = false; btn.innerText = "Initialize Track Node"; }
-        }
-
-        function launchProjectTrackModifierInspector(project) {
-            const html = `
-                <form onsubmit="executeProjectTrackUpdates(event, ${project.id})" class="flex flex-col gap-4">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-brand-textMuted">Adjust Tracking Completion Weight (%)</label>
-                        <input type="number" id="updateProjProgressInput" min="0" max="100" value="${project.progress}" required class="p-2 border border-brand-borderSlate rounded-lg bg-slate-50 font-bold">
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-brand-textMuted">Update Lifecycle Track Status</label>
-                        <select id="updateProjStatusSelect" class="p-2 border border-brand-borderSlate bg-slate-50 rounded-lg font-bold">
-                            <option value="Pending" ${project.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option value="Review Phase" ${project.status === 'Review Phase' ? 'selected' : ''}>Review Phase</option>
-                            <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-brand-textMuted">Append Historical Developer Notes</label>
-                        <textarea id="updateProjNotesArea" rows="3" class="p-2 border border-brand-borderSlate bg-slate-50 rounded-lg font-medium custom-scrollbar">${project.notes || ''}</textarea>
-                    </div>
-                    <button type="submit" class="bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-slate-800 transition-colors mt-2">Commit Structural Track Updates</button>
-                </form>
-            `;
-            presentTelemetryInspectionModal("Modify Active Project Production Node", `Track Reference: TRK-${project.id}`, html);
-        }
-
-        async function executeProjectTrackUpdates(event, projectId) {
-            event.preventDefault();
-            const progress = document.getElementById("updateProjProgressInput").value;
-            const status = document.getElementById("updateProjStatusSelect").value;
-            const notes = document.getElementById("updateProjNotesArea").value;
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/projects/${projectId}`, {
-                    method: "PUT",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify({ progress, status, notes })
-                });
-                if (!response.ok) throw new Error("Project amendment execution rejection.");
-                displayOperationalToastMessage(`Track parameters for TRK-${projectId} committed successfully.`);
-                dismissTelemetryInspectionModal();
-                executeProductionTrackersDataGridRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        // Tab 4: Financial Ledger Registry Polling Routines
-        async function executeFinancialLedgerDataGridRefresh() {
-            const gridTarget = document.getElementById("mpesaLedgerRenderGridTarget");
-            const invoiceTarget = document.getElementById("invoicesListRenderRack");
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/mpesa`, { headers: getClearanceRequestHeaders() });
-                if (response.ok) {
-                    const data = await response.json();
-                    let aggregateSum = 0;
-                    
-                    if (data.length === 0) {
-                        gridTarget.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-brand-textMuted">No network financial logs returned.</td></tr>`;
-                    } else {
-                        gridTarget.innerHTML = "";
-                        data.forEach(tx => {
-                            if (tx.status === 'Completed' || tx.result_code === 0) aggregateSum += parseFloat(tx.amount) || 0;
-                            const tr = document.createElement("tr");
-                            tr.className = "hover:bg-slate-50 border-b border-slate-100 font-mono text-[11px]";
-                            tr.innerHTML = `
-                                <td class="p-4 font-bold text-slate-800">${tx.mpesa_receipt_number || 'N/A'}</td>
-                                <td class="p-4 font-sans font-semibold">${tx.phone_number}</td>
-                                <td class="p-4 font-sans font-bold text-slate-900">KES ${(parseFloat(tx.amount) || 0).toLocaleString()}</td>
-                                <td class="p-4 font-sans"><span class="px-2 py-0.5 rounded text-[9px] font-extrabold ${tx.result_code === 0 || tx.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-brand-red border border-red-100'}">${tx.status.toUpperCase()}</span></td>
-                                <td class="p-4 text-slate-400 text-[10px]">${new Date(tx.created_at).toLocaleString()}</td>
-                            `;
-                            gridTarget.appendChild(tr);
-                        });
-                        document.getElementById("metricGrossFinancialVolume").innerText = `KES ${aggregateSum.toLocaleString()}`;
-                    }
-                }
-                
-                // Fetch related Billing Invoices registry indexes
-                const invRes = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/invoices`, { headers: getClearanceRequestHeaders() });
-                if (invRes.ok) {
-                    const invoices = await invRes.json();
-                    if (invoices.length === 0) {
-                        invoiceTarget.innerHTML = `<p class="text-[11px] text-brand-textMuted font-medium text-center py-6">No historical invoices mapped.</p>`;
-                        return;
-                    }
-                    invoiceTarget.innerHTML = "";
-                    invoices.forEach(inv => {
-                        const div = document.createElement("div");
-                        div.className = "p-3 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between text-xs";
-                        div.innerHTML = `
-                            <div>
-                                <div class="font-mono font-bold text-slate-900">${inv.invoice_number}</div>
-                                <div class="text-[10px] text-brand-textMuted font-semibold mt-0.5">${inv.client_name}</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-slate-900">KES ${(parseFloat(inv.amount) || 0).toLocaleString()}</div>
-                                <span class="text-[9px] font-bold uppercase ${inv.status === 'paid' ? 'text-emerald-600' : 'text-brand-orange'}">${inv.status}</span>
-                            </div>
-                        `;
-                        invoiceTarget.appendChild(div);
-                    });
-                }
-            } catch(e) { appendSocketEventRowToLiveStack("FINANCIAL_LEDGER_ERR", e.message, "error"); }
-        }
-
-        // Tab 5: Dynamic Corporate Catalog Framework Execution Agents
-        async function executeServicesCatalogStructureRefresh() {
-            const gridTarget = document.getElementById("servicesFrameworkFlexGrid");
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/services`);
-                if (!response.ok) throw new Error("Catalog structural definitions unreachable.");
-                const data = await response.json();
-                
-                if (data.length === 0) {
-                    gridTarget.innerHTML = `<p class="text-xs text-brand-textMuted font-medium py-12 text-center col-span-2">No active service schemas found inside storage arrays.</p>`;
-                    return;
-                }
-
-                gridTarget.innerHTML = "";
-                data.forEach(service => {
-                    const card = document.createElement("div");
-                    card.className = "bg-brand-panelWhite border border-brand-borderSlate rounded-2xl p-5 shadow-sm flex flex-col gap-3";
-                    card.innerHTML = `
-                        <div class="flex items-start justify-between border-b pb-2 border-slate-100">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-9 h-9 rounded-lg bg-blue-50 text-brand-blue flex items-center justify-center text-base shadow-inner"><i class="fa-solid ${service.icon || 'fa-cubes'}"></i></div>
-                                <div>
-                                    <h4 class="font-black text-brand-textDark text-sm">${service.name}</h4>
-                                    <p class="text-[10px] text-slate-400 font-mono">Catalog ID Node: ${service.id}</p>
-                                </div>
-                            </div>
-                            <button onclick="executeServiceDeletionSequence(${service.id})" class="text-slate-300 hover:text-brand-red transition-colors p-1" title="Purge Category"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </div>
-                        <p class="text-[11px] font-medium text-brand-textMuted leading-relaxed">${service.description || 'No descriptive parameter string bound.'}</p>
-                    `;
-                    gridTarget.appendChild(card);
-                });
-            } catch(err) { gridTarget.innerHTML = `<p class="text-xs text-brand-red font-bold text-center col-span-2">${err.message}</p>`; }
-        }
-
-        async function executePrimaryServiceDeployment(event) {
-            event.preventDefault();
-            const form = document.getElementById("primaryServiceRegistryForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/services`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Structural catalog injection failed.");
-                displayOperationalToastMessage("Primary system core service index schema deployed.");
-                form.reset();
-                executeServicesCatalogStructureRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeSubServicePricingDeployment(event) {
-            event.preventDefault();
-            const form = document.getElementById("subServicePricingRegistryForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/subservices`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Subservice framework compilation rejected.");
-                displayOperationalToastMessage("Sub-service pricing package parameters bound successfully.");
-                form.reset();
-                executeServicesCatalogStructureRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeServiceDeletionSequence(serviceId) {
-            if (!confirm(`Are you certain you wish to flag catalog record ID ${serviceId} as deleted? This action updates system visibility tables.`)) return;
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/services/${serviceId}`, {
-                    method: "DELETE",
-                    headers: getClearanceRequestHeaders()
-                });
-                if (!response.ok) throw new Error("De-provisioning sequence execution error.");
-                displayOperationalToastMessage(`Catalog node definitions for target ID ${serviceId} terminated.`);
-                executeServicesCatalogStructureRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        // Tab 6: Editorial cross-Entity Data Grid Assembly Engine (Dual Column Logic Alignment)
-        async function executeEditorialPublishingMatrixRefresh() {
-            const gridTarget = document.getElementById("editorialAssetsRenderGridTarget");
-            try {
-                // Poll a unified content array endpoint or fallback via metadata whitelists
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/content-matrix`, { headers: getClearanceRequestHeaders() })
-                .catch(() => fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/portfolio`)); // Fallback path mapping if matrix endpoint is isolated
-                
-                if (!response.ok) throw new Error("Content metadata indices scanning validation failure.");
-                const data = await response.json();
-                
-                if (data.length === 0) {
-                    gridTarget.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-brand-textMuted">No publication nodes matched.</td></tr>`;
-                    return;
-                }
-
-                gridTarget.innerHTML = "";
-                data.forEach(item => {
-                    const itemType = item.type || (item.slug ? 'blog' : item.challenge ? 'case_study' : 'portfolio');
-                    const displayStatus = item.status || (item.is_approved ? 'Approved' : 'pending');
-                    
-                    const tr = document.createElement("tr");
-                    tr.className = "hover:bg-slate-50/80 border-b border-slate-100";
-                    tr.innerHTML = `
-                        <td class="p-4 font-mono text-[10px] uppercase font-bold tracking-wider text-slate-400">${itemType}</td>
-                        <td class="p-4 text-brand-textDark font-bold">${item.title}</td>
-                        <td class="p-4">
-                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide border ${
-                                displayStatus === 'Approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-brand-orange border-amber-200'
-                            }">${displayStatus}</span>
-                        </td>
-                        <td class="p-4 text-right flex items-center justify-end gap-2">
-                            ${displayStatus !== 'Approved' ? `<button onclick="executeApprovalStateConvergenceSequence('${itemType}', ${item.id})" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md text-[10px] transition-colors shadow-sm">Approve</button>` : ''}
-                            <button onclick="executeContentPurgeSequence('${itemType}', ${item.id})" class="p-1 text-slate-400 hover:text-brand-red transition-colors"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </td>
-                    `;
-                    gridTarget.appendChild(tr);
-                });
-            } catch(e) { gridTarget.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-brand-red font-bold">${e.message}</td></tr>`; }
-        }
-
-        async function executeApprovalStateConvergenceSequence(targetType, entityId) {
-            try {
-                // Aligns dual-state columns by resolving status to 'Approved' and is_approved to true concurrently
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/approve/${targetType}/${entityId}`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify({ status: "Approved", is_approved: true })
-                });
-                if (!response.ok) throw new Error("Dual-state consensus lifecycle alignment failure.");
-                displayOperationalToastMessage(`Content block approval validated. State synced successfully.`);
-                executeEditorialPublishingMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeContentPurgeSequence(targetType, entityId) {
-            if (!confirm(`Confirm content removal sequencing for target entry ID ${entityId}?`)) return;
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/content/${targetType}/${entityId}`, {
-                    method: "DELETE",
-                    headers: getClearanceRequestHeaders()
-                });
-                if (!response.ok) throw new Error("Content entity compression registry failure.");
-                displayOperationalToastMessage("Content publication context purged.");
-                executeEditorialPublishingMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeEditorialBlogPostDeployment(event) {
-            event.preventDefault();
-            const form = document.getElementById("blogPostAssemblyForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            // Align dual status states initially
-            payload.status = "pending";
-            payload.is_approved = false;
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/blogs`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Blog compilation engine rejected request parameters.");
-                displayOperationalToastMessage("Editorial blog entry logged to draft tables successfully.");
-                form.reset();
-                executeEditorialPublishingMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeCorporateCaseStudyDeployment(event) {
-            event.preventDefault();
-            const form = document.getElementById("caseStudyAssemblyForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            payload.status = "pending";
-            payload.is_approved = false;
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/casestudies`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Case study registry compilation failure.");
-                displayOperationalToastMessage("Case study mapping vector saved.");
-                form.reset();
-                executeEditorialPublishingMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        async function executeSystemPortfolioShowcaseDeployment(event) {
-            event.preventDefault();
-            const form = document.getElementById("portfolioAssetAssemblyForm");
-            const payload = Object.fromEntries(new FormData(form).entries());
-            payload.status = "In Progress";
-            payload.is_approved = false;
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/portfolio`, {
-                    method: "POST",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error("Portfolio verification schema failed.");
-                displayOperationalToastMessage("Portfolio showcase asset track injected.");
-                form.reset();
-                executeEditorialPublishingMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        // Tab 7: Multi-Directory Identity Matrix View (Coexistence Layer Control)
-        function toggleDirectoryCatalogTarget(targetScope) {
-            activeDirectoryScopeTarget = targetScope;
-            
-            const btnUsers = document.getElementById("toggleScopeUserDirectoryBtn");
-            const btnLegacy = document.getElementById("toggleScopeLegacyDirectoryBtn");
-            
-            if (targetScope === "users") {
-                btnUsers.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-blue text-white shadow-sm";
-                btnLegacy.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-brand-textDark hover:bg-slate-50";
-            } else {
-                btnLegacy.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-blue text-white shadow-sm";
-                btnUsers.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-brand-textDark hover:bg-slate-50";
-            }
-            executeIdentityDirectoryMatrixRefresh();
-        }
-
-        async function executeIdentityDirectoryMatrixRefresh() {
-            const gridTarget = document.getElementById("directoryTargetRenderGridTarget");
-            const endpoint = activeDirectoryScopeTarget === "users" ? "/api/users" : "/api/clients";
-            
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}${endpoint}`, { headers: getClearanceRequestHeaders() });
-                if (!response.ok) throw new Error(`Target directory index trace rejected connection request.`);
-                const data = await response.json();
-                
-                if (activeDirectoryScopeTarget === "users") {
-                    document.getElementById("metricRegisteredUsersVolume").innerText = `${data.length} Accounts`;
-                }
-
-                if (data.length === 0) {
-                    gridTarget.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-brand-textMuted">Selected target array context is currently empty.</td></tr>`;
-                    return;
-                }
-
-                gridTarget.innerHTML = "";
-                data.forEach(account => {
-                    const recordId = account.id;
-                    const name = account.name || account.full_name || "Unknown Profile Reference";
-                    const email = account.email;
-                    const role = account.role || "legacy_catalog_node";
-                    
-                    const tr = document.createElement("tr");
-                    tr.className = "hover:bg-slate-50 border-b border-slate-100";
-                    tr.innerHTML = `
-                        <td class="p-4 font-mono text-slate-500">${recordId}</td>
-                        <td class="p-4 font-bold text-brand-textDark flex items-center gap-2">
-                            ${name}
-                            ${account.is_online ? '<span class="w-2 h-2 rounded-full bg-emerald-500 block animate-pulse" title="Device Active"></span>' : ''}
-                        </td>
-                        <td class="p-4 font-mono font-medium text-slate-600">${email}</td>
-                        <td class="p-4"><span class="px-1.5 py-0.5 rounded font-mono text-[10px] font-bold uppercase ${role === 'admin' ? 'bg-red-50 text-brand-red border border-red-200' : 'bg-slate-100 text-slate-700'}">${role}</span></td>
-                        <td class="p-4 text-right">
-                            <button onclick="executeAccountPurgeSequence(${recordId}, '${activeDirectoryScopeTarget}')" class="text-slate-300 hover:text-brand-red transition-colors p-1"><i class="fa-solid fa-user-xmark text-sm"></i></button>
-                        </td>
-                    `;
-                    gridTarget.appendChild(tr);
-                });
-            } catch(e) { gridTarget.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-brand-red font-bold">${e.message}</td></tr>`; }
-        }
-
-        async function executeAccountPurgeSequence(id, currentContextScope) {
-            if (!confirm(`Are you certain you wish to terminate account reference tracking for target index ${id}?`)) return;
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/${currentContextScope}/${id}`, {
-                    method: "DELETE",
-                    headers: getClearanceRequestHeaders()
-                });
-                if (!response.ok) throw new Error("Account records de-provisioning execution fault.");
-                displayOperationalToastMessage(`Directory account profile track deactivated.`);
-                executeIdentityDirectoryMatrixRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
-        }
-
-        // Tab 8: CRM Inquiries & Customer Support Ticketing Logic Agents
-        async function executeEngagementHubCRMDataRefresh() {
-            const inquiriesTarget = document.getElementById("publicInquiriesRenderGridTarget");
-            const ticketsTarget = document.getElementById("supportTicketsRenderGridTarget");
-            
-            // Fetch Customer Inquiries Layer (Matches dynamic fallback whitelist tracking schemas)
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/messages`, { headers: getClearanceRequestHeaders() })
-                .catch(() => fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/consultations`, { headers: getClearanceRequestHeaders() }));
-                
-                if (response.ok) {
-                    const inquiries = await response.json();
-                    if (inquiries.length === 0) {
-                        inquiriesTarget.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-brand-textMuted">No customer feedback messages filed.</td></tr>`;
-                    } else {
-                        inquiriesTarget.innerHTML = "";
-                        inquiries.forEach(msg => {
-                            const tr = document.createElement("tr");
-                            tr.className = "hover:bg-slate-50 border-b border-slate-100";
-                            tr.innerHTML = `
-                                <td class="p-4"><div class="font-bold text-slate-800">${msg.name || 'Anonymous'}</div><div class="text-[10px] text-slate-400 font-mono">${msg.email || 'N/A'}</div></td>
-                                <td class="p-4 font-bold text-slate-600 truncate max-w-[140px]">${msg.subject || 'General Inquiry'}</td>
-                                <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${msg.status === 'unread' ? 'bg-red-50 text-brand-red border border-red-100' : 'bg-slate-100 text-slate-500'}">${msg.status.toUpperCase()}</span></td>
-                                <td class="p-4 text-right">
-                                    <button onclick="launchMessageContentTelemetryInspector(${JSON.stringify(msg).replace(/"/g, '&quot;')})" class="p-1 text-brand-blue hover:text-blue-700"><i class="fa-solid fa-envelope-open"></i></button>
-                                </td>
-                            `;
-                            inquiriesTarget.appendChild(tr);
-                        });
-                    }
-                }
-            } catch(e) { inquiriesTarget.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-brand-red font-bold">Inquiries trace disconnect.</td></tr>`; }
-
-            // Fetch System Assistance Support Tickets Layer
-            try {
-                const resTickets = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/support-tickets`, { headers: getClearanceRequestHeaders() });
-                if (resTickets.ok) {
-                    const tickets = await resTickets.json();
-                    if (tickets.length === 0) {
-                        ticketsTarget.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-brand-textMuted">No system technical assistance support tickets mapped.</td></tr>`;
-                    } else {
-                        ticketsTarget.innerHTML = "";
-                        tickets.forEach(ticket => {
-                            const tr = document.createElement("tr");
-                            tr.className = "hover:bg-slate-50 border-b border-slate-100";
-                            tr.innerHTML = `
-                                <td class="p-4 font-mono font-bold text-slate-500">TCK-${ticket.id}<br><span class="text-[9px] font-medium text-slate-400">UID: ${ticket.user_id}</span></td>
-                                <td class="p-4 font-bold text-slate-700">${ticket.subject}</td>
-                                <td class="p-4"><span class="text-[9px] font-black uppercase text-brand-red">${ticket.priority}</span> / <span class="text-[9px] text-slate-500 font-bold">${ticket.status.toUpperCase()}</span></td>
-                                <td class="p-4 text-right">
-                                    <button onclick="launchTechnicalSupportTicketTelemetryInspector(${JSON.stringify(ticket).replace(/"/g, '&quot;')})" class="px-2 py-1 bg-slate-900 text-white font-bold rounded hover:bg-slate-800 text-[10px]">Review</button>
-                                </td>
-                            `;
-                            ticketsTarget.appendChild(tr);
-                        });
-                    }
-                }
-            } catch(e) { ticketsTarget.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-brand-red font-bold">Tickets tracking array exception.</td></tr>`; }
-        }
-
-        function launchMessageContentTelemetryInspector(msg) {
-            const html = `
-                <div class="flex flex-col gap-1 border-b pb-3 border-slate-100">
-                    <span class="text-brand-textMuted text-[10px] uppercase">Message Content Payload</span>
-                    <p class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-medium text-slate-800 leading-relaxed">${msg.message}</p>
-                </div>
-                <div class="text-[10px] text-slate-400 font-mono flex items-center justify-between">
-                    <span>Inquiry Timestamp Record: ${new Date(msg.created_at).toLocaleString()}</span>
-                </div>
-            `;
-            presentTelemetryInspectionModal(`CRM Public Inbound Message`, `Vector Hash Signature ID: MSG-${msg.id}`, html);
-            
-            // Auto mark message parameter records as read if flagged as unread
-            if (msg.status === "unread") {
-                fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/messages/${msg.id}/read`, { method: "PUT", headers: getClearanceRequestHeaders() })
-                .then(() => executeEngagementHubCRMDataRefresh()).catch(() => {});
-            }
-        }
-
-        function launchTechnicalSupportTicketTelemetryInspector(ticket) {
-            const html = `
-                <div class="flex flex-col gap-1 border-b pb-3 border-slate-100">
-                    <span class="text-brand-textMuted text-[10px] uppercase">Incident Problem Parameters</span>
-                    <p class="bg-slate-50 p-4 rounded-xl border border-slate-200 font-medium text-slate-800 leading-relaxed">${ticket.description}</p>
-                </div>
-                <form onsubmit="executeSupportTicketResolutionStateChange(event, ${ticket.id})" class="flex items-end gap-3 mt-2">
-                    <div class="flex flex-col gap-1 flex-1">
-                        <label class="text-brand-textMuted text-[10px] uppercase">Re-route Resolution Status Vector</label>
-                        <select id="updateTicketStatusSelectElement" class="p-2 border border-brand-borderSlate bg-slate-50 rounded-lg font-bold">
-                            <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open (Awaiting Fix Node)</option>
-                            <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved (Close Channel)</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="bg-brand-blue text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors">Apply State</button>
-                </form>
-            `;
-            presentTelemetryInspectionModal("Technical Support Ticket Resolution System", `Tracking Track: TCK-${ticket.id}`, html);
-        }
-
-        async function executeSupportTicketResolutionStateChange(event, ticketId) {
-            event.preventDefault();
-            const state = document.getElementById("updateTicketStatusSelectElement").value;
-            try {
-                const response = await fetch(`${SYSTEM_SECURE_API_HOST_ADDRESS}/api/support-tickets/${ticketId}`, {
-                    method: "PUT",
-                    headers: getClearanceRequestHeaders(),
-                    body: JSON.stringify({ status: state })
-                });
-                if (!response.ok) throw new Error("Ticket status mutation rejected by core controller.");
-                displayOperationalToastMessage(`TCK-${ticketId} lifecycle state changes committed.`);
-                dismissTelemetryInspectionModal();
-                executeEngagementHubCRMDataRefresh();
-            } catch(e) { displayOperationalToastMessage(e.message, "error"); }
+                const blob = await fetchSecure(`invoices/${id}/download`, 'GET');
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `Invoice_Record_${id}.pdf`;
+                document.body.appendChild(a); a.click(); a.remove(); window.URL.revokeObjectURL(url);
+                pushSystemOperationalToast("Download pipeline concluded.", "success");
+            } catch (e) { pushSystemOperationalToast("PDF Extraction Failed.", "error"); }
         }
     </script>
 </body>
