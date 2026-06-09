@@ -58,6 +58,23 @@
 <body class="antialiased flex flex-col min-h-screen font-sans selection:bg-brandBlue selection:text-white">
 
     <section id="auth-section" class="flex-grow flex items-center justify-center p-6 bg-facebookBg">
+
+          <header class="w-full relative z-10 border-b border-gray-800 bg-[#0b0f19]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px]">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-extrabold text-white font-mono tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Unified Authentication Hub</span>
+                </div>
+            </a>
+            <a href="index.html" class="text-sm font-bold text-gray-300 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
+        </div>
+    </header>
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-4 border-brandBlue relative overflow-hidden">
             <div class="text-center mb-8 flex flex-col items-center">
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-brandBlue to-brandRed p-[2px] shadow-sm mb-3">
@@ -66,36 +83,39 @@
                     </div>
                 </div>
                 <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h1>
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Client Authorization Matrix</p>
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Client Login Credentials</p>
             </div>
             
             <div id="login-view">
                 <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
-                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
-                    <button type="submit" class="w-full bg-brandBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-[15px]">Establish Connection</button>
+                    <input type="email" id="login-email" placeholder="Your Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <button type="submit" class="w-full bg-brandBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-[15px]">Login to Your Account</button>
                 </form>
                 <div class="my-6 border-t border-gray-100 relative">
                     <span class="absolute left-1/2 -translate-x-1/2 -top-2.5 bg-white px-2 text-xs text-gray-400 font-bold">OR</span>
                 </div>
                 <div class="text-center">
-                    <button onclick="toggleAuth('register')" class="w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-600 transition shadow-md text-[15px]">Create New Node Account</button>
+                    <button onclick="toggleAuth('register')" class="w-full bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-600 transition shadow-md text-[15px]">Create Account</button>
                 </div>
             </div>
 
-            <div id="register-view" class="hide">
-                <form id="register-form" class="space-y-4">
-                    <input type="text" id="reg-name" placeholder="Full Designation (Name)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
-                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
-                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
-                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
-                    <button type="submit" class="w-full bg-brandYellow text-gray-900 font-extrabold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-[15px]">Register Clearance</button>
-                </form>
-                <div class="mt-4 text-center">
-                    <button onclick="toggleAuth('login')" class="text-brandBlue font-bold hover:underline text-sm">Return to Login</button>
-                </div>
-            </div>
-        </div>
+        <div id="register-view" class="hide">
+    <form id="register-form" class="space-y-4">
+        <input type="text" id="reg-name" placeholder="Full Designation (Name)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
+        <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
+        <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
+        <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
+        
+        <input type="password" id="reg-confirm-password" placeholder="Confirm Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:border-brandBlue">
+        
+        <button type="submit" class="w-full bg-brandYellow text-gray-900 font-extrabold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-[15px]">Register Clearance</button>
+    </form>
+    <div class="mt-4 text-center">
+        <button onclick="toggleAuth('login')" class="text-brandBlue font-bold hover:underline text-sm"> BACK to Login</button>
+    </div>
+</div>
+    
     </section>
 
     <section id="dashboard-section" class="flex-grow hide flex flex-col h-screen overflow-hidden">
