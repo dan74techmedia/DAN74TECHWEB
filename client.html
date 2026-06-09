@@ -3,456 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Client Operations Portal</title>
+    <title>DAN74TECH MEDIA | Unified Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        corporateYellow: '#FFD700',
-                        professionalBlue: '#0044FF',
-                        actionRed: '#FF2A2A',
-                        darkFooter: '#111827'
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Strict ban on dark-mode overrides on document body */
-        body { background-color: #f9fafb !important; color: #111827 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f3f4f6 !important; font-family: 'Segoe UI', sans-serif; }
         .hide { display: none !important; }
-        .chat-container { max-height: 400px; overflow-y: auto; }
+        .scroll-style::-webkit-scrollbar { width: 6px; }
+        .scroll-style::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <section id="auth-section" class="flex-grow flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border-t-4 border-professionalBlue">
-            <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-professionalBlue">DAN74TECH MEDIA</h1>
-                <p class="text-sm text-gray-500">Client Operations Portal</p>
-            </div>
-
-            <div id="login-view">
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="login-email" required class="mt-1 w-full px-4 py-2 border rounded-md focus:ring-professionalBlue focus:border-professionalBlue outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Access Credential</label>
-                        <input type="password" id="login-password" required class="mt-1 w-full px-4 py-2 border rounded-md focus:ring-professionalBlue focus:border-professionalBlue outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">Authenticate Pipeline</button>
-                </form>
-                <p class="mt-4 text-center text-sm">No operational clearance? <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue hover:underline">Request Access</a></p>
-            </div>
-
-            <div id="register-view" class="hide">
-                <form id="register-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Full Name</label>
-                        <input type="text" id="reg-name" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Email Address</label>
-                        <input type="email" id="reg-email" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Phone Vector</label>
-                        <input type="text" id="reg-phone" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Access Credential</label>
-                        <input type="password" id="reg-password" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2 px-4 rounded-md hover:bg-yellow-500 transition duration-200">Initialize Profile</button>
-                </form>
-                <p class="mt-4 text-center text-sm">Existing clearance? <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue hover:underline">Authenticate Here</a></p>
-            </div>
+    <nav class="bg-white border-b px-6 py-3 flex justify-between items-center z-20">
+        <div class="text-xl font-bold text-professionalBlue tracking-tighter">DAN74TECH MEDIA</div>
+        <div class="flex gap-6 text-gray-600 font-medium">
+            <button onclick="switchView('feed')" class="hover:text-professionalBlue">Portal Feed</button>
+            <button onclick="switchView('chat')" class="hover:text-professionalBlue">Communications</button>
         </div>
-    </section>
+        <div class="flex items-center gap-4">
+            <span id="user-role-badge" class="text-xs bg-gray-100 px-2 py-1 rounded border"></span>
+            <button onclick="logoutPipeline()" class="text-sm text-actionRed font-bold hover:underline">Logout</button>
+        </div>
+    </nav>
 
-    <section id="dashboard-section" class="flex-grow hide flex flex-col">
-        <nav class="bg-professionalBlue text-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16 items-center">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-layer-group text-corporateYellow text-xl"></i>
-                        <span class="font-bold text-lg tracking-wider">DAN74TECH MATRIX</span>
-                    </div>
-                    <div class="flex items-center gap-6">
-                        <span id="user-greeting" class="text-sm font-medium hidden sm:block"></span>
-                        <button onclick="logoutPipeline()" class="bg-actionRed hover:bg-red-700 px-4 py-1.5 rounded text-sm font-bold transition">Terminate Session</button>
-                    </div>
+    <main class="flex flex-grow overflow-hidden">
+        
+        <aside class="w-64 bg-white border-r p-4 scroll-style overflow-y-auto">
+            <h3 class="font-bold text-gray-400 text-xs uppercase mb-4">Network Connections</h3>
+            <div id="user-list-container" class="space-y-3">
                 </div>
-            </div>
-        </nav>
+        </aside>
 
-        <div class="bg-corporateYellow text-gray-900 text-xs font-bold px-4 py-2 text-center uppercase tracking-widest shadow-sm">
-            System Telemetry: <span id="telemetry-status">Syncing Data Node...</span>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section class="flex-grow bg-gray-50 overflow-y-auto p-6">
             
-            <div class="lg:col-span-2 space-y-8">
-                
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-rocket text-professionalBlue mr-2"></i>Active Deployments (Orders)</h2>
-                        <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="text-xs bg-professionalBlue text-white px-3 py-1.5 rounded hover:bg-blue-700">New Deployment</button>
-                    </div>
-                    <div class="p-6 overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-2">ID</th>
-                                    <th class="px-4 py-2">Service</th>
-                                    <th class="px-4 py-2">Status</th>
-                                    <th class="px-4 py-2">Financials</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-registry-body">
-                                <tr><td colspan="4" class="text-center py-4 text-gray-400">Pulling ledger data...</td></tr>
-                            </tbody>
-                        </table>
+            <div id="feed-view" class="max-w-3xl mx-auto space-y-6">
+                <div class="bg-white p-4 rounded-lg shadow-sm border">
+                    <textarea id="post-input" placeholder="Publish to the community..." class="w-full p-2 border rounded-md resize-none h-20 outline-none"></textarea>
+                    <div class="flex justify-between mt-3">
+                        <select id="post-type" class="text-sm border p-1 rounded">
+                            <option value="portfolio">Portfolio</option>
+                            <option value="blog">Blog</option>
+                            <option value="case-study">Case Study</option>
+                        </select>
+                        <button onclick="submitPost()" class="bg-professionalBlue text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Publish</button>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b">
-                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-box-archive text-professionalBlue mr-2"></i>Secure File Deliveries</h2>
-                    </div>
-                    <div class="p-6">
-                        <ul id="files-registry-body" class="space-y-3">
-                            <li class="text-sm text-gray-500">Searching secure delivery network...</li>
-                        </ul>
-                    </div>
-                </div>
-
+                <div id="feed-container" class="space-y-6"></div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-[600px]">
-                <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-headset text-actionRed mr-2"></i>Matrix Support Thread</h2>
-                    <span id="socket-indicator" class="h-3 w-3 bg-red-500 rounded-full" title="Socket Disconnected"></span>
-                </div>
-                
-                <div id="chat-window" class="chat-container flex-grow p-4 bg-gray-50 flex flex-col gap-3">
-                    </div>
-                
-                <div class="p-4 border-t bg-white">
-                    <form id="chat-form" class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Transmit message..." required class="flex-grow px-3 py-2 border rounded-md outline-none focus:border-professionalBlue text-sm">
-                        <button type="submit" class="bg-professionalBlue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"><i class="fa-solid fa-paper-plane"></i></button>
-                    </form>
+            <div id="chat-view" class="hide max-w-4xl mx-auto h-full flex flex-col">
+                <div id="chat-header" class="bg-white p-4 border-b font-bold">Select a connection to start messaging</div>
+                <div id="chat-window" class="flex-grow bg-white p-4 overflow-y-auto scroll-style"></div>
+                <div class="bg-white p-4 border-t flex gap-2">
+                    <input type="file" id="file-input" class="hidden">
+                    <button onclick="document.getElementById('file-input').click()" class="text-gray-500 hover:text-professionalBlue"><i class="fa-solid fa-paperclip"></i></button>
+                    <input type="text" id="msg-input" class="flex-grow border rounded-full px-4 py-2 outline-none" placeholder="Transmit data...">
+                    <button onclick="sendMessage()" class="bg-professionalBlue text-white px-6 py-2 rounded-full font-bold">Send</button>
                 </div>
             </div>
 
-        </div>
-    </section>
-
-    <div id="order-modal" class="hide fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
-            <div class="px-6 py-4 border-b bg-professionalBlue text-white flex justify-between items-center">
-                <h3 class="font-bold text-lg">Initialize Deployment Request</h3>
-                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="text-white hover:text-gray-300"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <form id="new-order-form" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Target Service</label>
-                    <select id="order-service" class="mt-1 w-full px-3 py-2 border rounded-md outline-none" required>
-                        <option value="">Select Primary Architecture</option>
-                        <option value="Web Development">Web Application Development</option>
-                        <option value="Branding">Corporate Identity & Branding</option>
-                        <option value="Digital Marketing">Digital Pipeline Marketing</option>
-                        <option value="Systems Integration">API & Systems Integration</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Project Vector Specifications</label>
-                    <textarea id="order-details" rows="3" required placeholder="Detail the operational requirements..." class="mt-1 w-full px-3 py-2 border rounded-md outline-none resize-none"></textarea>
-                </div>
-                <div class="bg-blue-50 p-3 rounded border border-blue-100 text-xs text-blue-800">
-                    <i class="fa-solid fa-shield-halved mr-1"></i> Submitting this form activates the Safaricom STK fallback loop. You will be redirected to our encrypted WhatsApp conduit to finalize transaction authentication.
-                </div>
-                <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2 rounded-md hover:bg-yellow-500 transition">Transmit Request & Proceed to Payment</button>
-            </form>
-        </div>
-    </div>
-
-    <footer class="bg-darkFooter text-gray-400 py-6 text-center text-sm mt-auto">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> DAN74TECH MEDIA. All operational vectors secured.</p>
-        <p class="text-xs mt-1">Lead Systems Architecture by Daniel Ngumi | Meru, Kenya</p>
-    </footer>
+        </section>
+    </main>
 
     <script>
-        // API Base Vector Mapping
-        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:10000/api' 
-            : 'https://dan74techweb.onrender.com/api'; // Replace with actual production URL if different
-
+        const API_BASE = 'https://dan74techweb.onrender.com/api';
+        let currentUser = JSON.parse(localStorage.getItem('dan74tech_user'));
         let token = localStorage.getItem('dan74tech_token');
-        let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
-        let socket = null;
+        let socket = io(API_BASE.replace('/api', ''));
+        let activeChatRecipient = null;
 
-        // Phase 10.3 Centralized Dashboard Module Registry Mapping
-        const MODULE_REGISTRY = {
-            orders: { endpoint: '/orders/user/', renderer: renderOrders },
-            files: { endpoint: '/file-deliveries/client/', renderer: renderFiles },
-            chat: { endpoint: '/client-portal/thread', renderer: renderChatHistory }
-        };
-
-        // UI View Toggles
-        const toggleAuth = (view) => {
-            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
-            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
-        };
-
-        const setViewState = () => {
-            if (token && userNode) {
-                document.getElementById('auth-section').classList.add('hide');
-                document.getElementById('dashboard-section').classList.remove('hide');
-                document.getElementById('user-greeting').innerText = `Clearance: ${userNode.name} (${userNode.role.toUpperCase()})`;
-                triggerTelemetryClockPulse();
-                executeModuleRegistrySync();
-                initializeWebSocketEngine();
-            } else {
-                document.getElementById('auth-section').classList.remove('hide');
-                document.getElementById('dashboard-section').classList.add('hide');
-            }
-        };
-
-        // Universal Network Interceptor
-        const apiCall = async (endpoint, method = 'GET', body = null) => {
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            
-            const config = { method, headers };
-            if (body) config.body = JSON.stringify(body);
-
-            try {
-                const response = await fetch(`${API_BASE}${endpoint}`, config);
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || data.message || 'Network vector failed');
-                return data;
-            } catch (error) {
-                console.error(`API Fault [${endpoint}]:`, error);
-                alert(`System Error: ${error.message}`);
-                throw error;
-            }
-        };
-
-        // Auth Logic
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-password').value
-            };
-            const res = await apiCall('/auth/login', 'POST', payload);
-            if(res.success) { authorizeSession(res.token, res.user); }
-        });
-
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                name: document.getElementById('reg-name').value,
-                email: document.getElementById('reg-email').value,
-                phone: document.getElementById('reg-phone').value,
-                password: document.getElementById('reg-password').value
-            };
-            const res = await apiCall('/auth/register', 'POST', payload);
-            if(res.success) { authorizeSession(res.token, res.user); }
-        });
-
-        const authorizeSession = (jwt, user) => {
-            localStorage.setItem('dan74tech_token', jwt);
-            localStorage.setItem('dan74tech_user', JSON.stringify(user));
-            token = jwt; userNode = user;
-            setViewState();
-        };
-
-        const logoutPipeline = () => {
-            localStorage.removeItem('dan74tech_token');
-            localStorage.removeItem('dan74tech_user');
-            token = null; userNode = null;
-            if (socket) socket.disconnect();
-            setViewState();
-        };
-
-        // Phase 4 Telemetry Discovery
-        const triggerTelemetryClockPulse = () => {
-            const statusNode = document.getElementById('telemetry-status');
-            setInterval(() => {
-                const date = new Date();
-                statusNode.innerText = `LOCKED ON EAT CLOCK: ${date.toLocaleTimeString('en-KE')} | SECURE CONNECTION`;
-            }, 1000);
-        };
-
-        // Master Sync Dispatcher
-        const executeModuleRegistrySync = async () => {
-            for (const [key, module] of Object.entries(MODULE_REGISTRY)) {
-                try {
-                    // Chat thread does not require user.id appended to URL in our server.js API
-                    const targetEndpoint = key === 'chat' ? module.endpoint : `${module.endpoint}${userNode.id}`;
-                    const data = await apiCall(targetEndpoint, 'GET');
-                    module.renderer(data);
-                } catch (e) {
-                    console.warn(`Module Sync Warning [${key}]: Missing data nodes.`);
-                }
-            }
-        };
-
-        // Render Functions
-        function renderOrders(orders) {
-            const tbody = document.getElementById('orders-registry-body');
-            tbody.innerHTML = '';
-            if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-sm text-gray-500">No active deployments detected.</td></tr>`;
-                return;
-            }
-            orders.forEach(order => {
-                const statusColor = order.status === 'completed' ? 'text-green-600' : 'text-corporateYellow';
-                const row = `<tr class="border-b">
-                    <td class="px-4 py-3 text-xs font-bold">#ORD-${order.id}</td>
-                    <td class="px-4 py-3 font-medium text-gray-800">${order.service}</td>
-                    <td class="px-4 py-3 font-bold ${statusColor} uppercase text-xs">${order.status}</td>
-                    <td class="px-4 py-3 text-xs">
-                        <span class="px-2 py-1 rounded bg-gray-100 ${order.payment_status === 'paid' ? 'text-green-600' : 'text-actionRed'}">${order.payment_status.toUpperCase()}</span>
-                    </td>
-                </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
+        // UI Routing
+        function switchView(view) {
+            document.getElementById('feed-view').classList.toggle('hide', view !== 'feed');
+            document.getElementById('chat-view').classList.toggle('hide', view !== 'chat');
         }
 
-        function renderFiles(files) {
-            const list = document.getElementById('files-registry-body');
-            list.innerHTML = '';
-            if (files.length === 0) {
-                list.innerHTML = `<li class="text-sm text-gray-500">No encrypted payloads ready for download.</li>`;
-                return;
-            }
-            files.forEach(file => {
-                const item = `<li class="flex items-center justify-between p-3 bg-gray-50 rounded border">
-                    <div class="flex items-center"><i class="fa-solid fa-file-pdf text-actionRed mr-3"></i> <span class="text-sm font-medium text-gray-700">${file.file_name}</span></div>
-                    <a href="${file.file_url}" target="_blank" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded font-bold transition">Decrypt & Download</a>
-                </li>`;
-                list.insertAdjacentHTML('beforeend', item);
-            });
-        }
+        // Initialize Socket Presence
+        socket.emit('login', currentUser.id);
 
-        // New Order Submission with WhatsApp Intercept
-        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                user_id: userNode.id,
-                customer_name: userNode.name,
-                phone: userNode.phone || 'N/A',
-                service: document.getElementById('order-service').value,
-                project_details: document.getElementById('order-details').value
-            };
-            
-            try {
-                const res = await apiCall('/orders', 'POST', payload);
-                if (res.success && res.whatsapp_redirect) {
-                    document.getElementById('order-modal').classList.add('hide');
-                    executeModuleRegistrySync(); // Refresh UI
-                    window.open(res.whatsapp_redirect, '_blank'); // Trigger Intercept
-                }
-            } catch (err) {
-                // Handled in apiCall
+        socket.on('user_status', (users) => {
+            renderUserList(users);
+        });
+
+        // Messaging Engine
+        socket.on('receive_message', (msg) => {
+            if(activeChatRecipient && msg.sender_id === activeChatRecipient.id) {
+                appendMessage(msg, 'received');
+                socket.emit('mark_read', { messageId: msg.id });
             }
         });
 
-        // =========================================================================
-        // ======================== WEBSOCKET DUPLEX CHAT ==========================
-        // =========================================================================
-        function initializeWebSocketEngine() {
-            // Bind to base URL, stripping /api
-            const socketUrl = API_BASE.replace('/api', '');
-            socket = io(socketUrl);
+        socket.on('message_delivered', (data) => {
+            const el = document.getElementById(`msg-${data.messageId}`);
+            if(el) el.innerHTML = '<i class="fa-solid fa-check-double text-blue-500 text-[10px]"></i>';
+        });
 
-            socket.on('connect', () => {
-                document.getElementById('socket-indicator').classList.replace('bg-red-500', 'bg-green-500');
-                document.getElementById('socket-indicator').title = "Socket Matrix Active";
-                socket.emit('join_thread', userNode.id);
-            });
-
-            socket.on('disconnect', () => {
-                document.getElementById('socket-indicator').classList.replace('bg-green-500', 'bg-red-500');
-                document.getElementById('socket-indicator').title = "Socket Matrix Severed";
-            });
-
-            socket.on('receive_message', (msgNode) => {
-                appendChatMessage(msgNode);
-                scrollToChatBottom();
-            });
-        }
-
-        function renderChatHistory(messages) {
-            const chatWindow = document.getElementById('chat-window');
-            chatWindow.innerHTML = '';
-            if(messages.length === 0) {
-                chatWindow.innerHTML = '<div class="text-center text-xs text-gray-400 mt-4">Commence secure transmission. Admin is standing by.</div>';
-            }
-            messages.forEach(msg => appendChatMessage(msg));
-            scrollToChatBottom();
-        }
-
-        function appendChatMessage(msg) {
-            const chatWindow = document.getElementById('chat-window');
-            const isMe = msg.sender_id === userNode.id;
-            
-            const alignment = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-200 text-gray-900';
-            const radius = isMe ? 'rounded-l-lg rounded-tr-lg' : 'rounded-r-lg rounded-tl-lg';
-            
-            const html = `
-                <div class="max-w-[80%] p-3 text-sm shadow-sm ${alignment} ${radius}">
-                    ${msg.message_body}
+        // Feed Logic
+        async function fetchFeed() {
+            const res = await fetch(`${API_BASE}/posts`, { headers: {'Authorization': `Bearer ${token}`}});
+            const posts = await res.json();
+            const container = document.getElementById('feed-container');
+            container.innerHTML = posts.map(post => `
+                <div class="bg-white p-6 rounded-lg shadow-sm border ${post.status === 'pending' ? 'opacity-70' : ''}">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-bold text-professionalBlue">${post.publisher_name}</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">${post.type} | ${post.status}</span>
+                    </div>
+                    <p class="text-gray-700">${post.content}</p>
                 </div>
-            `;
-            chatWindow.insertAdjacentHTML('beforeend', html);
+            `).join('');
         }
 
-        function scrollToChatBottom() {
-            const chatWindow = document.getElementById('chat-window');
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+        // User List Render
+        function renderUserList(users) {
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = users.map(user => `
+                <div onclick="startChat(${JSON.stringify(user).replace(/"/g, '&quot;')})" class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">${user.name.charAt(0)}</div>
+                    <div>
+                        <div class="text-sm font-bold">${user.name}</div>
+                        <div class="text-[10px] text-gray-500">${user.role}</div>
+                    </div>
+                    <span class="ml-auto status-dot ${user.online ? 'bg-green-500' : 'bg-gray-300'}"></span>
+                </div>
+            `).join('');
         }
 
-        document.getElementById('chat-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const msgBody = input.value.trim();
-            if (!msgBody) return;
+        function startChat(user) {
+            activeChatRecipient = user;
+            document.getElementById('chat-header').innerText = `Chatting with: ${user.name}`;
+            document.getElementById('chat-window').innerHTML = '';
+            switchView('chat');
+        }
 
-            const payload = {
-                receiver_id: 1, // Assuming Lead System Architect Admin ID is 1
-                message_body: msgBody
+        function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const msg = {
+                sender_id: currentUser.id,
+                receiver_id: activeChatRecipient.id,
+                body: input.value,
+                timestamp: new Date()
             };
-
-            // Optimistic UI Append
-            const optimisticMsg = { sender_id: userNode.id, message_body: msgBody };
-            appendChatMessage(optimisticMsg);
-            scrollToChatBottom();
+            socket.emit('send_message', msg);
+            appendMessage(msg, 'sent');
             input.value = '';
+        }
 
-            try {
-                await apiCall('/communications/send', 'POST', payload);
-                // Broadcast handled by socket on server side
-            } catch (err) {
-                // Revert optimistic UI if failed (simplified error state)
-                input.value = msgBody; 
-            }
-        });
+        function appendMessage(msg, type) {
+            const window = document.getElementById('chat-window');
+            window.insertAdjacentHTML('beforeend', `
+                <div class="mb-4 ${type === 'sent' ? 'text-right' : 'text-left'}">
+                    <div class="inline-block p-3 rounded-lg ${type === 'sent' ? 'bg-professionalBlue text-white' : 'bg-gray-200'}">
+                        ${msg.body}
+                        <span id="msg-${msg.id}" class="ml-2">${type === 'sent' ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}</span>
+                    </div>
+                </div>
+            `);
+        }
 
-        // Init App State
-        window.onload = setViewState;
+        function logoutPipeline() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
 
+        // Lifecycle
+        window.onload = () => {
+            fetchFeed();
+            document.getElementById('user-role-badge').innerText = currentUser.role.toUpperCase();
+        };
     </script>
 </body>
 </html>
