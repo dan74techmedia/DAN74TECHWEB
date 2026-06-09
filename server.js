@@ -960,9 +960,9 @@ app.post('/api/content/publish', verifySystemToken, async (req, res) => {
     }
 });
 
--- =========================================================================
--- ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
--- =========================================================================
+// =========================================================================
+// ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
+// =========================================================================
 app.get('/api/admin/dashboard-stats', verifyAdminAccess, async (req, res) => {
     try {
         const userCount = await pool.query("SELECT COUNT(*) FROM users WHERE is_deleted = FALSE");
