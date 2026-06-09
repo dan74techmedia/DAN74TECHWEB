@@ -1,12 +1,11 @@
-
 // =========================================================================
 // DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
-// STATUS: V4.0.0 PRODUCTION ENTERPRISE BLUEPRINT ALIGNED
+// STATUS: V4.1.0 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (COMPLETE)
 // =========================================================================
 require('dotenv').config();
 const express = require('express');
-const http = require('http'); // Required for Socket.io binding
-const { Server } = require('socket.io'); // Phase 5 Enterprise Upgrade
+const http = require('http'); 
+const { Server } = require('socket.io'); 
 const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
@@ -21,16 +20,16 @@ const rateLimit = require('express-rate-limit');
 const nodemailer = require('nodemailer'); 
 const PDFDocument = require('pdfkit');
 const Brevo = require('@getbrevo/brevo');
-const cron = require('node-cron'); // Required for S3 Backup Scheduler
-const { exec } = require('child_process'); // For pg_dump execution
-const AWS = require('aws-sdk'); // For AWS S3 Backups
+const cron = require('node-cron'); 
+const { exec } = require('child_process'); 
+const AWS = require('aws-sdk'); 
 
 // Initialize Express App Engine & HTTP Server for WebSockets
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: '*', // Adjust dynamically based on Render domains if strictness is required
+        origin: '*', 
         methods: ["GET", "POST", "PUT", "DELETE"]
     }
 });
@@ -45,7 +44,12 @@ const pool = new Pool({
 });
 
 pool.query("SELECT NOW()")
-    .then(() => console.log("✅ Postgres Database Connected Successfully"))
+    .then(() => {
+        console.log("✅ Postgres Database Connected Successfully");
+        // Clear phantom presence configurations on application startup
+        pool.query('UPDATE users SET is_online = FALSE WHERE is_online = TRUE')
+            .catch(err => console.error("❌ Online status cleanup failure:", err));
+    })
     .catch(err => console.error("❌ Database Connection Error:", err));
 
 // Configure Cloudinary Integration
@@ -64,7 +68,6 @@ if (process.env.BREVO_API_KEY) {
 // =========================================================================
 // ======================== GLOBAL MIDDLEWARE CONFIGURATION ====================
 // =========================================================================
-
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
@@ -109,23 +112,17 @@ const uploadMemory = multer({ storage: multer.memoryStorage() });
 // =========================================================================
 // ==================== ARCHITECTURAL PROTECTION MIDDLEWARES ===================
 // =========================================================================
-
 const verifyAdminAccess = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers['authorization'];
-    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: "Access Denied: Token missing or malformed" });
     }
-    
     const token = authHeader.split(' ')[1];
-    
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        
         if (!decoded.role || String(decoded.role).trim().toLowerCase() !== 'admin') {
             return res.status(403).json({ error: "Unauthorized: Admin clearance required" });
         }
-        
         req.user = decoded;
         next();
     } catch (err) { 
@@ -139,9 +136,7 @@ const verifySystemToken = (req, res, next) => {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: "Access token validation mapping empty. Unauthorized." });
     }
-    
     const token = authHeader.split(' ')[1];
-    
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) return res.status(403).json({ error: "Token reference structural compromise detected. Forbidden." });
         req.user = user;
@@ -173,12 +168,10 @@ async function sendSystemNotificationEmail(to, subject, text, html) {
 // =========================================================================
 // ================= MODULE 1: AUTHENTICATION & SECURITY DATA ENGINE =======
 // =========================================================================
-
 app.post('/api/auth/register', async (req, res) => {
     try {
-        // PATCH: Removed user-submitted role parsing to prevent privilege escalation
         const { name, email, password, phone } = req.body;
-        const userRole = 'client'; // Strictly forced per security audit logs
+        const userRole = 'client'; 
         
         const checkUser = await pool.query('SELECT id FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (checkUser.rows.length > 0) {
@@ -196,7 +189,6 @@ app.post('/api/auth/register', async (req, res) => {
         );
         
         const userNode = result.rows[0];
-        
         const accessToken = jwt.sign(
             { id: userNode.id, name: userNode.name, email: userNode.email, role: userNode.role }, 
             JWT_SECRET, 
@@ -207,7 +199,6 @@ app.post('/api/auth/register', async (req, res) => {
         const emailBody = `Hello ${userNode.name}, your Profile setup is successfully validated. We are glad you joined. For more information you can reply to this email or reach us via our website ${maskedLink}. ✨DAN74TECH MEDIA ✨.`;
 
         await sendSystemNotificationEmail(userNode.email, "Welcome to DAN74TECH MEDIA", emailBody);
-        
         res.json({ success: true, token: accessToken, user: userNode });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -217,7 +208,6 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        
         const result = await pool.query('SELECT * FROM users WHERE email = $1 AND is_deleted = FALSE', [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ success: false, message: "Invalid configuration options submitted" });
@@ -255,11 +245,10 @@ app.post('/api/auth/login', async (req, res) => {
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
 // =========================================================================
-
 app.get('/api/users', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT id, name, email, role, phone, created_at FROM users WHERE is_deleted = FALSE ORDER BY id DESC'
+            'SELECT id, name, email, role, phone, is_online, last_seen, created_at FROM users WHERE is_deleted = FALSE ORDER BY id DESC'
         );
         res.json(result.rows);
     } catch (err) {
@@ -270,7 +259,7 @@ app.get('/api/users', verifyAdminAccess, async (req, res) => {
 app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query(
-            'SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1 AND is_deleted = FALSE',
+            'SELECT id, name, email, role, phone, is_online, last_seen, created_at FROM users WHERE id = $1 AND is_deleted = FALSE',
             [req.params.id]
         );
         if (result.rows.length === 0) {
@@ -316,7 +305,6 @@ app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 2 (B): SERVICES MANAGEMENT INTERFACE ===========
 // =========================================================================
-
 app.get('/api/services', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM services WHERE is_deleted = FALSE ORDER BY id DESC');
@@ -365,7 +353,6 @@ app.delete('/api/services/:id', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 3: SUB-SERVICES & PRICING ENGINE ==============
 // =========================================================================
-
 app.get('/api/sub-services', async (req, res) => {
     try {
         const query = `
@@ -423,10 +410,8 @@ app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE ==============
 // =========================================================================
-
 const buildAdvancedQuery = (tableName, queryParams, searchableColumns = []) => {
     let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = queryParams;
-    
     let whereClauses = [`is_deleted = FALSE`]; 
     let values = [];
     let valueIndex = 1;
@@ -516,7 +501,6 @@ app.post('/api/orders', async (req, res) => {
         );
         
         const orderData = result.rows[0];
-        
         if (user_id) {
             await pool.query(
                 `INSERT INTO notifications (user_id, title, message, channel, status) VALUES ($1, $2, $3, 'dashboard', 'unread')`,
@@ -530,7 +514,6 @@ app.post('/api/orders', async (req, res) => {
             `An operational deployment request has been logged by ${customer_name}. Details: ${project_details}`
         );
 
-        // Generates the synchronous WhatsApp intercept URL as requested in the Phase 3 specs
         const whatsappMessage = encodeURIComponent(`Hello DAN74TECH MEDIA, I have placed an order for ${service}. Project Details: ${project_details || 'N/A'}. Please advise on the next steps for payment completion.`);
         const whatsappLink = `https://wa.me/254790435584?text=${whatsappMessage}`;
         
@@ -547,7 +530,6 @@ app.post('/api/orders', async (req, res) => {
 // =========================================================================
 // ================= MODULE 11: INVOICE GENERATION PIPELINE ================
 // =========================================================================
-
 app.get('/api/invoices/:id/download', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM invoices WHERE id = $1 AND is_deleted = FALSE', [req.params.id]);
@@ -558,10 +540,7 @@ app.get('/api/invoices/:id/download', async (req, res) => {
         res.setHeader('Content-disposition', `attachment; filename="${invoice.invoice_number}.pdf"`);
         res.setHeader('Content-type', 'application/pdf');
         
-        // Stream directly to client memory
         doc.pipe(res);
-
-        // Core Financial Layout Generation
         doc.fontSize(22).fillColor('#0044FF').text('DAN74TECH MEDIA', { align: 'center' });
         doc.fontSize(12).fillColor('#333333').text('Enterprise Transaction Ledger', { align: 'center' });
         doc.moveDown(2);
@@ -576,7 +555,6 @@ app.get('/api/invoices/:id/download', async (req, res) => {
         doc.moveDown(3);
         
         doc.fontSize(12).text('Automated ledger generated by DAN74TECH MEDIA Matrix.', { align: 'center' });
-        
         doc.end();
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -586,31 +564,26 @@ app.get('/api/invoices/:id/download', async (req, res) => {
 // =========================================================================
 // ================= MODULE 12: EMAIL BROADCAST PIPELINES ==================
 // =========================================================================
-
 app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     try {
         const { subject, message, html } = req.body;
-        
         const subsResult = await pool.query("SELECT email FROM subscribers WHERE is_deleted = FALSE AND status = 'active'");
         const userResult = await pool.query("SELECT email FROM users WHERE is_deleted = FALSE");
         
-        // Merge & deduplicate emails
         const emailsSet = new Set([...subsResult.rows.map(r => r.email), ...userResult.rows.map(r => r.email)]);
         const emailsArray = Array.from(emailsSet).map(email => ({ email }));
         
         if (emailsArray.length === 0) return res.status(400).json({ error: "No target clearance vectors found." });
-
         if (!process.env.BREVO_API_KEY) throw new Error("Brevo SMTP engine offline.");
 
         const sendSmtpEmail = new Brevo.SendSmtpEmail();
         sendSmtpEmail.subject = subject;
         sendSmtpEmail.htmlContent = html || `<p>${message}</p>`;
         sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-        sendSmtpEmail.bcc = emailsArray; // Enforces BCC privacy masking per blueprint
+        sendSmtpEmail.bcc = emailsArray; 
 
         await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
         
-        // Log campaign history
         const campaign = await pool.query(
             `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by, sent_at) VALUES ($1, $2, 'broadcast', $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
             [subject, html || message, emailsArray.length, req.user.id]
@@ -625,7 +598,6 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 14: TESTIMONIALS ENGINE ========================
 // =========================================================================
-
 app.get('/api/testimonials', async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM testimonials WHERE is_deleted = FALSE ORDER BY id DESC");
@@ -651,7 +623,6 @@ app.post('/api/testimonials', async (req, res) => {
 // =========================================================================
 // ================= MODULE 15: MEDIA & CDN REPOSITORY LAYERS ==============
 // =========================================================================
-
 app.get('/api/media', async (req, res) => {
     try {
         const data = await pool.query('SELECT * FROM media_library WHERE is_deleted = FALSE ORDER BY id DESC');
@@ -669,7 +640,6 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
             { folder: "dan74tech_media_library" },
             async (error, result) => {
                 if (error) return res.status(500).json({ error: error.message });
-                
                 try {
                     const dbInsert = await pool.query(
                         `INSERT INTO media_library (file_name, file_url, file_type, file_size) VALUES ($1, $2, $3, $4) RETURNING *`,
@@ -690,7 +660,6 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
 // =========================================================================
 // ================= MODULE 16: CONSULTATIONS ARCHIVE BLOCK ================
 // =========================================================================
-
 app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM consultations WHERE is_deleted = FALSE ORDER BY id DESC');
@@ -738,7 +707,6 @@ app.delete('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 17: FILE DELIVERY NETWORK LAYER =================
 // =========================================================================
-
 app.get('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM file_deliveries WHERE is_deleted = FALSE ORDER BY id DESC');
@@ -771,34 +739,66 @@ app.post('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
 });
 
 // =========================================================================
-// ================= MODULE 18: CHAT & CLIENT-ADMIN COMMUNICATIONS =========
+// ================= MODULE 18: CHAT & TELEMETRY COMMUNICATION ENGINE =======
 // =========================================================================
-
-// Socket.io Duplex Chat Engine Integration
 io.on('connection', (socket) => {
-    console.log(`🔌 WebSockets: Client connected [ID: ${socket.id}]`);
+    console.log(`🔌 WebSockets: Connection Established [ID: ${socket.id}]`);
     
-    socket.on('join_thread', (userId) => {
+    socket.on('join_thread', async (userId) => {
         socket.join(userId.toString());
+        socket.userId = userId;
+        await pool.query('UPDATE users SET is_online = TRUE, last_seen = NOW() WHERE id = $1', [userId]);
+        io.emit('presence_update', { userId, status: 'online' });
     });
 
-    socket.on('disconnect', () => {
-        console.log(`🔌 WebSockets: Client disconnected [ID: ${socket.id}]`);
+    socket.on('typing_start', (data) => {
+        io.to(data.receiver_id.toString()).emit('user_typing', { sender_id: socket.userId });
     });
+
+    socket.on('typing_stop', (data) => {
+        io.to(data.receiver_id.toString()).emit('user_stopped_typing', { sender_id: socket.userId });
+    });
+
+    socket.on('mark_read', async (data) => {
+        await pool.query('UPDATE client_communications SET is_read = TRUE WHERE sender_id = $1 AND receiver_id = $2', [data.sender_id, socket.userId]);
+        io.to(data.sender_id.toString()).emit('receipt_update', { receiver_id: socket.userId });
+    });
+
+    socket.on('disconnect', async () => {
+        console.log(`🔌 WebSockets: Connection Terminated [ID: ${socket.id}]`);
+        if (socket.userId) {
+            await pool.query('UPDATE users SET is_online = FALSE, last_seen = NOW() WHERE id = $1', [socket.userId]);
+            io.emit('presence_update', { userId: socket.userId, status: 'offline', last_seen: new Date() });
+        }
+    });
+});
+
+app.get('/api/communications/directory', verifySystemToken, async (req, res) => {
+    try {
+        const query = `
+            SELECT id, name, email, role, is_online, last_seen,
+            (SELECT COUNT(*) FROM client_communications cc WHERE cc.sender_id = users.id AND cc.receiver_id = $1 AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
+            FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, last_seen DESC NULLS LAST;
+        `;
+        const result = await pool.query(query, [req.user.id]);
+        res.json(result.rows);
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
 });
 
 app.get('/api/communications/clients', verifyAdminAccess, async (req, res) => {
     try {
         const query = `
-            SELECT u.id, u.name, u.email, u.phone, u.role, u.created_at,
+            SELECT u.id, u.name, u.email, u.phone, u.role, u.is_online, u.last_seen, u.created_at,
                 (SELECT message_body FROM client_communications cc WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) AND cc.is_deleted = FALSE ORDER BY cc.created_at DESC LIMIT 1) as last_message,
                 (SELECT created_at FROM client_communications cc WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) AND cc.is_deleted = FALSE ORDER BY cc.created_at DESC LIMIT 1) as last_message_date,
-                (SELECT COUNT(*) FROM client_communications cc WHERE cc.sender_id = u.id AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
+                (SELECT COUNT(*) FROM client_communications cc WHERE cc.sender_id = u.id AND cc.receiver_id = $1 AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
             FROM users u
             WHERE u.role = 'client' AND u.is_deleted = FALSE
             ORDER BY last_message_date DESC NULLS LAST;
         `;
-        const result = await pool.query(query);
+        const result = await pool.query(query, [req.user.id]);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -816,9 +816,7 @@ app.post('/api/communications/send', verifySystemToken, async (req, res) => {
             [sender_id, receiver_id, message_body, attachment_url, attachment_name]
         );
         
-        // Broadcast in real-time
         io.to(receiver_id.toString()).emit('receive_message', savedMsg.rows[0]);
-
         res.json({ success: true, data: savedMsg.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -847,13 +845,9 @@ app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
 // =========================================================================
 // ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
 // =========================================================================
-
 app.post('/api/payments/mpesa-stk', verifySystemToken, async (req, res) => {
     try {
         const { order_id, phone_number, amount } = req.body;
-        // NOTE: M-Pesa API Key generation pending. Fallback to WhatsApp confirmation flow explicitly.
-        
-        // Temporarily flag order as processing until Daraja keys are live
         await pool.query(`UPDATE orders SET payment_status = 'processing', updated_at = CURRENT_TIMESTAMP WHERE id = $1`, [order_id]);
         
         res.json({
@@ -885,7 +879,6 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
                 [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc]
             );
         }
-
         res.json({ ResultCode: 0, ResultDesc: "Transaction Accepted Confirmed" });
     } catch (err) {
         console.error("M-Pesa Callback Error:", err);
@@ -894,9 +887,82 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
 });
 
 // =========================================================================
-// ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
+// ================= MODULE 20: COMMUNITY SOCIAL FEED ENGINE ==========================
 // =========================================================================
+app.get('/api/feed/global', verifySystemToken, async (req, res) => {
+    try {
+        const query = `
+            SELECT id, title, description as content, link as media_url, 'portfolio' as type, created_at, likes_count, views_count, NULL as author_name
+            FROM portfolio WHERE is_deleted = FALSE AND status = 'Approved'
+            UNION ALL
+            SELECT b.id, b.title, b.content, b.image_url as media_url, 'blog' as type, b.created_at, b.likes_count, b.views_count, u.name as author_name
+            FROM blog_posts b LEFT JOIN users u ON b.author_id = u.id WHERE b.is_deleted = FALSE AND b.status = 'Approved'
+            UNION ALL
+            SELECT c.id, c.title, c.challenge || ' ' || c.solution as content, c.image_url as media_url, 'case_study' as type, c.created_at, c.likes_count, c.views_count, u.name as author_name
+            FROM case_studies c LEFT JOIN users u ON c.author_id = u.id WHERE c.is_deleted = FALSE AND c.status = 'Approved'
+            ORDER BY created_at DESC LIMIT 50;
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
 
+app.post('/api/feed/interact', verifySystemToken, async (req, res) => {
+    try {
+        const { entity_id, entity_type, action } = req.body; 
+        const userId = req.user.id;
+        
+        const check = await pool.query(
+            'SELECT id FROM feed_interactions WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3 AND interaction_type = $4', 
+            [userId, entity_id, entity_type, action]
+        );
+        
+        if (check.rows.length === 0) {
+            await pool.query('INSERT INTO feed_interactions (user_id, entity_id, entity_type, interaction_type) VALUES ($1, $2, $3, $4)', [userId, entity_id, entity_type, action]);
+            let table = entity_type === 'blog' ? 'blog_posts' : entity_type === 'case_study' ? 'case_studies' : 'portfolio';
+            await pool.query(`UPDATE ${table} SET likes_count = likes_count + 1 WHERE id = $1`, [entity_id]);
+        }
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
+app.get('/api/catalog/full', verifySystemToken, async (req, res) => {
+    try {
+        const services = await pool.query('SELECT id, name, description, icon FROM services WHERE is_deleted = FALSE');
+        const subServices = await pool.query('SELECT id, service_id, name, price, description FROM sub_services WHERE is_deleted = FALSE');
+        
+        const catalog = services.rows.map(srv => {
+            return {
+                ...srv,
+                packages: subServices.rows.filter(sub => sub.service_id === srv.id)
+            };
+        });
+        res.json(catalog);
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
+app.post('/api/content/publish', verifySystemToken, async (req, res) => {
+    try {
+        const { target, title, content } = req.body;
+        const authorId = req.user.id;
+        const table = target === 'blog' ? 'blog_posts' : 'case_studies';
+        
+        await pool.query(`INSERT INTO ${table} (title, ${target === 'blog' ? 'content' : 'challenge'}, status, author_id) VALUES ($1, $2, 'pending', $3)`, [title, content, authorId]);
+        res.json({ success: true });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
+});
+
+-- =========================================================================
+-- ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
+-- =========================================================================
 app.get('/api/admin/dashboard-stats', verifyAdminAccess, async (req, res) => {
     try {
         const userCount = await pool.query("SELECT COUNT(*) FROM users WHERE is_deleted = FALSE");
@@ -934,7 +1000,6 @@ app.get('/api/admin/backup/status', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MISSING ADMIN CRUD CONSOLIDATION BLOCK =================
 // =========================================================================
-
 app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
     try {
         const result = await pool.query(
@@ -963,18 +1028,16 @@ app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =============
 // =========================================================================
-
 app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
     const whitelist = [
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
         'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
         'media_library', 'invoices', 'notifications', 'support_tickets', 
         'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications',
-        'mpesa_transactions' // Appended Phase 5 Mpesa ledger
+        'mpesa_transactions' 
     ];
     
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-
     if (!whitelist.includes(requestedTable)) {
         return res.status(403).json({ error: "Dynamic route injection target blocked." });
     }
@@ -987,15 +1050,13 @@ app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
 
         const query = `UPDATE ${requestedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`;
         await pool.query(query, [ids]);
-
         res.json({ success: true, message: 'Bulk soft delete pipeline executed.' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// FIXED VULNERABILITY 8.4: Placed catch-all lookup endpoint at the absolute bottom of routes to prevent shadowing
-app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
+app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
     const adminTables = [
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
         'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
@@ -1010,11 +1071,9 @@ app.get('/api/:table/:id', verifyAdminAccess, async (req, res) => {
     ]; 
 
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-
     if (req.user.role !== 'admin' && !clientTables.includes(requestedTable)) {
         return res.status(403).json({ error: "Unauthorized Table Access" });
     }
-
     if (!adminTables.includes(requestedTable)) {
         return res.status(403).json({ error: "Unknown Table Vector" });
     }
@@ -1036,7 +1095,6 @@ app.get('/', (req, res) => {
 // ================= AUTOMATED AWS S3 POSTGRESQL BACKUP SCHEDULER ==========
 cron.schedule('0 2 * * *', () => {
     console.log("🕒 02:00 EAT: Triggering pg_dump cryptographic snapshot for AWS S3 Cold Storage...");
-    
     if(!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.S3_BUCKET_NAME) {
         console.warn("⚠️ S3 Backup aborted: AWS credentials or Bucket Name missing in environment.");
         return;
@@ -1044,8 +1102,6 @@ cron.schedule('0 2 * * *', () => {
 
     const fileName = `dan74tech_backup_${Date.now()}.sql`;
     const filePath = path.join(__dirname, 'uploads', fileName);
-    
-    // Command assumes pg_dump is available in the deployment environment
     const dumpCmd = `pg_dump ${process.env.DATABASE_URL} -F p -f ${filePath}`;
 
     exec(dumpCmd, (error, stdout, stderr) => {
@@ -1064,7 +1120,7 @@ cron.schedule('0 2 * * *', () => {
             Bucket: process.env.S3_BUCKET_NAME,
             Key: `database_backups/${fileName}`,
             Body: fileContent,
-            ServerSideEncryption: 'AES256' // Required by enterprise blueprint specification
+            ServerSideEncryption: 'AES256' 
         };
 
         s3.upload(params, (err, data) => {
@@ -1073,7 +1129,6 @@ cron.schedule('0 2 * * *', () => {
             } else {
                 console.log(`✅ Database successfully backed up to S3: ${data.Location}`);
             }
-            // Cleanup local file
             fs.unlinkSync(filePath);
         });
     });
