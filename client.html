@@ -3,17 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Client Portal</title>
-    
-    <meta name="description" content="DAN74TECH | Professional Tech & Creative Solutions">
-    <meta name="keywords" content="DAN74TECH, Tech Support, Web Development, Client Portal">
-    <meta name="author" content="DAN74TECH MEDIA">
-
+    <title>DAN74TECH MEDIA | Client Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -24,44 +15,41 @@
                         actionRed: '#FF2A2A', 
                         darkFooter: '#111827', 
                         facebookBg: '#F0F2F5',
-                        fbCard: '#FFFFFF'
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
+                        fbCard: '#FFFFFF',
+                        brandBlue: '#0044FF',
+                        brandRed: '#FF2A2A'
                     }
                 }
             }
         }
     </script>
-    
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #F0F2F5 !important; color: #050505 !important; overflow-x: hidden; }
+        body { background-color: #F0F2F5 !important; color: #050505 !important; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
         .hide { display: none !important; }
         .scroll-clean::-webkit-scrollbar { width: 8px; }
         .scroll-clean::-webkit-scrollbar-track { background: transparent; }
         .scroll-clean::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 10px; }
         .sticky-col { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; }
-        
         .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #828df8; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        .active-nav-tab { border-bottom-color: #0044FF !important; color: #0044FF !important; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen font-sans">
+<body class="antialiased flex flex-col min-h-screen">
 
+    <!-- Authentication Matrix -->
     <section id="auth-section" class="flex-grow flex items-center justify-center p-6 bg-facebookBg">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-t-4 border-professionalBlue">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-professionalBlue tracking-tight">DAN74TECH</h1>
-                <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Client Portal Login</p>
+                <h1 class="text-3xl font-bold text-professionalBlue tracking-tight">DAN74TECH MEDIA</h1>
+                <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Client Authorization Matrix</p>
             </div>
-            
             <div id="login-view">
                 <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Email Address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
-                    <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
                     <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-lg">Log In</button>
                 </form>
                 <hr class="my-6 border-gray-300">
@@ -69,14 +57,13 @@
                     <button onclick="toggleAuth('register')" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition shadow-md">Create New Account</button>
                 </div>
             </div>
-
             <div id="register-view" class="hide">
                 <form id="register-form" class="space-y-4">
                     <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
-                    <input type="email" id="reg-email" placeholder="Email Address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
-                    <input type="text" id="reg-phone" placeholder="Phone Number" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
-                    <input type="password" id="reg-password" placeholder="Create Password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
-                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-lg">Register Account</button>
+                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-lg">Establish Clearance</button>
                 </form>
                 <div class="mt-4 text-center">
                     <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline text-sm">Already have an account?</a>
@@ -85,95 +72,94 @@
         </div>
     </section>
 
+    <!-- Main Dashboard Section -->
     <section id="dashboard-section" class="flex-grow hide flex flex-col h-screen overflow-hidden">
-        
         <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 px-4 h-14 flex items-center justify-between">
             <div class="flex items-center gap-2 w-1/4">
                 <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow text-xl">D</div>
                 <div class="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-2 text-sm w-64 border border-transparent focus-within:border-gray-300 transition">
                     <i class="fa-solid fa-magnifying-glass text-gray-500 mr-2"></i>
-                    <input type="text" placeholder="Search Portal..." class="bg-transparent outline-none w-full text-gray-700">
+                    <input type="text" placeholder="Search Matrix..." class="bg-transparent outline-none w-full text-gray-700">
                 </div>
             </div>
 
             <div class="flex justify-center gap-2 w-2/4 h-full">
-                <button onclick="switchTab('feed')" id="tab-feed" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-professionalBlue text-professionalBlue">
-                    <i class="fa-solid fa-house text-2xl"></i>
+                <button onclick="switchTab('feed')" id="tab-feed" class="nav-tab w-20 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-solid fa-house text-xl"></i>
                 </button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
-                    <i class="fa-solid fa-briefcase text-2xl"></i>
+                <button onclick="switchTab('portfolio')" id="tab-portfolio" class="nav-tab w-20 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent" title="Portfolio">
+                    <i class="fa-solid fa-briefcase text-xl"></i>
                 </button>
-                <button onclick="switchTab('messages')" id="tab-messages" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
-                    <i class="fa-brands fa-facebook-messenger text-2xl relative">
+                <button onclick="switchTab('orders')" id="tab-orders" class="nav-tab w-20 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent" title="Orders">
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                </button>
+                <button onclick="switchTab('messages')" id="tab-messages" class="nav-tab w-20 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-brands fa-facebook-messenger text-xl">
                         <span id="nav-msg-badge" class="absolute -top-1.5 -right-2 bg-actionRed text-white text-[10px] px-1.5 rounded-full hide border-2 border-white font-bold">0</span>
                     </i>
                 </button>
             </div>
 
             <div class="flex items-center justify-end gap-3 w-1/4">
-                <div onclick="switchTab('settings')" class="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 cursor-pointer transition" title="Profile Settings">
+                <div class="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 cursor-pointer transition">
                     <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 border border-gray-200" id="user-avatar-node"></div>
                     <span id="user-greeting" class="text-sm font-semibold text-gray-800 hidden lg:block"></span>
                 </div>
-                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition text-lg" title="Log Out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition text-lg"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
             </div>
         </nav>
 
         <div class="flex-grow bg-facebookBg flex justify-center max-w-[1600px] mx-auto w-full">
-            
+            <!-- Left Sidebar -->
             <div class="hidden lg:block w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean">
                 <div class="space-y-1">
-                    <div onclick="switchTab('settings')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
-                        <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-sm" id="left-avatar"></div>
+                    <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold" id="left-avatar"></div>
                         <span class="font-semibold text-gray-900" id="left-name">Loading...</span>
                     </div>
                     <div onclick="switchTab('feed')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
-                        <i class="fa-solid fa-user-group text-blue-500 w-8 text-center text-xl"></i>
-                        <span class="font-medium text-gray-900">Community Feed</span>
+                        <i class="fa-solid fa-rss text-blue-500 w-8 text-center"></i>
+                        <span class="font-medium text-gray-900">Unified Feed</span>
                     </div>
                     <div onclick="switchTab('orders')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
-                        <i class="fa-solid fa-clock-rotate-left text-blue-500 w-8 text-center text-xl"></i>
-                        <span class="font-medium text-gray-900">My Orders & Deployments</span>
+                        <i class="fa-solid fa-clock-rotate-left text-green-500 w-8 text-center"></i>
+                        <span class="font-medium text-gray-900">Active Deployments</span>
                     </div>
-                    <div onclick="switchTab('settings')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
-                        <i class="fa-solid fa-gears text-gray-500 w-8 text-center text-xl"></i>
-                        <span class="font-medium text-gray-900">Profile Settings</span>
-                    </div>
-                    <div class="border-b border-gray-300 my-2"></div>
-                    <h3 class="text-gray-500 font-semibold px-2 py-1 text-sm">Services Overview</h3>
+                    <hr class="my-2 border-gray-300">
+                    <h3 class="text-gray-500 font-semibold px-2 py-1 text-sm uppercase tracking-wider">System Catalog</h3>
                     <div id="sidebar-services-list" class="space-y-1"></div>
                 </div>
             </div>
 
-            <div class="w-full max-w-[680px] flex-shrink-0 px-2 sm:px-8 py-6 sticky-col scroll-clean" id="main-content-area">
+            <!-- Central Content Area -->
+            <div class="w-full max-w-[680px] flex-shrink-0 px-2 sm:px-4 py-6 sticky-col scroll-clean" id="main-content-area">
                 
-                <div id="view-feed" class="w-full">
+                <!-- Feed View -->
+                <div id="view-feed" class="w-full space-y-4">
                     <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
                         <div class="flex gap-2 items-center border-b border-gray-200 pb-3">
                             <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold" id="publisher-avatar"></div>
-                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-base px-4 py-2.5 rounded-full transition">Share an update, <span id="pub-greeting"></span>?</button>
+                            <button onclick="openPublishModal()" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-base px-4 py-2.5 rounded-full transition">Share a Technical Insight, <span id="pub-greeting"></span>?</button>
                         </div>
                         <div class="flex justify-between pt-3 px-2">
-                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-pen-nib text-blue-500 text-lg"></i> Blog Post</button>
-                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-briefcase text-green-500 text-lg"></i> Case Study</button>
+                            <button onclick="openPublishModal('blog')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-pen-nib text-blue-500"></i> Blog</button>
+                            <button onclick="openPublishModal('case_study')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-diagram-project text-green-500"></i> Case Study</button>
                         </div>
                     </div>
-
-                    <div id="global-feed-stream" class="space-y-4">
-                        <div class="text-center text-sm text-gray-500 font-semibold py-10"><i class="fa-solid fa-circle-notch animate-spin mr-2 text-xl"></i> Loading Feed...</div>
-                    </div>
+                    <div id="global-feed-stream" class="space-y-4"></div>
                 </div>
 
+                <!-- Orders View -->
                 <div id="view-orders" class="w-full hide">
-                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden mb-6">
-                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h2 class="font-bold text-xl text-gray-900">My Orders & Invoices</h2>
-                            <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-professionalBlue text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                            <h2 class="font-extrabold text-lg text-gray-900 tracking-tight">Active Deployments</h2>
+                            <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-professionalBlue text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition shadow">NEW DEPLOYMENT</button>
                         </div>
-                        <div class="p-0 overflow-x-auto">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left">
-                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
-                                    <tr><th class="px-6 py-4">Order ID</th><th class="px-6 py-4">Service</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Payment</th></tr>
+                                <thead class="text-[10px] text-gray-500 uppercase bg-gray-100/50 font-bold">
+                                    <tr><th class="px-6 py-3">Sequence</th><th class="px-6 py-3">Service Strategy</th><th class="px-6 py-3">Status</th><th class="px-6 py-3">Clearance</th></tr>
                                 </thead>
                                 <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
                             </table>
@@ -181,490 +167,326 @@
                     </div>
                 </div>
 
+                <!-- Messenger View -->
                 <div id="view-messages" class="w-full hide h-[calc(100vh-140px)] flex flex-col bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
                     <div id="chat-overlay" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center text-gray-400">
                         <i class="fa-brands fa-facebook-messenger text-6xl mb-4 text-professionalBlue opacity-20"></i>
-                        <p class="font-medium text-gray-600">Select a contact from the right sidebar to start messaging.</p>
+                        <p class="font-medium text-gray-600">Secure Peer-to-Peer Matrix</p>
+                        <p class="text-xs">Select a node from the directory to start E2EE comms.</p>
                     </div>
-
-                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-4 bg-white shadow-sm z-10 flex-shrink-0">
+                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-4 bg-white shadow-sm z-10">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-md" id="active-chat-avatar">--</div>
+                            <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold" id="active-chat-avatar">--</div>
                             <div>
-                                <h3 class="font-bold text-gray-900 text-base leading-tight" id="active-chat-title">--</h3>
-                                <p class="text-xs text-green-500 font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online</p>
+                                <h3 class="font-bold text-gray-900 text-base" id="active-chat-title">--</h3>
+                                <p class="text-xs text-green-500 font-medium" id="active-chat-status">--</p>
                             </div>
                         </div>
-                        <div class="text-xs font-semibold text-gray-500 flex items-center gap-1"><i class="fa-solid fa-lock text-gray-400"></i> Encrypted</div>
+                        <div class="text-[10px] font-mono bg-blue-50 text-blue-600 px-2 py-1 rounded border border-blue-100"><i class="fa-solid fa-lock"></i> E2EE ACTIVE</div>
                     </div>
-                    
                     <div id="chat-window-timeline" class="flex-grow p-4 overflow-y-auto scroll-clean flex flex-col gap-2 bg-white"></div>
-                    
-                    <div id="typing-indicator-node" class="px-6 py-1 text-xs text-gray-400 font-medium hide flex items-center gap-2 bg-white flex-shrink-0">
-                        User is typing <div class="typing-indicator"><span></span><span></span><span></span></div>
+                    <div id="typing-indicator-node" class="px-6 py-1 text-[10px] text-gray-400 font-bold hide flex items-center gap-2 bg-white">
+                        PEER COMPOSING <div class="typing-indicator"><span></span><span></span><span></span></div>
                     </div>
-                    
-                    <div class="p-3 border-t border-gray-200 bg-white flex-shrink-0">
+                    <div class="p-3 border-t border-gray-200 bg-white">
                         <form id="unified-chat-form" class="flex items-center gap-2">
-                            <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Type a message..." required autocomplete="off" class="flex-grow bg-gray-100 border border-transparent rounded-full px-4 py-2 text-[15px] outline-none focus:border-gray-300 transition">
-                            <button type="submit" class="text-professionalBlue hover:text-blue-700 w-10 h-10 rounded-full flex justify-center items-center transition text-xl"><i class="fa-solid fa-paper-plane"></i></button>
+                            <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Aa" required autocomplete="off" class="flex-grow bg-gray-100 border border-transparent rounded-full px-4 py-2 text-sm outline-none focus:border-gray-300">
+                            <button type="submit" class="text-professionalBlue text-xl px-2"><i class="fa-solid fa-paper-plane"></i></button>
                         </form>
                     </div>
                 </div>
-
-                <div id="view-settings" class="w-full hide">
-                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="font-bold text-xl text-gray-900 mb-2">Profile Settings</h2>
-                        <p class="text-sm text-gray-500 mb-6">Update your account information and preferences.</p>
-                        
-                        <form id="profile-update-form" class="space-y-4">
-                            <div>
-                                <label class="text-sm font-semibold text-gray-700 block mb-1">Full Name</label>
-                                <input type="text" id="settings-name" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 outline-none focus:border-professionalBlue" required>
-                            </div>
-                            <div>
-                                <label class="text-sm font-semibold text-gray-700 block mb-1">Email Address</label>
-                                <input type="email" id="settings-email" class="w-full bg-gray-200 border border-gray-300 rounded-lg px-4 py-2 outline-none text-gray-500 cursor-not-allowed" readonly>
-                            </div>
-                            <div>
-                                <label class="text-sm font-semibold text-gray-700 block mb-1">Phone Number</label>
-                                <input type="text" id="settings-phone" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 outline-none focus:border-professionalBlue" required>
-                            </div>
-                            <button type="submit" class="bg-professionalBlue text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition shadow mt-4">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-
             </div>
 
+            <!-- Right Sidebar: Contacts -->
             <div class="hidden lg:flex w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean flex-col">
                 <div class="flex justify-between items-center mb-4 px-2">
-                    <h3 class="text-gray-500 font-semibold text-sm">Contacts & Community</h3>
-                    <div class="flex gap-2 text-gray-400">
-                        <i class="fa-solid fa-magnifying-glass cursor-pointer hover:bg-gray-200 p-1.5 rounded-full transition"></i>
-                    </div>
+                    <h3 class="text-gray-500 font-bold text-xs uppercase tracking-widest">Active Directory</h3>
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 cursor-pointer"></i>
                 </div>
-                <div id="community-roster-list" class="flex-grow space-y-1">
-                    <div class="text-center text-xs text-gray-400 py-10">Loading contacts...</div>
-                </div>
+                <div id="community-roster-list" class="flex-grow space-y-1"></div>
             </div>
-
         </div>
     </section>
 
-    <div id="publish-modal" class="hide fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100">
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <h3 class="font-extrabold text-gray-800">Create Post</h3>
-                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Modals -->
+    <div id="publish-modal" class="hide fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+                <h3 class="font-extrabold text-gray-800" id="publish-modal-title">Create Post</h3>
+                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form id="new-publish-form" class="p-4 space-y-4">
-                <select id="pub-target" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-professionalBlue">
-                    <option value="blog">Blog Entry</option>
-                    <option value="case_studies">Case Study</option>
-                </select>
-                <input type="text" id="pub-title" placeholder="Catchy Title" required class="w-full text-lg font-bold outline-none border-b border-gray-100 pb-2">
-                <textarea id="pub-content" rows="4" placeholder="Share your insights..." required class="w-full outline-none text-sm resize-none mt-2"></textarea>
-                
-                <button type="submit" class="w-full bg-professionalBlue text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-blue-700 transition">Publish Post</button>
+                <input type="hidden" id="pub-type" value="blog">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold" id="modal-user-avatar"></div>
+                    <div class="text-sm font-bold text-gray-900" id="modal-user-name"></div>
+                </div>
+                <input type="text" id="pub-title" placeholder="Designation / Title" required class="w-full text-lg font-bold outline-none border-b border-gray-100 pb-2">
+                <textarea id="pub-content" rows="5" placeholder="Document your findings..." required class="w-full outline-none text-[15px] resize-none"></textarea>
+                <div class="flex gap-4 border-t border-gray-100 pt-3 text-gray-500">
+                    <i class="fa-solid fa-image cursor-pointer hover:text-green-500 transition"></i>
+                    <i class="fa-solid fa-user-tag cursor-pointer hover:text-blue-500 transition"></i>
+                    <i class="fa-solid fa-location-dot cursor-pointer hover:text-red-500 transition"></i>
+                </div>
+                <button type="submit" class="w-full bg-professionalBlue text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-blue-700 transition">PUBLISH TO MATRIX</button>
             </form>
         </div>
     </div>
 
-    <div id="order-modal" class="hide fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md overflow-hidden">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
-                <h3 class="font-bold text-xl text-gray-900 text-center flex-grow">New Service Request</h3>
-                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <div id="order-modal" class="hide fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-professionalBlue text-white flex justify-between items-center">
+                <h3 class="font-extrabold tracking-tight">DEPLOY NEW STRATEGY</h3>
+                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="hover:text-corporateYellow"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="new-order-form" class="p-5 space-y-4">
+            <form id="new-order-form" class="p-6 space-y-4">
                 <div>
-                    <label class="text-sm font-semibold text-gray-700 block mb-1">Target Service</label>
-                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue" required>
-                        <option value="">Select Service...</option>
-                    </select>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">System Service</label>
+                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-professionalBlue" required></select>
                 </div>
                 <div id="sub-service-container" class="hide">
-                    <label class="text-sm font-semibold text-gray-700 block mb-1">Specific Package</label>
-                    <select id="ord-sub-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue">
-                        <option value="">Select Package...</option>
-                    </select>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Specific Vector</label>
+                    <select id="ord-sub-service" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-professionalBlue"></select>
                 </div>
                 <div>
-                    <label class="text-sm font-semibold text-gray-700 block mb-1">Project Details</label>
-                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-base outline-none resize-none focus:border-professionalBlue" placeholder="Provide system requirements..." required></textarea>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Operational Parameters</label>
+                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none resize-none focus:ring-2 focus:ring-professionalBlue" placeholder="Describe requirements..."></textarea>
                 </div>
-                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow text-lg mt-2">Submit Request</button>
+                <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-extrabold py-3 rounded-xl shadow hover:bg-yellow-400 transition">INITIATE DEPLOYMENT</button>
             </form>
         </div>
     </div>
 
-    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center group" title="WhatsApp Support">
-        <i class="fa-brands fa-whatsapp text-xl"></i>
-    </a>
-
-    <footer class="bg-darkFooter text-gray-400 pt-8 pb-4 border-t border-gray-900 mt-auto hide" id="main-footer">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs">
-            <p>&copy; 2026 DAN74TECH MEDIA. All rights reserved.</p>
-            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Systems Operational
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // Use your hosted API base URL automatically
         const API_BASE = window.location.hostname.includes('localhost') ? 'http://localhost:10000/api' : 'https://dan74techweb.onrender.com/api'; 
-        
         let token = localStorage.getItem('dan74tech_token');
         let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
         let socket = null;
         let activeTab = 'feed';
         let targetChatId = null;
         let typingTimeout = null;
-        let globalCatalog = []; 
+        let globalCatalog = [];
 
-        // E2EE Engine
+        /**
+         * E2EE Crypto Engine 
+         * Implements AES-GCM for peer-to-peer encryption.
+         * Ciphertext and IV are stored in 'client_communications' table.
+         */
         const CryptoEngine = {
             async getSharedKey(peerId) {
-                const secret = `dan74tech_e2ee_matrix_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
+                const secret = `dan74tech_e2ee_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
                 const enc = new TextEncoder();
                 const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), {name: "PBKDF2"}, false, ["deriveKey"]);
-                return crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+                return crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode("dan74tech_v99"), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
             },
             async encrypt(plaintext, peerId) {
                 const key = await this.getSharedKey(peerId);
                 const iv = crypto.getRandomValues(new Uint8Array(12));
                 const enc = new TextEncoder();
-                const ciphertextBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
-                return { ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))), iv: btoa(String.fromCharCode(...iv)), wrapped_key: "sys_derived_sym_key" };
+                const cipherBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
+                return { 
+                    ciphertext: btoa(String.fromCharCode(...new Uint8Array(cipherBuffer))), 
+                    iv: btoa(String.fromCharCode(...iv)) 
+                };
             },
             async decrypt(ciphertextB64, ivB64, peerId) {
                 try {
                     const key = await this.getSharedKey(peerId);
-                    const ciphertext = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
+                    const cipher = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
                     const iv = new Uint8Array(atob(ivB64).split('').map(c => c.charCodeAt(0)));
-                    const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
-                    return new TextDecoder().decode(decryptedBuffer);
-                } catch (e) { return "🔒 [Decryption Failed]"; }
+                    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, cipher);
+                    return new TextDecoder().decode(decrypted);
+                } catch (e) { return "🔒 [DECRYPTION_FAULT: Integrity Check Failed]"; }
             }
         };
 
-        const toggleAuth = (view) => {
-            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
-            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
-        };
-
-        // Initialize App State
-        const setViewState = () => {
-            if (token && userNode) {
-                document.getElementById('auth-section').classList.add('hide');
-                document.getElementById('dashboard-section').classList.remove('hide');
-                document.getElementById('main-footer').classList.remove('hide');
-                
-                const initials = userNode.name.charAt(0).toUpperCase();
-                const firstName = userNode.name.split(' ')[0];
-                
-                document.getElementById('user-greeting').innerText = userNode.name;
-                document.getElementById('left-name').innerText = userNode.name;
-                document.getElementById('pub-greeting').innerText = firstName;
-                
-                ['user-avatar-node', 'left-avatar', 'publisher-avatar'].forEach(id => {
-                    document.getElementById(id).innerText = initials;
-                });
-
-                // Populate settings form
-                document.getElementById('settings-name').value = userNode.name || '';
-                document.getElementById('settings-email').value = userNode.email || '';
-                document.getElementById('settings-phone').value = userNode.phone || '';
-                
-                switchTab('feed');
-                initSockets();
-                fetchOrdersCatalog(); 
-                fetchCommunityRoster(); 
-            } else {
-                document.getElementById('auth-section').classList.remove('hide');
-                document.getElementById('dashboard-section').classList.add('hide');
-                document.getElementById('main-footer').classList.add('hide');
-            }
-        };
-
-        // Standardized API Caller
         const apiCall = async (endpoint, method = 'GET', body = null) => {
             const config = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
             if (body) config.body = JSON.stringify(body);
             const res = await fetch(`${API_BASE}${endpoint}`, config);
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "System Error");
+            if (!res.ok) throw new Error(data.error || "Matrix Exception");
             return data;
         };
 
-        // --- AUTHENTICATION EVENTS ---
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const data = await apiCall('/auth/login', 'POST', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value });
-                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
-            } catch(e) { alert(e.message); }
-        });
-
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const data = await apiCall('/auth/register', 'POST', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, password: document.getElementById('reg-password').value });
-                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
-            } catch(e) { alert(e.message); }
-        });
-
-        const logoutPipeline = () => { localStorage.removeItem('dan74tech_token'); localStorage.removeItem('dan74tech_user'); if(socket) socket.disconnect(); location.reload(); };
-
-        // --- NAVIGATION ---
-        const switchTab = (tab) => {
-            activeTab = tab;
-            ['feed', 'orders', 'messages', 'settings'].forEach(t => {
-                const view = document.getElementById(`view-${t}`);
-                if(view) view.classList.toggle('hide', t !== tab);
-                
-                const btn = document.getElementById(`tab-${t}`);
-                if(btn) {
-                    if (t === tab) {
-                        btn.classList.add('text-professionalBlue', 'border-professionalBlue');
-                        btn.classList.remove('text-gray-500', 'border-transparent');
-                    } else {
-                        btn.classList.remove('text-professionalBlue', 'border-professionalBlue');
-                        btn.classList.add('text-gray-500', 'border-transparent');
-                    }
-                }
-            });
-            if (tab === 'feed') fetchSocialFeed();
-            if (tab === 'orders') fetchUserOrders();
+        const toggleAuth = (v) => {
+            document.getElementById('login-view').classList.toggle('hide', v !== 'login');
+            document.getElementById('register-view').classList.toggle('hide', v !== 'register');
         };
 
-        // --- FEED & POSTS ---
-        async function fetchSocialFeed() {
+        const setViewState = () => {
+            if (token && userNode) {
+                document.getElementById('auth-section').classList.add('hide');
+                document.getElementById('dashboard-section').classList.remove('hide');
+                const initials = userNode.name.charAt(0).toUpperCase();
+                ['user-avatar-node', 'left-avatar', 'publisher-avatar', 'modal-user-avatar'].forEach(id => document.getElementById(id).innerText = initials);
+                document.getElementById('user-greeting').innerText = userNode.name;
+                document.getElementById('left-name').innerText = userNode.name;
+                document.getElementById('pub-greeting').innerText = userNode.name.split(' ')[0];
+                document.getElementById('modal-user-name').innerText = userNode.name;
+                switchTab('feed');
+                initSockets();
+                fetchCatalog();
+                fetchCommunity();
+            } else {
+                document.getElementById('auth-section').classList.remove('hide');
+                document.getElementById('dashboard-section').classList.add('hide');
+            }
+        };
+
+        const switchTab = (tab) => {
+            activeTab = tab;
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active-nav-tab'));
+            document.getElementById(`tab-${tab}`).classList.add('active-nav-tab');
+            ['feed', 'orders', 'messages'].forEach(t => document.getElementById(`view-${t}`).classList.toggle('hide', t !== tab));
+            if(tab === 'feed') fetchFeed();
+            if(tab === 'orders') fetchOrders();
+        };
+
+        // --- FEED LOGIC (Unified blog_posts, case_studies, portfolio) ---
+        async function fetchFeed() {
+            const stream = document.getElementById('global-feed-stream');
+            stream.innerHTML = '<div class="text-center py-10 text-gray-400 font-mono text-xs"><i class="fa-solid fa-spinner animate-spin mr-2"></i>SYNCHRONIZING FEED...</div>';
             try {
                 const feed = await apiCall('/feed/global');
-                const stream = document.getElementById('global-feed-stream');
                 stream.innerHTML = '';
-                
-                if(feed.length === 0) {
-                    stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold bg-white rounded-xl shadow-sm border border-gray-200">No posts yet. Be the first to share!</div>`;
-                    return;
-                }
-                
                 feed.forEach(post => {
-                    const typeLabel = post.type === 'portfolio' ? 'System Portfolio' : (post.type === 'blog' ? 'Blog Post' : 'Case Study');
-                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full object-cover max-h-[500px]" onerror="this.style.display='none'">` : '';
-                    const authorName = post.author_name || 'DAN74TECH Official';
-                    
+                    const tag = post.type === 'portfolio' ? 'SYSTEM_PORTFOLIO' : post.type.toUpperCase();
+                    const media = post.image_url || post.media_url ? `<img src="${post.image_url || post.media_url}" class="w-full object-cover max-h-96 border-y border-gray-100">` : '';
                     stream.innerHTML += `
-                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
-                        <div class="p-4 pb-2 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold">${authorName.charAt(0)}</div>
-                                <div>
-                                    <p class="font-semibold text-[15px] text-gray-900 leading-tight">${authorName} <span class="text-gray-500 text-[13px] font-normal">published a ${typeLabel}</span></p>
-                                    <div class="flex items-center gap-1 text-[13px] text-gray-500">
-                                        <span>${new Date(post.created_at).toLocaleDateString([], {month:'short', day:'numeric'})}</span>
+                        <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
+                            <div class="p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold">${(post.author_name || 'D')[0]}</div>
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-900">${post.author_name || 'DAN74TECH'}</p>
+                                        <p class="text-[10px] text-gray-500 font-mono">${new Date(post.created_at).toLocaleString()} | <span class="text-professionalBlue font-bold">${tag}</span></p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="px-4 py-1 mb-2">
-                            <h4 class="font-bold text-[16px] text-gray-900">${post.title}</h4>
-                            <p class="text-[15px] text-gray-800 leading-snug mt-1">${post.content}</p>
-                        </div>
-                        ${imgNode}
-                        <div class="px-4 py-2.5 flex items-center justify-between border-b border-gray-200 mx-4">
-                            <div class="flex items-center gap-1.5 text-[15px] text-gray-500"><div class="bg-professionalBlue w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] shadow-sm"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
-                        </div>
-                        <div class="px-4 py-1 mx-2 flex">
-                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-gray-600 font-semibold text-[15px] hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Like</button>
-                        </div>
-                    </div>`;
+                            <div class="px-4 pb-3">
+                                <h4 class="font-extrabold text-gray-900 leading-tight">${post.title}</h4>
+                                <p class="text-sm text-gray-700 mt-2 whitespace-pre-wrap">${post.content || post.description || ''}</p>
+                            </div>
+                            ${media}
+                            <div class="px-4 py-3 flex items-center justify-between border-t border-gray-50">
+                                <div class="flex items-center gap-4 text-gray-500 text-sm">
+                                    <button onclick="interact(${post.id}, '${post.type}', 'like')" class="hover:text-professionalBlue transition font-bold"><i class="fa-regular fa-thumbs-up"></i> ${post.likes_count || 0}</button>
+                                    <button class="hover:text-professionalBlue transition font-bold"><i class="fa-regular fa-comment"></i> COMMENT</button>
+                                </div>
+                            </div>
+                        </div>`;
                 });
-            } catch(e) { console.error("Feed Error:", e); }
+            } catch(e) { stream.innerHTML = `<div class="p-4 bg-red-50 text-red-500 text-xs rounded">${e.message}</div>`; }
         }
 
-        async function triggerLike(id, type) { 
-            try { 
-                await apiCall('/feed/interact', 'POST', { entity_id: id, entity_type: type, action: 'like' }); 
-                fetchSocialFeed(); 
-            } catch(e){} 
+        function openPublishModal(type = 'blog') {
+            document.getElementById('pub-type').value = type;
+            document.getElementById('publish-modal-title').innerText = type === 'blog' ? 'Create Blog Entry' : 'Create Case Study';
+            document.getElementById('publish-modal').classList.remove('hide');
         }
 
-        document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
+        document.getElementById('new-publish-form').onsubmit = async (e) => {
             e.preventDefault();
-            try { 
-                await apiCall('/content/publish', 'POST', { target: document.getElementById('pub-target').value, title: document.getElementById('pub-title').value, content: document.getElementById('pub-content').value }); 
-                document.getElementById('publish-modal').classList.add('hide'); 
+            const payload = {
+                target: document.getElementById('pub-type').value,
+                title: document.getElementById('pub-title').value,
+                content: document.getElementById('pub-content').value,
+                author_id: userNode.id
+            };
+            try {
+                await apiCall('/content/publish', 'POST', payload);
+                document.getElementById('publish-modal').classList.add('hide');
                 document.getElementById('new-publish-form').reset();
-                alert('Post submitted successfully and is awaiting review.'); 
-                fetchSocialFeed(); 
+                fetchFeed();
             } catch(e) { alert(e.message); }
-        });
+        };
 
-        // --- CATALOG & ORDERS ---
-        async function fetchOrdersCatalog() {
+        // --- ORDER ENGINE ---
+        async function fetchCatalog() {
             try {
                 globalCatalog = await apiCall('/catalog/full');
-                const srvSelect = document.getElementById('ord-service');
-                const sidebarList = document.getElementById('sidebar-services-list');
-                
-                srvSelect.innerHTML = '<option value="">Select Service...</option>';
-                sidebarList.innerHTML = '';
-                
-                globalCatalog.forEach(srv => {
-                    srvSelect.innerHTML += `<option value="${srv.name}">${srv.name}</option>`;
-                    sidebarList.innerHTML += `<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition"><i class="${srv.icon || 'fa-solid fa-layer-group'} text-gray-500 w-8 text-center text-xl"></i><span class="font-medium text-gray-900 text-[15px]">${srv.name}</span></div>`;
+                const sel = document.getElementById('ord-service');
+                const sidebar = document.getElementById('sidebar-services-list');
+                sel.innerHTML = '<option value="">Select Strategy...</option>';
+                globalCatalog.forEach(s => {
+                    sel.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+                    sidebar.innerHTML += `
+                        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                            <i class="${s.icon || 'fa-solid fa-microchip'} text-gray-500 w-8 text-center"></i>
+                            <span class="text-sm font-medium text-gray-900">${s.name}</span>
+                        </div>`;
                 });
-                
-                // Dynamic Sub-service Select
-                srvSelect.addEventListener('change', (e) => {
-                    const selSrv = globalCatalog.find(s => s.name === e.target.value);
-                    const subContainer = document.getElementById('sub-service-container');
-                    const subSelect = document.getElementById('ord-sub-service');
-                    subSelect.innerHTML = '<option value="">Select Package...</option>';
-                    
-                    if (selSrv && selSrv.packages && selSrv.packages.length > 0) {
-                        selSrv.packages.forEach(sub => { subSelect.innerHTML += `<option value="${sub.name}">${sub.name} - Ksh ${sub.price}</option>`; });
-                        subContainer.classList.remove('hide');
-                    } else {
-                        subContainer.classList.add('hide');
-                    }
-                });
-            } catch(e) { console.error("Catalog Error:", e); }
+
+                sel.onchange = (e) => {
+                    const s = globalCatalog.find(x => x.name === e.target.value);
+                    const subSel = document.getElementById('ord-sub-service');
+                    const container = document.getElementById('sub-service-container');
+                    subSel.innerHTML = '<option value="">Select Vector...</option>';
+                    if(s && s.packages && s.packages.length > 0) {
+                        s.packages.forEach(p => subSel.innerHTML += `<option value="${p.name}">${p.name} - Ksh ${p.price}</option>`);
+                        container.classList.remove('hide');
+                    } else container.classList.add('hide');
+                };
+            } catch(e){}
         }
 
-        async function fetchUserOrders() {
+        async function fetchOrders() {
             try {
                 const orders = await apiCall(`/orders/user/${userNode.id}`);
                 const tb = document.getElementById('orders-registry-body');
                 tb.innerHTML = '';
-                if(orders.length === 0) {
-                    tb.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 font-medium">You have no active orders or deployments.</td></tr>`;
-                    return;
-                }
-                
                 orders.forEach(o => {
-                    const statClass = o.status === 'completed' ? 'text-green-600 bg-green-50' : (o.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 'text-blue-600 bg-blue-50');
-                    const payClass = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                    const subSrvText = o.sub_service && o.sub_service !== 'N/A' ? `<br><span class="text-xs text-gray-400 font-normal">${o.sub_service}</span>` : '';
-                    
-                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition border-b border-gray-100"><td class="px-6 py-4 font-bold text-gray-900">#ORD-${o.id}</td><td class="px-6 py-4 text-[15px] font-semibold text-gray-800">${o.service} ${subSrvText}</td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${statClass}">${o.status}</span></td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${payClass}">${o.payment_status}</span></td></tr>`;
+                    const statusColor = o.status === 'completed' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
+                    tb.innerHTML += `
+                        <tr class="hover:bg-gray-50 font-medium">
+                            <td class="px-6 py-4 text-gray-900 font-bold">#${o.id}</td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-bold text-gray-800">${o.service}</div>
+                                <div class="text-[10px] text-gray-500">${o.sub_service || 'Standard'}</div>
+                            </td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${o.status}</span></td>
+                            <td class="px-6 py-4"><span class="font-mono text-[11px] text-gray-600 uppercase">${o.payment_status}</span></td>
+                        </tr>`;
                 });
-            } catch(e) { console.error("Orders Error:", e); }
+            } catch(e){}
         }
 
-        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // --- MESSENGER & E2EE ---
+        async function fetchCommunity() {
             try {
-                const payload = {
-                    user_id: userNode.id, customer_name: userNode.name, phone: userNode.phone || 'N/A',
-                    service: document.getElementById('ord-service').value,
-                    sub_service: document.getElementById('ord-sub-service').value || 'N/A',
-                    project_details: document.getElementById('ord-details').value
-                };
-                const res = await apiCall('/orders', 'POST', payload);
-                document.getElementById('order-modal').classList.add('hide');
-                document.getElementById('new-order-form').reset();
-                if(activeTab === 'orders') fetchUserOrders();
-                if(res.whatsapp_redirect) window.open(res.whatsapp_redirect, '_blank');
-            } catch (e) { alert("Order submission failed: " + e.message); }
-        });
-
-        // --- SETTINGS (Profile Update) ---
-        document.getElementById('profile-update-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const updatedPayload = {
-                    name: document.getElementById('settings-name').value,
-                    email: document.getElementById('settings-email').value, // Email updates not supported by backend schema but kept for structure
-                    phone: document.getElementById('settings-phone').value,
-                    role: userNode.role
-                };
-                const res = await apiCall(`/users/${userNode.id}`, 'PUT', updatedPayload);
-                if(res.success) {
-                    alert("Profile updated successfully!");
-                    userNode.name = res.data.name;
-                    userNode.phone = res.data.phone;
-                    localStorage.setItem('dan74tech_user', JSON.stringify(userNode));
-                    setViewState(); // Refresh UI
-                }
-            } catch(e) { alert("Error updating profile: " + e.message); }
-        });
-
-
-        // --- CHAT & SOCKETS ---
-        function initSockets() {
-            socket = io(API_BASE.replace('/api', ''));
-            socket.on('connect', () => { socket.emit('join_thread', userNode.id); });
-            socket.on('presence_update', () => { fetchCommunityRoster(); });
-            socket.on('receive_encrypted_message', async (msg) => {
-                if (targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
-                    await appendMsg(msg); scrollChat();
-                } else {
-                    const badge = document.getElementById('nav-msg-badge');
-                    badge.classList.remove('hide'); badge.innerText = parseInt(badge.innerText || 0) + 1;
-                }
-            });
-            socket.on('user_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.remove('hide'); });
-            socket.on('user_stopped_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.add('hide'); });
-        }
-
-        async function fetchCommunityRoster() {
-            try {
-                const roster = await apiCall('/community/users');
-                const listNode = document.getElementById('community-roster-list');
-                listNode.innerHTML = '';
-                
-                const peers = roster.filter(u => u.id !== userNode.id);
-                if (peers.length === 0) { listNode.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">No contacts found.</div>'; return; }
-
-                peers.forEach(peer => {
-                    const isActive = targetChatId === peer.id;
-                    const statusDot = peer.is_online ? '<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>' : '';
-                    
-                    listNode.innerHTML += `
-                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition ${isActive ? 'bg-gray-200' : ''}">
-                        <div class="relative w-9 h-9 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center font-bold flex-shrink-0 border border-gray-200">
-                            ${peer.name.charAt(0)}
-                            ${statusDot}
-                        </div>
-                        <span class="font-medium text-[15px] text-gray-900 truncate flex-grow">${peer.name}</span>
-                    </div>`;
+                const users = await apiCall('/community/users');
+                const list = document.getElementById('community-roster-list');
+                list.innerHTML = '';
+                users.filter(u => u.id !== userNode.id).forEach(peer => {
+                    const statusColor = peer.is_online ? 'bg-green-500' : 'bg-gray-300';
+                    list.innerHTML += `
+                        <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                            <div class="relative">
+                                <div class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-bold border border-gray-200">${peer.name[0]}</div>
+                                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${statusColor}"></div>
+                            </div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-gray-900 leading-tight">${peer.name}</p>
+                                <p class="text-[10px] text-gray-500">${peer.is_online ? 'Active Now' : 'Off-grid'}</p>
+                            </div>
+                        </div>`;
                 });
-            } catch(e) { console.error("Roster Error:", e); }
+            } catch(e){}
         }
 
-        async function openChat(peerId, peerName) {
-            targetChatId = peerId;
-            switchTab('messages'); 
+        async function openChat(id, name) {
+            targetChatId = id;
             document.getElementById('chat-overlay').classList.add('hide');
-            document.getElementById('active-chat-title').innerText = peerName;
-            document.getElementById('active-chat-avatar').innerText = peerName.charAt(0);
-            document.getElementById('nav-msg-badge').classList.add('hide'); document.getElementById('nav-msg-badge').innerText = '0';
-            
-            fetchCommunityRoster(); 
-            
-            const tl = document.getElementById('chat-window-timeline');
-            tl.innerHTML = '';
-            
+            document.getElementById('active-chat-title').innerText = name;
+            document.getElementById('active-chat-status').innerText = 'SECURE LINK ESTABLISHED';
+            document.getElementById('chat-window-timeline').innerHTML = '';
             try {
                 const thread = await apiCall('/client-portal/thread');
-                const filtered = thread.filter(m => (m.sender_id === peerId && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === peerId));
-                
-                let lastDate = null;
-                for (let m of filtered) { 
-                    const msgDate = new Date(m.created_at).toLocaleDateString();
-                    if(msgDate !== lastDate) {
-                        tl.innerHTML += `<div class="text-center my-2"><span class="text-[11px] text-gray-500 font-semibold uppercase">${msgDate}</span></div>`;
-                        lastDate = msgDate;
-                    }
-                    await appendMsg(m); 
-                }
+                const filtered = thread.filter(m => (m.sender_id === id && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === id));
+                for(let m of filtered) await appendMsg(m);
                 scrollChat();
-            } catch(e) { console.error("Thread Load Error:", e); }
+            } catch(e){}
         }
 
         async function appendMsg(m) {
@@ -672,42 +494,41 @@
             const isMe = m.sender_id === userNode.id;
             const peerId = isMe ? m.receiver_id : m.sender_id;
             const plaintext = await CryptoEngine.decrypt(m.ciphertext, m.iv, peerId);
-            
-            const layout = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-100 text-gray-900 border border-gray-200';
-            
-            tl.innerHTML += `<div class="max-w-[70%] px-4 py-2 text-[15px] rounded-[20px] shadow-sm flex flex-col ${layout}">
-                <span>${plaintext}</span>
-                <span class="text-[10px] opacity-75 mt-0.5 ${isMe ? 'text-right text-blue-200' : 'text-left text-gray-500'}">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
-            </div>`;
+            const style = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-100 text-gray-900 border border-gray-200';
+            tl.innerHTML += `<div class="max-w-[80%] px-4 py-2 rounded-[18px] text-[14px] shadow-sm ${style}">${plaintext}</div>`;
         }
 
-        function scrollChat() { const t = document.getElementById('chat-window-timeline'); t.scrollTop = t.scrollHeight; }
+        function scrollChat() { const c = document.getElementById('chat-window-timeline'); c.scrollTop = c.scrollHeight; }
 
-        function emitTypingState() {
-            if(!targetChatId || !socket) return;
-            socket.emit('typing_start', { receiver_id: targetChatId });
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => socket.emit('typing_stop', { receiver_id: targetChatId }), 1500);
-        }
-
-        document.getElementById('unified-chat-form').addEventListener('submit', async(e) => {
+        document.getElementById('unified-chat-form').onsubmit = async (e) => {
             e.preventDefault();
-            const inp = document.getElementById('chat-message-input');
-            const plaintext = inp.value.trim();
-            if(!plaintext || !targetChatId) return;
-            inp.value = '';
-            socket.emit('typing_stop', { receiver_id: targetChatId });
-            
-            try {
-                const encryptedPayload = await CryptoEngine.encrypt(plaintext, targetChatId);
-                const tempMsg = { sender_id: userNode.id, receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, created_at: new Date() };
-                await appendMsg(tempMsg); scrollChat();
-                
-                await apiCall('/communications/send', 'POST', { receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, sender_key: encryptedPayload.wrapped_key, receiver_key: encryptedPayload.wrapped_key });
-            } catch(e) { alert("Encryption Error: " + e.message); }
-        });
+            const input = document.getElementById('chat-message-input');
+            const text = input.value.trim();
+            if(!text || !targetChatId) return;
+            input.value = '';
+            const encrypted = await CryptoEngine.encrypt(text, targetChatId);
+            await appendMsg({ sender_id: userNode.id, ciphertext: encrypted.ciphertext, iv: encrypted.iv });
+            scrollChat();
+            await apiCall('/communications/send', 'POST', { 
+                receiver_id: targetChatId, 
+                ciphertext: encrypted.ciphertext, 
+                iv: encrypted.iv 
+            });
+        };
 
-        // Initialize application lifecycle
+        function initSockets() {
+            socket = io(API_BASE.replace('/api', ''));
+            socket.on('receive_encrypted_message', async (msg) => {
+                if(targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
+                    await appendMsg(msg); scrollChat();
+                } else {
+                    const b = document.getElementById('nav-msg-badge');
+                    b.classList.remove('hide'); b.innerText = parseInt(b.innerText || 0) + 1;
+                }
+            });
+        }
+
+        const logoutPipeline = () => { localStorage.clear(); location.reload(); };
         window.onload = setViewState;
     </script>
 </body>
