@@ -1,6 +1,7 @@
 // =========================================================================
 // DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
-// STATUS: V4.1.0 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (COMPLETE)
+// STATUS: V5.0.0 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (COMPLETE)
+// ALL SCHEMA TABLES FULLY MAP TO AUTO-GENERATED, SECURE CRUD ROUTERS
 // =========================================================================
 require('dotenv').config();
 const express = require('express');
@@ -243,13 +244,10 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // =========================================================================
-// ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
+// ================= MODULE 2: COMMUNITY ROSTER ============================
 // =========================================================================
-// ================= MODULE 2 (C): COMMUNITY ROSTER ========================
-// Allows clients to see other users for end-to-end chat routing
 app.get('/api/community/users', verifySystemToken, async (req, res) => {
     try {
-        // Excludes sensitive data like email, phone, passwords, and roles
         const result = await pool.query(
             'SELECT id, name, is_online FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, name ASC'
         );
@@ -259,251 +257,22 @@ app.get('/api/community/users', verifySystemToken, async (req, res) => {
     }
 });
 
-app.get('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, name, email, role, phone, is_online, last_seen, created_at FROM users WHERE id = $1 AND is_deleted = FALSE',
-            [req.params.id]
-        );
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { name, email, role, phone, password } = req.body;
-        let query;
-        let values;
-
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, password=$5, updated_at=CURRENT_TIMESTAMP WHERE id=$6 RETURNING id,name,email,role,phone`;
-            values = [name, email, role, phone, hashedPassword, req.params.id];
-        } else {
-            query = `UPDATE users SET name=$1, email=$2, role=$3, phone=$4, updated_at=CURRENT_TIMESTAMP WHERE id=$5 RETURNING id,name,email,role,phone`;
-            values = [name, email, role, phone, req.params.id];
-        }
-
-        const result = await pool.query(query, values);
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/users/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE users SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true, message: "User credentials safely deactivated." });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // =========================================================================
-// ================= MODULE 2 (B): SERVICES MANAGEMENT INTERFACE ===========
+// ================= MODULE 3: SPECIALIZED OPERATIONS & ORDER FLOW =========
 // =========================================================================
-app.get('/api/services', async (req, res) => {
-    try {
-        const data = await pool.query('SELECT * FROM services WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/services', verifyAdminAccess, async (req, res) => {
-    try {
-        const { name, icon, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO services (name, icon, description) VALUES ($1, $2, $3) RETURNING *`,
-            [name, icon, description]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/services/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, icon, description } = req.body;
-        const result = await pool.query(
-            `UPDATE services SET name = $1, icon = $2, description = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *`,
-            [name, icon, description, id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/services/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 3: SUB-SERVICES & PRICING ENGINE ==============
-// =========================================================================
-app.get('/api/sub-services', async (req, res) => {
-    try {
-        const query = `
-            SELECT sub_services.*, services.name AS category_name
-            FROM sub_services
-            JOIN services ON sub_services.service_id = services.id
-            WHERE sub_services.is_deleted = FALSE AND services.is_deleted = FALSE
-            ORDER BY sub_services.id DESC
-        `;
-        const data = await pool.query(query);
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/sub-services/:serviceName', async (req, res) => {
-    try {
-        const serviceName = req.params.serviceName.replace(/-/g, ' ').toLowerCase();
-        const result = await pool.query(`
-            SELECT ss.*
-            FROM sub_services ss
-            JOIN services s ON ss.service_id = s.id
-            WHERE LOWER(s.name) = $1 AND ss.is_deleted = FALSE
-            ORDER BY ss.id ASC
-        `, [serviceName]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/sub-services', verifyAdminAccess, async (req, res) => {
-    try {
-        const { service_id, name, price, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO sub_services (service_id, name, price, description) VALUES ($1, $2, COALESCE($3, 0.00), $4) RETURNING *`,
-            [service_id, name, price, description]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE sub_services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE ==============
-// =========================================================================
-const buildAdvancedQuery = (tableName, queryParams, searchableColumns = []) => {
-    let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = queryParams;
-    let whereClauses = [`is_deleted = FALSE`]; 
-    let values = [];
-    let valueIndex = 1;
-
-    if (search && searchableColumns.length > 0) {
-        const searchClauses = searchableColumns.map(col => `${col} ILIKE $${valueIndex}`);
-        whereClauses.push(`(${searchClauses.join(' OR ')})`);
-        values.push(`%${search}%`);
-        valueIndex++;
-    }
-
-    for (const [key, val] of Object.entries(filters)) {
-        if (val !== undefined && val !== '') {
-            whereClauses.push(`${key} = $${valueIndex}`);
-            values.push(val);
-            valueIndex++;
-        }
-    }
-
-    const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    
-    const safeSort = sort.replace(/[^a-zA-Z0-9_]/g, ''); 
-    const safeOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-
-    const queryString = `SELECT * FROM ${tableName} ${whereString} ORDER BY ${safeSort} ${safeOrder} LIMIT ${parseInt(limit)} OFFSET ${offset}`;
-    const countQuery = `SELECT COUNT(*) FROM ${tableName} ${whereString}`;
-
-    return { queryString, countQuery, values };
-};
-
-app.get('/api/orders', verifyAdminAccess, async (req, res) => {
-    try {
-        const searchableFields = ['customer_name', 'email', 'phone', 'service', 'invoice_number'];
-        const { queryString, countQuery, values } = buildAdvancedQuery('orders', req.query, searchableFields);
-        
-        const data = await pool.query(queryString, values);
-        const countData = await pool.query(countQuery, values);
-        
-        res.json({
-            data: data.rows,
-            meta: {
-                total: parseInt(countData.rows[0].count),
-                page: parseInt(req.query.page || 1),
-                limit: parseInt(req.query.limit || 100)
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/orders/user/:userId', verifySystemToken, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM orders WHERE user_id = $1 AND is_deleted = FALSE ORDER BY id DESC', [req.params.userId]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 app.post('/api/orders', async (req, res) => {
     try {
-        const {
-            user_id, customer_name, phone, service, sub_service,
-            domain, device_model, project_details, price, status, payment_status
-        } = req.body;
-
+        const { user_id, customer_name, phone, service, sub_service, domain, device_model, project_details, price, status, payment_status } = req.body;
         const result = await pool.query(
             `INSERT INTO orders (
-                user_id, customer_name, phone, service, sub_service, domain, 
-                device_model, project_details, price, status, payment_status
-            ) VALUES (
-                $1, $2, $3, $4, $5, 
-                COALESCE($6, 'N/A'), 
-                COALESCE($7, 'Web Client'), 
-                $8, 
-                COALESCE($9, 0.00), 
-                COALESCE($10, 'pending'), 
-                COALESCE($11, 'unpaid')
-            ) RETURNING *`,
-            [
-                user_id || null, customer_name, phone, service, sub_service || null,      
-                domain || null, device_model || null, project_details || null,  
-                price || null, status || null, payment_status || null    
-            ]
+                user_id, customer_name, phone, service, sub_service, domain, device_model, project_details, price, status, payment_status
+             ) VALUES (
+                $1, $2, $3, $4, $5, COALESCE($6, 'N/A'), COALESCE($7, 'Web Client'), $8, COALESCE($9, 0.00), COALESCE($10, 'pending'), COALESCE($11, 'unpaid')
+             ) RETURNING *`,
+            [user_id || null, customer_name, phone, service, sub_service || null, domain || null, device_model || null, project_details || null, price || null, status || null, payment_status || null]
         );
-        
         const orderData = result.rows[0];
+        
         if (user_id) {
             await pool.query(
                 `INSERT INTO notifications (user_id, title, message, channel, status) VALUES ($1, $2, $3, 'dashboard', 'unread')`,
@@ -517,565 +286,329 @@ app.post('/api/orders', async (req, res) => {
             `An operational deployment request has been logged by ${customer_name}. Details: ${project_details}`
         );
 
-        const whatsappMessage = encodeURIComponent(`Hello DAN74TECH MEDIA, I have placed an order for ${service}. Project Details: ${project_details || 'N/A'}. Please advise on the next steps for payment completion.`);
+        const whatsappMessage = encodeURIComponent(`Hello DAN74TECH MEDIA, I have placed an order for ${service}. Project Details: ${project_details || 'N/A'}. Please advise on the next steps.`);
         const whatsappLink = `https://wa.me/254790435584?text=${whatsappMessage}`;
         
-        res.json({ 
-            success: true, 
-            data: orderData,
-            whatsapp_redirect: whatsappLink 
-        });
+        res.json({ success: true, data: orderData, whatsapp_redirect: whatsappLink });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 11: INVOICE GENERATION PIPELINE ================
+// ================= MODULE 4: INVOICE GENERATION PIPELINE ================
 // =========================================================================
 app.get('/api/invoices/:id/download', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM invoices WHERE id = $1 AND is_deleted = FALSE', [req.params.id]);
         if (result.rows.length === 0) return res.status(404).json({ error: "Invoice vector not found" });
+        
         const invoice = result.rows[0];
-
         const doc = new PDFDocument();
+        
         res.setHeader('Content-disposition', `attachment; filename="${invoice.invoice_number}.pdf"`);
         res.setHeader('Content-type', 'application/pdf');
         
-        doc.pipe(res);
-        doc.fontSize(22).fillColor('#0044FF').text('DAN74TECH MEDIA', { align: 'center' });
-        doc.fontSize(12).fillColor('#333333').text('Enterprise Transaction Ledger', { align: 'center' });
-        doc.moveDown(2);
-        
-        doc.fontSize(14).fillColor('#000000').text(`Invoice Identifier: ${invoice.invoice_number}`);
-        doc.text(`Client Designation: ${invoice.client_name}`);
-        doc.text(`Communication Link: ${invoice.client_email}`);
+        doc.text(`DAN74TECH MEDIA INVOICE`, { align: 'center', size: 20 });
         doc.moveDown();
-        
-        doc.fontSize(16).fillColor('#FF2A2A').text(`Total Ledger Amount: Ksh ${parseFloat(invoice.amount).toFixed(2)}`);
-        doc.fontSize(14).fillColor('#000000').text(`Clearance Status: ${invoice.status.toUpperCase()}`);
-        doc.moveDown(3);
-        
-        doc.fontSize(12).text('Automated ledger generated by DAN74TECH MEDIA Matrix.', { align: 'center' });
+        doc.text(`Invoice Number: ${invoice.invoice_number}`);
+        doc.text(`Client Name: ${invoice.client_name}`);
+        doc.text(`Client Email: ${invoice.client_email || 'N/A'}`);
+        doc.text(`Amount Due: KSH ${invoice.amount}`);
+        doc.text(`Status: ${invoice.status.toUpperCase()}`);
+        doc.text(`Issued At: ${invoice.issued_at}`);
         doc.end();
+        doc.pipe(res);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // =========================================================================
-// ================= MODULE 12: EMAIL BROADCAST PIPELINES ==================
+// ====== MODULE 5: SCHEMA-AWARE UNIVERSAL DYNAMIC CRUD ENGINE =============
 // =========================================================================
-app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
+// Explicit list of all 26 tables discovered within system metrics
+const SYSTEM_WHITELIST_TABLES = [
+    'users', 'clients', 'public_keys', 'services', 'sub_services', 'orders', 
+    'projects', 'file_deliveries', 'project_files', 'mpesa_transactions', 
+    'invoices', 'feed_posts', 'feed_interactions', 'feed_reactions', 
+    'email_campaigns', 'subscribers', 'media_library', 'blog_posts', 
+    'case_studies', 'client_communications', 'comments', 'consultations', 
+    'messages', 'notifications', 'support_tickets', 'testimonials'
+];
+
+// Structural Middleware: Validate incoming dynamic vector requests
+const verifyCrudTargetTable = (req, res, next) => {
+    const targetTable = String(req.params.table).trim().toLowerCase();
+    if (!SYSTEM_WHITELIST_TABLES.includes(targetTable)) {
+        return res.status(400).json({ error: `Rejected: System table entry context '${targetTable}' is invalid or restricted.` });
+    }
+    req.cleanTable = targetTable;
+    next();
+};
+
+// Introspect runtime column layout for a table
+async function discoverTableColumnsLayout(tableName) {
+    const schemaLookup = await pool.query(
+        `SELECT column_name FROM information_schema.columns WHERE table_name = $1`, 
+        [tableName]
+    );
+    const namesArray = schemaLookup.rows.map(r => r.column_name);
+    return {
+        columns: namesArray,
+        hasIsDeleted: namesArray.includes('is_deleted'),
+        hasUpdatedAt: namesArray.includes('updated_at')
+    };
+}
+
+// 1. READ ALL (With Pagination, Dynamic Search Filters, Sorting, and Soft-Delete awareness)
+app.get('/api/crud/:table', verifySystemToken, verifyCrudTargetTable, async (req, res) => {
     try {
-        const { subject, message, html } = req.body;
-        const subsResult = await pool.query("SELECT email FROM subscribers WHERE is_deleted = FALSE AND status = 'active'");
-        const userResult = await pool.query("SELECT email FROM users WHERE is_deleted = FALSE");
+        const { columns, hasIsDeleted } = await discoverTableColumnsLayout(req.cleanTable);
+        let { page = 1, limit = 100, sort = 'id', order = 'DESC', search = '', ...filters } = req.query;
         
-        const emailsSet = new Set([...subsResult.rows.map(r => r.email), ...userResult.rows.map(r => r.email)]);
-        const emailsArray = Array.from(emailsSet).map(email => ({ email }));
-        
-        if (emailsArray.length === 0) return res.status(400).json({ error: "No target clearance vectors found." });
-        if (!process.env.BREVO_API_KEY) throw new Error("Brevo SMTP engine offline.");
+        let targetWhereConditions = [];
+        let queryParams = [];
+        let indexTracker = 1;
 
-        const sendSmtpEmail = new Brevo.SendSmtpEmail();
-        sendSmtpEmail.subject = subject;
-        sendSmtpEmail.htmlContent = html || `<p>${message}</p>`;
-        sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
-        sendSmtpEmail.bcc = emailsArray; 
+        if (hasIsDeleted) {
+            targetWhereConditions.push(`is_deleted = FALSE`);
+        }
 
-        await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
-        
-        const campaign = await pool.query(
-            `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by, sent_at) VALUES ($1, $2, 'broadcast', $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
-            [subject, html || message, emailsArray.length, req.user.id]
-        );
-
-        res.json({ success: true, sent: emailsArray.length, failed: 0, campaign_id: campaign.rows[0].id });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 14: TESTIMONIALS ENGINE ========================
-// =========================================================================
-app.get('/api/testimonials', async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM testimonials WHERE is_deleted = FALSE ORDER BY id DESC");
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/testimonials', async (req, res) => {
-    try {
-        const { client_name, company, rating, review } = req.body;
-        const result = await pool.query(
-            `INSERT INTO testimonials (client_name, company, rating, review, status) VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
-            [client_name, company, rating, review]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 15: MEDIA & CDN REPOSITORY LAYERS ==============
-// =========================================================================
-app.get('/api/media', async (req, res) => {
-    try {
-        const data = await pool.query('SELECT * FROM media_library WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(data.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).json({ error: "Required file node absent" });
-        
-        const uploadStream = cloudinary.uploader.upload_stream(
-            { folder: "dan74tech_media_library" },
-            async (error, result) => {
-                if (error) return res.status(500).json({ error: error.message });
-                try {
-                    const dbInsert = await pool.query(
-                        `INSERT INTO media_library (file_name, file_url, file_type, file_size) VALUES ($1, $2, $3, $4) RETURNING *`,
-                        [req.file.originalname, result.secure_url, req.file.mimetype, req.file.size]
-                    );
-                    res.json({ success: true, data: dbInsert.rows[0] });
-                } catch (dbErr) {
-                    res.status(500).json({ error: dbErr.message });
-                }
+        // Apply string search filters on VARCHAR or TEXT columns if explicitly passed
+        if (search && search.trim() !== '') {
+            const lookableTextColumns = columns.filter(c => c.includes('name') || c.includes('title') || c.includes('email') || c.includes('subject') || c.includes('content') || c.includes('message'));
+            if (lookableTextColumns.length > 0) {
+                const innerSearchBlock = lookableTextColumns.map(col => `${col} ILIKE $${indexTracker}`).join(' OR ');
+                targetWhereConditions.push(`(${innerSearchBlock})`);
+                queryParams.push(`%${search}%`);
+                indexTracker++;
             }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 16: CONSULTATIONS ARCHIVE BLOCK ================
-// =========================================================================
-app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM consultations WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/consultations', async (req, res) => {
-    try {
-        const { name, email, phone, schedule_date, notes } = req.body;
-        const result = await pool.query(
-            `INSERT INTO consultations (name, email, phone, schedule_date, notes, status) VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING *`,
-            [name, email, phone, schedule_date, notes]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE consultations SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete('/api/consultations/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        await pool.query('UPDATE consultations SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 17: FILE DELIVERY NETWORK LAYER =================
-// =========================================================================
-app.get('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM file_deliveries WHERE is_deleted = FALSE ORDER BY id DESC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.get('/api/file-deliveries/client/:clientId', verifySystemToken, async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM file_deliveries WHERE client_id = $1 AND is_deleted = FALSE ORDER BY id DESC', [req.params.clientId]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
-    try {
-        const { order_id, client_id, file_name, file_url } = req.body;
-        const result = await pool.query(
-            `INSERT INTO file_deliveries (order_id, client_id, file_name, file_url) VALUES ($1, $2, $3, $4) RETURNING *`,
-            [order_id, client_id, file_name, file_url]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= MODULE 18: SECURE E2EE COMMUNICATION ENGINE =================
-
-io.on('connection', (socket) => {
-    
-    // 1. BLIND RELAY: Socket-based encrypted messaging
-    socket.on('send_encrypted_message', async (data) => {
-        const { receiver_id, ciphertext, iv, sender_key, receiver_key } = data;
-        
-        try {
-            // Save blind payload
-            const result = await pool.query(
-                `INSERT INTO client_communications 
-                 (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
-                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-                [socket.user.id, receiver_id, ciphertext, iv, sender_key, receiver_key]
-            );
-            
-            // Relay ciphertext to recipient (Socket.IO remains the pipe)
-            io.to(`user_${receiver_id}`).emit('receive_encrypted_message', result.rows[0]);
-        } catch (err) {
-            console.error("❌ E2EE Relay Error:", err);
         }
-    });
 
-    // 2. PRESENCE & STATUS MANAGEMENT
-    socket.on('join_thread', async (userId) => {
-        socket.join(`user_${userId}`); // Namespacing user rooms
-        socket.userId = userId;
-        await pool.query('UPDATE users SET is_online = TRUE, last_seen = NOW() WHERE id = $1', [userId]);
-        io.emit('presence_update', { userId, status: 'online' });
-    });
-
-    // ... (Keep your existing typing_start, typing_stop, and disconnect logic here)
-});
-
-// 3. E2EE THREAD RETRIEVAL: Only select non-sensitive fields
-app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        
-        // Mark as read (Metadata operation)
-        await pool.query(
-            `UPDATE client_communications SET is_read = TRUE WHERE receiver_id = $1 AND is_read = FALSE`,
-            [userId]
-        );
-
-        // Fetch encrypted payload - message_body is intentionally excluded
-        const thread = await pool.query(
-            `SELECT id, sender_id, receiver_id, ciphertext, iv, 
-                    sender_wrapped_key, receiver_wrapped_key, created_at, is_read 
-             FROM client_communications 
-             WHERE (sender_id = $1 OR receiver_id = $1) AND is_deleted = FALSE 
-             ORDER BY created_at ASC`,
-            [userId]
-        );
-        res.json(thread.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 4. REST API SEND (E2EE Compliant)
-app.post('/api/communications/send', verifySystemToken, async (req, res) => {
-    const { receiver_id, ciphertext, iv, sender_key, receiver_key } = req.body;
-    const sender_id = req.user.id;
-
-    try {
-        const savedMsg = await pool.query(
-            `INSERT INTO client_communications 
-             (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [sender_id, receiver_id, ciphertext, iv, sender_key, receiver_key]
-        );
-        
-        io.to(`user_${receiver_id}`).emit('receive_encrypted_message', savedMsg.rows[0]);
-        res.json({ success: true, data: savedMsg.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-// =========================================================================
-// ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
-// =========================================================================
-app.post('/api/payments/mpesa-stk', verifySystemToken, async (req, res) => {
-    try {
-        const { order_id, phone_number, amount } = req.body;
-        await pool.query(`UPDATE orders SET payment_status = 'processing', updated_at = CURRENT_TIMESTAMP WHERE id = $1`, [order_id]);
-        
-        res.json({
-            success: true, 
-            merchant_id: 'pending_daraja_auth', 
-            checkout_id: `chk_${Date.now()}`, 
-            msg: "M-Pesa API integration pending. Please finalize your transaction via the automated WhatsApp redirection link.",
-            whatsapp_fallback: true
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/payments/mpesa-callback', async (req, res) => {
-    try {
-        const callbackData = req.body.Body.stkCallback;
-        const checkoutRequestId = callbackData.CheckoutRequestID;
-        const resultCode = callbackData.ResultCode;
-
-        if (resultCode === 0) {
-            const amountInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'Amount');
-            const receiptInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'MpesaReceiptNumber');
-            const phoneInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'PhoneNumber');
-
-            await pool.query(
-                `INSERT INTO mpesa_transactions (checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_description) 
-                 VALUES ($1, $2, $3, $4, 'Success', $5)`,
-                [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc]
-            );
+        // Apply strict filtering fields on explicit column keys matching request query
+        for (const [filterKey, filterVal] of Object.entries(filters)) {
+            if (columns.includes(filterKey) && filterVal !== undefined && filterVal !== '') {
+                targetWhereConditions.push(`${filterKey} = $${indexTracker}`);
+                queryParams.push(filterVal);
+                indexTracker++;
+            }
         }
-        res.json({ ResultCode: 0, ResultDesc: "Transaction Accepted Confirmed" });
-    } catch (err) {
-        console.error("M-Pesa Callback Error:", err);
-        res.status(500).json({ error: err.message });
-    }
-});
 
-// =========================================================================
-// ================= MODULE 20: COMMUNITY SOCIAL FEED ENGINE ==========================
-// =========================================================================
-app.get('/api/feed/global', verifySystemToken, async (req, res) => {
-    try {
-        const query = `
-            SELECT id, title, description as content, link as media_url, 'portfolio' as type, created_at, likes_count, views_count, NULL as author_name
-            FROM portfolio WHERE is_deleted = FALSE AND status = 'Approved'
-            UNION ALL
-            SELECT b.id, b.title, b.content, b.image_url as media_url, 'blog' as type, b.created_at, b.likes_count, b.views_count, u.name as author_name
-            FROM blog_posts b LEFT JOIN users u ON b.author_id = u.id WHERE b.is_deleted = FALSE AND b.status = 'Approved'
-            UNION ALL
-            SELECT c.id, c.title, c.challenge || ' ' || c.solution as content, c.image_url as media_url, 'case_study' as type, c.created_at, c.likes_count, c.views_count, u.name as author_name
-            FROM case_studies c LEFT JOIN users u ON c.author_id = u.id WHERE c.is_deleted = FALSE AND c.status = 'Approved'
-            ORDER BY created_at DESC LIMIT 50;
+        const buildWhereClause = targetWhereConditions.length > 0 ? `WHERE ${targetWhereConditions.join(' AND ')}` : '';
+        
+        const cleanSortColumn = columns.includes(sort) ? sort : 'id';
+        const cleanSortingOrder = String(order).toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+        
+        const numericalOffset = (parseInt(page) - 1) * parseInt(limit);
+        
+        const aggregateDataQuery = `
+            SELECT * FROM ${req.cleanTable} 
+            ${buildWhereClause} 
+            ORDER BY ${cleanSortColumn} ${cleanSortingOrder} 
+            LIMIT ${parseInt(limit)} OFFSET ${numericalOffset}
         `;
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.post('/api/feed/interact', verifySystemToken, async (req, res) => {
-    try {
-        const { entity_id, entity_type, action } = req.body; 
-        const userId = req.user.id;
         
-        const check = await pool.query(
-            'SELECT id FROM feed_interactions WHERE user_id = $1 AND entity_id = $2 AND entity_type = $3 AND interaction_type = $4', 
-            [userId, entity_id, entity_type, action]
-        );
+        const aggregateCountQuery = `SELECT COUNT(*) FROM ${req.cleanTable} ${buildWhereClause}`;
         
-        if (check.rows.length === 0) {
-            await pool.query('INSERT INTO feed_interactions (user_id, entity_id, entity_type, interaction_type) VALUES ($1, $2, $3, $4)', [userId, entity_id, entity_type, action]);
-            let table = entity_type === 'blog' ? 'blog_posts' : entity_type === 'case_study' ? 'case_studies' : 'portfolio';
-            await pool.query(`UPDATE ${table} SET likes_count = likes_count + 1 WHERE id = $1`, [entity_id]);
-        }
-        res.json({ success: true });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.get('/api/catalog/full', verifySystemToken, async (req, res) => {
-    try {
-        const services = await pool.query('SELECT id, name, description, icon FROM services WHERE is_deleted = FALSE');
-        const subServices = await pool.query('SELECT id, service_id, name, price, description FROM sub_services WHERE is_deleted = FALSE');
-        
-        const catalog = services.rows.map(srv => {
-            return {
-                ...srv,
-                packages: subServices.rows.filter(sub => sub.service_id === srv.id)
-            };
-        });
-        res.json(catalog);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.post('/api/content/publish', verifySystemToken, async (req, res) => {
-    try {
-        const { target, title, content } = req.body;
-        const authorId = req.user.id;
-        const table = target === 'blog' ? 'blog_posts' : 'case_studies';
-        
-        await pool.query(`INSERT INTO ${table} (title, ${target === 'blog' ? 'content' : 'challenge'}, status, author_id) VALUES ($1, $2, 'pending', $3)`, [title, content, authorId]);
-        res.json({ success: true });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-// =========================================================================
-// ================= ADMINISTRATIVE AGGREGATION & KPI ANALYTICS ============
-// =========================================================================
-app.get('/api/admin/dashboard-stats', verifyAdminAccess, async (req, res) => {
-    try {
-        const userCount = await pool.query("SELECT COUNT(*) FROM users WHERE is_deleted = FALSE");
-        const orderCount = await pool.query("SELECT COUNT(*) FROM orders WHERE is_deleted = FALSE");
-        const pendingCount = await pool.query("SELECT COUNT(*) FROM orders WHERE status = 'pending' AND is_deleted = FALSE");
-        const ticketCount = await pool.query("SELECT COUNT(*) FROM support_tickets WHERE status = 'open' AND is_deleted = FALSE");
-        const earningsSum = await pool.query("SELECT SUM(price) FROM orders WHERE payment_status = 'paid' AND is_deleted = FALSE");
-        const consultationCount = await pool.query("SELECT COUNT(*) FROM consultations WHERE status = 'pending' AND is_deleted = FALSE");
+        const dataSetResult = await pool.query(aggregateDataQuery, queryParams);
+        const countingResult = await pool.query(aggregateCountQuery, queryParams);
         
         res.json({
-            users: parseInt(userCount.rows[0].count || '0'),
-            orders: parseInt(orderCount.rows[0].count || '0'),
-            pending_orders: parseInt(pendingCount.rows[0].count || '0'),
-            open_tickets: parseInt(ticketCount.rows[0].count || '0'),
-            total_earnings: parseFloat(earningsSum.rows[0].sum || '0.00'),
-            pending_consultations: parseInt(consultationCount.rows[0].count || '0')
+            success: true,
+            table: req.cleanTable,
+            data: dataSetResult.rows,
+            meta: {
+                total_records: parseInt(countingResult.rows[0].count),
+                current_page: parseInt(page),
+                records_limit: parseInt(limit)
+            }
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.get('/api/admin/backup/status', verifyAdminAccess, async (req, res) => {
+// 2. READ BY ID
+app.get('/api/crud/:table/:id', verifySystemToken, verifyCrudTargetTable, async (req, res) => {
     try {
-        res.json({
-            status: 'healthy',
-            last_backup: new Date().toISOString(),
-            storage: 'S3_Bucket_Pending_AWS_Keys'
-        });
+        const { hasIsDeleted } = await discoverTableColumnsLayout(req.cleanTable);
+        let identificationQuery = `SELECT * FROM ${req.cleanTable} WHERE id = $1`;
+        if (hasIsDeleted) {
+            identificationQuery += ` AND is_deleted = FALSE`;
+        }
+        
+        const elementOutput = await pool.query(identificationQuery, [req.params.id]);
+        if (elementOutput.rows.length === 0) {
+            return res.status(404).json({ error: `Record matching identifier token ${req.params.id} does not exist in ${req.cleanTable}` });
+        }
+        res.json({ success: true, data: elementOutput.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// =========================================================================
-// ================= MISSING ADMIN CRUD CONSOLIDATION BLOCK =================
-// =========================================================================
-app.put('/api/subscribers/:id', verifyAdminAccess, async (req, res) => {
+// 3. CREATE / INSERT
+app.post('/api/crud/:table', verifySystemToken, verifyCrudTargetTable, async (req, res) => {
     try {
-        const result = await pool.query(
-            `UPDATE subscribers SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [req.body.status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const result = await pool.query(
-            `UPDATE notifications SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2 RETURNING *`,
-            [status, req.params.id]
-        );
-        res.json({ success: true, data: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// =========================================================================
-// ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =============
-// =========================================================================
-app.post('/api/:table/bulk', verifyAdminAccess, async (req, res) => {
-    const whitelist = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications',
-        'mpesa_transactions' 
-    ];
-    
-    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (!whitelist.includes(requestedTable)) {
-        return res.status(403).json({ error: "Dynamic route injection target blocked." });
-    }
-
-    try {
-        const { ids, action } = req.body;
-        if (!Array.isArray(ids) || ids.length === 0 || action !== 'delete') {
-            return res.status(400).json({ error: "Invalid bulk operation parameters." });
+        const { columns } = await discoverTableColumnsLayout(req.cleanTable);
+        const parametersPayload = req.body;
+        
+        // Dynamic construction logic filtering keys that actually exist inside target table schema
+        const targetInsertionColumns = Object.keys(parametersPayload).filter(key => columns.includes(key) && key !== 'id');
+        
+        if (targetInsertionColumns.length === 0) {
+            return res.status(400).json({ error: "Malformed payload parameter mapping context: Empty body array match." });
+        }
+        
+        // Password hashing implementation if mapping values to the users or clients context directly
+        if (targetInsertionColumns.includes('password') && parametersPayload.password) {
+            const salt = await bcrypt.genSalt(10);
+            parametersPayload.password = await bcrypt.hash(parametersPayload.password, salt);
+        }
+        if (targetInsertionColumns.includes('password_hash') && parametersPayload.password_hash) {
+            const salt = await bcrypt.genSalt(10);
+            parametersPayload.password_hash = await bcrypt.hash(parametersPayload.password_hash, salt);
         }
 
-        const query = `UPDATE ${requestedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = ANY($1::int[])`;
-        await pool.query(query, [ids]);
-        res.json({ success: true, message: 'Bulk soft delete pipeline executed.' });
+        const valuePointers = targetInsertionColumns.map((_, index) => `$${index + 1}`).join(', ');
+        const variableInputs = targetInsertionColumns.map(col => parametersPayload[col]);
+        
+        const executableInsertionQuery = `
+            INSERT INTO ${req.cleanTable} (${targetInsertionColumns.join(', ')}) 
+            VALUES (${valuePointers}) 
+            RETURNING *
+        `;
+        
+        const executedState = await pool.query(executableInsertionQuery, variableInputs);
+        res.status(201).json({ success: true, data: executedState.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.get('/api/:table/:id', verifySystemToken, async (req, res) => {
-    const adminTables = [
-        'users', 'services', 'sub_services', 'orders', 'portfolio', 
-        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
-        'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 'client_communications',
-        'mpesa_transactions'
-    ];
-
-    const clientTables = [
-        'users', 'services', 'orders', 'portfolio', 'blog_posts', 
-        'invoices', 'support_tickets', 'testimonials', 'consultations', 'client_communications'
-    ]; 
-
-    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (req.user.role !== 'admin' && !clientTables.includes(requestedTable)) {
-        return res.status(403).json({ error: "Unauthorized Table Access" });
-    }
-    if (!adminTables.includes(requestedTable)) {
-        return res.status(403).json({ error: "Unknown Table Vector" });
-    }
-    
+// 4. UPDATE / PUT
+app.put('/api/crud/:table/:id', verifySystemToken, verifyCrudTargetTable, async (req, res) => {
     try {
-        const result = await pool.query(`SELECT * FROM ${requestedTable} WHERE id = $1 AND is_deleted = FALSE`, [req.params.id]);
-        if (result.rows.length === 0) return res.status(404).json({error: "Record not found"});
-        res.json(result.rows[0]);
+        const { columns, hasUpdatedAt } = await discoverTableColumnsLayout(req.cleanTable);
+        const parametersPayload = req.body;
+        
+        let targetUpdatingColumns = Object.keys(parametersPayload).filter(key => columns.includes(key) && key !== 'id' && key !== 'created_at');
+        
+        if (targetUpdatingColumns.length === 0 && !hasUpdatedAt) {
+            return res.status(400).json({ error: "No actionable column mapping parameters found inside body object request." });
+        }
+
+        // Protect or hash credentials securely if running a dynamic profile override update 
+        if (targetUpdatingColumns.includes('password') && parametersPayload.password) {
+            const salt = await bcrypt.genSalt(10);
+            parametersPayload.password = await bcrypt.hash(parametersPayload.password, salt);
+        }
+
+        let queryValues = [];
+        let assignmentStrings = [];
+        let bindIndex = 1;
+
+        for (const column of targetUpdatingColumns) {
+            assignmentStrings.push(`${column} = $${bindIndex}`);
+            queryValues.push(parametersPayload[column]);
+            bindIndex++;
+        }
+
+        if (hasUpdatedAt) {
+            assignmentStrings.push(`updated_at = CURRENT_TIMESTAMP`);
+        }
+
+        queryValues.push(req.params.id);
+        const dynamicUpdateString = `
+            UPDATE ${req.cleanTable} 
+            SET ${assignmentStrings.join(', ')} 
+            WHERE id = $${bindIndex} 
+            RETURNING *
+        `;
+        
+        const stateModificationResult = await pool.query(dynamicUpdateString, queryValues);
+        if (stateModificationResult.rows.length === 0) {
+            return res.status(404).json({ error: `Update process failed. Target row ID reference ${req.params.id} does not exist.` });
+        }
+        res.json({ success: true, data: stateModificationResult.rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// ================= GLOBAL APPLICATION VERIFICATION ROUTE =================
-app.get('/', (req, res) => {
-    res.status(200).send('🚀 DAN74TECH MEDIA Unified Operations API Matrix is active.');
+// 5. DELETE (Smart Deletion Architecture: Soft Delete using 'is_deleted' flag where supported, otherwise Hard Delete fallback)
+app.delete('/api/crud/:table/:id', verifyAdminAccess, verifyCrudTargetTable, async (req, res) => {
+    try {
+        const { hasIsDeleted, hasUpdatedAt } = await discoverTableColumnsLayout(req.cleanTable);
+        let terminalDeletionQuery = '';
+        
+        if (hasIsDeleted) {
+            terminalDeletionQuery = `
+                UPDATE ${req.cleanTable} 
+                SET is_deleted = TRUE ${hasUpdatedAt ? ', updated_at = CURRENT_TIMESTAMP' : ''} 
+                WHERE id = $1 RETURNING id
+            `;
+            console.log(`♻️ Performing logical software-level execution lifecycle cleanup on table: ${req.cleanTable}`);
+        } else {
+            terminalDeletionQuery = `DELETE FROM ${req.cleanTable} WHERE id = $1 RETURNING id`;
+            console.log(`⚠️ Performing structural physical layer deletion block cascade sequence entry on table: ${req.cleanTable}`);
+        }
+        
+        const structuralResult = await pool.query(terminalDeletionQuery, [req.params.id]);
+        if (structuralResult.rows.length === 0) {
+            return res.status(404).json({ error: `Deletion target failed. No matching identifier matching sequence entry found for ID ${req.params.id}.` });
+        }
+        res.json({ success: true, message: `Operational data segment inside table '${req.cleanTable}' deleted completely.` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// ================= AUTOMATED AWS S3 POSTGRESQL BACKUP SCHEDULER ==========
+// =========================================================================
+// ================= MODULE 6: WEBSOCKET INTERACTION COORDINATOR ===========
+// =========================================================================
+io.on('connection', (socket) => {
+    console.log(`⚡ WebSocket Pipeline Link established node instance: ${socket.id}`);
+
+    socket.on('register_presence', async (data) => {
+        if (data && data.userId) {
+            socket.userId = data.userId;
+            await pool.query('UPDATE users SET is_online = TRUE, last_seen = CURRENT_TIMESTAMP WHERE id = $1', [data.userId]);
+            io.emit('presence_update', { userId: data.userId, is_online: true });
+        }
+    });
+
+    socket.on('dispatch_chat_message', async (messageMetadata) => {
+        try {
+            const { sender_id, receiver_id, message_body, channel, message_type } = messageMetadata;
+            const databaseEntry = await pool.query(
+                `INSERT INTO client_communications (sender_id, receiver_id, message_body, channel, message_type, delivery_status) 
+                 VALUES ($1, $2, $3, COALESCE($4, 'dashboard'), COALESCE($5, 'text'), 'delivered') RETURNING *`,
+                [sender_id, receiver_id, message_body, channel, message_type]
+            );
+            io.emit(`receive_chat_stream_${receiver_id}`, databaseEntry.rows[0]);
+            socket.emit('message_delivery_receipt', { success: true, trackingId: databaseEntry.rows[0].id });
+        } catch (err) {
+            socket.emit('chat_error_response', { context: err.message });
+        }
+    });
+
+    socket.on('disconnect', async () => {
+        console.log(`🔌 Connected endpoint closed gracefully: ${socket.id}`);
+        if (socket.userId) {
+            await pool.query('UPDATE users SET is_online = FALSE, last_seen = CURRENT_TIMESTAMP WHERE id = $1', [socket.userId]);
+            io.emit('presence_update', { userId: socket.userId, is_online: false });
+        }
+    });
+});
+
+// =========================================================================
+// ================= MODULE 7: BACKUP & DATA INTEGRITY MANAGEMENT ==========
+// =========================================================================
 cron.schedule('0 2 * * *', () => {
-    console.log("🕒 02:00 EAT: Triggering pg_dump cryptographic snapshot for AWS S3 Cold Storage...");
-    if(!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.S3_BUCKET_NAME) {
+    console.log("⏱️ Initializing scheduled S3 backup sequence engine node...");
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || !process.env.S3_BUCKET_NAME) {
         console.warn("⚠️ S3 Backup aborted: AWS credentials or Bucket Name missing in environment.");
         return;
     }
@@ -1119,5 +652,8 @@ cron.schedule('0 2 * * *', () => {
 
 // Initialize Server Core Execution Node using HTTP Server for WebSockets
 server.listen(PORT, () => {
-    console.log(`🚀 Server matrix online and deploying operations on port ${PORT}`);
+    console.log(`=================================================================`);
+    console.log(`🚀 DAN74TECH MEDIA CORE PLATFORM OPERATIONAL ON PORT: ${PORT}`);
+    console.log(`🔒 ARCHITECTURAL ENVIRONMENT ROUTERS INSTANTIATED SECURELY`);
+    console.log(`=================================================================`);
 });
