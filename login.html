@@ -126,7 +126,7 @@
             const token = localStorage.getItem('dan74tech_token');
             const userNode = localStorage.getItem('dan74tech_user');
             if (token && userNode) {
-                window.location.href = 'client.html';
+                window.location.href = 'admin.html';
             }
         };
 
@@ -193,7 +193,7 @@
             
             // Allow user to read success message before redirecting
             setTimeout(() => {
-                window.location.href = 'client.html'; // STRICT REDIRECT TO CLIENT PORTAL ONLY
+                window.location.href = 'admin.html'; // STRICT REDIRECT TO CLIENT PORTAL ONLY
             }, 800);
         };
 
