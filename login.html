@@ -2,364 +2,252 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gateway Authentication | DAN74TECH MEDIA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | Secure Client Authentication</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        corporateYellow: '#FFD700',
+                        professionalBlue: '#0044FF',
+                        actionRed: '#FF2A2A',
+                        darkFooter: '#111827'
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --brand-yellow: #FFD700;
-            --brand-blue: #0044FF; 
-            --brand-red: #FF2A2A; 
-            --bg-light-social: #F3F4F6;
-        }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-image: url('images/logo.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-color: var(--bg-light-social);
-        }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Corporate Light-Mode Overlay - Explicitly Banning Dark Background Overrides at Body Tier */
-        .bg-overlay {
-            background: rgba(249, 250, 251, 0.85);
-            backdrop-filter: blur(10px);
-        }
-
-        .floating-panel {
-            box-shadow: 0 25px 50px -12px rgba(0, 68, 255, 0.08);
-            animation: floatUp 0.5s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Focus Border Highlights matching Corporate Yellow specification */
-        .focus-brand-yellow:focus {
-            border-color: var(--brand-yellow) !important;
-            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
-        }
-
-        .hidden { display: none !important; }
+        /* Strict ban on dark-mode overrides on document body */
+        body { background-color: #f9fafb !important; color: #111827 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hide { display: none !important; }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased selection:bg-[#0044FF] selection:text-white min-h-screen flex flex-col justify-between relative">
+<body class="antialiased flex flex-col min-h-screen">
 
-    <div class="absolute inset-0 bg-overlay z-0"></div>
-
-    <header class="w-full relative z-10 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044FF] to-[#FF2A2A] p-[2px]">
-                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center overflow-hidden">
-                        <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    </div>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-lg font-extrabold text-[#0044FF] font-mono tracking-wider">DAN74TECH<span class="text-[#FF2A2A] font-sans">.</span><span class="text-gray-900">MEDIA</span></span>
-                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Unified Authentication Hub</span>
-                </div>
-            </a>
-            <a href="index.html" class="text-sm font-bold text-gray-600 hover:text-[#0044FF] transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
-        </div>
-    </header>
-
-    <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
-        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 floating-panel space-y-6">
+    <section class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border-t-4 border-professionalBlue relative overflow-hidden">
             
-            <div class="text-center space-y-2">
-                <div class="w-12 h-12 bg-blue-50 text-[#0044FF] rounded-2xl flex items-center justify-center text-xl mx-auto">
-                    <i class="fa-solid fa-fingerprint"></i>
+            <div id="alert-box" class="hide absolute top-0 left-0 w-full p-3 text-xs font-bold text-center text-white transition-all z-10"></div>
+
+            <div class="text-center mb-8 mt-4">
+                <div class="inline-block bg-blue-50 p-3 rounded-full mb-3">
+                    <i class="fa-solid fa-shield-halved text-2xl text-professionalBlue"></i>
                 </div>
-                <h1 id="panelTitle" class="text-2xl font-extrabold text-gray-900 tracking-tight">System Login</h1>
-                <p id="panelSubtitle" class="text-xs text-gray-500 font-medium">Enter your credentials to access your workspace.</p>
+                <h1 class="text-2xl font-bold text-professionalBlue tracking-wide">DAN74TECH MEDIA</h1>
+                <p class="text-sm text-gray-500 font-medium mt-1">Secure Client Operations Portal</p>
             </div>
 
-            <div id="authAlert" class="hidden p-3 rounded-xl text-xs font-bold text-center font-mono transition-all"></div>
-
-            <form id="loginForm" class="space-y-4">
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Email Address</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="email" id="loginEmail" required placeholder="name@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
+            <div id="login-view">
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Vector</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-envelope text-gray-400 text-sm"></i>
+                            </div>
+                            <input type="email" id="login-email" required placeholder="client@domain.com" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-professionalBlue focus:border-professionalBlue outline-none transition bg-gray-50 focus:bg-white text-sm">
+                        </div>
                     </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                        <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044FF] transition-colors">
-                            <i id="loginEyeIcon" class="fa-solid fa-eye text-xs"></i>
-                        </button>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Access Credential</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-lock text-gray-400 text-sm"></i>
+                            </div>
+                            <input type="password" id="login-password" required placeholder="••••••••" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-professionalBlue focus:border-professionalBlue outline-none transition bg-gray-50 focus:bg-white text-sm">
+                        </div>
                     </div>
-                </div>
-
-                <button type="submit" id="loginBtn" class="w-full bg-[#FFD700] hover:bg-[#e6c200] text-gray-900 font-extrabold text-xs tracking-wider py-4 rounded-xl shadow-md transition-all font-mono uppercase mt-2 border border-[#e6c200]/30">
-                    Verify Identity <i class="fa-solid fa-right-to-bracket ml-1"></i>
-                </button>
+                    <button type="submit" id="btn-login" class="w-full bg-professionalBlue text-white font-bold py-2.5 px-4 rounded-md hover:bg-blue-700 transition duration-200 shadow-md flex justify-center items-center gap-2">
+                        <span>Authenticate Pipeline</span>
+                        <i id="spinner-login" class="fa-solid fa-circle-notch spinner hide"></i>
+                    </button>
+                </form>
                 
-                <div class="text-center pt-2">
-                    <button type="button" onclick="switchForm('register')" class="text-xs font-bold text-[#0044FF] hover:underline font-mono">
-                        Don't have an account? Register
+                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                    <p class="text-sm text-gray-600">No operational clearance? <br>
+                        <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue font-bold hover:underline mt-1 inline-block">Initialize Client Profile</a>
+                    </p>
+                </div>
+            </div>
+
+            <div id="register-view" class="hide">
+                <form id="register-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Full Designation (Name)</label>
+                        <input type="text" id="reg-name" required placeholder="John Doe" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Vector</label>
+                        <input type="email" id="reg-email" required placeholder="client@domain.com" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Phone Conduit</label>
+                        <input type="text" id="reg-phone" required placeholder="+254 7XX XXX XXX" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Access Credential</label>
+                        <input type="password" id="reg-password" required placeholder="Create strong password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
+                    </div>
+                    <button type="submit" id="btn-register" class="w-full bg-corporateYellow text-gray-900 font-bold py-2.5 px-4 rounded-md hover:bg-yellow-500 transition duration-200 shadow-md mt-2 flex justify-center items-center gap-2">
+                        <span>Establish Clearance</span>
+                        <i id="spinner-register" class="fa-solid fa-circle-notch spinner hide"></i>
                     </button>
+                </form>
+                
+                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
+                    <p class="text-sm text-gray-600">Existing matrix clearance? <br>
+                        <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline mt-1 inline-block">Authenticate Here</a>
+                    </p>
                 </div>
-            </form>
-
-            <form id="registerForm" class="space-y-4 hidden">
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Full Name</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="regName" required placeholder="Daniel Ngumi" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Email Address</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="email" id="regEmail" required placeholder="name@example.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Phone Number</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-phone"></i></span>
-                        <input type="tel" id="regPhone" required placeholder="+254 700 000000" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="regPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                        <button type="button" onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044FF] transition-colors">
-                            <i id="regEyeIcon" class="fa-solid fa-eye text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Confirm Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-shield-halved"></i></span>
-                        <input type="password" id="regConfirmPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus-brand-yellow transition-colors font-mono">
-                        <button type="button" onclick="togglePasswordVisibility('regConfirmPassword', 'regConfirmEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044FF] transition-colors">
-                            <i id="regConfirmEyeIcon" class="fa-solid fa-eye text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" id="registerBtn" class="w-full bg-[#FFD700] hover:bg-[#e6c200] text-gray-900 font-extrabold text-xs tracking-wider py-4 rounded-xl shadow-md transition-all font-mono uppercase mt-2 border border-[#e6c200]/30">
-                    Create Workspace <i class="fa-solid fa-user-plus ml-1"></i>
-                </button>
-
-                <div class="text-center pt-2">
-                    <button type="button" onclick="switchForm('login')" class="text-xs font-bold text-gray-500 hover:text-[#0044FF] hover:underline font-mono">
-                        Already have an account? Sign In
-                    </button>
-                </div>
-            </form>
-
+            </div>
+            
         </div>
-    </main>
+    </section>
 
-    <footer class="w-full relative z-10 bg-[#0B0F19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
-        &copy; 2026 DAN74TECH MEDIA. Systems Security Protocol Node. Status: <span class="text-emerald-500">Secure</span>
+    <footer class="bg-darkFooter text-gray-400 py-6 text-center text-sm mt-auto border-t-4 border-corporateYellow">
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> DAN74TECH MEDIA. All operational vectors secured.</p>
+        <p class="text-xs mt-1">Lead Systems Architecture by Daniel Ngumi | Meru, Kenya</p>
     </footer>
 
     <script>
-        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
+        // API Base Vector Mapping
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:10000/api' 
+            : 'https://dan74techweb.onrender.com/api';
 
-        // --- DOM Elements ---
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const panelTitle = document.getElementById('panelTitle');
-        const panelSubtitle = document.getElementById('panelSubtitle');
-        const authAlert = document.getElementById('authAlert');
-
-        // --- UI Interactions ---
-        function switchForm(target) {
-            authAlert.classList.add('hidden'); 
-            if (target === 'register') {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                panelTitle.innerText = 'Register Profile';
-                panelSubtitle.innerText = 'Create a new client workspace to track your active orders.';
-            } else {
-                registerForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                panelTitle.innerText = 'System Login';
-                panelSubtitle.innerText = 'Enter your credentials to access your workspace.';
+        // Pre-Flight Session Check: Redirect immediately if already logged in
+        window.onload = () => {
+            const token = localStorage.getItem('dan74tech_token');
+            const userNode = localStorage.getItem('dan74tech_user');
+            if (token && userNode) {
+                window.location.href = 'client.html';
             }
-        }
+        };
 
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
+        // UI View Toggles
+        const toggleAuth = (view) => {
+            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
+            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
+            hideAlert(); // Clear any existing errors when switching views
+        };
 
-        function showPanelAlert(message, type = 'error') {
-            authAlert.className = `p-3 rounded-xl text-xs font-bold text-center font-mono transition-all mb-4 ${type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`;
-            authAlert.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'} mr-2"></i>${message}`;
-            authAlert.classList.remove('hidden');
-        }
-        
-        // --- Token Serialization & Rectified Redirection Engine ---
-        function processAuthenticationSuccess(data) {
-            // 1. Clear out stale authentication contexts
-            localStorage.clear(); 
-            
-            // 2. Synchronize storage variables across sessions
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
+        // Alert System
+        const showAlert = (message, isSuccess = false) => {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.innerText = message;
+            alertBox.className = `absolute top-0 left-0 w-full p-3 text-xs font-bold text-center text-white transition-all z-10 ${isSuccess ? 'bg-green-600' : 'bg-actionRed'}`;
+            alertBox.classList.remove('hide');
+            setTimeout(hideAlert, 5000);
+        };
 
-            // 3. Normalize role parameter matrix
-            const userRole = String(data.user.role || 'client').trim().toLowerCase();
-            
-            // 4. Corrected Routing Engine Logic
-            if (userRole === 'admin') {
-                console.log("Admin session validated. Directing to Master Operations Console.");
-                localStorage.setItem('dan74_admin_token', data.token);
-                localStorage.setItem('dan74_admin_user', JSON.stringify(data.user));
-                window.location.href = 'admin.html'; // Rectified target for administrators
-            } else {
-                console.log("Client validated. Directing to operational dashboard workspace.");
-                window.location.href = 'client.html'; 
-            }
-        }
+        const hideAlert = () => {
+            document.getElementById('alert-box').classList.add('hide');
+        };
 
-        // --- Authentication Business Workflows ---
-
-        // 1. Login Endpoint Linkage
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            authAlert.classList.add('hidden');
-            const btn = document.getElementById('loginBtn');
-            const originalText = btn.innerHTML;
-            
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            try {
-                btn.innerHTML = 'Authenticating... <i class="fa-solid fa-circle-notch fa-spin ml-1"></i>';
+        const setButtonLoading = (btnId, spinnerId, isLoading) => {
+            const btn = document.getElementById(btnId);
+            const spinner = document.getElementById(spinnerId);
+            if (isLoading) {
                 btn.disabled = true;
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                spinner.classList.remove('hide');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                spinner.classList.add('hide');
+            }
+        };
 
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/login`, {
+        // Universal Network Interceptor
+        const authApiCall = async (endpoint, payload) => {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify(payload)
                 });
-
+                
                 const data = await response.json();
+                
+                // Blueprint Enforcement: Handle specific rate limiting / block errors
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || 'Authentication vector compromised. Try again.');
+                }
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        };
 
-                if (response.ok && data.token) {
-                    showPanelAlert("Handshake complete. Routing to workspace...", "success");
-                    setTimeout(() => processAuthenticationSuccess(data), 800);
-                } else {
-                    throw new Error(data.error || data.message || "Authentication access denied.");
+        // Complete Session & Redirect
+        const authorizeSessionAndRedirect = (jwt, user) => {
+            localStorage.setItem('dan74tech_token', jwt);
+            localStorage.setItem('dan74tech_user', JSON.stringify(user));
+            showAlert('Authentication successful. Routing to operations portal...', true);
+            
+            // Allow user to read success message before redirecting
+            setTimeout(() => {
+                window.location.href = 'client.html'; // STRICT REDIRECT TO CLIENT PORTAL ONLY
+            }, 800);
+        };
+
+        // ---------------------------------------------------------
+        // Form Submission Handlers
+        // ---------------------------------------------------------
+
+        // Login Handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+            setButtonLoading('btn-login', 'spinner-login', true);
+
+            const payload = {
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+            };
+
+            try {
+                const res = await authApiCall('/auth/login', payload);
+                if (res.success) {
+                    authorizeSessionAndRedirect(res.token, res.user);
                 }
             } catch (err) {
-                showPanelAlert(err.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                showAlert(err.message);
+                setButtonLoading('btn-login', 'spinner-login', false);
             }
         });
 
-        // 2. Registration Endpoint Linkage
-        registerForm.addEventListener('submit', async function(e) {
+        // Registration Handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            authAlert.classList.add('hidden');
-            const btn = document.getElementById('registerBtn');
-            const originalText = btn.innerHTML;
+            hideAlert();
+            setButtonLoading('btn-register', 'spinner-register', true);
 
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
-
-            // Pre-flight match validation
-            if (password !== confirmPassword) {
-                showPanelAlert("Security Error: Passwords do not match.", "error");
-                return;
-            }
+            const payload = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                phone: document.getElementById('reg-phone').value,
+                password: document.getElementById('reg-password').value
+            };
 
             try {
-                btn.innerHTML = 'Creating Profile... <i class="fa-solid fa-circle-notch fa-spin ml-1"></i>';
-                btn.disabled = true;
-
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name, 
-                        email, 
-                        phone, 
-                        password, 
-                        role: 'client' // Client privilege isolation check enforcement
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.token) {
-                    showPanelAlert("Profile generated successfully. Initializing workspace...", "success");
-                    setTimeout(() => processAuthenticationSuccess(data), 1000);
-                } else {
-                    throw new Error(data.error || data.message || "Profile generation failed.");
+                const res = await authApiCall('/auth/register', payload);
+                if (res.success) {
+                    // Alert users to check their email based on Phase 3 notification triggers
+                    showAlert('Profile initialized. Routing to operations portal...', true);
+                    setTimeout(() => {
+                        authorizeSessionAndRedirect(res.token, res.user);
+                    }, 1000);
                 }
             } catch (err) {
-                showPanelAlert(err.message, "error");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        });
-
-        // --- Optional Newsletter Pipeline Engine Listener ---
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(formSubmissionEvent) {
-            formSubmissionEvent.preventDefault();
-            const emailInput = this.querySelector('input[type="email"]').value;
-            try {
-                const response = await fetch('/api/subscribers', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: emailInput, status: 'active' })
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert("✅ Subscription confirmed for DAN74TECH MEDIA updates.");
-                    this.reset();
-                } else {
-                    alert("Notice: " + (result.error || "Subscription already exists."));
-                }
-            } catch (err) {
-                console.error("Submission Failure:", err);
-                alert("Pipeline error. Please try again later.");
+                showAlert(err.message);
+                setButtonLoading('btn-register', 'spinner-register', false);
             }
         });
     </script>
