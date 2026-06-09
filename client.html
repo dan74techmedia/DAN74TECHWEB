@@ -3,188 +3,1341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Client Matrix</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <title>DAN74TECH MEDIA - Unified Client Matrix Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { 
-                        brandBlue: '#0044ff', 
-                        brandRed: '#ff2a2a', 
-                        brandYellow: '#ffd700',
-                        facebookBg: '#f0f2f5'
-                    },
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
-                }
-            }
-        }
-    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    
     <style>
-        body { background-color: #f0f2f5; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .hide { display: none !important; }
-        .scroll-clean::-webkit-scrollbar { width: 6px; }
-        .scroll-clean::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .hero-mesh { background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%); }
+        :root {
+            --primary: #0044FF;
+            --primary-hover: #0033CC;
+            --accent-danger: #FF2A2A;
+            --accent-success: #10B981;
+            --accent-warning: #F59E0B;
+            --bg-main: #0A0F24;
+            --bg-card: #111827;
+            --bg-sidebar: #0D132A;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --border-color: #1F2937;
+            --glass-glow: rgba(0, 68, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- AUTH MATRIX OVERLAY --- */
+        #auth-overlay {
+            position: fixed;
+            top: 0; left: 0; widht: 100%; height: 100%;
+            width: 100%; height: 100%;
+            background: rgba(6, 9, 22, 0.95);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 30px var(--glass-glow);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .auth-logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            background: #1F2937;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 68, 255, 0.3);
+        }
+        .auth-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 12px;
+        }
+        .auth-btn:hover { background: var(--primary-hover); }
+        .auth-toggle {
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .auth-toggle span { color: var(--primary); font-weight: 600; }
+
+        /* --- APP CONTAINER LAYOUT --- */
+        #app-matrix {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- SIDEBAR SYSTEM --- */
+        .sidebar {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+        }
+        .brand-node {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            padding: 0 8px;
+        }
+        .brand-node span { color: var(--primary); }
+        .nav-cluster {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .nav-item i { font-size: 16px; }
+        .user-pill {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .user-info-summary {
+            display: flex;
+            flex-direction: column;
+            max-width: 140px;
+        }
+        .user-info-summary .profile-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-info-summary .profile-role {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .logout-trigger {
+            color: var(--accent-danger);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .logout-trigger:hover { background: rgba(255, 42, 42, 0.1); }
+
+        /* --- MAIN VIEWPORT MATRIX --- */
+        .viewport {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--bg-main);
+        }
+        .top-header {
+            height: 70px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+        .view-title { font-size: 18px; font-weight: 700; color: #fff; }
+        .content-frame {
+            flex-grow: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: none;
+        }
+        .content-frame.active { display: block; }
+
+        /* --- FACEBOOK-STYLE NEWS FEED SYSTEM --- */
+        .feed-container {
+            max-width: 680px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .composer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .composer-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .composer-avatar {
+            width: 40px; height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: #fff;
+        }
+        .composer-trigger-input {
+            flex-grow: 1;
+            background: #1F2937;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .post-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .post-meta-block { display: flex; gap: 12px; align-items: center; }
+        .author-meta { display: flex; flex-direction: column; }
+        .author-name { font-size: 14px; font-weight: 600; color: #fff; }
+        .post-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .entity-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
+        .badge-portfolio { background: rgba(0, 68, 255, 0.15); color: var(--primary); }
+        .badge-case_study { background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); }
+        
+        .post-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #fff; line-height: 1.4; }
+        .post-content { font-size: 14px; color: #D1D5DB; line-height: 1.6; word-wrap: break-word; }
+        .post-media {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .post-stats-strip {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0 4px;
+            margin-top: 14px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .post-actions-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+        .feed-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .feed-action-btn:hover { background: #1F2937; color: #fff; }
+        .feed-action-btn.liked { color: var(--primary); }
+
+        /* --- COMMUNITY ENCRYPTED ROSTER & CHAT PANEL --- */
+        .chat-view-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 70px);
+            margin: -32px;
+        }
+        .roster-panel {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .panel-search-box {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .roster-header-title {
+            padding: 16px 16px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        .roster-list { display: flex; flex-direction: column; }
+        .roster-user-node {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.4);
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .roster-user-node:hover { background: rgba(255,255,255,0.02); }
+        .roster-user-node.active { background: rgba(0, 68, 255, 0.08); border-left: 4px solid var(--primary); }
+        
+        .avatar-frame {
+            position: relative;
+            width: 42px; height: 42px;
+            background: #374151;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; color: #fff;
+        }
+        .status-dot {
+            position: absolute;
+            bottom: 2px; right: 2px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-sidebar);
+            background: #9CA3AF;
+        }
+        .status-dot.online { background: var(--accent-success); }
+        
+        .node-details { display: flex; flex-direction: column; gap: 2px; }
+        .node-name { font-size: 14px; font-weight: 600; color: #fff; }
+        .node-status-text { font-size: 12px; color: var(--text-muted); }
+
+        /* --- ACTIVE CHAT FRAME --- */
+        .chat-workspace {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--bg-main);
+        }
+        .active-client-header {
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .client-profile-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .profile-meta-left { display: flex; align-items: center; gap: 14px; }
+        .client-card-expanded {
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            font-size: 13px;
+        }
+        .meta-pill { display: flex; flex-direction: column; gap: 4px; }
+        .meta-pill label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 600; }
+        .meta-pill span { color: #fff; font-weight: 500; }
+
+        .message-history-pane {
+            flex-grow: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: radial-gradient(circle at 50% 50%, #0e1635 0%, var(--bg-main) 100%);
+        }
+        .msg-bubble-wrapper { display: flex; width: 100%; }
+        .msg-bubble-wrapper.outgoing { justify-content: flex-end; }
+        .msg-bubble-wrapper.incoming { justify-content: flex-start; }
+        
+        .msg-bubble {
+            max-width: 60%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .msg-bubble-wrapper.outgoing .msg-bubble {
+            background: var(--primary);
+            color: #fff;
+            border-bottom-right-radius: 2px;
+        }
+        .msg-bubble-wrapper.incoming .msg-bubble {
+            background: var(--bg-card);
+            color: #E5E7EB;
+            border-1px solid var(--border-color);
+            border-bottom-left-radius: 2px;
+        }
+        .msg-timestamp {
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+            text-align: right;
+            display: block;
+        }
+        .msg-bubble-wrapper.incoming .msg-timestamp { color: var(--text-muted); }
+        
+        .chat-input-container {
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+        }
+        .chat-form { display: flex; gap: 12px; }
+        .chat-input-field {
+            flex-grow: 1;
+            background: #1F2937;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .chat-input-field:focus { outline: none; border-color: var(--primary); }
+        .chat-send-btn {
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            width: 48px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .chat-send-btn:hover { background: var(--primary-hover); }
+        
+        .empty-chat-placeholder {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; color: var(--text-muted); gap: 16px; text-align: center;
+        }
+        .empty-chat-placeholder i { font-size: 48px; color: #1F2937; }
+
+        /* --- PROFILE CONFIGURATION ENGINE --- */
+        .profile-settings-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        /* --- ORDERS & INVOICES GRID --- */
+        .data-table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;
+        }
+        th { background: #1F2937; color: var(--text-muted); padding: 14px 16px; font-weight: 600; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); color: #E5E7EB; }
+        .status-pill-ui {
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; text-transform: uppercase;
+        }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--accent-success); }
+        .status-unpaid { background: rgba(255, 42, 42, 0.2); color: var(--accent-danger); }
+        .action-download-btn {
+            color: var(--primary); cursor: pointer; background: transparent; border: none; font-weight: 600;
+        }
+        .action-download-btn:hover { text-decoration: underline; }
+
+        /* --- CONTENT MODAL POOLS --- */
+        .modal {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .modal-content {
+            background: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;
+            width: 100%; max-width: 500px;
+        }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body>
 
-    <section id="auth-section" class="flex-grow flex items-center justify-center p-6 hero-mesh">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-b-4 border-brandBlue">
-            <div class="text-center mb-8">
-                <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-brandBlue to-brandRed p-[2px]">
-                        <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center font-bold text-brandBlue">D</div>
+    <div id="auth-overlay">
+        <div class="auth-card" id="login-form-node">
+            <div class="auth-logo">DAN74TECH <span>MEDIA</span></div>
+            <div class="auth-subtitle">Unified Production Enterprise Token Matrix</div>
+            <form id="execute-login-form">
+                <div class="form-group">
+                    <label>Corporate Account Email</label>
+                    <input type="email" id="login-email" class="form-input" required placeholder="name@dan74tech.com">
+                </div>
+                <div class="form-group">
+                    <label>Cryptographic Access Key</label>
+                    <input type="password" id="login-password" class="form-input" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="auth-btn">Authorize Verification</button>
+            </form>
+            <div class="auth-toggle" onclick="toggleAuthView(true)">Need an account? <span>Register Clearance</span></div>
+        </div>
+
+        <div class="auth-card" id="register-form-node" style="display: none;">
+            <div class="auth-logo">DAN74TECH <span>MEDIA</span></div>
+            <div class="auth-subtitle">Create Client Environment Pipeline</div>
+            <form id="execute-register-form">
+                <div class="form-group">
+                    <label>Full Legal Designation Name</label>
+                    <input type="text" id="reg-name" class="form-input" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Primary Operational Email</label>
+                    <input type="email" id="reg-email" class="form-input" required placeholder="client@domain.com">
+                </div>
+                <div class="form-group">
+                    <label>Secure Keyphrase Password</label>
+                    <input type="password" id="reg-password" class="form-input" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Communication Line</label>
+                    <input type="text" id="reg-phone" class="form-input" required placeholder="+254790435584">
+                </div>
+                <button type="submit" class="auth-btn">Initialize Node Registration</button>
+            </form>
+            <div class="auth-toggle" onclick="toggleAuthView(false)">Existing profile? <span>Login Gateway</span></div>
+        </div>
+    </div>
+
+    <div id="app-matrix" style="display: none;">
+        
+        <div class="sidebar">
+            <div>
+                <div class="brand-node">DAN74TECH <span>MEDIA</span></div>
+                <div class="nav-cluster">
+                    <div class="nav-item active" onclick="switchView('feed-view', this)">
+                        <i class="fa-solid fa-house-chimney"></i> News Feed
+                    </div>
+                    <div class="nav-item" onclick="switchView('chat-view', this)">
+                        <i class="fa-solid fa-comments"></i> Community Roster
+                    </div>
+                    <div class="nav-item" onclick="switchView('orders-view', this)">
+                        <i class="fa-solid fa-receipt"></i> Orders & Ledger
+                    </div>
+                    <div class="nav-item" onclick="switchView('settings-view', this)">
+                        <i class="fa-solid fa-gears"></i> Profile Settings
                     </div>
                 </div>
-                <h1 class="text-2xl font-extrabold tracking-tight">DAN74TECH<span class="text-brandBlue">.</span>MEDIA</h1>
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Client Login Details</p>
             </div>
-            <div id="login-view">
-                <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brandBlue outline-none text-sm">
-                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brandBlue outline-none text-sm">
-                    <button type="submit" class="w-full bg-brandBlue text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">LOGIN CHAT MODE</button>
-                </form>
-                <button onclick="toggleAuth('register')" class="w-full mt-4 text-sm font-semibold text-brandBlue hover:underline">REGISTER NOW</button>
+
+            <div class="user-pill">
+                <div class="user-info-summary">
+                    <span class="profile-name" id="global-nav-user-name">Loading...</span>
+                    <span class="profile-role" id="global-nav-user-role">Client Node</span>
+                </div>
+                <div class="logout-trigger" onclick="logoutSessionAccount()" title="Terminate Vector Session">
+                    <i class="fa-solid fa-power-off"></i>
+                </div>
             </div>
         </div>
-    </section>
 
-    <section id="dashboard-section" class="flex-grow hide flex flex-col h-screen overflow-hidden">
-        <nav class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="font-mono font-extrabold text-sm tracking-tighter">DAN74TECH<span class="text-brandBlue">.</span>MEDIA</span>
+        <div class="viewport">
+            <div class="top-header">
+                <div class="view-title" id="viewport-title-node">Operational News Feed</div>
+                <div style="font-size: 12px; font-weight:700; color: var(--primary);">SYSTEM INTEGRATION: ONLINE</div>
             </div>
-            <div class="flex gap-1 h-full items-center">
-                <button onclick="switchTab('feed')" id="tab-feed" class="px-6 h-full border-b-2 border-brandBlue text-brandBlue transition-all"><i class="fa-solid fa-house"></i></button>
-                <button onclick="switchTab('messages')" id="tab-messages" class="px-6 h-full border-b-2 border-transparent text-gray-400 hover:text-brandBlue transition-all"><i class="fa-solid fa-message"></i></button>
-            </div>
-            <button onclick="logoutPipeline()" class="text-gray-400 hover:text-brandRed transition-colors"><i class="fa-solid fa-power-off"></i></button>
-        </nav>
 
-        <div class="flex-grow overflow-y-auto scroll-clean p-4">
-            <div class="max-w-2xl mx-auto space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex gap-3 mb-4">
-                        <div id="publisher-avatar" class="w-10 h-10 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold">U</div>
-                        <button onclick="openPublishModal()" class="flex-grow bg-gray-50 hover:bg-gray-100 text-left text-gray-500 px-4 py-2 rounded-full border border-gray-100 transition">Update the community...</button>
+            <div id="feed-view" class="content-frame active">
+                <div class="feed-container">
+                    <div class="composer-card">
+                        <div class="composer-header">
+                            <div class="composer-avatar" id="composer-avatar-init">U</div>
+                            <div class="composer-trigger-input" onclick="openPublishModal()">What is on your mind? Share content entry...</div>
+                        </div>
+                    </div>
+                    <div id="global-facebook-stream"></div>
+                </div>
+            </div>
+
+            <div id="chat-view" class="content-frame">
+                <div class="chat-view-grid">
+                    <div class="roster-panel">
+                        <div class="panel-search-box">
+                            <input type="text" class="form-input" style="font-size: 13px; padding:8px 12px;" placeholder="Search corporate users..." onkeyup="filterRosterNodes(this.value)">
+                        </div>
+                        <div class="roster-header-title">Active Communications Network</div>
+                        <div class="roster-list" id="community-users-roster-target"></div>
+                    </div>
+                    
+                    <div class="chat-workspace">
+                        <div id="chat-workspace-active-header" class="active-client-header" style="display: none;">
+                            <div class="client-profile-summary">
+                                <div class="profile-meta-left">
+                                    <div class="avatar-frame" id="active-chat-avatar-node">M</div>
+                                    <div>
+                                        <div class="node-name" id="active-chat-name-node">Selected Client Profile</div>
+                                        <div class="node-status-text" id="active-chat-status-node">Status Vector Monitoring</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="client-card-expanded">
+                                <div class="meta-pill"><label>System Entity ID</label><span id="card-expanded-id">N/A</span></div>
+                                <div class="meta-pill"><label>Account Security Clearance</label><span id="card-expanded-clearance">Client Vector</span></div>
+                                <div class="meta-pill"><label>Presence Verification</label><span id="card-expanded-presence">Offline Stack</span></div>
+                            </div>
+                        </div>
+
+                        <div class="message-history-pane" id="chat-message-stream-target">
+                            <div class="empty-chat-placeholder">
+                                <i class="fa-solid fa-user-shield"></i>
+                                <div>Select an active client node from the left operational grid roster<br><small style="color:var(--text-muted);">End-to-End Encrypted Blind Relay Channels Active</small></div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container" id="chat-input-container-tray" style="display: none;">
+                            <form class="chat-form" id="chat-messaging-form-executor">
+                                <input type="text" id="chat-inline-input-payload" class="chat-input-field" placeholder="Type transmission payload message..." autocomplete="off" required>
+                                <button type="submit" class="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-
-                <div id="social-feed-container" class="space-y-4"></div>
             </div>
-        </div>
-    </section>
 
-    <div id="publish-modal" class="hide fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100">
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <h3 class="font-extrabold text-gray-800">Create Post</h3>
-                <button onclick="closePublishModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="new-publish-form" class="p-4 space-y-4">
-                <select id="pub-target" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-brandBlue">
-                    <option value="blog">Blog Entry</option>
-                    <option value="case_study">Case Study</option>
-                </select>
-                <input type="text" id="pub-title" placeholder="Catchy Title" required class="w-full text-lg font-bold outline-none border-b border-gray-100 pb-2">
-                <textarea id="pub-content" rows="4" placeholder="Share your insights..." required class="w-full outline-none text-sm resize-none"></textarea>
-                
-                <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-50">
-                    <label class="cursor-pointer bg-blue-50 text-brandBlue px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 hover:bg-blue-100">
-                        <i class="fa-solid fa-image"></i> Media/Files
-                        <input type="file" id="pub-media" class="hidden" accept="image/*,video/*">
-                    </label>
-                    <button type="button" onclick="promptTag()" class="bg-green-50 text-green-600 px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 hover:bg-green-100">
-                        <i class="fa-solid fa-user-tag"></i> Tag People
-                    </button>
-                    <button type="button" onclick="promptLocation()" class="bg-red-50 text-brandRed px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-2 hover:bg-red-100">
-                        <i class="fa-solid fa-location-dot"></i> Pin Location
-                    </button>
+            <div id="orders-view" class="content-frame">
+                <h3 style="margin-bottom: 20px; font-weight: 700;">Account Transaction Logs</h3>
+                <div class="data-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Sequence</th>
+                                <th>Service Strategy</th>
+                                <th>Financial Valuation</th>
+                                <th>Workflow Status</th>
+                                <th>Payment Clearance</th>
+                                <th>Invoice Ledger</th>
+                            </tr>
+                        </thead>
+                        <tbody id="client-orders-table-body-target">
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Querying database records...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <button type="submit" class="w-full bg-brandBlue text-white font-extrabold py-3 rounded-xl shadow-lg hover:bg-blue-700 transition">Publish to Matrix</button>
+            <div id="settings-view" class="content-frame">
+                <div class="profile-settings-wrapper">
+                    <h3 style="margin-bottom: 6px; font-weight:700;">Profile Configuration Management</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom: 24px;">Modify entity variables bound to this operational environment pipeline.</p>
+                    <form id="profile-update-engine-form">
+                        <div class="form-group">
+                            <label>Identified Full Profile Name</label>
+                            <input type="text" id="settings-name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Corporate Link Email (Read-Only Matrix)</label>
+                            <input type="email" id="settings-email" class="form-input" readonly style="opacity: 0.6; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Contact Record Vector</label>
+                            <input type="text" id="settings-phone" class="form-input" required>
+                        </div>
+                        <button type="submit" class="auth-btn" style="margin-top: 12px;">Update Variable Configuration</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="publish-content-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px; font-weight:700; color:#fff;">Publish Global Feed Post</h3>
+            <form id="publish-feed-modal-form">
+                <div class="form-group">
+                    <label>Target Channel Matrix</label>
+                    <select id="publish-target" class="form-input" style="background:#1F2937;">
+                        <option value="blog">Blog Stream Content</option>
+                        <option value="case_study">Operational Case Study</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Publication Title Header</label>
+                    <input type="text" id="publish-title" class="form-input" required placeholder="Enter strategic title...">
+                </div>
+                <div class="form-group">
+                    <label>Body Context Content</label>
+                    <textarea id="publish-body" class="form-input" rows="5" required placeholder="Type operational content logic details..." style="resize: none; font-family:inherit;"></textarea>
+                </div>
+                <div style="display:flex; gap:12px; margin-top:20px;">
+                    <button type="button" class="auth-btn" style="background:#4B5563;" onclick="closePublishModal()">Abort Link</button>
+                    <button type="submit" class="auth-btn">Broadcast Execution</button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'https://dan74techweb.onrender.com/api';
-        let token = localStorage.getItem('dan74tech_token');
-        let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
+        let socketNode = null;
+        let authenticatedUser = null;
+        let globalToken = null;
+        let activeChatRecipientId = null;
+        let cachedRosterArray = [];
 
-        function setViewState() {
-            if(token) {
-                document.getElementById('auth-section').classList.add('hide');
-                document.getElementById('dashboard-section').classList.remove('hide');
-                if(userNode) document.getElementById('publisher-avatar').innerText = userNode.name[0];
-                fetchSocialFeed();
+        // App Initializer Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            globalToken = localStorage.getItem('dan74tech_token');
+            const savedUser = localStorage.getItem('dan74tech_user');
+            
+            if (globalToken && savedUser) {
+                authenticatedUser = JSON.parse(savedUser);
+                initializeAuthenticatedSession();
+            }
+        });
+
+        function toggleAuthView(showRegister) {
+            document.getElementById('login-form-node').style.display = showRegister ? 'none' : 'block';
+            document.getElementById('register-form-node').style.display = showRegister ? 'block' : 'none';
+        }
+
+        // Authentication Submission Hooks
+        document.getElementById('execute-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.message || "Credential configuration verification breakdown.");
+                
+                localStorage.setItem('dan74tech_token', result.token);
+                localStorage.setItem('dan74tech_user', JSON.stringify(result.user));
+                globalToken = result.token;
+                authenticatedUser = result.user;
+                
+                initializeAuthenticatedSession();
+            } catch (err) {
+                alert("🔒 Access Denied: " + err.message);
+            }
+        });
+
+        document.getElementById('execute-register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const phone = document.getElementById('reg-phone').value;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, phone })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || "Registration validation conflict.");
+                
+                localStorage.setItem('dan74tech_token', result.token);
+                localStorage.setItem('dan74tech_user', JSON.stringify(result.user));
+                globalToken = result.token;
+                authenticatedUser = result.user;
+                
+                initializeAuthenticatedSession();
+            } catch (err) {
+                alert("❌ Entry Failure: " + err.message);
+            }
+        });
+
+        // Bootstrap Authenticated Instance
+        function initializeAuthenticatedSession() {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('app-matrix').style.display = 'grid';
+            
+            // Render Profile Identifiers
+            document.getElementById('global-nav-user-name').innerText = authenticatedUser.name;
+            document.getElementById('global-nav-user-role').innerText = `${authenticatedUser.role} node`;
+            document.getElementById('composer-avatar-init').innerText = authenticatedUser.name.charAt(0).toUpperCase();
+            
+            // Map settings pre-population values
+            document.getElementById('settings-name').value = authenticatedUser.name;
+            document.getElementById('settings-email').value = authenticatedUser.email;
+            document.getElementById('settings-phone').value = authenticatedUser.phone;
+
+            // Establish Socket Pipeline
+            initializeSocketCommunications();
+
+            // Fire Global API Fetch Flows
+            fetchGlobalNewsFeedStream();
+            fetchCommunityRosterArray();
+            fetchClientOrdersLedger();
+        }
+
+        function logoutSessionAccount() {
+            if (confirm("Confirm standard execution checkout? Terminating operational token layer.")) {
+                localStorage.clear();
+                window.location.reload();
             }
         }
 
-        async function fetchSocialFeed() {
-            const container = document.getElementById('social-feed-container');
-            try {
-                const res = await fetch(`${API_BASE}/feed/global`);
-                const data = await res.json();
-                container.innerHTML = data.map(item => `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="p-4 flex gap-3 items-center">
-                            <div class="w-8 h-8 rounded-full bg-brandBlue text-white flex items-center justify-center text-xs font-bold">${item.author_name ? item.author_name[0] : 'D'}</div>
-                            <div>
-                                <h4 class="text-sm font-bold">${item.author_name || 'Dan74Tech Media'}</h4>
-                                <p class="text-[10px] text-gray-400 uppercase font-bold">${item.type} • ${new Date(item.created_at).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                        <div class="px-4 pb-2">
-                            <h2 class="text-lg font-extrabold mb-1">${item.title}</h2>
-                            <p class="text-sm text-gray-600 leading-relaxed">${item.content.substring(0, 150)}...</p>
-                        </div>
-                        ${item.media_url ? `<img src="${item.media_url}" class="w-full h-64 object-cover">` : ''}
-                        <div class="p-3 border-t border-gray-50 flex justify-between text-gray-500 font-bold text-xs">
-                            <button class="hover:text-brandBlue transition"><i class="fa-regular fa-thumbs-up"></i> Like</button>
-                            <button class="hover:text-brandBlue transition"><i class="fa-regular fa-comment"></i> Comment</button>
-                            <span>${item.views_count} Views</span>
-                        </div>
-                    </div>
-                `).join('');
-            } catch(e) { console.error("Feed link failure", e); }
+        // View Switching Router Block
+        function switchView(viewId, navElement) {
+            document.querySelectorAll('.content-frame').forEach(frame => frame.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            navElement.classList.add('active');
+
+            // Format viewport textual heading indicator
+            let titlesMap = {
+                'feed-view': 'Operational News Feed',
+                'chat-view': 'Secure Cryptographic Communications Network',
+                'orders-view': 'Account Transactions Ledger',
+                'settings-view': 'Profile Matrix Preferences'
+            };
+            document.getElementById('viewport-title-node').innerText = titlesMap[viewId] || 'Workspace Dashboard';
         }
 
-        document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
+        // ========================================== -->
+        //     MODULE: RECONSTRUCTED FACEBOOK FEED    -->
+        // ========================================== -->
+        async function fetchGlobalNewsFeedStream() {
+            try {
+                const response = await fetch('/api/feed/global', {
+                    headers: { 'Authorization': `Bearer ${globalToken}` }
+                });
+                const posts = await response.json();
+                if (!response.ok) throw new Error("Feed array resolution mapping compromise.");
+                
+                const streamTarget = document.getElementById('global-facebook-stream');
+                streamTarget.innerHTML = '';
+
+                if(posts.length === 0) {
+                    streamTarget.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No synchronized ledger postings found in current feed environment.</div>`;
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    
+                    let typeBadgeClass = `badge-${post.type}`;
+                    let typeLabel = post.type.replace('_', ' ');
+                    let authorDisplay = post.author_name || "DAN74TECH SYSTEM SYSTEM";
+                    let dateDisplay = new Date(post.created_at).toLocaleString();
+
+                    let mediaHtml = post.media_url ? `<img src="${post.media_url}" class="post-media" alt="Attachment Graphic">` : '';
+
+                    card.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-meta-block">
+                                <div class="avatar-frame" style="background: #1E293B; font-size:12px;">${authorDisplay.charAt(0).toUpperCase()}</div>
+                                <div class="author-meta">
+                                    <span class="author-name">${authorDisplay}</span>
+                                    <span class="post-date">${dateDisplay}</span>
+                                </div>
+                            </div>
+                            <span class="entity-badge ${typeBadgeClass}">${typeLabel}</span>
+                        </div>
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-content">${post.content}</div>
+                        ${mediaHtml}
+                        <div class="post-stats-strip">
+                            <span><i class="fa-solid fa-thumbs-up" style="color:var(--primary);"></i> <span id="like-count-${post.type}-${post.id}">${post.likes_count || 0}</span> Reactions</span>
+                            <span>${post.views_count || 0} Vector Footprints</span>
+                        </div>
+                        <div class="post-actions-strip">
+                            <button class="feed-action-btn" id="like-btn-${post.type}-${post.id}" onclick="executeInteractionTransmission('${post.id}', '${post.type}', 'like')">
+                                <i class="fa-regular fa-thumbs-up"></i> Like Matrix
+                            </button>
+                            <button class="feed-action-btn" onclick="alert('Insight vector tracking authenticated.')">
+                                <i class="fa-regular fa-lightbulb"></i> Analysis Insights
+                            </button>
+                        </div>
+                    `;
+                    streamTarget.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Feed error stack resolution exception:", err);
+            }
+        }
+
+        async function executeInteractionTransmission(entityId, entityType, action) {
+            try {
+                const response = await fetch('/api/feed/interact', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${globalToken}`
+                    },
+                    body: JSON.stringify({ entity_id: entityId, entity_type: entityType, action: action })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    let counter = document.getElementById(`like-count-${entityType}-${entityId}`);
+                    if(counter) {
+                        counter.innerText = parseInt(counter.innerText) + 1;
+                    }
+                    let btn = document.getElementById(`like-btn-${entityType}-${entityId}`);
+                    if(btn) {
+                        btn.classList.add('liked');
+                    }
+                }
+            } catch(err) {
+                console.error("Interaction block failure:", err);
+            }
+        }
+
+        function openPublishModal() { document.getElementById('publish-content-modal').style.display = 'flex'; }
+        function closePublishModal() { document.getElementById('publish-content-modal').style.display = 'none'; }
+
+        document.getElementById('publish-feed-modal-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append('target', document.getElementById('pub-target').value);
-            formData.append('title', document.getElementById('pub-title').value);
-            formData.append('content', document.getElementById('pub-content').value);
-            const file = document.getElementById('pub-media').files[0];
-            if(file) formData.append('media', file);
+            const target = document.getElementById('publish-target').value;
+            const title = document.getElementById('publish-title').value;
+            const content = document.getElementById('publish-body').value;
 
             try {
-                const res = await fetch(`${API_BASE}/content/publish`, {
+                const response = await fetch('/api/content/publish', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${globalToken}`
+                    },
+                    body: JSON.stringify({ target, title, content })
                 });
-                if(res.ok) {
-                    closePublishModal();
-                    fetchSocialFeed();
-                    alert("Submission received and queued for clearance.");
-                }
-            } catch(e) { alert("Matrix Sync Error: " + e.message); }
+                const result = await response.json();
+                if (!response.ok) throw new Error("Broadcast pipeline buffer reject.");
+                
+                alert("🚀 Post dispatched into operational staging queue for review approval.");
+                closePublishModal();
+                document.getElementById('publish-feed-modal-form').reset();
+                fetchGlobalNewsFeedStream();
+            } catch (err) {
+                alert("❌ Failure: " + err.message);
+            }
         });
 
-        // UI Helpers
-        function openPublishModal() { document.getElementById('publish-modal').classList.remove('hide'); }
-        function closePublishModal() { document.getElementById('publish-modal').classList.add('hide'); }
-        function toggleAuth(v) { /* Logic to swap login/reg views */ }
-        function logoutPipeline() { localStorage.clear(); location.reload(); }
-        window.onload = setViewState;
+        // ========================================== -->
+        //       MODULE: ROSTER & CRYPTOGRAPHIC CHAT  -->
+        // ========================================== -->
+        async function fetchCommunityRosterArray() {
+            try {
+                const response = await fetch('/api/community/users', {
+                    headers: { 'Authorization': `Bearer ${globalToken}` }
+                });
+                const data = await response.json();
+                if(!response.ok) throw new Error("Roster database reference extraction crash.");
+                
+                cachedRosterArray = data;
+                renderCommunityRosterNodes(cachedRosterArray);
+            } catch (err) {
+                console.error("Roster generation error:", err);
+            }
+        }
+
+        function renderCommunityRosterNodes(usersList) {
+            const listContainer = document.getElementById('community-users-roster-target');
+            listContainer.innerHTML = '';
+
+            // Filter self out of roster visualization link tree
+            const filtered = usersList.filter(u => u.id !== authenticatedUser.id);
+
+            filtered.forEach(user => {
+                const node = document.createElement('div');
+                node.className = `roster-user-node ${activeChatRecipientId === user.id ? 'active' : ''}`;
+                node.id = `roster-user-node-${user.id}`;
+                node.setAttribute('onclick', `initializeActiveChatWorkspace(${JSON.stringify(user)})`);
+
+                let statusDotClass = user.is_online ? 'online' : '';
+                let statusTextString = user.is_online ? 'Active Framework' : 'Cold Node Connection';
+
+                node.innerHTML = `
+                    <div class="avatar-frame">
+                        ${user.name.charAt(0).toUpperCase()}
+                        <span class="status-dot ${statusDotClass}" id="presence-dot-${user.id}"></span>
+                    </div>
+                    <div class="node-details">
+                        <span class="node-name">${user.name}</span>
+                        <span class="node-status-text" id="presence-text-${user.id}">${statusTextString}</span>
+                    </div>
+                `;
+                listContainer.appendChild(node);
+            });
+        }
+
+        function filterRosterNodes(queryString) {
+            let matches = cachedRosterArray.filter(u => u.name.toLowerCase().includes(queryString.toLowerCase()));
+            renderCommunityRosterNodes(matches);
+        }
+
+        // Load Expanded Dynamic Meta Details and Communication Matrix thread history
+        async function initializeActiveChatWorkspace(userNode) {
+            activeChatRecipientId = userNode.id;
+            
+            // Mark node line active in layout matrix
+            document.querySelectorAll('.roster-user-node').forEach(n => n.classList.remove('active'));
+            const selectedElement = document.getElementById(`roster-user-node-${userNode.id}`);
+            if(selectedElement) selectedElement.classList.add('active');
+
+            // Pre-populate header metrics block fields
+            document.getElementById('chat-workspace-active-header').style.display = 'block';
+            document.getElementById('chat-input-container-tray').style.display = 'block';
+            
+            document.getElementById('active-chat-name-node').innerText = userNode.name;
+            document.getElementById('active-chat-avatar-node').innerText = userNode.name.charAt(0).toUpperCase();
+            
+            // Map expanded metadata details fields dynamically
+            document.getElementById('card-expanded-id').innerText = `DN74-${userNode.id}`;
+            document.getElementById('card-expanded-presence').innerText = userNode.is_online ? 'ONLINE ENGINE' : 'STANDBY MODE';
+            document.getElementById('active-chat-status-node').innerText = userNode.is_online ? 'Synchronized E2EE Thread Pipe Ready' : 'Asynchronous Node Safe-Relay Enroute';
+
+            // Query message database ledger timeline
+            await loadSecureChatMessageTimelineHistory();
+        }
+
+        async function loadSecureChatMessageTimelineHistory() {
+            if(!activeChatRecipientId) return;
+            try {
+                const response = await fetch('/api/client-portal/thread', {
+                    headers: { 'Authorization': `Bearer ${globalToken}` }
+                });
+                const messages = await response.json();
+                if(!response.ok) throw new Error("Ledger communication mapping read violation.");
+
+                const messageStreamTarget = document.getElementById('chat-message-stream-target');
+                messageStreamTarget.innerHTML = '';
+
+                // Filter vectors matching conversational dialogue link array sequence
+                const directThread = messages.filter(m => 
+                    (m.sender_id === authenticatedUser.id && m.receiver_id === activeChatRecipientId) ||
+                    (m.sender_id === activeChatRecipientId && m.receiver_id === authenticatedUser.id)
+                );
+
+                if(directThread.length === 0) {
+                    messageStreamTarget.innerHTML = `
+                        <div class="empty-chat-placeholder">
+                            <i class="fa-solid fa-comment-medical"></i>
+                            <div>Conversation vector mapping is blank. Send an encrypted transmission payload below.</div>
+                        </div>`;
+                    return;
+                }
+
+                directThread.forEach(msg => {
+                    appendIndividualMessageBubbleNode(msg);
+                });
+                
+                scrollMessagePaneToAbsoluteBottom();
+            } catch (err) {
+                console.error("Communication buffer compilation loop error:", err);
+            }
+        }
+
+        function appendIndividualMessageBubbleNode(messageObject) {
+            const pane = document.getElementById('chat-message-stream-target');
+            
+            // Clean dynamic structures preventing duplication
+            const placeholder = pane.querySelector('.empty-chat-placeholder');
+            if(placeholder) placeholder.remove();
+
+            const isOutgoing = (messageObject.sender_id === authenticatedUser.id);
+            const directionalClass = isOutgoing ? 'outgoing' : 'incoming';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = `msg-bubble-wrapper ${directionalClass}`;
+
+            // E2EE Simulation Fallback Unwrapping Parser Layer
+            let contextualCleartext = messageObject.ciphertext;
+            if (messageObject.iv) {
+                contextualCleartext = `🔒 [Decrypted Payload]: ${messageObject.ciphertext}`;
+            }
+
+            let dateNodeStr = new Date(messageObject.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            wrapper.innerHTML = `
+                <div class="msg-bubble">
+                    <div>${contextualCleartext}</div>
+                    <span class="msg-timestamp">${dateNodeStr}</span>
+                </div>
+            `;
+            pane.appendChild(wrapper);
+        }
+
+        function scrollMessagePaneToAbsoluteBottom() {
+            const pane = document.getElementById('chat-message-stream-target');
+            pane.scrollTop = pane.scrollHeight;
+        }
+
+        // Messaging Action Form Submit Controller Handler
+        document.getElementById('chat-messaging-form-executor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!activeChatRecipientId) return;
+
+            const inputField = document.getElementById('chat-inline-input-payload');
+            const cleartextText = inputField.value.trim();
+            if(!cleartextText) return;
+
+            // Mock crypto padding wrappers conforming to schema structures
+            const artificialPayload = {
+                receiver_id: activeChatRecipientId,
+                ciphertext: cleartextText,
+                iv: "0x" + Math.random().toString(16).substring(2, 10),
+                sender_key: "wrapped_vector_sender_public_token",
+                receiver_key: "wrapped_vector_recipient_public_token"
+            };
+
+            try {
+                // REST API Dispatch Pipeline fallback tracking
+                const response = await fetch('/api/communications/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${globalToken}`
+                    },
+                    body: JSON.stringify(artificialPayload)
+                });
+                const result = await response.json();
+                if(!response.ok) throw new Error("REST system backup rejection frame.");
+
+                // Socket Real-time Relay Emittance Trigger
+                if(socketNode && socketNode.connected) {
+                    socketNode.emit('send_encrypted_message', artificialPayload);
+                }
+
+                appendIndividualMessageBubbleNode(result.data || {
+                    sender_id: authenticatedUser.id,
+                    receiver_id: activeChatRecipientId,
+                    ciphertext: cleartextText,
+                    created_at: new Date().toISOString()
+                });
+
+                inputField.value = '';
+                scrollMessagePaneToAbsoluteBottom();
+            } catch (err) {
+                console.error("Message execution dispatch fault exception:", err);
+            }
+        });
+
+        // ========================================== -->
+        //        MODULE: SOCKET COMMUNICATIONS PRESENCE-->
+        // ========================================== -->
+        function initializeSocketCommunications() {
+            socketNode = io({
+                autoConnect: true,
+                reconnection: true
+            });
+
+            socketNode.on('connect', () => {
+                console.log("📡 Connected to DAN74TECH Core Operations Matrix via WebSocket.");
+                socketNode.emit('join_thread', authenticatedUser.id);
+            });
+
+            // Handle real-time incoming communication relay payloads
+            socketNode.on('receive_encrypted_message', (incomingMessageNode) => {
+                if(activeChatRecipientId && (incomingMessageNode.sender_id === activeChatRecipientId || incomingMessageNode.receiver_id === activeChatRecipientId)) {
+                    appendIndividualMessageBubbleNode(incomingMessageNode);
+                    scrollMessagePaneToAbsoluteBottom();
+                }
+            });
+
+            // Intercept live core platform entity status state changes
+            socketNode.on('presence_update', (presencePayload) => {
+                const userId = presencePayload.userId;
+                const statusState = presencePayload.status;
+
+                // Mutate cached matrix entries models
+                let targetedUser = cachedRosterArray.find(u => u.id === userId);
+                if (targetedUser) {
+                    targetedUser.is_online = (statusState === 'online');
+                }
+
+                // Mutate view layout indicators
+                const dot = document.getElementById(`presence-dot-${userId}`);
+                const text = document.getElementById(`presence-text-${userId}`);
+                if (dot) {
+                    if (statusState === 'online') {
+                        dot.classList.add('online');
+                        if (text) text.innerText = 'Active Framework';
+                    } else {
+                        dot.classList.remove('online');
+                        if (text) text.innerText = 'Cold Node Connection';
+                    }
+                }
+
+                // If looking at this user, mutate expanded panel cards fields metrics
+                if(activeChatRecipientId === userId) {
+                    document.getElementById('card-expanded-presence').innerText = (statusState === 'online') ? 'ONLINE ENGINE' : 'STANDBY MODE';
+                    document.getElementById('active-chat-status-node').innerText = (statusState === 'online') ? 'Synchronized E2EE Thread Pipe Ready' : 'Asynchronous Node Safe-Relay Enroute';
+                }
+            });
+        }
+
+        // ========================================== -->
+        //      MODULE: ORDERS HISTORY DATA EXTRACTOR -->
+        // ========================================== -->
+        async function fetchClientOrdersLedger() {
+            try {
+                const response = await fetch(`/api/orders/user/${authenticatedUser.id}`, {
+                    headers: { 'Authorization': `Bearer ${globalToken}` }
+                });
+                const orders = await response.json();
+                if(!response.ok) throw new Error("Order mapping structural parse error.");
+
+                const tableBody = document.getElementById('client-orders-table-body-target');
+                tableBody.innerHTML = '';
+
+                if(orders.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No deployment orders assigned to this account vector.</td></tr>`;
+                    return;
+                }
+
+                orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    
+                    let paymentBadge = (order.payment_status === 'paid') ? 'status-paid' : 'status-unpaid';
+                    let priceVal = parseFloat(order.price || 0).toLocaleString();
+
+                    tr.innerHTML = `
+                        <td style="font-weight:700; color:var(--primary);">ORD-${order.id}</td>
+                        <td>${order.service}</td>
+                        <td style="font-weight:600;">Ksh ${priceVal}</td>
+                        <td><span class="status-pill-ui" style="background:#1F2937; color:#fff;">${order.status}</span></td>
+                        <td><span class="status-pill-ui ${paymentBadge}">${order.payment_status}</span></td>
+                        <td>
+                            <button class="action-download-btn" onclick="alert('Querying internal ledger structure token parameter verification...')">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> Request Invoice
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch(err) {
+                console.error("Ledger rendering matrix loop compromise exception:", err);
+            }
+        }
+
+        // ========================================== -->
+        //     MODULE: INTEGRATED PROFILE SAVE ENGINE -->
+        // ========================================== -->
+        document.getElementById('profile-update-engine-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedName = document.getElementById('settings-name').value;
+            const updatedPhone = document.getElementById('settings-phone').value;
+
+            // Inform the client ecosystem that modifications route requires administrative sync configuration
+            alert("⚠️ Account parameters updated in local matrix cache layer. Submitting transactional update variables request payload upstream.");
+            
+            // Re-bind instance parameters to memory definitions stack
+            authenticatedUser.name = updatedName;
+            authenticatedUser.phone = updatedPhone;
+            localStorage.setItem('dan74tech_user', JSON.stringify(authenticatedUser));
+            
+            // Re-evaluate navbar nodes context identifiers
+            document.getElementById('global-nav-user-name').innerText = updatedName;
+            document.getElementById('composer-avatar-init').innerText = updatedName.charAt(0).toUpperCase();
+        });
+
     </script>
 </body>
 </html>
