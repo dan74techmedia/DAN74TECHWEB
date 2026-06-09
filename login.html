@@ -3,251 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Secure Client Authentication</title>
+    <title>Administrative Gateway | DAN74TECH MEDIA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        corporateYellow: '#FFD700',
-                        professionalBlue: '#0044FF',
-                        actionRed: '#FF2A2A',
-                        darkFooter: '#111827'
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Strict ban on dark-mode overrides on document body */
-        body { background-color: #f9fafb !important; color: #111827 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .hide { display: none !important; }
-        .spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        :root { --brand-blue: #0044ff; --brand-red: #ff2a2a; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-image: url('images/logo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .bg-overlay {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .floating-panel {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: floatUp 0.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="antialiased selection:bg-[#0044ff] selection:text-white min-h-screen flex flex-col justify-between relative">
 
-    <section class="flex-grow flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border-t-4 border-professionalBlue relative overflow-hidden">
-            
-            <div id="alert-box" class="hide absolute top-0 left-0 w-full p-3 text-xs font-bold text-center text-white transition-all z-10"></div>
+    <div class="absolute inset-0 bg-overlay z-0"></div>
 
-            <div class="text-center mb-8 mt-4">
-                <div class="inline-block bg-blue-50 p-3 rounded-full mb-3">
-                    <i class="fa-solid fa-shield-halved text-2xl text-professionalBlue"></i>
+    <header class="w-full relative z-10 border-b border-gray-800 bg-[#0b0f19]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px]">
+                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
                 </div>
-                <h1 class="text-2xl font-bold text-professionalBlue tracking-wide">DAN74TECH MEDIA</h1>
-                <p class="text-sm text-gray-500 font-medium mt-1">Secure Client Operations Portal</p>
-            </div>
-
-            <div id="login-view">
-                <form id="login-form" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Vector</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-envelope text-gray-400 text-sm"></i>
-                            </div>
-                            <input type="email" id="login-email" required placeholder="client@domain.com" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-professionalBlue focus:border-professionalBlue outline-none transition bg-gray-50 focus:bg-white text-sm">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Access Credential</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fa-solid fa-lock text-gray-400 text-sm"></i>
-                            </div>
-                            <input type="password" id="login-password" required placeholder="••••••••" class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-professionalBlue focus:border-professionalBlue outline-none transition bg-gray-50 focus:bg-white text-sm">
-                        </div>
-                    </div>
-                    <button type="submit" id="btn-login" class="w-full bg-professionalBlue text-white font-bold py-2.5 px-4 rounded-md hover:bg-blue-700 transition duration-200 shadow-md flex justify-center items-center gap-2">
-                        <span>Authenticate Pipeline</span>
-                        <i id="spinner-login" class="fa-solid fa-circle-notch spinner hide"></i>
-                    </button>
-                </form>
-                
-                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
-                    <p class="text-sm text-gray-600">No operational clearance? <br>
-                        <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue font-bold hover:underline mt-1 inline-block">Initialize Client Profile</a>
-                    </p>
+                <div class="flex flex-col">
+                    <span class="text-lg font-extrabold text-white font-mono tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Administrative Gateway</span>
                 </div>
-            </div>
-
-            <div id="register-view" class="hide">
-                <form id="register-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Full Designation (Name)</label>
-                        <input type="text" id="reg-name" required placeholder="John Doe" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Email Vector</label>
-                        <input type="email" id="reg-email" required placeholder="client@domain.com" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Phone Conduit</label>
-                        <input type="text" id="reg-phone" required placeholder="+254 7XX XXX XXX" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Access Credential</label>
-                        <input type="password" id="reg-password" required placeholder="Create strong password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-corporateYellow focus:border-corporateYellow outline-none bg-gray-50 focus:bg-white text-sm">
-                    </div>
-                    <button type="submit" id="btn-register" class="w-full bg-corporateYellow text-gray-900 font-bold py-2.5 px-4 rounded-md hover:bg-yellow-500 transition duration-200 shadow-md mt-2 flex justify-center items-center gap-2">
-                        <span>Establish Clearance</span>
-                        <i id="spinner-register" class="fa-solid fa-circle-notch spinner hide"></i>
-                    </button>
-                </form>
-                
-                <div class="mt-6 pt-4 border-t border-gray-100 text-center">
-                    <p class="text-sm text-gray-600">Existing matrix clearance? <br>
-                        <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline mt-1 inline-block">Authenticate Here</a>
-                    </p>
-                </div>
-            </div>
-            
+            </a>
+            <a href="index.html" class="text-sm font-bold text-gray-300 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
         </div>
-    </section>
+    </header>
 
-    <footer class="bg-darkFooter text-gray-400 py-6 text-center text-sm mt-auto border-t-4 border-corporateYellow">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> DAN74TECH MEDIA. All operational vectors secured.</p>
-        <p class="text-xs mt-1">Lead Systems Architecture by Daniel Ngumi | Meru, Kenya</p>
+    <main class="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
+        <div class="max-w-md w-full bg-white rounded-3xl border border-gray-100 p-8 floating-panel space-y-6">
+            
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-blue-50 text-[#0044ff] rounded-2xl flex items-center justify-center text-xl mx-auto">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 id="panelTitle" class="text-2xl font-extrabold text-gray-900 tracking-tight">Administrative Login</h1>
+                <p id="panelSubtitle" class="text-xs text-gray-500 font-medium">Enter secure clearance credentials to access the master operations console.</p>
+            </div>
+
+            <div id="authAlert" class="hidden p-3 rounded-xl text-xs font-bold text-center font-mono transition-all"></div>
+
+            <form id="loginForm" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Admin Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="loginEmail" required placeholder="admin@dan74tech.com" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold tracking-wider text-gray-400 uppercase font-mono">Secure Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="loginPassword" required placeholder="••••••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-3 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#0044ff] transition-colors">
+                            <i id="loginEyeIcon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginBtn" class="w-full bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider py-4 rounded-xl shadow-lg shadow-blue-600/10 transition-all font-mono uppercase mt-4">
+                    Verify Clearance & Enter <i class="fa-solid fa-key ml-1"></i>
+                </button>
+            </form>
+
+        </div>
+    </main>
+
+    <footer class="w-full relative z-10 bg-[#0b0f19] text-gray-400 py-6 border-t border-gray-900 text-center text-[11px] font-mono">
+        &copy; 2026 DAN74TECH MEDIA. Systems Security Protocol Node. Status: <span class="text-emerald-500">Secure</span>
     </footer>
 
     <script>
-        // API Base Vector Mapping
-        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:10000/api' 
-            : 'https://dan74techweb.onrender.com/api';
+        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
 
-        // Pre-Flight Session Check: Redirect immediately if already logged in
-        window.onload = () => {
-            const token = localStorage.getItem('dan74tech_token');
-            const userNode = localStorage.getItem('dan74tech_user');
-            if (token && userNode) {
-                window.location.href = 'admin.html';
-            }
-        };
+        // --- DOM Elements ---
+        const loginForm = document.getElementById('loginForm');
+        const authAlert = document.getElementById('authAlert');
 
-        // UI View Toggles
-        const toggleAuth = (view) => {
-            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
-            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
-            hideAlert(); // Clear any existing errors when switching views
-        };
-
-        // Alert System
-        const showAlert = (message, isSuccess = false) => {
-            const alertBox = document.getElementById('alert-box');
-            alertBox.innerText = message;
-            alertBox.className = `absolute top-0 left-0 w-full p-3 text-xs font-bold text-center text-white transition-all z-10 ${isSuccess ? 'bg-green-600' : 'bg-actionRed'}`;
-            alertBox.classList.remove('hide');
-            setTimeout(hideAlert, 5000);
-        };
-
-        const hideAlert = () => {
-            document.getElementById('alert-box').classList.add('hide');
-        };
-
-        const setButtonLoading = (btnId, spinnerId, isLoading) => {
-            const btn = document.getElementById(btnId);
-            const spinner = document.getElementById(spinnerId);
-            if (isLoading) {
-                btn.disabled = true;
-                btn.classList.add('opacity-75', 'cursor-not-allowed');
-                spinner.classList.remove('hide');
+        // --- UI Interactions ---
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-                spinner.classList.add('hide');
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
-        };
+        }
 
-        // Universal Network Interceptor
-        const authApiCall = async (endpoint, payload) => {
+        function showPanelAlert(message, type = 'error') {
+            authAlert.className = `p-3 rounded-xl text-xs font-bold text-center font-mono transition-all mb-4 ${type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'}`;
+            authAlert.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'} mr-2"></i>${message}`;
+            authAlert.classList.remove('hidden');
+        }
+        
+        // --- Token Serialization & Redirection Engine ---
+        function processAuthenticationSuccess(data) {
+            // 1. Vaporize all ghost sessions
+            localStorage.clear(); 
+            
+            // 2. Establish persistent session context
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            // Admin system compatibility keys
+            localStorage.setItem('dan74_admin_token', data.token);
+            localStorage.setItem('dan74_admin_user', JSON.stringify(data.user));
+            
+            console.log("Admin session validated. Initializing Master Operations Console.");
+            window.location.href = 'admin.html'; 
+        }
+
+        // --- Authentication Login Pipeline ---
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            authAlert.classList.add('hidden');
+            const btn = document.getElementById('loginBtn');
+            const originalText = btn.innerHTML;
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
             try {
-                const response = await fetch(`${API_BASE}${endpoint}`, {
+                btn.innerHTML = 'Verifying Credentials... <i class="fa-solid fa-circle-notch fa-spin ml-1"></i>';
+                btn.disabled = true;
+
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ email, password })
                 });
-                
+
                 const data = await response.json();
-                
-                // Blueprint Enforcement: Handle specific rate limiting / block errors
-                if (!response.ok) {
-                    throw new Error(data.error || data.message || 'Authentication vector compromised. Try again.');
-                }
-                return data;
-            } catch (error) {
-                throw error;
-            }
-        };
 
-        // Complete Session & Redirect
-        const authorizeSessionAndRedirect = (jwt, user) => {
-            localStorage.setItem('dan74tech_token', jwt);
-            localStorage.setItem('dan74tech_user', JSON.stringify(user));
-            showAlert('Authentication successful. Routing to operations portal...', true);
-            
-            // Allow user to read success message before redirecting
-            setTimeout(() => {
-                window.location.href = 'admin.html'; // STRICT REDIRECT TO CLIENT PORTAL ONLY
-            }, 800);
-        };
-
-        // ---------------------------------------------------------
-        // Form Submission Handlers
-        // ---------------------------------------------------------
-
-        // Login Handler
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideAlert();
-            setButtonLoading('btn-login', 'spinner-login', true);
-
-            const payload = {
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-password').value
-            };
-
-            try {
-                const res = await authApiCall('/auth/login', payload);
-                if (res.success) {
-                    authorizeSessionAndRedirect(res.token, res.user);
+                if (response.ok && data.token) {
+                    // Enforce structural admin checkpoint on client side
+                    const userRole = String(data.user?.role || '').trim().toLowerCase();
+                    
+                    if (userRole === 'admin') {
+                        showPanelAlert("Handshake complete. Routing to Master Console...", "success");
+                        setTimeout(() => processAuthenticationSuccess(data), 800);
+                    } else {
+                        throw new Error("Access Denied: Terminal restricted to system administrators.");
+                    }
+                } else {
+                    throw new Error(data.error || data.message || "Authentication clearance denied.");
                 }
             } catch (err) {
-                showAlert(err.message);
-                setButtonLoading('btn-login', 'spinner-login', false);
+                showPanelAlert(err.message, "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         });
 
-        // Registration Handler
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideAlert();
-            setButtonLoading('btn-register', 'spinner-register', true);
-
-            const payload = {
-                name: document.getElementById('reg-name').value,
-                email: document.getElementById('reg-email').value,
-                phone: document.getElementById('reg-phone').value,
-                password: document.getElementById('reg-password').value
-            };
-
+        // --- Newsletter Pipeline Engine ---
+        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(formSubmissionEvent) {
+            formSubmissionEvent.preventDefault();
+            const emailInput = this.querySelector('input[type="email"]').value;
+            
             try {
-                const res = await authApiCall('/auth/register', payload);
-                if (res.success) {
-                    // Alert users to check their email based on Phase 3 notification triggers
-                    showAlert('Profile initialized. Routing to operations portal...', true);
-                    setTimeout(() => {
-                        authorizeSessionAndRedirect(res.token, res.user);
-                    }, 1000);
+                const response = await fetch('/api/subscribers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailInput, status: 'active' })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert("✅ Subscription confirmed for DAN74TECH MEDIA updates.");
+                    this.reset();
+                } else {
+                    alert("Notice: " + (result.error || "Subscription already exists."));
                 }
             } catch (err) {
-                showAlert(err.message);
-                setButtonLoading('btn-register', 'spinner-register', false);
+                console.error("Submission Failure:", err);
+                alert("Pipeline error. Please try again later.");
             }
         });
     </script>
