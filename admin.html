@@ -12,27 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <script>
-        // STRICT JWT VALIDATION WALL - Executes instantly to prevent unauthorized DOM rendering
-        (function() {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                window.location.href = '/logini.html';
-                return;
-            }
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const payload = JSON.parse(window.atob(base64));
-                if (payload.role !== 'admin') {
-                    alert('CRITICAL ACCESS ERROR: Administrative clearance required.');
-                    window.location.href = '/client.html';
-                }
-            } catch (err) {
-                localStorage.removeItem('authToken');
-                window.location.href = '/login.html';
-            }
-        })();
-
         tailwind.config = {
             theme: {
                 extend: {
@@ -47,7 +26,10 @@
                             borderSlate: '#e2e8f0',
                             textDark: '#0f172a',
                             textMuted: '#64748b'
-                        }
+                        },
+                        brandBlue: '#0044ff',
+                        brandRed: '#ff2a2a',
+                        facebookBg: '#f0f2f5'
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
@@ -81,113 +63,157 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        
+        /* Utility classes for view toggling */
+        .view-hidden { display: none !important; }
+        .view-flex { display: flex !important; }
     </style>
 </head>
-<body class="h-screen overflow-hidden flex bg-brand-slateBg">
+<body class="h-screen overflow-hidden flex bg-brand-slateBg w-full antialiased">
 
-    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-5 right-5 z-[200] flex flex-col gap-3 max-w-sm pointer-events-none"></div>
 
-    <aside class="w-72 bg-brand-panelWhite border-r border-brand-borderSlate flex flex-col justify-between h-full flex-shrink-0">
-        <div>
-            <div class="p-6 border-b border-brand-borderSlate flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center shadow-md shadow-blue-200">
-                    <i class="fa-solid fa-layer-group text-white text-lg"></i>
+    <div id="admin-login-view" class="fixed inset-0 z-[100] flex flex-col min-h-screen bg-facebookBg font-sans view-flex">
+        <header class="w-full relative z-10 border-b border-gray-800 bg-[#0b0f19]/80 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3 group focus:outline-none">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brandBlue to-brandRed p-[2px]">
+                        <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                            <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-lg font-extrabold text-white font-mono tracking-wider">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Enterprise Control Login</span>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-sm font-extrabold tracking-tight text-brand-textDark font-mono uppercase">DAN74TECH MEDIA</h1>
-                    <p class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Enterprise Matrix v2.0.6</p>
-                </div>
+                <a href="index.html" class="text-sm font-bold text-gray-300 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Back to Hub</a>
             </div>
-
-            <nav class="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)]">
-                <button onclick="switchModule('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm">
-                    <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard
-                </button>
-                
-                <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Core Directories</div>
-                <button onclick="switchModule('users')" id="nav-users" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-users text-sm"></i> Users Directory
-                </button>
-                <button onclick="switchModule('services')" id="nav-services" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-cubes text-sm"></i> System Services
-                </button>
-                <button onclick="switchModule('sub_services')" id="nav-sub_services" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-sitemap text-sm"></i> Sub-Services
-                </button>
-
-                <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Operations Matrix</div>
-                <button onclick="switchModule('orders')" id="nav-orders" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-basket-shopping text-sm"></i> Client Orders
-                </button>
-                <button onclick="switchModule('invoices')" id="nav-invoices" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Billing Ledgers
-                </button>
-                <button onclick="switchModule('consultations')" id="nav-consultations" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-user-tie text-sm"></i> Consultations
-                </button>
-
-                <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Showcases & CMS</div>
-                <button onclick="switchModule('portfolio')" id="nav-portfolio" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-briefcase text-sm"></i> Creative Portfolio
-                </button>
-                <button onclick="switchModule('case_studies')" id="nav-case_studies" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-receipt text-sm"></i> Case Studies
-                </button>
-                <button onclick="switchModule('blog_posts')" id="nav-blog_posts" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-terminal text-sm"></i> Technical Logs
-                </button>
-                <button onclick="switchModule('testimonials')" id="nav-testimonials" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-comment-dots text-sm"></i> Audit Appraisals
-                </button>
-
-                <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Communications</div>
-                <button onclick="switchModule('client_communications')" id="nav-client_communications" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-comments text-sm"></i> Secure Chat threads
-                </button>
-                <button onclick="switchModule('support_tickets')" id="nav-support_tickets" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-ticket text-sm"></i> Support Tickets
-                </button>
-                <button onclick="switchModule('subscribers')" id="nav-subscribers" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-envelope-open-text text-sm"></i> Subscribers Pool
-                </button>
-                <button onclick="switchModule('broadcast')" id="nav-broadcast" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
-                    <i class="fa-solid fa-bullhorn text-sm"></i> Mass Broadcast Engine
-                </button>
-            </nav>
-        </div>
-
-        <div class="p-4 border-t border-brand-borderSlate bg-slate-50 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-full bg-brand-orange/10 flex items-center justify-center border border-brand-orange/20">
-                    <i class="fa-solid fa-user-shield text-brand-orange text-sm"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-brand-textDark font-mono">D. Ngumi</h4>
-                    <p class="text-[10px] text-brand-textMuted font-mono">Super Admin</p>
-                </div>
-            </div>
-            <button onclick="executeLogoutSequence()" class="p-2 text-brand-textMuted hover:text-brand-red transition-colors" title="Purge Token session">
-                <i class="fa-solid fa-power-off text-sm"></i>
-            </button>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
-        
-        <header class="h-20 bg-brand-panelWhite border-b border-brand-borderSlate flex items-center justify-between px-8 flex-shrink-0">
-            <div>
-                <h2 id="activeWorkspaceTitle" class="text-base font-extrabold text-brand-textDark font-mono uppercase tracking-wider">Dashboard Matrix Analytics</h2>
-                <p id="activeWorkspaceSubtitle" class="text-xs text-brand-textMuted">Operational status, network telemetry, and live pipeline indicators.</p>
-            </div>
-            <div id="workspaceContextualActions" class="flex items-center gap-3">
-                </div>
         </header>
 
-        <div id="workspaceContentViewport" class="flex-1 p-8 overflow-y-auto">
+        <section class="flex-grow flex items-center justify-center p-6">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-4 border-brandBlue relative overflow-hidden">
+                <div class="text-center mb-8 flex flex-col items-center">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-brandBlue to-brandRed p-[2px] shadow-sm mb-3">
+                        <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center overflow-hidden">
+                            <img src="images/logo.png" alt="Logo" class="w-10 h-10 object-contain" onerror="this.src='https://placehold.co/100?text=D74'">
+                        </div>
+                    </div>
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h1>
+                    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Admin Operations Matrix</p>
+                </div>
+                
+                <form id="login-form" class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Administrator Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-sm font-medium transition">
+                    <button type="submit" id="admin-login-btn" class="w-full bg-brandBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-[15px]">Initialize Secure Session</button>
+                </form>
             </div>
-    </main>
+        </section>
+    </div>
 
-    <div id="structuralActionModalPortal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="admin-dashboard-view" class="w-full h-full flex view-hidden">
+        <aside class="w-72 bg-brand-panelWhite border-r border-brand-borderSlate flex flex-col justify-between h-full flex-shrink-0">
+            <div>
+                <div class="p-6 border-b border-brand-borderSlate flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center shadow-md shadow-blue-200">
+                        <i class="fa-solid fa-layer-group text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold tracking-tight text-brand-textDark font-mono uppercase">DAN74TECH MEDIA</h1>
+                        <p class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Enterprise Matrix v2.0.6</p>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)]">
+                    <button onclick="switchModule('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-sm">
+                        <i class="fa-solid fa-chart-pie text-sm"></i> Dashboard
+                    </button>
+                    
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Core Directories</div>
+                    <button onclick="switchModule('users')" id="nav-users" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-users text-sm"></i> Users Directory
+                    </button>
+                    <button onclick="switchModule('services')" id="nav-services" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-cubes text-sm"></i> System Services
+                    </button>
+                    <button onclick="switchModule('sub_services')" id="nav-sub_services" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-sitemap text-sm"></i> Sub-Services
+                    </button>
+
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Operations Matrix</div>
+                    <button onclick="switchModule('orders')" id="nav-orders" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-basket-shopping text-sm"></i> Client Orders
+                    </button>
+                    <button onclick="switchModule('invoices')" id="nav-invoices" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Billing Ledgers
+                    </button>
+                    <button onclick="switchModule('consultations')" id="nav-consultations" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-user-tie text-sm"></i> Consultations
+                    </button>
+
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Showcases & CMS</div>
+                    <button onclick="switchModule('portfolio')" id="nav-portfolio" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-briefcase text-sm"></i> Creative Portfolio
+                    </button>
+                    <button onclick="switchModule('case_studies')" id="nav-case_studies" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-receipt text-sm"></i> Case Studies
+                    </button>
+                    <button onclick="switchModule('blog_posts')" id="nav-blog_posts" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-terminal text-sm"></i> Technical Logs
+                    </button>
+                    <button onclick="switchModule('testimonials')" id="nav-testimonials" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-comment-dots text-sm"></i> Audit Appraisals
+                    </button>
+
+                    <div class="pt-4 pb-2 px-4 text-[10px] font-extrabold uppercase text-brand-textMuted tracking-widest font-mono">Communications</div>
+                    <button onclick="switchModule('client_communications')" id="nav-client_communications" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-comments text-sm"></i> Secure Chat threads
+                    </button>
+                    <button onclick="switchModule('support_tickets')" id="nav-support_tickets" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-ticket text-sm"></i> Support Tickets
+                    </button>
+                    <button onclick="switchModule('subscribers')" id="nav-subscribers" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-envelope-open-text text-sm"></i> Subscribers Pool
+                    </button>
+                    <button onclick="switchModule('broadcast')" id="nav-broadcast" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark">
+                        <i class="fa-solid fa-bullhorn text-sm"></i> Mass Broadcast Engine
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-brand-borderSlate bg-slate-50 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-brand-orange/10 flex items-center justify-center border border-brand-orange/20">
+                        <i class="fa-solid fa-user-shield text-brand-orange text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-brand-textDark font-mono" id="admin-user-display-name">Admin</h4>
+                        <p class="text-[10px] text-brand-textMuted font-mono">Super Admin</p>
+                    </div>
+                </div>
+                <button onclick="executeLogoutSequence()" class="p-2 text-brand-textMuted hover:text-brand-red transition-colors" title="Purge Token session">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            <header class="h-20 bg-brand-panelWhite border-b border-brand-borderSlate flex items-center justify-between px-8 flex-shrink-0">
+                <div>
+                    <h2 id="activeWorkspaceTitle" class="text-base font-extrabold text-brand-textDark font-mono uppercase tracking-wider">Dashboard Matrix Analytics</h2>
+                    <p id="activeWorkspaceSubtitle" class="text-xs text-brand-textMuted">Operational status, network telemetry, and live pipeline indicators.</p>
+                </div>
+                <div id="workspaceContextualActions" class="flex items-center gap-3">
+                </div>
+            </header>
+
+            <div id="workspaceContentViewport" class="flex-1 p-8 overflow-y-auto">
+            </div>
+        </main>
+    </div>
+
+    <div id="structuralActionModalPortal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] flex items-center justify-center hidden opacity-0 transition-all duration-300">
         <div class="bg-brand-panelWhite w-full max-w-2xl rounded-2xl shadow-xl border border-brand-borderSlate overflow-hidden transform scale-95 transition-all duration-300">
             <div class="px-6 py-4 border-b border-brand-borderSlate bg-slate-50 flex items-center justify-between">
                 <h3 id="modalInterfaceTitle" class="text-xs font-extrabold font-mono uppercase text-brand-textDark tracking-wider">Modify Structure Entry</h3>
@@ -218,7 +244,110 @@
             cachedRecords: []
         };
 
+        // =========================================================================================
+        // SECURITY GATEWAY & NATIVE AUTH PIPELINE
+        // =========================================================================================
+        
+        function enforceSecurityClearance() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return renderLoginView();
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(window.atob(base64));
+                if (payload.role !== 'admin') {
+                    pushSystemOperationalToast('CRITICAL ACCESS ERROR: Administrative clearance required.', 'error');
+                    localStorage.removeItem('authToken');
+                    return renderLoginView();
+                }
+                document.getElementById('admin-user-display-name').innerText = payload.name || 'Admin';
+                renderDashboardView();
+            } catch (err) {
+                localStorage.removeItem('authToken');
+                renderLoginView();
+            }
+        }
+
+        function renderLoginView() {
+            document.getElementById('admin-dashboard-view').classList.add('view-hidden');
+            document.getElementById('admin-dashboard-view').classList.remove('view-flex');
+            document.getElementById('admin-login-view').classList.remove('view-hidden');
+            document.getElementById('admin-login-view').classList.add('view-flex');
+        }
+
+        function renderDashboardView() {
+            document.getElementById('admin-login-view').classList.add('view-hidden');
+            document.getElementById('admin-login-view').classList.remove('view-flex');
+            document.getElementById('admin-dashboard-view').classList.remove('view-hidden');
+            document.getElementById('admin-dashboard-view').classList.add('view-flex');
+            
+            // Re-initialize core system state dynamically when access is granted
+            loadDashboardStats();
+            switchModule('dashboard');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check clearance on DOM initialization
+            enforceSecurityClearance();
+
+            // Intercept Internal Admin Form Dispatch Event
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    const btn = document.getElementById('admin-login-btn');
+                    
+                    const origText = btn.innerText;
+                    btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Authenticating Matrix...';
+                    btn.disabled = true;
+
+                    try {
+                        const response = await fetch(`${API_BASE}/api/auth/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok || !data.success) {
+                            throw new Error(data.message || data.error || 'Authentication sequence failed.');
+                        }
+                        
+                        // Strict Admin validation rule check
+                        if (data.user.role !== 'admin') {
+                            throw new Error('Unauthorized Access: Strict Admin clearance parameter required.');
+                        }
+                        
+                        localStorage.setItem('authToken', data.token);
+                        pushSystemOperationalToast("Admin session authenticated securely.", "success");
+                        loginForm.reset();
+                        enforceSecurityClearance();
+
+                    } catch (err) {
+                        pushSystemOperationalToast(err.message, "error");
+                    } finally {
+                        btn.innerHTML = origText;
+                        btn.disabled = false;
+                    }
+                });
+            }
+        });
+
+        // DESTRUCTION TERMINATION LOGOUT PIPELINE SEQUENCE
+        function executeLogoutSequence() {
+            localStorage.removeItem('authToken');
+            pushSystemOperationalToast("Session destruction routine executed successfully. Re-routing initialization path.", "info");
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 800);
+        }
+
+        // =========================================================================================
         // METADATA SCHEMATIC DEFINITIONS ENGINE (Direct Schema Alignment Mirror)
+        // =========================================================================================
         const MODULE_REGISTRY = {
             users: {
                 endpoint: 'users',
@@ -311,7 +440,7 @@
                 ]
             },
             blog_posts: {
-                endpoint: 'blogs', // Direct Backend Route Redirection
+                endpoint: 'blogs', 
                 label: 'Technical Engineering Logs',
                 hasFiles: true,
                 columns: ['id', 'title', 'category', 'created_at'],
@@ -407,7 +536,6 @@
             const token = localStorage.getItem('authToken');
             let headers = { 'Authorization': `Bearer ${token}` };
             
-            // STRICT INTERCEPT FIX: Let browser implicitly apply appropriate form boundary strings
             if (!isMultipart) {
                 headers['Content-Type'] = 'application/json';
             }
@@ -433,7 +561,6 @@
             
             if (method === 'DELETE' || response.status === 204) return { success: true };
             
-            // Special handling for dynamic formats (e.g. dynamic invoice generation pipelines)
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.includes("application/pdf")) {
                 return await response.blob();
@@ -441,12 +568,6 @@
 
             return await response.json();
         }
-
-        // SYSTEM INITIALIZATION ROUTINE HOOK HOOKS
-        document.addEventListener('DOMContentLoaded', () => {
-            loadDashboardStats();
-            switchModule('dashboard');
-        });
 
         // NOTIFICATION FRAMEWORK TOAST ENGINE PIPELINE
         function pushSystemOperationalToast(message, type = 'success') {
@@ -469,7 +590,7 @@
             setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
             setTimeout(() => {
                 toast.classList.add('translate-y-[-10px]', 'opacity-0');
-                setTimeout(() => { toast.remove(); }, 300);
+                setTimeout(() => { toast.remove(); }, 4000);
             }, 4000);
         }
 
@@ -477,7 +598,6 @@
         function switchModule(moduleKey) {
             appState.module = moduleKey;
             
-            // Re-render sidebar active navigation styles
             document.querySelectorAll('aside nav button').forEach(btn => {
                 btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all text-brand-textMuted hover:bg-slate-100 hover:text-brand-textDark";
             });
@@ -486,7 +606,6 @@
                 targetNav.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all bg-brand-blue text-white shadow-md shadow-blue-100";
             }
 
-            // Sync Header text tracks
             const titleNode = document.getElementById('activeWorkspaceTitle');
             const subNode = document.getElementById('activeWorkspaceSubtitle');
             const actionNode = document.getElementById('workspaceContextualActions');
@@ -526,11 +645,9 @@
             `;
 
             try {
-                // Bulk query tables via specific loop handles to map out counts safely
                 const targetTables = ['users', 'orders', 'services', 'invoices', 'support_tickets', 'subscribers', 'consultations'];
                 let dashboardMetricsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">`;
                 
-                // Process metrics concurrently to avoid request latency
                 const promises = targetTables.map(async (table) => {
                     try {
                         let endpoint = table === 'blog_posts' ? '/api/blogs' : `/api/${table}`;
@@ -569,7 +686,6 @@
 
                 dashboardMetricsHtml += `</div>`;
 
-                // Add System Operational Parameters Card Grid System
                 dashboardMetricsHtml += `
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="bg-brand-panelWhite border border-brand-borderSlate p-6 rounded-2xl shadow-sm">
@@ -623,7 +739,6 @@
             `;
 
             try {
-                // Read from structured backend API routes matrix mapping keys
                 const rawRecords = await fetchSecure(meta.endpoint);
                 appState.cachedRecords = Array.isArray(rawRecords) ? rawRecords : (rawRecords.data ? rawRecords.data : []);
                 
@@ -637,7 +752,6 @@
                     return;
                 }
 
-                // Compile tabular grid layout system dynamically
                 let datagridHtml = `
                     <div class="bg-brand-panelWhite rounded-2xl border border-brand-borderSlate shadow-sm overflow-hidden">
                         <div class="overflow-x-auto">
@@ -661,7 +775,6 @@
                         datagridHtml += `<td class="px-6 py-4 text-brand-textDark font-medium font-sans">${value}</td>`;
                     });
 
-                    // Generate action arrays context controls based on item metadata references
                     datagridHtml += `
                         <td class="px-6 py-4 text-right space-x-1 whitespace-nowrap">
                             ${meta.endpoint === 'invoices' ? `
@@ -710,7 +823,6 @@
 
             let recordMatch = mode === 'edit' ? appState.cachedRecords.find(r => r.id === recordId) : null;
 
-            // Generate HTML input structural fields matching configuration parameters
             meta.fields.forEach(f => {
                 let inputContainer = `<div class="${f.type === 'textarea' ? 'sm:col-span-2' : ''} flex flex-col gap-1.5">
                     <label class="text-[10px] font-extrabold uppercase font-mono tracking-wider text-brand-textMuted">${f.label}${f.required && mode === 'create' ? ' <span class="text-brand-red">*</span>' : ''}</label>`;
@@ -736,7 +848,7 @@
                 } else {
                     let reqAttr = (f.required && mode === 'create') ? 'required' : '';
                     let placeholderVal = f.placeholder || '';
-                    if (f.type === 'password' && mode === 'edit') reqAttr = ''; // Unrequire passwords on update operations
+                    if (f.type === 'password' && mode === 'edit') reqAttr = ''; 
                     
                     inputContainer += `<input type="${f.type}" name="${f.name}" value="${f.type === 'password' ? '' : curVal}" ${reqAttr} placeholder="${placeholderVal}" class="w-full bg-slate-50 border border-brand-borderSlate rounded-xl px-4 py-3 text-xs text-brand-textDark focus:outline-none focus:border-brand-blue focus:bg-white transition-all font-sans">`;
                 }
@@ -745,7 +857,6 @@
                 stack.insertAdjacentHTML('beforeend', inputContainer);
             });
 
-            // Trigger structural rendering of CSS visibility animations
             const portal = document.getElementById('structuralActionModalPortal');
             portal.classList.remove('hidden');
             setTimeout(() => {
@@ -754,7 +865,6 @@
             }, 50);
         }
 
-        // CLOSE ACTIVE STRUCTURAL ACTION WINDOW MODAL ENGINE
         function closeActiveModalWindow() {
             const portal = document.getElementById('structuralActionModalPortal');
             portal.classList.add('opacity-0');
@@ -766,7 +876,6 @@
             }, 300);
         }
 
-        // FORM TRANSACTION DATA ASSEMBLY PIPE CONTROLLER SUBMIT WRITE
         async function executeWriteSubmitPipeline(e) {
             e.preventDefault();
             const meta = MODULE_REGISTRY[appState.module];
@@ -787,7 +896,6 @@
 
                 let responseObj;
                 if (meta.hasFiles) {
-                    // VALIDATION FIX: Scrub empty text files out of multi-part payloads during edit mode to safeguard database pointers
                     if (appState.mode === 'edit') {
                         meta.fields.forEach(field => {
                             if (field.type === 'file') {
@@ -801,7 +909,6 @@
                     responseObj = await fetchSecure(endpoint, method, formData, true);
                 } else {
                     const plainPayloadObj = Object.fromEntries(formData.entries());
-                    // Secure field pruning: eliminate blank password inputs from the mapping block to maintain structural logic
                     if (appState.mode === 'edit' && plainPayloadObj.password === '') {
                         delete plainPayloadObj.password;
                     }
@@ -819,7 +926,6 @@
             }
         }
 
-        // COMPILATION SOFT DELETION PURGE CONTROL INTERCEPT SIGNAL
         async function executeSoftPurgeSequence(dbTableKey, entityRecordId) {
             if (!confirm(`CRITICAL DELETION WARNING: Initialize soft-delete isolation sequence for structural record node reference #${entityRecordId}?`)) return;
             try {
@@ -831,7 +937,6 @@
             }
         }
 
-        // FINANCIAL INVOICE PDF EXTRACTION DATA PIPELINE CONTROLLER
         async function triggerInvoiceDownloadPipeline(invoiceEntityId) {
             pushSystemOperationalToast("Accessing server routing maps to isolate ledger PDF binary tracks...", "info");
             try {
@@ -850,7 +955,6 @@
             }
         }
 
-        // MASS MARKETING AND BROADCAST COMMUNICATION INTERFACE ENGINE
         function renderBroadcastInterface() {
             const viewport = document.getElementById('workspaceContentViewport');
             viewport.innerHTML = `
@@ -883,7 +987,6 @@
             `;
         }
 
-        // MASS BROADCAST TRANSMISSION ROUTING EXECUTION DISPATCHER
         async function executeMassBroadcastOperation(e) {
             e.preventDefault();
             const btn = document.getElementById('broadcastSubmissionButtonText');
@@ -906,14 +1009,6 @@
             }
         }
 
-        // DESTRUCTION TERMINATION LOGOUT PIPELINE SEQUENCE
-        function executeLogoutSequence() {
-            localStorage.removeItem('authToken');
-            pushSystemOperationalToast("Session destruction routine executed successfully. Re-routing initialization path.", "info");
-            setTimeout(() => {
-                window.location.href = '/login.html';
-            }, 800);
-        }
     </script>
 </body>
 </html>
