@@ -3,1341 +3,637 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA - Unified Client Matrix Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>DAN74TECH MEDIA | Client Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { 
+                        corporateYellow: '#FFD700', 
+                        professionalBlue: '#0044FF', 
+                        actionRed: '#FF2A2A', 
+                        darkFooter: '#111827', 
+                        facebookBg: '#F0F2F5',
+                        fbCard: '#FFFFFF'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="/socket.io/socket.io.js"></script>
-    
     <style>
-        :root {
-            --primary: #0044FF;
-            --primary-hover: #0033CC;
-            --accent-danger: #FF2A2A;
-            --accent-success: #10B981;
-            --accent-warning: #F59E0B;
-            --bg-main: #0A0F24;
-            --bg-card: #111827;
-            --bg-sidebar: #0D132A;
-            --text-main: #F3F4F6;
-            --text-muted: #9CA3AF;
-            --border-color: #1F2937;
-            --glass-glow: rgba(0, 68, 255, 0.15);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            overflow: hidden;
-            height: 100vh;
-        }
-
-        /* --- AUTH MATRIX OVERLAY --- */
-        #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; widht: 100%; height: 100%;
-            width: 100%; height: 100%;
-            background: rgba(6, 9, 22, 0.95);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 0 30px var(--glass-glow);
-            padding: 40px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        .auth-logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-        }
-        .auth-subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .form-input {
-            width: 100%;
-            background: #1F2937;
-            border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 68, 255, 0.3);
-        }
-        .auth-btn {
-            width: 100%;
-            background: var(--primary);
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 12px;
-        }
-        .auth-btn:hover { background: var(--primary-hover); }
-        .auth-toggle {
-            margin-top: 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .auth-toggle span { color: var(--primary); font-weight: 600; }
-
-        /* --- APP CONTAINER LAYOUT --- */
-        #app-matrix {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        /* --- SIDEBAR SYSTEM --- */
-        .sidebar {
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 24px 16px;
-        }
-        .brand-node {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 800;
-            color: #fff;
-            padding: 0 8px;
-        }
-        .brand-node span { color: var(--primary); }
-        .nav-cluster {
-            margin-top: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .nav-item:hover, .nav-item.active {
-            background: var(--primary);
-            color: #fff;
-        }
-        .nav-item i { font-size: 16px; }
-        .user-pill {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .user-info-summary {
-            display: flex;
-            flex-direction: column;
-            max-width: 140px;
-        }
-        .user-info-summary .profile-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .user-info-summary .profile-role {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .logout-trigger {
-            color: var(--accent-danger);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .logout-trigger:hover { background: rgba(255, 42, 42, 0.1); }
-
-        /* --- MAIN VIEWPORT MATRIX --- */
-        .viewport {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: var(--bg-main);
-        }
-        .top-header {
-            height: 70px;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-        }
-        .view-title { font-size: 18px; font-weight: 700; color: #fff; }
-        .content-frame {
-            flex-grow: 1;
-            padding: 32px;
-            overflow-y: auto;
-            display: none;
-        }
-        .content-frame.active { display: block; }
-
-        /* --- FACEBOOK-STYLE NEWS FEED SYSTEM --- */
-        .feed-container {
-            max-width: 680px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .composer-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-        }
-        .composer-header {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .composer-avatar {
-            width: 40px; height: 40px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: #fff;
-        }
-        .composer-trigger-input {
-            flex-grow: 1;
-            background: #1F2937;
-            border: none;
-            border-radius: 20px;
-            padding: 12px 20px;
-            color: var(--text-muted);
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .post-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 14px;
-        }
-        .post-meta-block { display: flex; gap: 12px; align-items: center; }
-        .author-meta { display: flex; flex-direction: column; }
-        .author-name { font-size: 14px; font-weight: 600; color: #fff; }
-        .post-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        .entity-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-        }
-        .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
-        .badge-portfolio { background: rgba(0, 68, 255, 0.15); color: var(--primary); }
-        .badge-case_study { background: rgba(245, 158, 11, 0.15); color: var(--accent-warning); }
+        body { background-color: #F0F2F5 !important; color: #050505 !important; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
+        .hide { display: none !important; }
+        .scroll-clean::-webkit-scrollbar { width: 8px; }
+        .scroll-clean::-webkit-scrollbar-track { background: transparent; }
+        .scroll-clean::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 10px; }
+        .main-height { min-height: calc(100vh - 56px); }
+        .sticky-col { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; }
         
-        .post-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #fff; line-height: 1.4; }
-        .post-content { font-size: 14px; color: #D1D5DB; line-height: 1.6; word-wrap: break-word; }
-        .post-media {
-            width: 100%;
-            max-height: 350px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 14px;
-            border: 1px solid var(--border-color);
-        }
-        .post-stats-strip {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0 4px;
-            margin-top: 14px;
-            border-top: 1px solid var(--border-color);
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .post-actions-strip {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border-top: 1px solid var(--border-color);
-            padding-top: 8px;
-            margin-top: 4px;
-        }
-        .feed-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .feed-action-btn:hover { background: #1F2937; color: #fff; }
-        .feed-action-btn.liked { color: var(--primary); }
-
-        /* --- COMMUNITY ENCRYPTED ROSTER & CHAT PANEL --- */
-        .chat-view-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            height: calc(100vh - 70px);
-            margin: -32px;
-        }
-        .roster-panel {
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        .panel-search-box {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .roster-header-title {
-            padding: 16px 16px 8px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-        .roster-list { display: flex; flex-direction: column; }
-        .roster-user-node {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 20px;
-            border-bottom: 1px solid rgba(31, 41, 55, 0.4);
-            cursor: pointer;
-            transition: background 0.2s;
-            position: relative;
-        }
-        .roster-user-node:hover { background: rgba(255,255,255,0.02); }
-        .roster-user-node.active { background: rgba(0, 68, 255, 0.08); border-left: 4px solid var(--primary); }
-        
-        .avatar-frame {
-            position: relative;
-            width: 42px; height: 42px;
-            background: #374151;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; color: #fff;
-        }
-        .status-dot {
-            position: absolute;
-            bottom: 2px; right: 2px;
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            border: 2px solid var(--bg-sidebar);
-            background: #9CA3AF;
-        }
-        .status-dot.online { background: var(--accent-success); }
-        
-        .node-details { display: flex; flex-direction: column; gap: 2px; }
-        .node-name { font-size: 14px; font-weight: 600; color: #fff; }
-        .node-status-text { font-size: 12px; color: var(--text-muted); }
-
-        /* --- ACTIVE CHAT FRAME --- */
-        .chat-workspace {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background: var(--bg-main);
-        }
-        .active-client-header {
-            padding: 16px 24px;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .client-profile-summary {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .profile-meta-left { display: flex; align-items: center; gap: 14px; }
-        .client-card-expanded {
-            background: rgba(31, 41, 55, 0.5);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            font-size: 13px;
-        }
-        .meta-pill { display: flex; flex-direction: column; gap: 4px; }
-        .meta-pill label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 600; }
-        .meta-pill span { color: #fff; font-weight: 500; }
-
-        .message-history-pane {
-            flex-grow: 1;
-            padding: 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            background: radial-gradient(circle at 50% 50%, #0e1635 0%, var(--bg-main) 100%);
-        }
-        .msg-bubble-wrapper { display: flex; width: 100%; }
-        .msg-bubble-wrapper.outgoing { justify-content: flex-end; }
-        .msg-bubble-wrapper.incoming { justify-content: flex-start; }
-        
-        .msg-bubble {
-            max-width: 60%;
-            padding: 12px 16px;
-            border-radius: 14px;
-            font-size: 14px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            position: relative;
-        }
-        .msg-bubble-wrapper.outgoing .msg-bubble {
-            background: var(--primary);
-            color: #fff;
-            border-bottom-right-radius: 2px;
-        }
-        .msg-bubble-wrapper.incoming .msg-bubble {
-            background: var(--bg-card);
-            color: #E5E7EB;
-            border-1px solid var(--border-color);
-            border-bottom-left-radius: 2px;
-        }
-        .msg-timestamp {
-            font-size: 10px;
-            color: rgba(255,255,255,0.5);
-            margin-top: 4px;
-            text-align: right;
-            display: block;
-        }
-        .msg-bubble-wrapper.incoming .msg-timestamp { color: var(--text-muted); }
-        
-        .chat-input-container {
-            padding: 16px 24px;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-        }
-        .chat-form { display: flex; gap: 12px; }
-        .chat-input-field {
-            flex-grow: 1;
-            background: #1F2937;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px 16px;
-            color: #fff;
-            font-size: 14px;
-        }
-        .chat-input-field:focus { outline: none; border-color: var(--primary); }
-        .chat-send-btn {
-            background: var(--primary);
-            border: none;
-            color: #fff;
-            width: 48px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px;
-            transition: background 0.2s;
-        }
-        .chat-send-btn:hover { background: var(--primary-hover); }
-        
-        .empty-chat-placeholder {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; color: var(--text-muted); gap: 16px; text-align: center;
-        }
-        .empty-chat-placeholder i { font-size: 48px; color: #1F2937; }
-
-        /* --- PROFILE CONFIGURATION ENGINE --- */
-        .profile-settings-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px;
-        }
-
-        /* --- ORDERS & INVOICES GRID --- */
-        .data-table-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        table {
-            width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;
-        }
-        th { background: #1F2937; color: var(--text-muted); padding: 14px 16px; font-weight: 600; }
-        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); color: #E5E7EB; }
-        .status-pill-ui {
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; text-transform: uppercase;
-        }
-        .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--accent-success); }
-        .status-unpaid { background: rgba(255, 42, 42, 0.2); color: var(--accent-danger); }
-        .action-download-btn {
-            color: var(--primary); cursor: pointer; background: transparent; border: none; font-weight: 600;
-        }
-        .action-download-btn:hover { text-decoration: underline; }
-
-        /* --- CONTENT MODAL POOLS --- */
-        .modal {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 10000;
-        }
-        .modal-content {
-            background: var(--bg-card); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;
-            width: 100%; max-width: 500px;
-        }
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #828df8; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
-<body>
+<body class="antialiased flex flex-col min-h-screen">
 
-    <div id="auth-overlay">
-        <div class="auth-card" id="login-form-node">
-            <div class="auth-logo">DAN74TECH <span>MEDIA</span></div>
-            <div class="auth-subtitle">Unified Production Enterprise Token Matrix</div>
-            <form id="execute-login-form">
-                <div class="form-group">
-                    <label>Corporate Account Email</label>
-                    <input type="email" id="login-email" class="form-input" required placeholder="name@dan74tech.com">
+    <section id="auth-section" class="flex-grow flex items-center justify-center p-6 bg-facebookBg">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-t-4 border-professionalBlue">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-professionalBlue tracking-tight">DAN74TECH MEDIA</h1>
+                <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Client Authorization Matrix</p>
+            </div>
+            <div id="login-view">
+                <form id="login-form" class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-lg">Log In</button>
+                </form>
+                <hr class="my-6 border-gray-300">
+                <div class="text-center">
+                    <button onclick="toggleAuth('register')" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition shadow-md">Create New Account</button>
                 </div>
-                <div class="form-group">
-                    <label>Cryptographic Access Key</label>
-                    <input type="password" id="login-password" class="form-input" required placeholder="••••••••">
+            </div>
+            <div id="register-view" class="hide">
+                <form id="register-form" class="space-y-4">
+                    <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-lg">Establish Clearance</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline text-sm">Already have an account?</a>
                 </div>
-                <button type="submit" class="auth-btn">Authorize Verification</button>
-            </form>
-            <div class="auth-toggle" onclick="toggleAuthView(true)">Need an account? <span>Register Clearance</span></div>
+            </div>
         </div>
+    </section>
 
-        <div class="auth-card" id="register-form-node" style="display: none;">
-            <div class="auth-logo">DAN74TECH <span>MEDIA</span></div>
-            <div class="auth-subtitle">Create Client Environment Pipeline</div>
-            <form id="execute-register-form">
-                <div class="form-group">
-                    <label>Full Legal Designation Name</label>
-                    <input type="text" id="reg-name" class="form-input" required placeholder="John Doe">
-                </div>
-                <div class="form-group">
-                    <label>Primary Operational Email</label>
-                    <input type="email" id="reg-email" class="form-input" required placeholder="client@domain.com">
-                </div>
-                <div class="form-group">
-                    <label>Secure Keyphrase Password</label>
-                    <input type="password" id="reg-password" class="form-input" required placeholder="••••••••">
-                </div>
-                <div class="form-group">
-                    <label>Mobile Communication Line</label>
-                    <input type="text" id="reg-phone" class="form-input" required placeholder="+254790435584">
-                </div>
-                <button type="submit" class="auth-btn">Initialize Node Registration</button>
-            </form>
-            <div class="auth-toggle" onclick="toggleAuthView(false)">Existing profile? <span>Login Gateway</span></div>
-        </div>
-    </div>
-
-    <div id="app-matrix" style="display: none;">
+    <section id="dashboard-section" class="flex-grow hide flex flex-col h-screen overflow-hidden">
         
-        <div class="sidebar">
-            <div>
-                <div class="brand-node">DAN74TECH <span>MEDIA</span></div>
-                <div class="nav-cluster">
-                    <div class="nav-item active" onclick="switchView('feed-view', this)">
-                        <i class="fa-solid fa-house-chimney"></i> News Feed
-                    </div>
-                    <div class="nav-item" onclick="switchView('chat-view', this)">
-                        <i class="fa-solid fa-comments"></i> Community Roster
-                    </div>
-                    <div class="nav-item" onclick="switchView('orders-view', this)">
-                        <i class="fa-solid fa-receipt"></i> Orders & Ledger
-                    </div>
-                    <div class="nav-item" onclick="switchView('settings-view', this)">
-                        <i class="fa-solid fa-gears"></i> Profile Settings
-                    </div>
+        <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-2 w-1/4">
+                <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow text-xl">D</div>
+                <div class="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-2 text-sm w-64 border border-transparent focus-within:border-gray-300 transition">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 mr-2"></i>
+                    <input type="text" placeholder="Search Matrix..." class="bg-transparent outline-none w-full text-gray-700">
                 </div>
             </div>
 
-            <div class="user-pill">
-                <div class="user-info-summary">
-                    <span class="profile-name" id="global-nav-user-name">Loading...</span>
-                    <span class="profile-role" id="global-nav-user-role">Client Node</span>
-                </div>
-                <div class="logout-trigger" onclick="logoutSessionAccount()" title="Terminate Vector Session">
-                    <i class="fa-solid fa-power-off"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="viewport">
-            <div class="top-header">
-                <div class="view-title" id="viewport-title-node">Operational News Feed</div>
-                <div style="font-size: 12px; font-weight:700; color: var(--primary);">SYSTEM INTEGRATION: ONLINE</div>
+            <div class="flex justify-center gap-2 w-2/4 h-full">
+                <button onclick="switchTab('feed')" id="tab-feed" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-professionalBlue text-professionalBlue">
+                    <i class="fa-solid fa-house text-2xl"></i>
+                </button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-solid fa-briefcase text-2xl"></i>
+                </button>
+                <button onclick="switchTab('messages')" id="tab-messages" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-brands fa-facebook-messenger text-2xl relative">
+                        <span id="nav-msg-badge" class="absolute -top-1.5 -right-2 bg-actionRed text-white text-[10px] px-1.5 rounded-full hide border-2 border-white font-bold">0</span>
+                    </i>
+                </button>
             </div>
 
-            <div id="feed-view" class="content-frame active">
-                <div class="feed-container">
-                    <div class="composer-card">
-                        <div class="composer-header">
-                            <div class="composer-avatar" id="composer-avatar-init">U</div>
-                            <div class="composer-trigger-input" onclick="openPublishModal()">What is on your mind? Share content entry...</div>
+            <div class="flex items-center justify-end gap-3 w-1/4">
+                <div class="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 cursor-pointer transition">
+                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 border border-gray-200" id="user-avatar-node"></div>
+                    <span id="user-greeting" class="text-sm font-semibold text-gray-800 hidden lg:block"></span>
+                </div>
+                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition text-lg" title="Sever Connection"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </nav>
+
+        <div class="flex-grow bg-facebookBg flex justify-center max-w-[1600px] mx-auto w-full">
+            
+            <div class="hidden lg:block w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-sm" id="left-avatar"></div>
+                        <span class="font-semibold text-gray-900" id="left-name">Loading...</span>
+                    </div>
+                    <div onclick="switchTab('feed')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <i class="fa-solid fa-user-group text-blue-500 w-8 text-center text-xl"></i>
+                        <span class="font-medium text-gray-900">Community Feed</span>
+                    </div>
+                    <div onclick="switchTab('orders')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <i class="fa-solid fa-clock-rotate-left text-blue-500 w-8 text-center text-xl"></i>
+                        <span class="font-medium text-gray-900">My Deployments</span>
+                    </div>
+                    <div class="border-b border-gray-300 my-2"></div>
+                    <h3 class="text-gray-500 font-semibold px-2 py-1 text-sm">Services Overview</h3>
+                    <div id="sidebar-services-list" class="space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="w-full max-w-[680px] flex-shrink-0 px-2 sm:px-8 py-6 sticky-col scroll-clean" id="main-content-area">
+                
+                <div id="view-feed" class="w-full">
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
+                        <div class="flex gap-2 items-center border-b border-gray-200 pb-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold" id="publisher-avatar"></div>
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-base px-4 py-2.5 rounded-full transition">What's on your mind, <span id="pub-greeting"></span>?</button>
+                        </div>
+                        <div class="flex justify-between pt-3 px-2">
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-pen-nib text-blue-500 text-lg"></i> Blog Entry</button>
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-briefcase text-green-500 text-lg"></i> Case Study</button>
                         </div>
                     </div>
-                    <div id="global-facebook-stream"></div>
-                </div>
-            </div>
 
-            <div id="chat-view" class="content-frame">
-                <div class="chat-view-grid">
-                    <div class="roster-panel">
-                        <div class="panel-search-box">
-                            <input type="text" class="form-input" style="font-size: 13px; padding:8px 12px;" placeholder="Search corporate users..." onkeyup="filterRosterNodes(this.value)">
+                    <div id="global-feed-stream" class="space-y-4">
+                        <div class="text-center text-sm text-gray-500 font-semibold py-10"><i class="fa-solid fa-circle-notch animate-spin mr-2 text-xl"></i>Synchronizing Feed...</div>
+                    </div>
+                </div>
+
+                <div id="view-orders" class="w-full hide">
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden mb-6">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="font-bold text-xl text-gray-900">My Deployments</h2>
+                            <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-professionalBlue text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
                         </div>
-                        <div class="roster-header-title">Active Communications Network</div>
-                        <div class="roster-list" id="community-users-roster-target"></div>
+                        <div class="p-0 overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                                    <tr><th class="px-6 py-4">Order ID</th><th class="px-6 py-4">Service</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Payment</th></tr>
+                                </thead>
+                                <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-messages" class="w-full hide h-[calc(100vh-140px)] flex flex-col bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+                    <div id="chat-overlay" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-brands fa-facebook-messenger text-6xl mb-4 text-professionalBlue opacity-20"></i>
+                        <p class="font-medium text-gray-600">Select a contact from the right sidebar to start messaging.</p>
+                    </div>
+
+                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-4 bg-white shadow-sm z-10 flex-shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-md" id="active-chat-avatar">--</div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-base leading-tight" id="active-chat-title">--</h3>
+                                <p class="text-xs text-green-500 font-medium flex items-center gap-1" id="active-chat-status"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Matrix standby</p>
+                            </div>
+                        </div>
+                        <div class="text-xs font-semibold text-gray-500 flex items-center gap-1"><i class="fa-solid fa-lock text-gray-400"></i> E2EE Active</div>
                     </div>
                     
-                    <div class="chat-workspace">
-                        <div id="chat-workspace-active-header" class="active-client-header" style="display: none;">
-                            <div class="client-profile-summary">
-                                <div class="profile-meta-left">
-                                    <div class="avatar-frame" id="active-chat-avatar-node">M</div>
-                                    <div>
-                                        <div class="node-name" id="active-chat-name-node">Selected Client Profile</div>
-                                        <div class="node-status-text" id="active-chat-status-node">Status Vector Monitoring</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="client-card-expanded">
-                                <div class="meta-pill"><label>System Entity ID</label><span id="card-expanded-id">N/A</span></div>
-                                <div class="meta-pill"><label>Account Security Clearance</label><span id="card-expanded-clearance">Client Vector</span></div>
-                                <div class="meta-pill"><label>Presence Verification</label><span id="card-expanded-presence">Offline Stack</span></div>
-                            </div>
-                        </div>
-
-                        <div class="message-history-pane" id="chat-message-stream-target">
-                            <div class="empty-chat-placeholder">
-                                <i class="fa-solid fa-user-shield"></i>
-                                <div>Select an active client node from the left operational grid roster<br><small style="color:var(--text-muted);">End-to-End Encrypted Blind Relay Channels Active</small></div>
-                            </div>
-                        </div>
-
-                        <div class="chat-input-container" id="chat-input-container-tray" style="display: none;">
-                            <form class="chat-form" id="chat-messaging-form-executor">
-                                <input type="text" id="chat-inline-input-payload" class="chat-input-field" placeholder="Type transmission payload message..." autocomplete="off" required>
-                                <button type="submit" class="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
-                            </form>
-                        </div>
+                    <div id="chat-window-timeline" class="flex-grow p-4 overflow-y-auto scroll-clean flex flex-col gap-2 bg-white"></div>
+                    
+                    <div id="typing-indicator-node" class="px-6 py-1 text-xs text-gray-400 font-medium hide flex items-center gap-2 bg-white flex-shrink-0">
+                        Node is composing <div class="typing-indicator"><span></span><span></span><span></span></div>
+                    </div>
+                    
+                    <div class="p-3 border-t border-gray-200 bg-white flex-shrink-0">
+                        <form id="unified-chat-form" class="flex items-center gap-2">
+                            <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Aa" required autocomplete="off" class="flex-grow bg-gray-100 border border-transparent rounded-full px-4 py-2 text-[15px] outline-none focus:border-gray-300 transition">
+                            <button type="submit" class="text-professionalBlue hover:text-blue-700 w-10 h-10 rounded-full flex justify-center items-center transition text-xl"><i class="fa-solid fa-paper-plane"></i></button>
+                        </form>
                     </div>
                 </div>
+
             </div>
 
-            <div id="orders-view" class="content-frame">
-                <h3 style="margin-bottom: 20px; font-weight: 700;">Account Transaction Logs</h3>
-                <div class="data-table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order Sequence</th>
-                                <th>Service Strategy</th>
-                                <th>Financial Valuation</th>
-                                <th>Workflow Status</th>
-                                <th>Payment Clearance</th>
-                                <th>Invoice Ledger</th>
-                            </tr>
-                        </thead>
-                        <tbody id="client-orders-table-body-target">
-                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Querying database records...</td></tr>
-                        </tbody>
-                    </table>
+            <div class="hidden lg:flex w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean flex-col">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <h3 class="text-gray-500 font-semibold text-sm">Contacts</h3>
+                    <div class="flex gap-2 text-gray-400">
+                        <i class="fa-solid fa-video cursor-pointer hover:bg-gray-200 p-1.5 rounded-full transition"></i>
+                        <i class="fa-solid fa-magnifying-glass cursor-pointer hover:bg-gray-200 p-1.5 rounded-full transition"></i>
+                    </div>
                 </div>
-            </div>
-
-            <div id="settings-view" class="content-frame">
-                <div class="profile-settings-wrapper">
-                    <h3 style="margin-bottom: 6px; font-weight:700;">Profile Configuration Management</h3>
-                    <p style="color:var(--text-muted); font-size:13px; margin-bottom: 24px;">Modify entity variables bound to this operational environment pipeline.</p>
-                    <form id="profile-update-engine-form">
-                        <div class="form-group">
-                            <label>Identified Full Profile Name</label>
-                            <input type="text" id="settings-name" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Corporate Link Email (Read-Only Matrix)</label>
-                            <input type="email" id="settings-email" class="form-input" readonly style="opacity: 0.6; cursor: not-allowed;">
-                        </div>
-                        <div class="form-group">
-                            <label>Phone Contact Record Vector</label>
-                            <input type="text" id="settings-phone" class="form-input" required>
-                        </div>
-                        <button type="submit" class="auth-btn" style="margin-top: 12px;">Update Variable Configuration</button>
-                    </form>
+                <div id="community-roster-list" class="flex-grow space-y-1">
+                    <div class="text-center text-xs text-gray-400 py-10">Decrypting directory...</div>
                 </div>
             </div>
 
         </div>
+    </section>
+
+    <div id="publish-modal" class="hide fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center relative">
+                <div class="w-8"></div>
+                <h3 class="font-bold text-xl text-gray-900 text-center flex-grow">Create Post</h3>
+                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="w-9 h-9 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="new-publish-form" class="p-4 space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold" id="modal-avatar"></div>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-[15px] text-gray-900" id="modal-username">User Node</span>
+                        <select id="pub-target" class="text-xs bg-gray-200 font-semibold rounded px-2 py-1 outline-none text-gray-700 cursor-pointer mt-0.5 w-fit border border-transparent focus:border-gray-400">
+                            <option value="blog">Tech Blog</option>
+                            <option value="case_studies">Case Study</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="text" id="pub-title" placeholder="Designation / Title" required class="w-full text-lg font-bold outline-none placeholder-gray-400 border-none px-0 mt-2">
+                <textarea id="pub-content" rows="4" placeholder="What's on your mind?" required class="w-full text-lg outline-none resize-none placeholder-gray-400 border-none px-0"></textarea>
+                
+                <div class="border border-gray-300 rounded-lg p-3 flex justify-between items-center shadow-sm">
+                    <span class="font-semibold text-gray-900 text-sm">Add to your post</span>
+                    <div class="flex gap-4 text-2xl">
+                        <i class="fa-solid fa-image text-green-500 cursor-pointer"></i>
+                        <i class="fa-solid fa-user-tag text-blue-500 cursor-pointer"></i>
+                        <i class="fa-solid fa-location-dot text-red-500 cursor-pointer"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition shadow text-[15px]">Post</button>
+            </form>
+        </div>
     </div>
 
-    <div id="publish-content-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 16px; font-weight:700; color:#fff;">Publish Global Feed Post</h3>
-            <form id="publish-feed-modal-form">
-                <div class="form-group">
-                    <label>Target Channel Matrix</label>
-                    <select id="publish-target" class="form-input" style="background:#1F2937;">
-                        <option value="blog">Blog Stream Content</option>
-                        <option value="case_study">Operational Case Study</option>
+    <div id="order-modal" class="hide fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <div class="w-8"></div>
+                <h3 class="font-bold text-xl text-gray-900 text-center flex-grow">New Deployment</h3>
+                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="w-9 h-9 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="new-order-form" class="p-5 space-y-4">
+                <div>
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Target Service</label>
+                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue" required>
+                        <option value="">Select Service...</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Publication Title Header</label>
-                    <input type="text" id="publish-title" class="form-input" required placeholder="Enter strategic title...">
+                <div id="sub-service-container" class="hide">
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Specific Package</label>
+                    <select id="ord-sub-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue">
+                        <option value="">Select Package...</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label>Body Context Content</label>
-                    <textarea id="publish-body" class="form-input" rows="5" required placeholder="Type operational content logic details..." style="resize: none; font-family:inherit;"></textarea>
+                <div>
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Operational Details</label>
+                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-base outline-none resize-none focus:border-professionalBlue" placeholder="Provide system requirements..." required></textarea>
                 </div>
-                <div style="display:flex; gap:12px; margin-top:20px;">
-                    <button type="button" class="auth-btn" style="background:#4B5563;" onclick="closePublishModal()">Abort Link</button>
-                    <button type="submit" class="auth-btn">Broadcast Execution</button>
-                </div>
+                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow text-lg mt-2">Submit Request</button>
             </form>
         </div>
     </div>
 
     <script>
-        let socketNode = null;
-        let authenticatedUser = null;
-        let globalToken = null;
-        let activeChatRecipientId = null;
-        let cachedRosterArray = [];
+        const API_BASE = window.location.hostname.includes('localhost') ? 'http://localhost:10000/api' : 'https://dan74techweb.onrender.com/api'; 
+        let token = localStorage.getItem('dan74tech_token');
+        let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
+        let socket = null;
+        let activeTab = 'feed';
+        let targetChatId = null;
+        let typingTimeout = null;
+        let globalCatalog = []; 
 
-        // App Initializer Sequence
-        window.addEventListener('DOMContentLoaded', () => {
-            globalToken = localStorage.getItem('dan74tech_token');
-            const savedUser = localStorage.getItem('dan74tech_user');
-            
-            if (globalToken && savedUser) {
-                authenticatedUser = JSON.parse(savedUser);
-                initializeAuthenticatedSession();
+        const CryptoEngine = {
+            async getSharedKey(peerId) {
+                const secret = `dan74tech_e2ee_matrix_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), {name: "PBKDF2"}, false, ["deriveKey"]);
+                return crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+            },
+            async encrypt(plaintext, peerId) {
+                const key = await this.getSharedKey(peerId);
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const enc = new TextEncoder();
+                const ciphertextBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
+                return { ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))), iv: btoa(String.fromCharCode(...iv)), wrapped_key: "sys_derived_sym_key" };
+            },
+            async decrypt(ciphertextB64, ivB64, peerId) {
+                try {
+                    const key = await this.getSharedKey(peerId);
+                    const ciphertext = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
+                    const iv = new Uint8Array(atob(ivB64).split('').map(c => c.charCodeAt(0)));
+                    const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
+                    return new TextDecoder().decode(decryptedBuffer);
+                } catch (e) { return "🔒 [Decryption Failed]"; }
             }
-        });
+        };
 
-        function toggleAuthView(showRegister) {
-            document.getElementById('login-form-node').style.display = showRegister ? 'none' : 'block';
-            document.getElementById('register-form-node').style.display = showRegister ? 'block' : 'none';
-        }
+        const toggleAuth = (view) => {
+            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
+            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
+        };
 
-        // Authentication Submission Hooks
-        document.getElementById('execute-login-form').addEventListener('submit', async (e) => {
+        const setViewState = () => {
+            if (token && userNode) {
+                document.getElementById('auth-section').classList.add('hide');
+                document.getElementById('dashboard-section').classList.remove('hide');
+                
+                const initials = userNode.name.charAt(0).toUpperCase();
+                const firstName = userNode.name.split(' ')[0];
+                
+                document.getElementById('user-greeting').innerText = userNode.name;
+                document.getElementById('left-name').innerText = userNode.name;
+                document.getElementById('pub-greeting').innerText = firstName;
+                
+                ['user-avatar-node', 'left-avatar', 'modal-avatar', 'publisher-avatar'].forEach(id => {
+                    document.getElementById(id).innerText = initials;
+                });
+                
+                document.getElementById('modal-username').innerText = userNode.name;
+                
+                switchTab('feed');
+                initSockets();
+                fetchOrdersCatalog(); 
+                fetchCommunityRoster(); 
+            } else {
+                document.getElementById('auth-section').classList.remove('hide');
+                document.getElementById('dashboard-section').classList.add('hide');
+            }
+        };
+
+        const apiCall = async (endpoint, method = 'GET', body = null) => {
+            const config = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
+            if (body) config.body = JSON.stringify(body);
+            const res = await fetch(`${API_BASE}${endpoint}`, config);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "System Error");
+            return data;
+        };
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const result = await response.json();
-                if (!response.ok || !result.success) throw new Error(result.message || "Credential configuration verification breakdown.");
-                
-                localStorage.setItem('dan74tech_token', result.token);
-                localStorage.setItem('dan74tech_user', JSON.stringify(result.user));
-                globalToken = result.token;
-                authenticatedUser = result.user;
-                
-                initializeAuthenticatedSession();
-            } catch (err) {
-                alert("🔒 Access Denied: " + err.message);
-            }
+                const data = await apiCall('/auth/login', 'POST', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value });
+                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
+            } catch(e) { alert(e.message); }
         });
 
-        document.getElementById('execute-register-form').addEventListener('submit', async (e) => {
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const phone = document.getElementById('reg-phone').value;
-
             try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, phone })
-                });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.error || "Registration validation conflict.");
-                
-                localStorage.setItem('dan74tech_token', result.token);
-                localStorage.setItem('dan74tech_user', JSON.stringify(result.user));
-                globalToken = result.token;
-                authenticatedUser = result.user;
-                
-                initializeAuthenticatedSession();
-            } catch (err) {
-                alert("❌ Entry Failure: " + err.message);
-            }
+                const data = await apiCall('/auth/register', 'POST', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, password: document.getElementById('reg-password').value });
+                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
+            } catch(e) { alert(e.message); }
         });
 
-        // Bootstrap Authenticated Instance
-        function initializeAuthenticatedSession() {
-            document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('app-matrix').style.display = 'grid';
-            
-            // Render Profile Identifiers
-            document.getElementById('global-nav-user-name').innerText = authenticatedUser.name;
-            document.getElementById('global-nav-user-role').innerText = `${authenticatedUser.role} node`;
-            document.getElementById('composer-avatar-init').innerText = authenticatedUser.name.charAt(0).toUpperCase();
-            
-            // Map settings pre-population values
-            document.getElementById('settings-name').value = authenticatedUser.name;
-            document.getElementById('settings-email').value = authenticatedUser.email;
-            document.getElementById('settings-phone').value = authenticatedUser.phone;
+        const logoutPipeline = () => { localStorage.removeItem('dan74tech_token'); localStorage.removeItem('dan74tech_user'); if(socket) socket.disconnect(); location.reload(); };
 
-            // Establish Socket Pipeline
-            initializeSocketCommunications();
+        const switchTab = (tab) => {
+            activeTab = tab;
+            ['feed', 'orders', 'messages'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.toggle('hide', t !== tab);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.classList.add('text-professionalBlue', 'border-professionalBlue');
+                    btn.classList.remove('text-gray-500', 'border-transparent');
+                } else {
+                    btn.classList.remove('text-professionalBlue', 'border-professionalBlue');
+                    btn.classList.add('text-gray-500', 'border-transparent');
+                }
+            });
+            if (tab === 'feed') fetchSocialFeed();
+            if (tab === 'orders') fetchUserOrders();
+        };
 
-            // Fire Global API Fetch Flows
-            fetchGlobalNewsFeedStream();
-            fetchCommunityRosterArray();
-            fetchClientOrdersLedger();
-        }
-
-        function logoutSessionAccount() {
-            if (confirm("Confirm standard execution checkout? Terminating operational token layer.")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        }
-
-        // View Switching Router Block
-        function switchView(viewId, navElement) {
-            document.querySelectorAll('.content-frame').forEach(frame => frame.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(viewId).classList.add('active');
-            navElement.classList.add('active');
-
-            // Format viewport textual heading indicator
-            let titlesMap = {
-                'feed-view': 'Operational News Feed',
-                'chat-view': 'Secure Cryptographic Communications Network',
-                'orders-view': 'Account Transactions Ledger',
-                'settings-view': 'Profile Matrix Preferences'
-            };
-            document.getElementById('viewport-title-node').innerText = titlesMap[viewId] || 'Workspace Dashboard';
-        }
-
-        // ========================================== -->
-        //     MODULE: RECONSTRUCTED FACEBOOK FEED    -->
-        // ========================================== -->
-        async function fetchGlobalNewsFeedStream() {
+        // --- FEED ---
+        async function fetchSocialFeed() {
             try {
-                const response = await fetch('/api/feed/global', {
-                    headers: { 'Authorization': `Bearer ${globalToken}` }
-                });
-                const posts = await response.json();
-                if (!response.ok) throw new Error("Feed array resolution mapping compromise.");
+                const feed = await apiCall('/feed/global');
+                const stream = document.getElementById('global-feed-stream');
+                stream.innerHTML = '';
                 
-                const streamTarget = document.getElementById('global-facebook-stream');
-                streamTarget.innerHTML = '';
-
-                if(posts.length === 0) {
-                    streamTarget.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No synchronized ledger postings found in current feed environment.</div>`;
+                if(feed.length === 0) {
+                    stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold bg-white rounded-xl shadow-sm border border-gray-200">No posts yet. Be the first to share!</div>`;
                     return;
                 }
-
-                posts.forEach(post => {
-                    const card = document.createElement('div');
-                    card.className = 'post-card';
+                
+                feed.forEach(post => {
+                    const typeLabel = post.type === 'portfolio' ? 'System Portfolio' : (post.type === 'blog' ? 'Tech Blog' : 'Case Study');
+                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full object-cover max-h-[500px]" onerror="this.style.display='none'">` : '';
+                    const authorName = post.author_name || 'DAN74TECH Master Core';
                     
-                    let typeBadgeClass = `badge-${post.type}`;
-                    let typeLabel = post.type.replace('_', ' ');
-                    let authorDisplay = post.author_name || "DAN74TECH SYSTEM SYSTEM";
-                    let dateDisplay = new Date(post.created_at).toLocaleString();
-
-                    let mediaHtml = post.media_url ? `<img src="${post.media_url}" class="post-media" alt="Attachment Graphic">` : '';
-
-                    card.innerHTML = `
-                        <div class="post-header">
-                            <div class="post-meta-block">
-                                <div class="avatar-frame" style="background: #1E293B; font-size:12px;">${authorDisplay.charAt(0).toUpperCase()}</div>
-                                <div class="author-meta">
-                                    <span class="author-name">${authorDisplay}</span>
-                                    <span class="post-date">${dateDisplay}</span>
+                    stream.innerHTML += `
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
+                        <div class="p-4 pb-2 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold">${authorName.charAt(0)}</div>
+                                <div>
+                                    <p class="font-semibold text-[15px] text-gray-900 leading-tight">${authorName} <span class="text-gray-500 text-[13px] font-normal">published a ${typeLabel}</span></p>
+                                    <div class="flex items-center gap-1 text-[13px] text-gray-500">
+                                        <span>${new Date(post.created_at).toLocaleDateString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</span> <i class="fa-solid fa-earth-americas text-[10px]"></i>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="entity-badge ${typeBadgeClass}">${typeLabel}</span>
+                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition"><i class="fa-solid fa-ellipsis"></i></button>
                         </div>
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-content">${post.content}</div>
-                        ${mediaHtml}
-                        <div class="post-stats-strip">
-                            <span><i class="fa-solid fa-thumbs-up" style="color:var(--primary);"></i> <span id="like-count-${post.type}-${post.id}">${post.likes_count || 0}</span> Reactions</span>
-                            <span>${post.views_count || 0} Vector Footprints</span>
+                        <div class="px-4 py-1 mb-2">
+                            <h4 class="font-bold text-[16px] text-gray-900">${post.title}</h4>
+                            <p class="text-[15px] text-gray-800 leading-snug mt-1">${post.content}</p>
                         </div>
-                        <div class="post-actions-strip">
-                            <button class="feed-action-btn" id="like-btn-${post.type}-${post.id}" onclick="executeInteractionTransmission('${post.id}', '${post.type}', 'like')">
-                                <i class="fa-regular fa-thumbs-up"></i> Like Matrix
-                            </button>
-                            <button class="feed-action-btn" onclick="alert('Insight vector tracking authenticated.')">
-                                <i class="fa-regular fa-lightbulb"></i> Analysis Insights
-                            </button>
+                        ${imgNode}
+                        <div class="px-4 py-2.5 flex items-center justify-between border-b border-gray-200 mx-4">
+                            <div class="flex items-center gap-1.5 text-[15px] text-gray-500"><div class="bg-professionalBlue w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] shadow-sm"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
                         </div>
-                    `;
-                    streamTarget.appendChild(card);
+                        <div class="px-4 py-1 mx-2 flex">
+                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-gray-600 font-semibold text-[15px] hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Like</button>
+                            <button class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-gray-600 font-semibold text-[15px] hover:bg-gray-100 transition"><i class="fa-regular fa-comment"></i> Comment</button>
+                        </div>
+                    </div>`;
                 });
-            } catch (err) {
-                console.error("Feed error stack resolution exception:", err);
-            }
+            } catch(e) { console.error("Feed Error:", e); }
         }
 
-        async function executeInteractionTransmission(entityId, entityType, action) {
-            try {
-                const response = await fetch('/api/feed/interact', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${globalToken}`
-                    },
-                    body: JSON.stringify({ entity_id: entityId, entity_type: entityType, action: action })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    let counter = document.getElementById(`like-count-${entityType}-${entityId}`);
-                    if(counter) {
-                        counter.innerText = parseInt(counter.innerText) + 1;
-                    }
-                    let btn = document.getElementById(`like-btn-${entityType}-${entityId}`);
-                    if(btn) {
-                        btn.classList.add('liked');
-                    }
-                }
-            } catch(err) {
-                console.error("Interaction block failure:", err);
-            }
-        }
+        async function triggerLike(id, type) { try { await apiCall('/feed/interact', 'POST', { entity_id: id, entity_type: type, action: 'like' }); fetchSocialFeed(); } catch(e){} }
 
-        function openPublishModal() { document.getElementById('publish-content-modal').style.display = 'flex'; }
-        function closePublishModal() { document.getElementById('publish-content-modal').style.display = 'none'; }
-
-        document.getElementById('publish-feed-modal-form').addEventListener('submit', async (e) => {
+        document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const target = document.getElementById('publish-target').value;
-            const title = document.getElementById('publish-title').value;
-            const content = document.getElementById('publish-body').value;
-
-            try {
-                const response = await fetch('/api/content/publish', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${globalToken}`
-                    },
-                    body: JSON.stringify({ target, title, content })
-                });
-                const result = await response.json();
-                if (!response.ok) throw new Error("Broadcast pipeline buffer reject.");
-                
-                alert("🚀 Post dispatched into operational staging queue for review approval.");
-                closePublishModal();
-                document.getElementById('publish-feed-modal-form').reset();
-                fetchGlobalNewsFeedStream();
-            } catch (err) {
-                alert("❌ Failure: " + err.message);
-            }
+            try { 
+                await apiCall('/content/publish', 'POST', { target: document.getElementById('pub-target').value, title: document.getElementById('pub-title').value, content: document.getElementById('pub-content').value }); 
+                document.getElementById('publish-modal').classList.add('hide'); 
+                document.getElementById('new-publish-form').reset();
+                alert('Post submitted and awaiting Admin clearance.'); 
+                fetchSocialFeed(); 
+            } catch(e) { alert(e.message); }
         });
 
-        // ========================================== -->
-        //       MODULE: ROSTER & CRYPTOGRAPHIC CHAT  -->
-        // ========================================== -->
-        async function fetchCommunityRosterArray() {
+        // --- CATALOG & ORDERS ---
+        async function fetchOrdersCatalog() {
             try {
-                const response = await fetch('/api/community/users', {
-                    headers: { 'Authorization': `Bearer ${globalToken}` }
-                });
-                const data = await response.json();
-                if(!response.ok) throw new Error("Roster database reference extraction crash.");
+                globalCatalog = await apiCall('/catalog/full');
+                const srvSelect = document.getElementById('ord-service');
+                const sidebarList = document.getElementById('sidebar-services-list');
                 
-                cachedRosterArray = data;
-                renderCommunityRosterNodes(cachedRosterArray);
-            } catch (err) {
-                console.error("Roster generation error:", err);
-            }
-        }
-
-        function renderCommunityRosterNodes(usersList) {
-            const listContainer = document.getElementById('community-users-roster-target');
-            listContainer.innerHTML = '';
-
-            // Filter self out of roster visualization link tree
-            const filtered = usersList.filter(u => u.id !== authenticatedUser.id);
-
-            filtered.forEach(user => {
-                const node = document.createElement('div');
-                node.className = `roster-user-node ${activeChatRecipientId === user.id ? 'active' : ''}`;
-                node.id = `roster-user-node-${user.id}`;
-                node.setAttribute('onclick', `initializeActiveChatWorkspace(${JSON.stringify(user)})`);
-
-                let statusDotClass = user.is_online ? 'online' : '';
-                let statusTextString = user.is_online ? 'Active Framework' : 'Cold Node Connection';
-
-                node.innerHTML = `
-                    <div class="avatar-frame">
-                        ${user.name.charAt(0).toUpperCase()}
-                        <span class="status-dot ${statusDotClass}" id="presence-dot-${user.id}"></span>
-                    </div>
-                    <div class="node-details">
-                        <span class="node-name">${user.name}</span>
-                        <span class="node-status-text" id="presence-text-${user.id}">${statusTextString}</span>
-                    </div>
-                `;
-                listContainer.appendChild(node);
-            });
-        }
-
-        function filterRosterNodes(queryString) {
-            let matches = cachedRosterArray.filter(u => u.name.toLowerCase().includes(queryString.toLowerCase()));
-            renderCommunityRosterNodes(matches);
-        }
-
-        // Load Expanded Dynamic Meta Details and Communication Matrix thread history
-        async function initializeActiveChatWorkspace(userNode) {
-            activeChatRecipientId = userNode.id;
-            
-            // Mark node line active in layout matrix
-            document.querySelectorAll('.roster-user-node').forEach(n => n.classList.remove('active'));
-            const selectedElement = document.getElementById(`roster-user-node-${userNode.id}`);
-            if(selectedElement) selectedElement.classList.add('active');
-
-            // Pre-populate header metrics block fields
-            document.getElementById('chat-workspace-active-header').style.display = 'block';
-            document.getElementById('chat-input-container-tray').style.display = 'block';
-            
-            document.getElementById('active-chat-name-node').innerText = userNode.name;
-            document.getElementById('active-chat-avatar-node').innerText = userNode.name.charAt(0).toUpperCase();
-            
-            // Map expanded metadata details fields dynamically
-            document.getElementById('card-expanded-id').innerText = `DN74-${userNode.id}`;
-            document.getElementById('card-expanded-presence').innerText = userNode.is_online ? 'ONLINE ENGINE' : 'STANDBY MODE';
-            document.getElementById('active-chat-status-node').innerText = userNode.is_online ? 'Synchronized E2EE Thread Pipe Ready' : 'Asynchronous Node Safe-Relay Enroute';
-
-            // Query message database ledger timeline
-            await loadSecureChatMessageTimelineHistory();
-        }
-
-        async function loadSecureChatMessageTimelineHistory() {
-            if(!activeChatRecipientId) return;
-            try {
-                const response = await fetch('/api/client-portal/thread', {
-                    headers: { 'Authorization': `Bearer ${globalToken}` }
-                });
-                const messages = await response.json();
-                if(!response.ok) throw new Error("Ledger communication mapping read violation.");
-
-                const messageStreamTarget = document.getElementById('chat-message-stream-target');
-                messageStreamTarget.innerHTML = '';
-
-                // Filter vectors matching conversational dialogue link array sequence
-                const directThread = messages.filter(m => 
-                    (m.sender_id === authenticatedUser.id && m.receiver_id === activeChatRecipientId) ||
-                    (m.sender_id === activeChatRecipientId && m.receiver_id === authenticatedUser.id)
-                );
-
-                if(directThread.length === 0) {
-                    messageStreamTarget.innerHTML = `
-                        <div class="empty-chat-placeholder">
-                            <i class="fa-solid fa-comment-medical"></i>
-                            <div>Conversation vector mapping is blank. Send an encrypted transmission payload below.</div>
-                        </div>`;
-                    return;
-                }
-
-                directThread.forEach(msg => {
-                    appendIndividualMessageBubbleNode(msg);
+                srvSelect.innerHTML = '<option value="">Select Service...</option>';
+                sidebarList.innerHTML = '';
+                
+                globalCatalog.forEach(srv => {
+                    srvSelect.innerHTML += `<option value="${srv.name}">${srv.name}</option>`;
+                    sidebarList.innerHTML += `<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition"><i class="${srv.icon || 'fa-solid fa-layer-group'} text-gray-500 w-8 text-center text-xl"></i><span class="font-medium text-gray-900 text-[15px]">${srv.name}</span></div>`;
                 });
                 
-                scrollMessagePaneToAbsoluteBottom();
-            } catch (err) {
-                console.error("Communication buffer compilation loop error:", err);
-            }
-        }
-
-        function appendIndividualMessageBubbleNode(messageObject) {
-            const pane = document.getElementById('chat-message-stream-target');
-            
-            // Clean dynamic structures preventing duplication
-            const placeholder = pane.querySelector('.empty-chat-placeholder');
-            if(placeholder) placeholder.remove();
-
-            const isOutgoing = (messageObject.sender_id === authenticatedUser.id);
-            const directionalClass = isOutgoing ? 'outgoing' : 'incoming';
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `msg-bubble-wrapper ${directionalClass}`;
-
-            // E2EE Simulation Fallback Unwrapping Parser Layer
-            let contextualCleartext = messageObject.ciphertext;
-            if (messageObject.iv) {
-                contextualCleartext = `🔒 [Decrypted Payload]: ${messageObject.ciphertext}`;
-            }
-
-            let dateNodeStr = new Date(messageObject.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            wrapper.innerHTML = `
-                <div class="msg-bubble">
-                    <div>${contextualCleartext}</div>
-                    <span class="msg-timestamp">${dateNodeStr}</span>
-                </div>
-            `;
-            pane.appendChild(wrapper);
-        }
-
-        function scrollMessagePaneToAbsoluteBottom() {
-            const pane = document.getElementById('chat-message-stream-target');
-            pane.scrollTop = pane.scrollHeight;
-        }
-
-        // Messaging Action Form Submit Controller Handler
-        document.getElementById('chat-messaging-form-executor').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if(!activeChatRecipientId) return;
-
-            const inputField = document.getElementById('chat-inline-input-payload');
-            const cleartextText = inputField.value.trim();
-            if(!cleartextText) return;
-
-            // Mock crypto padding wrappers conforming to schema structures
-            const artificialPayload = {
-                receiver_id: activeChatRecipientId,
-                ciphertext: cleartextText,
-                iv: "0x" + Math.random().toString(16).substring(2, 10),
-                sender_key: "wrapped_vector_sender_public_token",
-                receiver_key: "wrapped_vector_recipient_public_token"
-            };
-
-            try {
-                // REST API Dispatch Pipeline fallback tracking
-                const response = await fetch('/api/communications/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${globalToken}`
-                    },
-                    body: JSON.stringify(artificialPayload)
-                });
-                const result = await response.json();
-                if(!response.ok) throw new Error("REST system backup rejection frame.");
-
-                // Socket Real-time Relay Emittance Trigger
-                if(socketNode && socketNode.connected) {
-                    socketNode.emit('send_encrypted_message', artificialPayload);
-                }
-
-                appendIndividualMessageBubbleNode(result.data || {
-                    sender_id: authenticatedUser.id,
-                    receiver_id: activeChatRecipientId,
-                    ciphertext: cleartextText,
-                    created_at: new Date().toISOString()
-                });
-
-                inputField.value = '';
-                scrollMessagePaneToAbsoluteBottom();
-            } catch (err) {
-                console.error("Message execution dispatch fault exception:", err);
-            }
-        });
-
-        // ========================================== -->
-        //        MODULE: SOCKET COMMUNICATIONS PRESENCE-->
-        // ========================================== -->
-        function initializeSocketCommunications() {
-            socketNode = io({
-                autoConnect: true,
-                reconnection: true
-            });
-
-            socketNode.on('connect', () => {
-                console.log("📡 Connected to DAN74TECH Core Operations Matrix via WebSocket.");
-                socketNode.emit('join_thread', authenticatedUser.id);
-            });
-
-            // Handle real-time incoming communication relay payloads
-            socketNode.on('receive_encrypted_message', (incomingMessageNode) => {
-                if(activeChatRecipientId && (incomingMessageNode.sender_id === activeChatRecipientId || incomingMessageNode.receiver_id === activeChatRecipientId)) {
-                    appendIndividualMessageBubbleNode(incomingMessageNode);
-                    scrollMessagePaneToAbsoluteBottom();
-                }
-            });
-
-            // Intercept live core platform entity status state changes
-            socketNode.on('presence_update', (presencePayload) => {
-                const userId = presencePayload.userId;
-                const statusState = presencePayload.status;
-
-                // Mutate cached matrix entries models
-                let targetedUser = cachedRosterArray.find(u => u.id === userId);
-                if (targetedUser) {
-                    targetedUser.is_online = (statusState === 'online');
-                }
-
-                // Mutate view layout indicators
-                const dot = document.getElementById(`presence-dot-${userId}`);
-                const text = document.getElementById(`presence-text-${userId}`);
-                if (dot) {
-                    if (statusState === 'online') {
-                        dot.classList.add('online');
-                        if (text) text.innerText = 'Active Framework';
-                    } else {
-                        dot.classList.remove('online');
-                        if (text) text.innerText = 'Cold Node Connection';
-                    }
-                }
-
-                // If looking at this user, mutate expanded panel cards fields metrics
-                if(activeChatRecipientId === userId) {
-                    document.getElementById('card-expanded-presence').innerText = (statusState === 'online') ? 'ONLINE ENGINE' : 'STANDBY MODE';
-                    document.getElementById('active-chat-status-node').innerText = (statusState === 'online') ? 'Synchronized E2EE Thread Pipe Ready' : 'Asynchronous Node Safe-Relay Enroute';
-                }
-            });
-        }
-
-        // ========================================== -->
-        //      MODULE: ORDERS HISTORY DATA EXTRACTOR -->
-        // ========================================== -->
-        async function fetchClientOrdersLedger() {
-            try {
-                const response = await fetch(`/api/orders/user/${authenticatedUser.id}`, {
-                    headers: { 'Authorization': `Bearer ${globalToken}` }
-                });
-                const orders = await response.json();
-                if(!response.ok) throw new Error("Order mapping structural parse error.");
-
-                const tableBody = document.getElementById('client-orders-table-body-target');
-                tableBody.innerHTML = '';
-
-                if(orders.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No deployment orders assigned to this account vector.</td></tr>`;
-                    return;
-                }
-
-                orders.forEach(order => {
-                    const tr = document.createElement('tr');
+                // Dynamic Sub-service Logic
+                srvSelect.addEventListener('change', (e) => {
+                    const selSrv = globalCatalog.find(s => s.name === e.target.value);
+                    const subContainer = document.getElementById('sub-service-container');
+                    const subSelect = document.getElementById('ord-sub-service');
+                    subSelect.innerHTML = '<option value="">Select Package...</option>';
                     
-                    let paymentBadge = (order.payment_status === 'paid') ? 'status-paid' : 'status-unpaid';
-                    let priceVal = parseFloat(order.price || 0).toLocaleString();
-
-                    tr.innerHTML = `
-                        <td style="font-weight:700; color:var(--primary);">ORD-${order.id}</td>
-                        <td>${order.service}</td>
-                        <td style="font-weight:600;">Ksh ${priceVal}</td>
-                        <td><span class="status-pill-ui" style="background:#1F2937; color:#fff;">${order.status}</span></td>
-                        <td><span class="status-pill-ui ${paymentBadge}">${order.payment_status}</span></td>
-                        <td>
-                            <button class="action-download-btn" onclick="alert('Querying internal ledger structure token parameter verification...')">
-                                <i class="fa-solid fa-file-invoice-dollar"></i> Request Invoice
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(tr);
+                    if (selSrv && selSrv.packages && selSrv.packages.length > 0) {
+                        selSrv.packages.forEach(sub => { subSelect.innerHTML += `<option value="${sub.name}">${sub.name} - Ksh ${sub.price}</option>`; });
+                        subContainer.classList.remove('hide');
+                    } else {
+                        subContainer.classList.add('hide');
+                    }
                 });
-            } catch(err) {
-                console.error("Ledger rendering matrix loop compromise exception:", err);
+            } catch(e) { console.error("Catalog Error:", e); }
+        }
+
+        async function fetchUserOrders() {
+            try {
+                const orders = await apiCall(`/orders/user/${userNode.id}`);
+                const tb = document.getElementById('orders-registry-body');
+                tb.innerHTML = '';
+                if(orders.length === 0) tb.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 font-medium">You have no active deployments.</td></tr>`;
+                
+                orders.forEach(o => {
+                    const statClass = o.status === 'completed' ? 'text-green-600 bg-green-50' : (o.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 'text-blue-600 bg-blue-50');
+                    const payClass = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                    const subSrvText = o.sub_service && o.sub_service !== 'N/A' ? `<br><span class="text-xs text-gray-400 font-normal">${o.sub_service}</span>` : '';
+                    
+                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition border-b border-gray-100"><td class="px-6 py-4 font-bold text-gray-900">#ORD-${o.id}</td><td class="px-6 py-4 text-[15px] font-semibold text-gray-800">${o.service} ${subSrvText}</td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${statClass}">${o.status}</span></td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${payClass}">${o.payment_status}</span></td></tr>`;
+                });
+            } catch(e) { console.error("Orders Error:", e); }
+        }
+
+        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const payload = {
+                    user_id: userNode.id, customer_name: userNode.name, phone: userNode.phone || 'N/A',
+                    service: document.getElementById('ord-service').value,
+                    sub_service: document.getElementById('ord-sub-service').value || 'N/A',
+                    project_details: document.getElementById('ord-details').value
+                };
+                const res = await apiCall('/orders', 'POST', payload);
+                document.getElementById('order-modal').classList.add('hide');
+                document.getElementById('new-order-form').reset();
+                if(activeTab === 'orders') fetchUserOrders();
+                if(res.whatsapp_redirect) window.open(res.whatsapp_redirect, '_blank');
+            } catch (e) { alert("Deployment failed: " + e.message); }
+        });
+
+        // --- CHAT & SOCKETS ---
+        function initSockets() {
+            socket = io(API_BASE.replace('/api', ''));
+            socket.on('connect', () => { socket.emit('join_thread', userNode.id); });
+            socket.on('presence_update', () => { fetchCommunityRoster(); });
+            socket.on('receive_encrypted_message', async (msg) => {
+                if (targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
+                    await appendMsg(msg); scrollChat();
+                } else {
+                    const badge = document.getElementById('nav-msg-badge');
+                    badge.classList.remove('hide'); badge.innerText = parseInt(badge.innerText || 0) + 1;
+                }
+            });
+            socket.on('user_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.remove('hide'); });
+            socket.on('user_stopped_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.add('hide'); });
+        }
+
+        async function fetchCommunityRoster() {
+            try {
+                // Relies on the newly added backend route /api/community/users
+                const roster = await apiCall('/community/users');
+                const listNode = document.getElementById('community-roster-list');
+                listNode.innerHTML = '';
+                
+                const peers = roster.filter(u => u.id !== userNode.id);
+                if (peers.length === 0) { listNode.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">No other matrix nodes found.</div>'; return; }
+
+                peers.forEach(peer => {
+                    const isActive = targetChatId === peer.id;
+                    const statusDot = peer.is_online ? '<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>' : '';
+                    
+                    listNode.innerHTML += `
+                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition ${isActive ? 'bg-gray-200' : ''}">
+                        <div class="relative w-9 h-9 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center font-bold flex-shrink-0 border border-gray-200">
+                            ${peer.name.charAt(0)}
+                            ${statusDot}
+                        </div>
+                        <span class="font-medium text-[15px] text-gray-900 truncate flex-grow">${peer.name}</span>
+                    </div>`;
+                });
+            } catch(e) { 
+                console.error("Roster Error. Please ensure you updated server.js with /api/community/users", e); 
+                document.getElementById('community-roster-list').innerHTML = '<div class="text-xs text-red-500 p-2">Server endpoint missing. Add /api/community/users to server.js</div>';
             }
         }
 
-        // ========================================== -->
-        //     MODULE: INTEGRATED PROFILE SAVE ENGINE -->
-        // ========================================== -->
-        document.getElementById('profile-update-engine-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const updatedName = document.getElementById('settings-name').value;
-            const updatedPhone = document.getElementById('settings-phone').value;
+        async function openChat(peerId, peerName) {
+            targetChatId = peerId;
+            switchTab('messages'); // Auto-switch to messages view
+            document.getElementById('chat-overlay').classList.add('hide');
+            document.getElementById('active-chat-title').innerText = peerName;
+            document.getElementById('active-chat-avatar').innerText = peerName.charAt(0);
+            document.getElementById('nav-msg-badge').classList.add('hide'); document.getElementById('nav-msg-badge').innerText = '0';
+            
+            fetchCommunityRoster(); // Refresh active highlights
+            
+            const tl = document.getElementById('chat-window-timeline');
+            tl.innerHTML = '';
+            
+            try {
+                const thread = await apiCall('/client-portal/thread');
+                const filtered = thread.filter(m => (m.sender_id === peerId && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === peerId));
+                
+                // Add timestamp helper
+                let lastDate = null;
+                for (let m of filtered) { 
+                    const msgDate = new Date(m.created_at).toLocaleDateString();
+                    if(msgDate !== lastDate) {
+                        tl.innerHTML += `<div class="text-center my-2"><span class="text-[11px] text-gray-500 font-semibold uppercase">${msgDate}</span></div>`;
+                        lastDate = msgDate;
+                    }
+                    await appendMsg(m); 
+                }
+                scrollChat();
+            } catch(e) { console.error("Thread Load Error:", e); }
+        }
 
-            // Inform the client ecosystem that modifications route requires administrative sync configuration
-            alert("⚠️ Account parameters updated in local matrix cache layer. Submitting transactional update variables request payload upstream.");
+        async function appendMsg(m) {
+            const tl = document.getElementById('chat-window-timeline');
+            const isMe = m.sender_id === userNode.id;
+            const peerId = isMe ? m.receiver_id : m.sender_id;
+            const plaintext = await CryptoEngine.decrypt(m.ciphertext, m.iv, peerId);
             
-            // Re-bind instance parameters to memory definitions stack
-            authenticatedUser.name = updatedName;
-            authenticatedUser.phone = updatedPhone;
-            localStorage.setItem('dan74tech_user', JSON.stringify(authenticatedUser));
+            const layout = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-100 text-gray-900 border border-gray-200';
             
-            // Re-evaluate navbar nodes context identifiers
-            document.getElementById('global-nav-user-name').innerText = updatedName;
-            document.getElementById('composer-avatar-init').innerText = updatedName.charAt(0).toUpperCase();
+            tl.innerHTML += `<div class="max-w-[70%] px-4 py-2 text-[15px] rounded-[20px] shadow-sm flex flex-col ${layout}">
+                <span>${plaintext}</span>
+                <span class="text-[10px] opacity-75 mt-0.5 ${isMe ? 'text-right text-blue-200' : 'text-left text-gray-500'}">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+            </div>`;
+        }
+
+        function scrollChat() { const t=document.getElementById('chat-window-timeline'); t.scrollTop = t.scrollHeight; }
+
+        function emitTypingState() {
+            if(!targetChatId || !socket) return;
+            socket.emit('typing_start', { receiver_id: targetChatId });
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => socket.emit('typing_stop', { receiver_id: targetChatId }), 1500);
+        }
+
+        document.getElementById('unified-chat-form').addEventListener('submit', async(e) => {
+            e.preventDefault();
+            const inp = document.getElementById('chat-message-input');
+            const plaintext = inp.value.trim();
+            if(!plaintext || !targetChatId) return;
+            inp.value = '';
+            socket.emit('typing_stop', { receiver_id: targetChatId });
+            
+            try {
+                const encryptedPayload = await CryptoEngine.encrypt(plaintext, targetChatId);
+                const tempMsg = { sender_id: userNode.id, receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, created_at: new Date() };
+                await appendMsg(tempMsg); scrollChat();
+                
+                await apiCall('/communications/send', 'POST', { receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, sender_key: encryptedPayload.wrapped_key, receiver_key: encryptedPayload.wrapped_key });
+            } catch(e) { alert("Encryption Fault: " + e.message); }
         });
 
+        window.onload = setViewState;
     </script>
 </body>
 </html>
