@@ -739,99 +739,57 @@ app.post('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
 });
 
 // =========================================================================
-// ================= MODULE 18: CHAT & TELEMETRY COMMUNICATION ENGINE =======
-// =========================================================================
+// ================= MODULE 18: SECURE E2EE COMMUNICATION ENGINE =================
+
 io.on('connection', (socket) => {
-    console.log(`🔌 WebSockets: Connection Established [ID: ${socket.id}]`);
     
+    // 1. BLIND RELAY: Socket-based encrypted messaging
+    socket.on('send_encrypted_message', async (data) => {
+        const { receiver_id, ciphertext, iv, sender_key, receiver_key } = data;
+        
+        try {
+            // Save blind payload
+            const result = await pool.query(
+                `INSERT INTO client_communications 
+                 (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
+                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+                [socket.user.id, receiver_id, ciphertext, iv, sender_key, receiver_key]
+            );
+            
+            // Relay ciphertext to recipient (Socket.IO remains the pipe)
+            io.to(`user_${receiver_id}`).emit('receive_encrypted_message', result.rows[0]);
+        } catch (err) {
+            console.error("❌ E2EE Relay Error:", err);
+        }
+    });
+
+    // 2. PRESENCE & STATUS MANAGEMENT
     socket.on('join_thread', async (userId) => {
-        socket.join(userId.toString());
+        socket.join(`user_${userId}`); // Namespacing user rooms
         socket.userId = userId;
         await pool.query('UPDATE users SET is_online = TRUE, last_seen = NOW() WHERE id = $1', [userId]);
         io.emit('presence_update', { userId, status: 'online' });
     });
 
-    socket.on('typing_start', (data) => {
-        io.to(data.receiver_id.toString()).emit('user_typing', { sender_id: socket.userId });
-    });
-
-    socket.on('typing_stop', (data) => {
-        io.to(data.receiver_id.toString()).emit('user_stopped_typing', { sender_id: socket.userId });
-    });
-
-    socket.on('mark_read', async (data) => {
-        await pool.query('UPDATE client_communications SET is_read = TRUE WHERE sender_id = $1 AND receiver_id = $2', [data.sender_id, socket.userId]);
-        io.to(data.sender_id.toString()).emit('receipt_update', { receiver_id: socket.userId });
-    });
-
-    socket.on('disconnect', async () => {
-        console.log(`🔌 WebSockets: Connection Terminated [ID: ${socket.id}]`);
-        if (socket.userId) {
-            await pool.query('UPDATE users SET is_online = FALSE, last_seen = NOW() WHERE id = $1', [socket.userId]);
-            io.emit('presence_update', { userId: socket.userId, status: 'offline', last_seen: new Date() });
-        }
-    });
+    // ... (Keep your existing typing_start, typing_stop, and disconnect logic here)
 });
 
-app.get('/api/communications/directory', verifySystemToken, async (req, res) => {
-    try {
-        const query = `
-            SELECT id, name, email, role, is_online, last_seen,
-            (SELECT COUNT(*) FROM client_communications cc WHERE cc.sender_id = users.id AND cc.receiver_id = $1 AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
-            FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, last_seen DESC NULLS LAST;
-        `;
-        const result = await pool.query(query, [req.user.id]);
-        res.json(result.rows);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
-    }
-});
-
-app.get('/api/communications/clients', verifyAdminAccess, async (req, res) => {
-    try {
-        const query = `
-            SELECT u.id, u.name, u.email, u.phone, u.role, u.is_online, u.last_seen, u.created_at,
-                (SELECT message_body FROM client_communications cc WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) AND cc.is_deleted = FALSE ORDER BY cc.created_at DESC LIMIT 1) as last_message,
-                (SELECT created_at FROM client_communications cc WHERE (cc.sender_id = u.id OR cc.receiver_id = u.id) AND cc.is_deleted = FALSE ORDER BY cc.created_at DESC LIMIT 1) as last_message_date,
-                (SELECT COUNT(*) FROM client_communications cc WHERE cc.sender_id = u.id AND cc.receiver_id = $1 AND cc.is_read = FALSE AND cc.is_deleted = FALSE) as unread_count
-            FROM users u
-            WHERE u.role = 'client' AND u.is_deleted = FALSE
-            ORDER BY last_message_date DESC NULLS LAST;
-        `;
-        const result = await pool.query(query, [req.user.id]);
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/communications/send', verifySystemToken, async (req, res) => {
-    try {
-        const { receiver_id, message_body, attachment_url, attachment_name } = req.body;
-        const sender_id = req.user.id;
-
-        const savedMsg = await pool.query(
-            `INSERT INTO client_communications (sender_id, receiver_id, message_body, attachment_url, attachment_name) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [sender_id, receiver_id, message_body, attachment_url, attachment_name]
-        );
-        
-        io.to(receiver_id.toString()).emit('receive_message', savedMsg.rows[0]);
-        res.json({ success: true, data: savedMsg.rows[0] });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
+// 3. E2EE THREAD RETRIEVAL: Only select non-sensitive fields
 app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     try {
         const userId = req.user.id;
+        
+        // Mark as read (Metadata operation)
         await pool.query(
             `UPDATE client_communications SET is_read = TRUE WHERE receiver_id = $1 AND is_read = FALSE`,
             [userId]
         );
+
+        // Fetch encrypted payload - message_body is intentionally excluded
         const thread = await pool.query(
-            `SELECT * FROM client_communications 
+            `SELECT id, sender_id, receiver_id, ciphertext, iv, 
+                    sender_wrapped_key, receiver_wrapped_key, created_at, is_read 
+             FROM client_communications 
              WHERE (sender_id = $1 OR receiver_id = $1) AND is_deleted = FALSE 
              ORDER BY created_at ASC`,
             [userId]
@@ -842,6 +800,25 @@ app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     }
 });
 
+// 4. REST API SEND (E2EE Compliant)
+app.post('/api/communications/send', verifySystemToken, async (req, res) => {
+    const { receiver_id, ciphertext, iv, sender_key, receiver_key } = req.body;
+    const sender_id = req.user.id;
+
+    try {
+        const savedMsg = await pool.query(
+            `INSERT INTO client_communications 
+             (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [sender_id, receiver_id, ciphertext, iv, sender_key, receiver_key]
+        );
+        
+        io.to(`user_${receiver_id}`).emit('receive_encrypted_message', savedMsg.rows[0]);
+        res.json({ success: true, data: savedMsg.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // =========================================================================
 // ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
 // =========================================================================
