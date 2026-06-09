@@ -245,10 +245,13 @@ app.post('/api/auth/login', async (req, res) => {
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
 // =========================================================================
-app.get('/api/users', verifyAdminAccess, async (req, res) => {
+// ================= MODULE 2 (C): COMMUNITY ROSTER ========================
+// Allows clients to see other users for end-to-end chat routing
+app.get('/api/community/users', verifySystemToken, async (req, res) => {
     try {
+        // Excludes sensitive data like email, phone, passwords, and roles
         const result = await pool.query(
-            'SELECT id, name, email, role, phone, is_online, last_seen, created_at FROM users WHERE is_deleted = FALSE ORDER BY id DESC'
+            'SELECT id, name, is_online FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, name ASC'
         );
         res.json(result.rows);
     } catch (err) {
