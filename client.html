@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA | Client Community</title>
+    <title>DAN74TECH MEDIA | Client Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { corporateYellow: '#FFD700', professionalBlue: '#0044FF', actionRed: '#FF2A2A', darkFooter: '#111827', facebookBg: '#F0F2F5' }
+                    colors: { 
+                        corporateYellow: '#FFD700', 
+                        professionalBlue: '#0044FF', 
+                        actionRed: '#FF2A2A', 
+                        darkFooter: '#111827', 
+                        facebookBg: '#F0F2F5',
+                        fbCard: '#FFFFFF'
+                    }
                 }
             }
         }
@@ -17,14 +24,15 @@
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #F0F2F5 !important; color: #111827 !important; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        body { background-color: #F0F2F5 !important; color: #050505 !important; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
         .hide { display: none !important; }
-        .scroll-clean::-webkit-scrollbar { width: 6px; }
+        .scroll-clean::-webkit-scrollbar { width: 8px; }
         .scroll-clean::-webkit-scrollbar-track { background: transparent; }
-        .scroll-clean::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .chat-area { height: calc(100vh - 180px); }
-        .feed-area { height: calc(100vh - 120px); overflow-y: auto; }
-        .typing-indicator span { display: inline-block; width: 5px; height: 5px; background: #9ca3af; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
+        .scroll-clean::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 10px; }
+        .main-height { min-height: calc(100vh - 56px); }
+        .sticky-col { position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto; }
+        
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #828df8; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
@@ -32,29 +40,34 @@
 </head>
 <body class="antialiased flex flex-col min-h-screen">
 
-    <section id="auth-section" class="flex-grow flex items-center justify-center p-6">
+    <section id="auth-section" class="flex-grow flex items-center justify-center p-6 bg-facebookBg">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-t-4 border-professionalBlue">
             <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-professionalBlue tracking-tight">DAN74TECH MEDIA</h1>
-                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Community Matrix</p>
+                <h1 class="text-3xl font-bold text-professionalBlue tracking-tight">DAN74TECH MEDIA</h1>
+                <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Client Authorization Matrix</p>
             </div>
             <div id="login-view">
                 <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
-                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
-                    <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition shadow-md">Authenticate</button>
+                    <input type="email" id="login-email" placeholder="Clearance Email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <input type="password" id="login-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-professionalBlue outline-none text-sm">
+                    <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md text-lg">Log In</button>
                 </form>
-                <p class="mt-4 text-center text-xs text-gray-500">New here? <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue font-bold hover:underline">Join the Matrix</a></p>
+                <hr class="my-6 border-gray-300">
+                <div class="text-center">
+                    <button onclick="toggleAuth('register')" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition shadow-md">Create New Account</button>
+                </div>
             </div>
             <div id="register-view" class="hide">
                 <form id="register-form" class="space-y-4">
-                    <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
-                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2.5 rounded-lg hover:bg-yellow-500 transition shadow-md">Establish Clearance</button>
+                    <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="email" id="reg-email" placeholder="Email Vector" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="text" id="reg-phone" placeholder="Comm Link (Phone)" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <input type="password" id="reg-password" placeholder="Passphrase" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-sm outline-none">
+                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md text-lg">Establish Clearance</button>
                 </form>
-                <p class="mt-4 text-center text-xs text-gray-500">Active Node? <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline">Login</a></p>
+                <div class="mt-4 text-center">
+                    <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue font-bold hover:underline text-sm">Already have an account?</a>
+                </div>
             </div>
         </div>
     </section>
@@ -63,188 +76,208 @@
         
         <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 px-4 h-14 flex items-center justify-between">
             <div class="flex items-center gap-2 w-1/4">
-                <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow"><i class="fa-solid fa-bolt"></i></div>
-                <div class="hidden md:block">
-                    <input type="text" placeholder="Search Data Streams..." class="bg-facebookBg rounded-full px-4 py-1.5 text-sm outline-none w-56 border border-gray-100 focus:border-gray-300 transition">
+                <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow text-xl">D</div>
+                <div class="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-2 text-sm w-64 border border-transparent focus-within:border-gray-300 transition">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 mr-2"></i>
+                    <input type="text" placeholder="Search Matrix..." class="bg-transparent outline-none w-full text-gray-700">
                 </div>
             </div>
 
-            <div class="flex justify-center gap-1 w-2/4">
-                <button onclick="switchTab('feed')" id="tab-feed" class="w-16 md:w-24 h-12 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative">
-                    <i class="fa-solid fa-house text-xl"></i>
-                    <div class="active-indicator hidden absolute bottom-0 left-0 w-full h-1 bg-professionalBlue rounded-t-md"></div>
+            <div class="flex justify-center gap-2 w-2/4 h-full">
+                <button onclick="switchTab('feed')" id="tab-feed" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-professionalBlue text-professionalBlue">
+                    <i class="fa-solid fa-house text-2xl"></i>
                 </button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="w-16 md:w-24 h-12 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative">
-                    <i class="fa-solid fa-store text-xl"></i>
-                    <div class="active-indicator hidden absolute bottom-0 left-0 w-full h-1 bg-professionalBlue rounded-t-md"></div>
+                <button onclick="switchTab('orders')" id="tab-orders" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-solid fa-briefcase text-2xl"></i>
                 </button>
-                <button onclick="switchTab('messages')" id="tab-messages" class="w-16 md:w-24 h-12 rounded-lg flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative">
-                    <i class="fa-brands fa-facebook-messenger text-xl relative">
-                        <span id="nav-msg-badge" class="absolute -top-1.5 -right-2 bg-actionRed text-white text-[9px] px-1 rounded-full hide">0</span>
+                <button onclick="switchTab('messages')" id="tab-messages" class="w-24 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition relative border-b-4 border-transparent">
+                    <i class="fa-brands fa-facebook-messenger text-2xl relative">
+                        <span id="nav-msg-badge" class="absolute -top-1.5 -right-2 bg-actionRed text-white text-[10px] px-1.5 rounded-full hide border-2 border-white font-bold">0</span>
                     </i>
-                    <div class="active-indicator hidden absolute bottom-0 left-0 w-full h-1 bg-professionalBlue rounded-t-md"></div>
                 </button>
             </div>
 
             <div class="flex items-center justify-end gap-3 w-1/4">
-                <div class="flex items-center gap-2 bg-gray-100 rounded-full pr-4 p-1 shadow-inner">
-                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700" id="user-avatar-node"></div>
-                    <span id="user-greeting" class="text-sm font-bold text-gray-800 hidden lg:block"></span>
+                <div class="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 cursor-pointer transition">
+                    <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 border border-gray-200" id="user-avatar-node"></div>
+                    <span id="user-greeting" class="text-sm font-semibold text-gray-800 hidden lg:block"></span>
                 </div>
-                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition" title="Sever Connection"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <button onclick="logoutPipeline()" class="w-10 h-10 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition text-lg" title="Sever Connection"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
             </div>
         </nav>
 
-        <div class="flex-grow relative bg-facebookBg">
+        <div class="flex-grow bg-facebookBg flex justify-center max-w-[1600px] mx-auto w-full">
             
-            <div id="view-feed" class="w-full max-w-2xl mx-auto py-6 px-4 feed-area scroll-clean">
+            <div class="hidden lg:block w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <div class="w-9 h-9 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-sm" id="left-avatar"></div>
+                        <span class="font-semibold text-gray-900" id="left-name">Loading...</span>
+                    </div>
+                    <div onclick="switchTab('feed')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <i class="fa-solid fa-user-group text-blue-500 w-8 text-center text-xl"></i>
+                        <span class="font-medium text-gray-900">Community Feed</span>
+                    </div>
+                    <div onclick="switchTab('orders')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition">
+                        <i class="fa-solid fa-clock-rotate-left text-blue-500 w-8 text-center text-xl"></i>
+                        <span class="font-medium text-gray-900">My Deployments</span>
+                    </div>
+                    <div class="border-b border-gray-300 my-2"></div>
+                    <h3 class="text-gray-500 font-semibold px-2 py-1 text-sm">Services Overview</h3>
+                    <div id="sidebar-services-list" class="space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="w-full max-w-[680px] flex-shrink-0 px-2 sm:px-8 py-6 sticky-col scroll-clean" id="main-content-area">
                 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-                    <div class="flex gap-3 items-center border-b border-gray-100 pb-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-50 text-professionalBlue flex items-center justify-center text-sm font-bold shadow-inner" id="publisher-avatar"></div>
-                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-sm px-4 py-2.5 rounded-full transition">Publish a Case Study or Blog Entry to the network...</button>
+                <div id="view-feed" class="w-full">
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
+                        <div class="flex gap-2 items-center border-b border-gray-200 pb-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-bold" id="publisher-avatar"></div>
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-gray-100 hover:bg-gray-200 text-left text-gray-500 text-base px-4 py-2.5 rounded-full transition">What's on your mind, <span id="pub-greeting"></span>?</button>
+                        </div>
+                        <div class="flex justify-between pt-3 px-2">
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-pen-nib text-blue-500 text-lg"></i> Blog Entry</button>
+                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 py-2 rounded-lg transition"><i class="fa-solid fa-briefcase text-green-500 text-lg"></i> Case Study</button>
+                        </div>
                     </div>
-                    <div class="flex justify-around pt-2">
-                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg transition"><i class="fa-solid fa-image text-green-500"></i> Project Media</button>
-                        <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:bg-gray-50 py-1.5 px-4 rounded-lg transition"><i class="fa-solid fa-book-open text-blue-500"></i> Technical Article</button>
+
+                    <div id="global-feed-stream" class="space-y-4">
+                        <div class="text-center text-sm text-gray-500 font-semibold py-10"><i class="fa-solid fa-circle-notch animate-spin mr-2 text-xl"></i>Synchronizing Feed...</div>
                     </div>
                 </div>
 
-                <div id="global-feed-stream" class="space-y-5">
-                    <div class="text-center text-sm text-gray-400 font-bold py-10"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Synchronizing Global Network...</div>
+                <div id="view-orders" class="w-full hide">
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden mb-6">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="font-bold text-xl text-gray-900">My Deployments</h2>
+                            <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-professionalBlue text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
+                        </div>
+                        <div class="p-0 overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-200">
+                                    <tr><th class="px-6 py-4">Order ID</th><th class="px-6 py-4">Service</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Payment</th></tr>
+                                </thead>
+                                <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div id="view-orders" class="w-full max-w-7xl mx-auto py-6 px-4 flex gap-6 chat-area hide">
-                <div class="w-1/3 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                    <div class="p-4 border-b border-gray-100 bg-gray-50"><h2 class="font-bold text-lg text-gray-800">Services Matrix</h2></div>
-                    <div id="catalog-list" class="flex-grow overflow-y-auto scroll-clean p-3 space-y-3">
-                        <div class="text-center text-xs text-gray-400 py-4">Fetching catalog data...</div>
-                    </div>
-                </div>
-                <div class="w-2/3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                        <h2 class="font-bold text-lg text-gray-800">Active Deployments Ledger</h2>
-                        <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-corporateYellow text-black px-4 py-1.5 rounded-md text-sm font-bold hover:bg-yellow-500 shadow-sm transition"><i class="fa-solid fa-plus mr-1"></i> New Request</button>
-                    </div>
-                    <div class="flex-grow overflow-y-auto scroll-clean p-0">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-gray-500 uppercase bg-gray-100 border-b border-gray-200">
-                                <tr><th class="px-6 py-3">Vector ID</th><th class="px-6 py-3">Service Designation</th><th class="px-6 py-3">Operational Status</th><th class="px-6 py-3">Financial State</th></tr>
-                            </thead>
-                            <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-messages" class="w-full h-full flex bg-white hide border-t border-gray-200">
-                <div class="w-1/3 border-r border-gray-200 flex flex-col bg-gray-50">
-                    <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-white shadow-sm z-10">
-                        <h2 class="font-bold text-2xl tracking-tight text-gray-900">Encrypted Comms</h2>
-                        <span id="socket-indicator" class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" title="Disconnected"></span>
-                    </div>
-                    <div class="px-4 py-3 bg-white border-b border-gray-100">
-                        <input type="text" placeholder="Search Secured Directory..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-professionalBlue transition">
-                    </div>
-                    <div id="directory-roster-list" class="flex-grow overflow-y-auto scroll-clean p-2 bg-white">
-                        <div class="text-center text-xs text-gray-400 py-10"><i class="fa-solid fa-shield-halved mb-2 text-lg"></i><br>Decrypting directory parameters...</div>
-                    </div>
-                </div>
-                <div class="w-2/3 flex flex-col bg-white relative">
-                    <div id="chat-overlay" class="absolute inset-0 bg-gray-50 z-20 flex flex-col items-center justify-center text-gray-400">
-                        <i class="fa-brands fa-facebook-messenger text-6xl mb-4 text-gray-200"></i>
-                        <p class="font-medium">Select a node to establish a secure E2EE channel.</p>
+                <div id="view-messages" class="w-full hide h-[calc(100vh-140px)] flex flex-col bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+                    <div id="chat-overlay" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fa-brands fa-facebook-messenger text-6xl mb-4 text-professionalBlue opacity-20"></i>
+                        <p class="font-medium text-gray-600">Select a contact from the right sidebar to start messaging.</p>
                     </div>
 
-                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white/95 backdrop-blur z-10 shadow-sm">
+                    <div class="h-16 border-b border-gray-200 flex items-center justify-between px-4 bg-white shadow-sm z-10 flex-shrink-0">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold shadow-md" id="active-chat-avatar">--</div>
                             <div>
-                                <h3 class="font-bold text-gray-900" id="active-chat-title">--</h3>
-                                <p class="text-[11px] text-green-500 font-medium flex items-center gap-1" id="active-chat-status"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Matrix standby</p>
+                                <h3 class="font-bold text-gray-900 text-base leading-tight" id="active-chat-title">--</h3>
+                                <p class="text-xs text-green-500 font-medium flex items-center gap-1" id="active-chat-status"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Matrix standby</p>
                             </div>
                         </div>
-                        <div class="text-xs text-gray-400 flex items-center gap-1 bg-gray-100 px-2 py-1 rounded border border-gray-200" title="End-to-End Encrypted"><i class="fa-solid fa-lock text-gray-500"></i> AES-GCM 256</div>
+                        <div class="text-xs font-semibold text-gray-500 flex items-center gap-1"><i class="fa-solid fa-lock text-gray-400"></i> E2EE Active</div>
                     </div>
                     
-                    <div id="chat-window-timeline" class="flex-grow p-6 overflow-y-auto scroll-clean flex flex-col gap-3 bg-white">
-                    </div>
+                    <div id="chat-window-timeline" class="flex-grow p-4 overflow-y-auto scroll-clean flex flex-col gap-2 bg-white"></div>
                     
-                    <div id="typing-indicator-node" class="px-6 py-2 text-xs text-gray-400 font-medium hide flex items-center gap-2 bg-white">
+                    <div id="typing-indicator-node" class="px-6 py-1 text-xs text-gray-400 font-medium hide flex items-center gap-2 bg-white flex-shrink-0">
                         Node is composing <div class="typing-indicator"><span></span><span></span><span></span></div>
                     </div>
                     
-                    <div class="p-4 border-t border-gray-200 bg-gray-50">
-                        <form id="unified-chat-form" class="flex items-center gap-3">
-                            <div class="flex-grow relative">
-                                <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Transmit secure payload..." required autocomplete="off" class="w-full bg-white border border-gray-300 rounded-full px-5 py-3 text-sm outline-none focus:border-professionalBlue focus:ring-1 focus:ring-professionalBlue transition shadow-sm">
-                            </div>
-                            <button type="submit" class="bg-professionalBlue text-white hover:bg-blue-700 w-11 h-11 rounded-full flex justify-center items-center transition shadow-md"><i class="fa-solid fa-paper-plane"></i></button>
+                    <div class="p-3 border-t border-gray-200 bg-white flex-shrink-0">
+                        <form id="unified-chat-form" class="flex items-center gap-2">
+                            <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Aa" required autocomplete="off" class="flex-grow bg-gray-100 border border-transparent rounded-full px-4 py-2 text-[15px] outline-none focus:border-gray-300 transition">
+                            <button type="submit" class="text-professionalBlue hover:text-blue-700 w-10 h-10 rounded-full flex justify-center items-center transition text-xl"><i class="fa-solid fa-paper-plane"></i></button>
                         </form>
                     </div>
+                </div>
+
+            </div>
+
+            <div class="hidden lg:flex w-[300px] xl:w-[360px] flex-shrink-0 p-4 sticky-col scroll-clean flex-col">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <h3 class="text-gray-500 font-semibold text-sm">Contacts</h3>
+                    <div class="flex gap-2 text-gray-400">
+                        <i class="fa-solid fa-video cursor-pointer hover:bg-gray-200 p-1.5 rounded-full transition"></i>
+                        <i class="fa-solid fa-magnifying-glass cursor-pointer hover:bg-gray-200 p-1.5 rounded-full transition"></i>
+                    </div>
+                </div>
+                <div id="community-roster-list" class="flex-grow space-y-1">
+                    <div class="text-center text-xs text-gray-400 py-10">Decrypting directory...</div>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <div id="publish-modal" class="hide fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-lg overflow-hidden transform transition-all">
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-pen-nib text-professionalBlue mr-2"></i>Content Transmission</h3>
-                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition"><i class="fa-solid fa-xmark"></i></button>
+    <div id="publish-modal" class="hide fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center relative">
+                <div class="w-8"></div>
+                <h3 class="font-bold text-xl text-gray-900 text-center flex-grow">Create Post</h3>
+                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="w-9 h-9 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="new-publish-form" class="p-5 space-y-4">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 text-professionalBlue flex items-center justify-center text-sm font-bold shadow-inner" id="modal-avatar">U</div>
+            <form id="new-publish-form" class="p-4 space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold" id="modal-avatar"></div>
                     <div class="flex flex-col">
-                        <span class="font-bold text-sm text-gray-900" id="modal-username">User Node</span>
-                        <select id="pub-target" class="text-[11px] bg-gray-100 border border-gray-200 rounded px-2 py-1 outline-none font-bold text-gray-600 cursor-pointer mt-1">
-                            <option value="blog">Technical Blog Entry</option>
-                            <option value="case_studies">Case Study Log</option>
+                        <span class="font-semibold text-[15px] text-gray-900" id="modal-username">User Node</span>
+                        <select id="pub-target" class="text-xs bg-gray-200 font-semibold rounded px-2 py-1 outline-none text-gray-700 cursor-pointer mt-0.5 w-fit border border-transparent focus:border-gray-400">
+                            <option value="blog">Tech Blog</option>
+                            <option value="case_studies">Case Study</option>
                         </select>
                     </div>
                 </div>
-                <input type="text" id="pub-title" placeholder="Designation / Title" required class="w-full text-lg font-bold outline-none placeholder-gray-400 border-b border-transparent focus:border-gray-200 pb-2 transition">
-                <textarea id="pub-content" rows="5" placeholder="Detail the architecture, logic, or project specifics..." required class="w-full text-sm outline-none resize-none placeholder-gray-400 border border-gray-100 rounded-lg p-3 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-professionalBlue transition"></textarea>
+                <input type="text" id="pub-title" placeholder="Designation / Title" required class="w-full text-lg font-bold outline-none placeholder-gray-400 border-none px-0 mt-2">
+                <textarea id="pub-content" rows="4" placeholder="What's on your mind?" required class="w-full text-lg outline-none resize-none placeholder-gray-400 border-none px-0"></textarea>
                 
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs text-blue-800 flex items-start gap-2">
-                    <i class="fa-solid fa-shield-halved mt-0.5"></i>
-                    <p>All transmitted payloads enter a staging state pending automated administrative clearance before global broadcasting.</p>
+                <div class="border border-gray-300 rounded-lg p-3 flex justify-between items-center shadow-sm">
+                    <span class="font-semibold text-gray-900 text-sm">Add to your post</span>
+                    <div class="flex gap-4 text-2xl">
+                        <i class="fa-solid fa-image text-green-500 cursor-pointer"></i>
+                        <i class="fa-solid fa-user-tag text-blue-500 cursor-pointer"></i>
+                        <i class="fa-solid fa-location-dot text-red-500 cursor-pointer"></i>
+                    </div>
                 </div>
                 
-                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-md flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-satellite-dish"></i> Execute Broadcast Protocol
-                </button>
+                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition shadow text-[15px]">Post</button>
             </form>
         </div>
     </div>
 
-    <div id="order-modal" class="hide fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-md overflow-hidden">
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-lg text-gray-800"><i class="fa-solid fa-file-invoice text-corporateYellow mr-2"></i>New Deployment Request</h3>
-                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition"><i class="fa-solid fa-xmark"></i></button>
+    <div id="order-modal" class="hide fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <div class="w-8"></div>
+                <h3 class="font-bold text-xl text-gray-900 text-center flex-grow">New Deployment</h3>
+                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="w-9 h-9 bg-gray-200 rounded-full hover:bg-gray-300 text-gray-600 transition flex items-center justify-center text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="new-order-form" class="p-5 space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase">Target Service</label>
-                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none mt-1" required>
-                        <option value="">Select Service Protocol...</option>
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Target Service</label>
+                    <select id="ord-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue" required>
+                        <option value="">Select Service...</option>
+                    </select>
+                </div>
+                <div id="sub-service-container" class="hide">
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Specific Package</label>
+                    <select id="ord-sub-service" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-base outline-none focus:border-professionalBlue">
+                        <option value="">Select Package...</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase">Operational Details</label>
-                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none mt-1 resize-none" placeholder="Provide system requirements..." required></textarea>
+                    <label class="text-sm font-semibold text-gray-700 block mb-1">Operational Details</label>
+                    <textarea id="ord-details" rows="3" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-base outline-none resize-none focus:border-professionalBlue" placeholder="Provide system requirements..." required></textarea>
                 </div>
-                <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-500 transition shadow-md">Initialize Order</button>
+                <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow text-lg mt-2">Submit Request</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Matrix Configuration & State
         const API_BASE = window.location.hostname.includes('localhost') ? 'http://localhost:10000/api' : 'https://dan74techweb.onrender.com/api'; 
         let token = localStorage.getItem('dan74tech_token');
         let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
@@ -252,51 +285,33 @@
         let activeTab = 'feed';
         let targetChatId = null;
         let typingTimeout = null;
-        let cachedDirectory = new Map(); // Dynamic Directory Cache
+        let globalCatalog = []; 
 
-        // =========================================================================
-        // WEB CRYPTO API: E2EE ENGINE (AES-GCM 256)
-        // Implements dynamic symmetric derivation to bypass missing PKI backend registry.
-        // =========================================================================
         const CryptoEngine = {
             async getSharedKey(peerId) {
-                // Deterministic symmetric key generation based on strictly ordered IDs
                 const secret = `dan74tech_e2ee_matrix_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
                 const enc = new TextEncoder();
                 const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), {name: "PBKDF2"}, false, ["deriveKey"]);
-                return crypto.subtle.deriveKey(
-                    { name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" },
-                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
-                );
+                return crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
             },
             async encrypt(plaintext, peerId) {
                 const key = await this.getSharedKey(peerId);
                 const iv = crypto.getRandomValues(new Uint8Array(12));
                 const enc = new TextEncoder();
                 const ciphertextBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
-                
-                return {
-                    ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))),
-                    iv: btoa(String.fromCharCode(...iv)),
-                    wrapped_key: "sys_derived_sym_key" // Placeholder to satisfy DB constraints
-                };
+                return { ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))), iv: btoa(String.fromCharCode(...iv)), wrapped_key: "sys_derived_sym_key" };
             },
             async decrypt(ciphertextB64, ivB64, peerId) {
                 try {
                     const key = await this.getSharedKey(peerId);
                     const ciphertext = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
                     const iv = new Uint8Array(atob(ivB64).split('').map(c => c.charCodeAt(0)));
-                    
                     const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
                     return new TextDecoder().decode(decryptedBuffer);
-                } catch (e) {
-                    console.error("E2EE Decryption Failure:", e);
-                    return "🔒 [Encrypted Payload - Decryption Failed]";
-                }
+                } catch (e) { return "🔒 [Decryption Failed]"; }
             }
         };
 
-        // ======================= CORE SYSTEM LOGIC =======================
         const toggleAuth = (view) => {
             document.getElementById('login-view').classList.toggle('hide', view !== 'login');
             document.getElementById('register-view').classList.toggle('hide', view !== 'register');
@@ -308,14 +323,22 @@
                 document.getElementById('dashboard-section').classList.remove('hide');
                 
                 const initials = userNode.name.charAt(0).toUpperCase();
+                const firstName = userNode.name.split(' ')[0];
+                
                 document.getElementById('user-greeting').innerText = userNode.name;
-                document.getElementById('user-avatar-node').innerText = initials;
-                document.getElementById('modal-avatar').innerText = initials;
-                document.getElementById('publisher-avatar').innerText = initials;
+                document.getElementById('left-name').innerText = userNode.name;
+                document.getElementById('pub-greeting').innerText = firstName;
+                
+                ['user-avatar-node', 'left-avatar', 'modal-avatar', 'publisher-avatar'].forEach(id => {
+                    document.getElementById(id).innerText = initials;
+                });
+                
                 document.getElementById('modal-username').innerText = userNode.name;
                 
                 switchTab('feed');
                 initSockets();
+                fetchOrdersCatalog(); 
+                fetchCommunityRoster(); 
             } else {
                 document.getElementById('auth-section').classList.remove('hide');
                 document.getElementById('dashboard-section').classList.add('hide');
@@ -327,69 +350,46 @@
             if (body) config.body = JSON.stringify(body);
             const res = await fetch(`${API_BASE}${endpoint}`, config);
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "System Node Error");
+            if (!res.ok) throw new Error(data.error || "System Error");
             return data;
         };
 
-        // ======================= AUTHENTICATION =======================
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
-                const data = await apiCall('/auth/login', 'POST', { 
-                    email: document.getElementById('login-email').value, 
-                    password: document.getElementById('login-password').value 
-                });
-                if(data.success) { 
-                    localStorage.setItem('dan74tech_token', data.token); 
-                    localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); 
-                    token = data.token; userNode = data.user; setViewState(); 
-                }
+                const data = await apiCall('/auth/login', 'POST', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value });
+                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
             } catch(e) { alert(e.message); }
         });
 
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
-                const data = await apiCall('/auth/register', 'POST', {
-                    name: document.getElementById('reg-name').value,
-                    email: document.getElementById('reg-email').value,
-                    phone: document.getElementById('reg-phone').value,
-                    password: document.getElementById('reg-password').value
-                });
-                if(data.success) { 
-                    localStorage.setItem('dan74tech_token', data.token); 
-                    localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); 
-                    token = data.token; userNode = data.user; setViewState(); 
-                }
+                const data = await apiCall('/auth/register', 'POST', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, password: document.getElementById('reg-password').value });
+                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
             } catch(e) { alert(e.message); }
         });
 
-        const logoutPipeline = () => {
-            localStorage.removeItem('dan74tech_token'); localStorage.removeItem('dan74tech_user');
-            if(socket) socket.disconnect();
-            location.reload();
-        };
+        const logoutPipeline = () => { localStorage.removeItem('dan74tech_token'); localStorage.removeItem('dan74tech_user'); if(socket) socket.disconnect(); location.reload(); };
 
-        // ======================= NAVIGATION ENGINE =======================
         const switchTab = (tab) => {
             activeTab = tab;
             ['feed', 'orders', 'messages'].forEach(t => {
                 document.getElementById(`view-${t}`).classList.toggle('hide', t !== tab);
                 const btn = document.getElementById(`tab-${t}`);
                 if (t === tab) {
-                    btn.classList.add('text-professionalBlue', 'bg-blue-50'); btn.classList.remove('text-gray-500', 'hover:bg-gray-100');
-                    btn.querySelector('.active-indicator').classList.remove('hidden');
+                    btn.classList.add('text-professionalBlue', 'border-professionalBlue');
+                    btn.classList.remove('text-gray-500', 'border-transparent');
                 } else {
-                    btn.classList.remove('text-professionalBlue', 'bg-blue-50'); btn.classList.add('text-gray-500', 'hover:bg-gray-100');
-                    btn.querySelector('.active-indicator').classList.add('hidden');
+                    btn.classList.remove('text-professionalBlue', 'border-professionalBlue');
+                    btn.classList.add('text-gray-500', 'border-transparent');
                 }
             });
             if (tab === 'feed') fetchSocialFeed();
-            if (tab === 'orders') fetchOrdersCatalog();
-            if (tab === 'messages') buildDynamicDirectory();
+            if (tab === 'orders') fetchUserOrders();
         };
 
-        // ======================= MODULE 1: GLOBAL FEED =======================
+        // --- FEED ---
         async function fetchSocialFeed() {
             try {
                 const feed = await apiCall('/feed/global');
@@ -397,206 +397,198 @@
                 stream.innerHTML = '';
                 
                 if(feed.length === 0) {
-                    stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold bg-white rounded-xl shadow-sm border border-gray-100"><i class="fa-solid fa-ghost text-2xl mb-2"></i><br>No network activity detected.</div>`;
+                    stream.innerHTML = `<div class="text-center text-gray-500 py-10 font-bold bg-white rounded-xl shadow-sm border border-gray-200">No posts yet. Be the first to share!</div>`;
                     return;
                 }
                 
                 feed.forEach(post => {
-                    const isSystem = post.type === 'portfolio';
-                    const badgeColor = isSystem ? 'bg-purple-100 text-purple-700' : (post.type === 'blog' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700');
-                    const badgeText = isSystem ? 'System Portfolio' : (post.type === 'blog' ? 'Tech Blog' : 'Case Study');
-                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full max-h-96 object-cover border-y border-gray-100" onerror="this.style.display='none'">` : '';
+                    const typeLabel = post.type === 'portfolio' ? 'System Portfolio' : (post.type === 'blog' ? 'Tech Blog' : 'Case Study');
+                    const imgNode = post.media_url ? `<img src="${post.media_url}" class="w-full object-cover max-h-[500px]" onerror="this.style.display='none'">` : '';
+                    const authorName = post.author_name || 'DAN74TECH Master Core';
                     
                     stream.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden pb-1 hover:shadow-md transition duration-300">
+                    <div class="bg-fbCard rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
                         <div class="p-4 pb-2 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold border border-gray-200">${(post.author_name || 'Sys').charAt(0)}</div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold">${authorName.charAt(0)}</div>
                                 <div>
-                                    <p class="font-bold text-sm text-gray-900">${post.author_name || 'DAN74TECH Master Core'}</p>
-                                    <div class="flex items-center gap-1 text-[11px] text-gray-500">
-                                        <span>${new Date(post.created_at).toLocaleDateString()}</span> • <i class="fa-solid fa-earth-americas"></i>
+                                    <p class="font-semibold text-[15px] text-gray-900 leading-tight">${authorName} <span class="text-gray-500 text-[13px] font-normal">published a ${typeLabel}</span></p>
+                                    <div class="flex items-center gap-1 text-[13px] text-gray-500">
+                                        <span>${new Date(post.created_at).toLocaleDateString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</span> <i class="fa-solid fa-earth-americas text-[10px]"></i>
                                     </div>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full tracking-wider ${badgeColor}">${badgeText}</span>
+                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition"><i class="fa-solid fa-ellipsis"></i></button>
                         </div>
-                        <div class="px-4 py-2">
-                            <h4 class="font-bold text-lg mb-1 leading-tight text-gray-900">${post.title}</h4>
-                            <p class="text-sm text-gray-700 leading-relaxed">${post.content}</p>
+                        <div class="px-4 py-1 mb-2">
+                            <h4 class="font-bold text-[16px] text-gray-900">${post.title}</h4>
+                            <p class="text-[15px] text-gray-800 leading-snug mt-1">${post.content}</p>
                         </div>
                         ${imgNode}
-                        <div class="px-4 py-2 mt-2 flex items-center justify-between border-b border-gray-100 mx-4">
-                            <div class="flex items-center gap-1.5 text-xs text-gray-500 font-medium"><div class="bg-professionalBlue w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
+                        <div class="px-4 py-2.5 flex items-center justify-between border-b border-gray-200 mx-4">
+                            <div class="flex items-center gap-1.5 text-[15px] text-gray-500"><div class="bg-professionalBlue w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] shadow-sm"><i class="fa-solid fa-thumbs-up"></i></div> ${post.likes_count || 0}</div>
                         </div>
-                        <div class="px-4 py-1.5 mx-2 flex gap-1">
-                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-gray-600 font-bold text-sm hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Acknowledge</button>
+                        <div class="px-4 py-1 mx-2 flex">
+                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-gray-600 font-semibold text-[15px] hover:bg-gray-100 transition"><i class="fa-regular fa-thumbs-up"></i> Like</button>
+                            <button class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-gray-600 font-semibold text-[15px] hover:bg-gray-100 transition"><i class="fa-regular fa-comment"></i> Comment</button>
                         </div>
                     </div>`;
                 });
             } catch(e) { console.error("Feed Error:", e); }
         }
 
-        async function triggerLike(id, type) {
-            try { await apiCall('/feed/interact', 'POST', { entity_id: id, entity_type: type, action: 'like' }); fetchSocialFeed(); } catch(e){}
-        }
+        async function triggerLike(id, type) { try { await apiCall('/feed/interact', 'POST', { entity_id: id, entity_type: type, action: 'like' }); fetchSocialFeed(); } catch(e){} }
 
         document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try { 
-                await apiCall('/content/publish', 'POST', { 
-                    target: document.getElementById('pub-target').value, 
-                    title: document.getElementById('pub-title').value, 
-                    content: document.getElementById('pub-content').value 
-                }); 
+                await apiCall('/content/publish', 'POST', { target: document.getElementById('pub-target').value, title: document.getElementById('pub-title').value, content: document.getElementById('pub-content').value }); 
                 document.getElementById('publish-modal').classList.add('hide'); 
                 document.getElementById('new-publish-form').reset();
-                alert('Payload injected. Awaiting Admin clearance.'); 
+                alert('Post submitted and awaiting Admin clearance.'); 
                 fetchSocialFeed(); 
             } catch(e) { alert(e.message); }
         });
 
-        // ======================= MODULE 2: CATALOG & ORDERS =======================
+        // --- CATALOG & ORDERS ---
         async function fetchOrdersCatalog() {
             try {
-                // Fetch Catalog
-                const catalog = await apiCall('/catalog/full');
-                const catList = document.getElementById('catalog-list');
+                globalCatalog = await apiCall('/catalog/full');
                 const srvSelect = document.getElementById('ord-service');
-                catList.innerHTML = ''; srvSelect.innerHTML = '<option value="">Select Service Protocol...</option>';
+                const sidebarList = document.getElementById('sidebar-services-list');
                 
-                catalog.forEach(srv => {
+                srvSelect.innerHTML = '<option value="">Select Service...</option>';
+                sidebarList.innerHTML = '';
+                
+                globalCatalog.forEach(srv => {
                     srvSelect.innerHTML += `<option value="${srv.name}">${srv.name}</option>`;
-                    let subs = srv.packages.map(sub => `<div class="p-2 ml-4 text-xs bg-white border border-gray-100 rounded-md mb-1.5 flex justify-between items-center shadow-sm"><span class="font-bold text-gray-700">${sub.name}</span> <span class="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">Ksh ${sub.price}</span></div>`).join('');
-                    catList.innerHTML += `<div class="mb-3"><div class="p-3 bg-professionalBlue text-white rounded-lg font-bold text-sm shadow-sm flex items-center gap-2 mb-2"><i class="${srv.icon || 'fa-solid fa-layer-group'}"></i> ${srv.name}</div>${subs}</div>`;
+                    sidebarList.innerHTML += `<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition"><i class="${srv.icon || 'fa-solid fa-layer-group'} text-gray-500 w-8 text-center text-xl"></i><span class="font-medium text-gray-900 text-[15px]">${srv.name}</span></div>`;
                 });
                 
-                // Fetch Orders
+                // Dynamic Sub-service Logic
+                srvSelect.addEventListener('change', (e) => {
+                    const selSrv = globalCatalog.find(s => s.name === e.target.value);
+                    const subContainer = document.getElementById('sub-service-container');
+                    const subSelect = document.getElementById('ord-sub-service');
+                    subSelect.innerHTML = '<option value="">Select Package...</option>';
+                    
+                    if (selSrv && selSrv.packages && selSrv.packages.length > 0) {
+                        selSrv.packages.forEach(sub => { subSelect.innerHTML += `<option value="${sub.name}">${sub.name} - Ksh ${sub.price}</option>`; });
+                        subContainer.classList.remove('hide');
+                    } else {
+                        subContainer.classList.add('hide');
+                    }
+                });
+            } catch(e) { console.error("Catalog Error:", e); }
+        }
+
+        async function fetchUserOrders() {
+            try {
                 const orders = await apiCall(`/orders/user/${userNode.id}`);
                 const tb = document.getElementById('orders-registry-body');
                 tb.innerHTML = '';
-                if(orders.length === 0) tb.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400 font-medium">No operational requests found.</td></tr>`;
+                if(orders.length === 0) tb.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500 font-medium">You have no active deployments.</td></tr>`;
                 
                 orders.forEach(o => {
-                    const statColor = o.status === 'completed' ? 'text-green-500' : (o.status === 'pending' ? 'text-corporateYellow' : 'text-blue-500');
-                    const payColor = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition"><td class="px-6 py-4 font-bold text-xs text-gray-900">#ORD-${o.id}</td><td class="px-6 py-4 text-sm font-medium text-gray-700">${o.service}</td><td class="px-6 py-4 text-xs uppercase font-bold ${statColor}">${o.status}</td><td class="px-6 py-4 text-xs font-bold"><span class="px-2 py-1 rounded ${payColor}">${o.payment_status}</span></td></tr>`;
+                    const statClass = o.status === 'completed' ? 'text-green-600 bg-green-50' : (o.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 'text-blue-600 bg-blue-50');
+                    const payClass = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                    const subSrvText = o.sub_service && o.sub_service !== 'N/A' ? `<br><span class="text-xs text-gray-400 font-normal">${o.sub_service}</span>` : '';
+                    
+                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition border-b border-gray-100"><td class="px-6 py-4 font-bold text-gray-900">#ORD-${o.id}</td><td class="px-6 py-4 text-[15px] font-semibold text-gray-800">${o.service} ${subSrvText}</td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase ${statClass}">${o.status}</span></td><td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${payClass}">${o.payment_status}</span></td></tr>`;
                 });
-            } catch(e) { console.error("Catalog Error:", e); }
+            } catch(e) { console.error("Orders Error:", e); }
         }
 
         document.getElementById('new-order-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
                 const payload = {
-                    user_id: userNode.id,
-                    customer_name: userNode.name,
-                    phone: userNode.phone || 'N/A',
+                    user_id: userNode.id, customer_name: userNode.name, phone: userNode.phone || 'N/A',
                     service: document.getElementById('ord-service').value,
+                    sub_service: document.getElementById('ord-sub-service').value || 'N/A',
                     project_details: document.getElementById('ord-details').value
                 };
                 const res = await apiCall('/orders', 'POST', payload);
                 document.getElementById('order-modal').classList.add('hide');
                 document.getElementById('new-order-form').reset();
-                fetchOrdersCatalog();
+                if(activeTab === 'orders') fetchUserOrders();
                 if(res.whatsapp_redirect) window.open(res.whatsapp_redirect, '_blank');
             } catch (e) { alert("Deployment failed: " + e.message); }
         });
 
-        // ======================= MODULE 3: E2EE MESSAGING ENGINE =======================
+        // --- CHAT & SOCKETS ---
         function initSockets() {
             socket = io(API_BASE.replace('/api', ''));
-            socket.on('connect', () => {
-                document.getElementById('socket-indicator').classList.replace('bg-red-500', 'bg-green-500');
-                socket.emit('join_thread', userNode.id);
-            });
-            socket.on('disconnect', () => {
-                document.getElementById('socket-indicator').classList.replace('bg-green-500', 'bg-red-500');
-            });
-            
-            socket.on('presence_update', () => { if(activeTab === 'messages') buildDynamicDirectory(); });
-            
+            socket.on('connect', () => { socket.emit('join_thread', userNode.id); });
+            socket.on('presence_update', () => { fetchCommunityRoster(); });
             socket.on('receive_encrypted_message', async (msg) => {
-                // Dynamically intercept encrypted payloads via WebSocket
                 if (targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
                     await appendMsg(msg); scrollChat();
                 } else {
                     const badge = document.getElementById('nav-msg-badge');
-                    badge.classList.remove('hide');
-                    badge.innerText = parseInt(badge.innerText || 0) + 1;
-                    if(activeTab === 'messages') buildDynamicDirectory();
+                    badge.classList.remove('hide'); badge.innerText = parseInt(badge.innerText || 0) + 1;
                 }
             });
-            
             socket.on('user_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.remove('hide'); });
             socket.on('user_stopped_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.add('hide'); });
         }
 
-        // Backend Bypass: Generates Directory from Client's Thread History (Solves Admin 403 Wall)
-        async function buildDynamicDirectory() {
+        async function fetchCommunityRoster() {
             try {
-                const thread = await apiCall('/client-portal/thread');
-                const peerIds = new Set();
-                thread.forEach(m => {
-                    if(m.sender_id !== userNode.id) peerIds.add(m.sender_id);
-                    if(m.receiver_id !== userNode.id) peerIds.add(m.receiver_id);
-                });
-
-                // Fetch profiles individually (permitted by Client clearance)
-                const listNode = document.getElementById('directory-roster-list');
+                // Relies on the newly added backend route /api/community/users
+                const roster = await apiCall('/community/users');
+                const listNode = document.getElementById('community-roster-list');
                 listNode.innerHTML = '';
                 
-                if (peerIds.size === 0) {
-                    listNode.innerHTML = '<div class="text-center text-xs text-gray-400 py-10 font-medium px-4">No active encrypted channels found.<br>Initiate an order to trigger support.</div>';
-                    return;
-                }
+                const peers = roster.filter(u => u.id !== userNode.id);
+                if (peers.length === 0) { listNode.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">No other matrix nodes found.</div>'; return; }
 
-                for (let peerId of peerIds) {
-                    if (!cachedDirectory.has(peerId)) {
-                        try {
-                            const pData = await apiCall(`/users/${peerId}`); // Safe single fetch
-                            cachedDirectory.set(peerId, pData);
-                        } catch(e) { continue; }
-                    }
-                    
-                    const peer = cachedDirectory.get(peerId);
+                peers.forEach(peer => {
                     const isActive = targetChatId === peer.id;
-                    const statusDot = peer.is_online ? '<span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>' : '';
+                    const statusDot = peer.is_online ? '<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>' : '';
                     
                     listNode.innerHTML += `
-                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 cursor-pointer transition border border-transparent hover:border-blue-100 ${isActive ? 'bg-blue-50 border-blue-100 shadow-sm' : ''}">
-                        <div class="relative w-12 h-12 rounded-full bg-professionalBlue text-white flex items-center justify-center font-bold text-lg flex-shrink-0 shadow-inner">
+                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition ${isActive ? 'bg-gray-200' : ''}">
+                        <div class="relative w-9 h-9 rounded-full bg-gray-300 text-gray-700 flex items-center justify-center font-bold flex-shrink-0 border border-gray-200">
                             ${peer.name.charAt(0)}
                             ${statusDot}
                         </div>
-                        <div class="flex-grow min-w-0">
-                            <h4 class="font-bold text-sm text-gray-900 truncate">${peer.name}</h4>
-                            <p class="text-[11px] text-gray-500 truncate"><i class="fa-solid fa-lock text-[9px] mr-1"></i> E2EE Channel</p>
-                        </div>
+                        <span class="font-medium text-[15px] text-gray-900 truncate flex-grow">${peer.name}</span>
                     </div>`;
-                }
-            } catch(e) { console.error("Directory Generation Error:", e); }
+                });
+            } catch(e) { 
+                console.error("Roster Error. Please ensure you updated server.js with /api/community/users", e); 
+                document.getElementById('community-roster-list').innerHTML = '<div class="text-xs text-red-500 p-2">Server endpoint missing. Add /api/community/users to server.js</div>';
+            }
         }
 
         async function openChat(peerId, peerName) {
             targetChatId = peerId;
+            switchTab('messages'); // Auto-switch to messages view
             document.getElementById('chat-overlay').classList.add('hide');
             document.getElementById('active-chat-title').innerText = peerName;
             document.getElementById('active-chat-avatar').innerText = peerName.charAt(0);
             document.getElementById('nav-msg-badge').classList.add('hide'); document.getElementById('nav-msg-badge').innerText = '0';
             
-            buildDynamicDirectory(); // Refresh active state styling
+            fetchCommunityRoster(); // Refresh active highlights
             
             const tl = document.getElementById('chat-window-timeline');
-            tl.innerHTML = '<div class="text-center py-10 text-xs text-gray-400 font-bold"><i class="fa-solid fa-lock text-xl mb-2 text-gray-300"></i><br>Decrypting E2EE History...</div>';
+            tl.innerHTML = '';
             
             try {
                 const thread = await apiCall('/client-portal/thread');
-                tl.innerHTML = '<div class="w-full text-center mb-4"><span class="bg-yellow-50 text-yellow-800 text-[10px] font-bold px-3 py-1 rounded-full border border-yellow-200"><i class="fa-solid fa-shield-halved mr-1"></i> End-to-End Encrypted Thread</span></div>';
-                
                 const filtered = thread.filter(m => (m.sender_id === peerId && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === peerId));
                 
-                for (let msg of filtered) { await appendMsg(msg); }
+                // Add timestamp helper
+                let lastDate = null;
+                for (let m of filtered) { 
+                    const msgDate = new Date(m.created_at).toLocaleDateString();
+                    if(msgDate !== lastDate) {
+                        tl.innerHTML += `<div class="text-center my-2"><span class="text-[11px] text-gray-500 font-semibold uppercase">${msgDate}</span></div>`;
+                        lastDate = msgDate;
+                    }
+                    await appendMsg(m); 
+                }
                 scrollChat();
             } catch(e) { console.error("Thread Load Error:", e); }
         }
@@ -605,16 +597,13 @@
             const tl = document.getElementById('chat-window-timeline');
             const isMe = m.sender_id === userNode.id;
             const peerId = isMe ? m.receiver_id : m.sender_id;
-            
-            // Decrypt the payload
             const plaintext = await CryptoEngine.decrypt(m.ciphertext, m.iv, peerId);
             
-            const bubbleLayout = isMe ? 'self-end bg-professionalBlue text-white rounded-br-sm' : 'self-start bg-gray-100 text-gray-900 border border-gray-200 rounded-bl-sm';
-            const tick = isMe ? (m.is_read ? '<i class="fa-solid fa-check-double text-[9px] ml-1.5 text-blue-200"></i>' : '<i class="fa-solid fa-check text-[9px] ml-1.5 text-blue-300"></i>') : '';
+            const layout = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-100 text-gray-900 border border-gray-200';
             
-            tl.innerHTML += `<div class="max-w-[75%] px-4 py-2.5 text-sm rounded-2xl shadow-sm ${bubbleLayout}">
-                ${plaintext}
-                <div class="text-[9px] opacity-75 text-right mt-1.5 flex justify-end items-center">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}${tick}</div>
+            tl.innerHTML += `<div class="max-w-[70%] px-4 py-2 text-[15px] rounded-[20px] shadow-sm flex flex-col ${layout}">
+                <span>${plaintext}</span>
+                <span class="text-[10px] opacity-75 mt-0.5 ${isMe ? 'text-right text-blue-200' : 'text-left text-gray-500'}">${new Date(m.created_at || Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
             </div>`;
         }
 
@@ -632,34 +621,18 @@
             const inp = document.getElementById('chat-message-input');
             const plaintext = inp.value.trim();
             if(!plaintext || !targetChatId) return;
-            
             inp.value = '';
             socket.emit('typing_stop', { receiver_id: targetChatId });
             
             try {
-                // 1. Encrypt text locally before it ever hits the network
                 const encryptedPayload = await CryptoEngine.encrypt(plaintext, targetChatId);
-                
-                // 2. Optimistic UI update (using local plaintext)
-                const tempMsg = { 
-                    sender_id: userNode.id, receiver_id: targetChatId, 
-                    ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, 
-                    created_at: new Date() 
-                };
+                const tempMsg = { sender_id: userNode.id, receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, created_at: new Date() };
                 await appendMsg(tempMsg); scrollChat();
                 
-                // 3. Dispatch encrypted blob via REST API
-                await apiCall('/communications/send', 'POST', { 
-                    receiver_id: targetChatId, 
-                    ciphertext: encryptedPayload.ciphertext, 
-                    iv: encryptedPayload.iv, 
-                    sender_key: encryptedPayload.wrapped_key, 
-                    receiver_key: encryptedPayload.wrapped_key 
-                });
+                await apiCall('/communications/send', 'POST', { receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, sender_key: encryptedPayload.wrapped_key, receiver_key: encryptedPayload.wrapped_key });
             } catch(e) { alert("Encryption Fault: " + e.message); }
         });
 
-        // Initialize Core
         window.onload = setViewState;
     </script>
 </body>
