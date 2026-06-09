@@ -2,651 +2,457 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DAN74TECH Community Hub</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAN74TECH MEDIA | Client Operations Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        corporateYellow: '#FFD700',
+                        professionalBlue: '#0044FF',
+                        actionRed: '#FF2A2A',
+                        darkFooter: '#111827'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
     <style>
-        :root {
-            --brand-blue: #0044ff;
-            --brand-red: #ff2a2a;
-            --brand-yellow: #ffd700;
-            --bg-social: #f0f2f5;
-        }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-social); 
-            -webkit-tap-highlight-color: transparent;
-        }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        ::-webkit-scrollbar { display: none; }
-        
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        
-        .nav-item { color: #64748b; transition: all 0.2s; }
-        .nav-item.active { color: var(--brand-blue); }
-        .nav-item.active i { transform: scale(1.1); color: var(--brand-blue); }
-        
-        .chat-bubble { max-width: 80%; animation: slideUp 0.3s ease-out forwards; position: relative;}
-        .chat-user { background-color: var(--brand-blue); color: #fff; border-bottom-right-radius: 4px; }
-        .chat-admin { background-color: #fff; color: #0f172a; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .fab-services {
-            background: linear-gradient(135deg, var(--brand-blue), var(--brand-red));
-            box-shadow: 0 4px 15px rgba(0, 68, 255, 0.3);
-        }
-
-        /* Status Tick Indicators */
-        .msg-status { font-size: 0.65rem; margin-left: 4px; }
-        .status-pending { color: rgba(255,255,255,0.6); }
-        .status-delivered { color: #fff; }
-        .status-read { color: var(--brand-yellow); }
+        /* Strict ban on dark-mode overrides on document body */
+        body { background-color: #f9fafb !important; color: #111827 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hide { display: none !important; }
+        .chat-container { max-height: 400px; overflow-y: auto; }
     </style>
 </head>
-<body class="antialiased pb-20">
+<body class="antialiased flex flex-col min-h-screen">
 
-    <header class="fixed top-0 w-full bg-white border-b border-gray-200 z-40 shadow-sm h-14 flex items-center justify-between px-4">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px]">
-                <div class="w-full h-full bg-white rounded-md flex items-center justify-center overflow-hidden">
-                    <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=D74'">
-                </div>
+    <section id="auth-section" class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md border-t-4 border-professionalBlue">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-professionalBlue">DAN74TECH MEDIA</h1>
+                <p class="text-sm text-gray-500">Client Operations Portal</p>
             </div>
-            <span class="text-[15px] font-extrabold tracking-tight text-gray-900 font-mono">DAN74TECH</span>
+
+            <div id="login-view">
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="login-email" required class="mt-1 w-full px-4 py-2 border rounded-md focus:ring-professionalBlue focus:border-professionalBlue outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Access Credential</label>
+                        <input type="password" id="login-password" required class="mt-1 w-full px-4 py-2 border rounded-md focus:ring-professionalBlue focus:border-professionalBlue outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-professionalBlue text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">Authenticate Pipeline</button>
+                </form>
+                <p class="mt-4 text-center text-sm">No operational clearance? <a href="#" onclick="toggleAuth('register')" class="text-professionalBlue hover:underline">Request Access</a></p>
+            </div>
+
+            <div id="register-view" class="hide">
+                <form id="register-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="reg-name" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" id="reg-email" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Phone Vector</label>
+                        <input type="text" id="reg-phone" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Access Credential</label>
+                        <input type="password" id="reg-password" required class="mt-1 w-full px-4 py-2 border rounded-md outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2 px-4 rounded-md hover:bg-yellow-500 transition duration-200">Initialize Profile</button>
+                </form>
+                <p class="mt-4 text-center text-sm">Existing clearance? <a href="#" onclick="toggleAuth('login')" class="text-professionalBlue hover:underline">Authenticate Here</a></p>
+            </div>
         </div>
-        <div class="flex items-center gap-4 text-gray-600">
-            <button class="relative hover:bg-gray-100 p-2 rounded-full transition-colors">
-                <i class="fa-solid fa-bell"></i>
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff2a2a] rounded-full border border-white"></span>
-            </button>
-            <div id="header-avatar" class="w-8 h-8 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer" onclick="switchTab('profile')">--</div>
+    </section>
+
+    <section id="dashboard-section" class="flex-grow hide flex flex-col">
+        <nav class="bg-professionalBlue text-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-corporateYellow text-xl"></i>
+                        <span class="font-bold text-lg tracking-wider">DAN74TECH MATRIX</span>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <span id="user-greeting" class="text-sm font-medium hidden sm:block"></span>
+                        <button onclick="logoutPipeline()" class="bg-actionRed hover:bg-red-700 px-4 py-1.5 rounded text-sm font-bold transition">Terminate Session</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="bg-corporateYellow text-gray-900 text-xs font-bold px-4 py-2 text-center uppercase tracking-widest shadow-sm">
+            System Telemetry: <span id="telemetry-status">Syncing Data Node...</span>
         </div>
-    </header>
 
-    <main class="pt-16 px-0 md:max-w-2xl md:mx-auto">
-        
-        <section id="view-feed" class="tab-content active space-y-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="bg-white p-4 shadow-sm border-b border-gray-100">
-                <div class="flex items-center gap-3 mb-3">
-                    <div id="feed-avatar" class="w-10 h-10 rounded-full bg-blue-100 text-[#0044ff] flex items-center justify-center font-bold flex-shrink-0">--</div>
-                    <div class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm text-gray-500 cursor-pointer hover:bg-gray-200 transition-colors" onclick="openSubmissionModal()">
-                        Share a project, blog, or technical inquiry...
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-rocket text-professionalBlue mr-2"></i>Active Deployments (Orders)</h2>
+                        <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="text-xs bg-professionalBlue text-white px-3 py-1.5 rounded hover:bg-blue-700">New Deployment</button>
+                    </div>
+                    <div class="p-6 overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2">ID</th>
+                                    <th class="px-4 py-2">Service</th>
+                                    <th class="px-4 py-2">Status</th>
+                                    <th class="px-4 py-2">Financials</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-registry-body">
+                                <tr><td colspan="4" class="text-center py-4 text-gray-400">Pulling ledger data...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="flex justify-around border-t border-gray-50 pt-2 text-xs font-bold text-gray-500">
-                    <button onclick="openSubmissionModal('portfolio')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-briefcase text-[#0044ff]"></i> Portfolio</button>
-                    <button onclick="openSubmissionModal('blog')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-newspaper text-red-500"></i> Blog Post</button>
-                    <button onclick="openSubmissionModal('case_study')" class="flex items-center gap-2 hover:text-[#0044ff]"><i class="fa-solid fa-chart-line text-[#ffd700]"></i> Case Study</button>
-                </div>
-            </div>
 
-            <div id="feed-container" class="space-y-3 pb-6">
-                <div class="text-center py-10 text-gray-400">
-                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-[#0044ff]"></i>
-                    <p class="text-xs font-mono mt-2">Synchronizing Network Data...</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-chat" class="tab-content h-[calc(100vh-7rem)] flex flex-col bg-white">
-            
-            <div class="px-2 py-3 border-b border-gray-100 bg-gray-50 sticky top-14 z-30">
-                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-2 mb-2 font-mono">Active Network</h4>
-                <div id="active-users-directory" class="flex gap-3 overflow-x-auto px-2 pb-2 snap-x">
-                    <div class="flex flex-col items-center gap-1 min-w-[60px] cursor-pointer opacity-100 snap-center" onclick="setChatTarget(1, 'Admin Support')">
-                        <div class="w-12 h-12 rounded-full bg-[#ffd700] border-2 border-[#0044ff] flex items-center justify-center text-black font-bold shadow-sm relative">
-                            <i class="fa-solid fa-headset text-lg"></i>
-                            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <span class="text-[10px] font-bold text-gray-800 text-center leading-tight">Admin</span>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-gray-50 px-6 py-4 border-b">
+                        <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-box-archive text-professionalBlue mr-2"></i>Secure File Deliveries</h2>
                     </div>
+                    <div class="p-6">
+                        <ul id="files-registry-body" class="space-y-3">
+                            <li class="text-sm text-gray-500">Searching secure delivery network...</li>
+                        </ul>
                     </div>
-                <div class="px-2 mt-1 flex items-center justify-between">
-                    <h3 id="current-chat-target" class="text-sm font-extrabold text-[#0044ff]">Thread: Admin Support</h3>
-                    <p class="text-[10px] text-emerald-600 font-mono font-bold flex items-center gap-1">
-                        <span id="socket-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Connected
-                    </p>
                 </div>
+
             </div>
 
-            <div id="chat-thread" class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8fafc]">
-            </div>
-
-            <form id="client-message-form" class="p-3 bg-white border-t border-gray-200 sticky bottom-14 md:bottom-0">
-                <div id="attachment-preview" class="hidden mb-2 flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg w-max max-w-full overflow-hidden">
-                    <i class="fa-solid fa-paperclip text-[#0044ff] text-xs"></i>
-                    <span id="attachment-name" class="text-xs font-mono text-gray-700 truncate">file.pdf</span>
-                    <button type="button" onclick="removeAttachment()" class="text-[#ff2a2a] ml-2"><i class="fa-solid fa-xmark"></i></button>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-[600px]">
+                <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-headset text-actionRed mr-2"></i>Matrix Support Thread</h2>
+                    <span id="socket-indicator" class="h-3 w-3 bg-red-500 rounded-full" title="Socket Disconnected"></span>
                 </div>
-                <div class="flex items-end gap-2">
-                    <label class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-[#0044ff] transition-colors cursor-pointer flex-shrink-0">
-                        <i class="fa-solid fa-paperclip"></i>
-                        <input type="file" id="chat-file-upload" class="hidden">
-                    </label>
-                    <textarea id="chat-input" rows="1" class="flex-1 bg-gray-100 border-none rounded-2xl px-4 py-3 text-sm text-gray-800 focus:ring-0 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
-                    <button type="submit" id="btn-send-chat" class="w-10 h-10 rounded-full bg-[#0044ff] flex items-center justify-center text-white shadow-md hover:bg-blue-700 transition-colors flex-shrink-0">
-                        <i class="fa-solid fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px]"></i>
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <section id="view-profile" class="tab-content bg-white min-h-[calc(100vh-3.5rem)]">
-            <div class="relative h-32 bg-gradient-to-r from-[#0044ff] to-[#ff2a2a]"></div>
-            <div class="px-4 pb-6 relative">
-                <div id="profile-avatar-lg" class="w-24 h-24 rounded-full bg-white border-4 border-white shadow-lg flex items-center justify-center text-3xl font-bold text-[#0044ff] -mt-12 mb-3 mx-auto relative z-10">
-                    --
-                </div>
-                <div class="text-center space-y-1">
-                    <h2 id="profile-name" class="text-xl font-extrabold text-gray-900">User Identity</h2>
-                    <p id="profile-role" class="text-xs font-mono font-bold text-[#0044ff] uppercase tracking-widest bg-blue-50 inline-block px-2 py-0.5 rounded">Verified Client</p>
-                </div>
-
-                <div class="mt-8 space-y-4">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-3">
-                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-mono">Telemetry Data</h4>
-                        <div class="flex items-center gap-3 text-sm">
-                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-envelope"></i></div>
-                            <span id="profile-email" class="text-gray-700 font-mono">--</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm">
-                            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm"><i class="fa-solid fa-phone"></i></div>
-                            <span id="profile-phone" class="text-gray-700 font-mono">--</span>
-                        </div>
+                
+                <div id="chat-window" class="chat-container flex-grow p-4 bg-gray-50 flex flex-col gap-3">
                     </div>
-
-                    <button onclick="logout()" class="w-full py-3 rounded-xl border-2 border-red-50 text-[#ff2a2a] font-bold text-sm hover:bg-red-50 transition-colors">
-                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Terminate Session
-                    </button>
+                
+                <div class="p-4 border-t bg-white">
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Transmit message..." required class="flex-grow px-3 py-2 border rounded-md outline-none focus:border-professionalBlue text-sm">
+                        <button type="submit" class="bg-professionalBlue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
                 </div>
             </div>
-        </section>
-    </main>
 
-    <div id="post-submission-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end md:items-center justify-center">
-        <div class="bg-white w-full md:w-[500px] rounded-t-2xl md:rounded-2xl p-5 transform transition-transform translate-y-full md:translate-y-0 duration-300" id="post-modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-extrabold text-lg text-gray-900">Create Submission</h3>
-                <button onclick="closeSubmissionModal()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+    </section>
+
+    <div id="order-modal" class="hide fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
+            <div class="px-6 py-4 border-b bg-professionalBlue text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg">Initialize Deployment Request</h3>
+                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="text-white hover:text-gray-300"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <form id="content-submission-form" class="space-y-4">
+            <form id="new-order-form" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Content Type</label>
-                    <select id="post-type" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff]">
-                        <option value="portfolio">Portfolio Project</option>
-                        <option value="blog_posts">Technical Blog</option>
-                        <option value="case_studies">Case Study</option>
+                    <label class="block text-sm font-medium text-gray-700">Target Service</label>
+                    <select id="order-service" class="mt-1 w-full px-3 py-2 border rounded-md outline-none" required>
+                        <option value="">Select Primary Architecture</option>
+                        <option value="Web Development">Web Application Development</option>
+                        <option value="Branding">Corporate Identity & Branding</option>
+                        <option value="Digital Marketing">Digital Pipeline Marketing</option>
+                        <option value="Systems Integration">API & Systems Integration</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Title</label>
-                    <input type="text" id="post-title" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff]">
+                    <label class="block text-sm font-medium text-gray-700">Project Vector Specifications</label>
+                    <textarea id="order-details" rows="3" required placeholder="Detail the operational requirements..." class="mt-1 w-full px-3 py-2 border rounded-md outline-none resize-none"></textarea>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase font-mono mb-1">Details / Content</label>
-                    <textarea id="post-content" rows="4" required class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#0044ff] resize-none"></textarea>
+                <div class="bg-blue-50 p-3 rounded border border-blue-100 text-xs text-blue-800">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Submitting this form activates the Safaricom STK fallback loop. You will be redirected to our encrypted WhatsApp conduit to finalize transaction authentication.
                 </div>
-                <div class="bg-blue-50 text-[#0044ff] text-[10px] font-mono p-2 rounded flex items-start gap-2">
-                    <i class="fa-solid fa-circle-info mt-0.5"></i>
-                    <p>Submissions enter a 'pending' state. They will appear in the global feed upon Administrator verification.</p>
-                </div>
-                <button type="submit" class="w-full py-3 bg-[#0044ff] text-white rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition-colors">
-                    Submit to Network
-                </button>
+                <button type="submit" class="w-full bg-corporateYellow text-gray-900 font-bold py-2 rounded-md hover:bg-yellow-500 transition">Transmit Request & Proceed to Payment</button>
             </form>
         </div>
     </div>
 
-    <a href="services.html" class="fab-services fixed bottom-20 right-4 w-14 h-14 rounded-full flex items-center justify-center text-white z-40 transition-transform active:scale-95 md:right-[calc(50vw-300px)]">
-        <i class="fa-solid fa-layer-group text-xl"></i>
-    </a>
-
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 h-14 flex items-center justify-around px-2 z-50 md:max-w-2xl md:mx-auto md:left-0 md:right-0">
-        <button onclick="switchTab('feed')" class="nav-item active flex flex-col items-center justify-center w-16 gap-1" data-target="feed">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[9px] font-bold">Feed</span>
-        </button>
-        <a href="services.html" class="nav-item flex flex-col items-center justify-center w-16 gap-1">
-            <i class="fa-solid fa-store text-lg"></i>
-            <span class="text-[9px] font-bold">Store</span>
-        </a>
-        <button onclick="switchTab('chat')" class="nav-item flex flex-col items-center justify-center w-16 gap-1 relative" data-target="chat">
-            <i class="fa-solid fa-comment-dots text-lg"></i>
-            <span class="text-[9px] font-bold">Inbox</span>
-        </button>
-        <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center justify-center w-16 gap-1" data-target="profile">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[9px] font-bold">Profile</span>
-        </button>
-    </nav>
+    <footer class="bg-darkFooter text-gray-400 py-6 text-center text-sm mt-auto">
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> DAN74TECH MEDIA. All operational vectors secured.</p>
+        <p class="text-xs mt-1">Lead Systems Architecture by Daniel Ngumi | Meru, Kenya</p>
+    </footer>
 
     <script>
-        // API Configuration & Networking Context
-        const hostname = window.location.hostname;
-        const isLocalNetwork = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
-        const API_BASE = isLocalNetwork ? 'http://localhost:10000/api' : '/api';
-        const SOCKET_URL = isLocalNetwork ? 'http://localhost:10000' : window.location.origin;
-         
-        let authToken = localStorage.getItem('token') || localStorage.getItem('dan74_admin_token') || localStorage.getItem('dan74_token'); 
-        let userNode = JSON.parse(localStorage.getItem('user') || localStorage.getItem('dan74_admin_user') || localStorage.getItem('user_context') || 'null');
-        let selectedFile = null;
-        let activeChatReceiverId = 1; // Defaulting 1 to Admin
-        let socket;
+        // API Base Vector Mapping
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:10000/api' 
+            : 'https://dan74techweb.onrender.com/api'; // Replace with actual production URL if different
 
-        // Security Authentication Block
-        if (!authToken || !userNode) {
-            window.location.replace('login.html');
-        }
+        let token = localStorage.getItem('dan74tech_token');
+        let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
+        let socket = null;
 
-        // Boot Sequence Master Function
-        document.addEventListener('DOMContentLoaded', () => {
-            if (userNode) populateUserData();
-            
-            // Phase 1: Operational Telemetry Synchronization
-            triggerTelemetryClockPulse();
-            runSystemTelemetryDatabaseSynchronization();
+        // Phase 10.3 Centralized Dashboard Module Registry Mapping
+        const MODULE_REGISTRY = {
+            orders: { endpoint: '/orders/user/', renderer: renderOrders },
+            files: { endpoint: '/file-deliveries/client/', renderer: renderFiles },
+            chat: { endpoint: '/client-portal/thread', renderer: renderChatHistory }
+        };
 
-            // Load Interface Data Blocks
-            loadSocialFeed();
-            loadActiveDirectory();
-            loadChatThread();
-            
-            // Phase 5: Initialize Real-Time WebSocket Infrastructure
-            initSocketConnection();
-        });
+        // UI View Toggles
+        const toggleAuth = (view) => {
+            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
+            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
+        };
 
-        // ==========================================
-        // PHASE 1: TELEMETRY ENGINE
-        // ==========================================
-        function triggerTelemetryClockPulse() {
-            const start = performance.now();
-            setTimeout(() => {
-                const end = performance.now();
-                if ((end - start) > 100) {
-                    console.warn("⚠️ Telemetry Pulse: Interface thread blockage detected (>100ms latency).");
-                }
-            }, 0);
-        }
-
-        async function runSystemTelemetryDatabaseSynchronization() {
-            try {
-                // Ping the backend admin stats if accessible to aggregate data logic
-                const res = await fetch(`${API_BASE}/admin/dashboard-stats`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                if(res.ok) console.log("✅ Telemetry Data Matrix Synchronized.");
-            } catch (err) {
-                console.log("Telemetry sync pending operational parameters.");
-            }
-        }
-
-        // ==========================================
-        // CORE UI & PROFILE MANAGEMENT
-        // ==========================================
-        function populateUserData() {
-            const initials = userNode.name ? userNode.name.substring(0, 2).toUpperCase() : 'U';
-            document.getElementById('header-avatar').textContent = initials;
-            document.getElementById('feed-avatar').textContent = initials;
-            document.getElementById('profile-avatar-lg').textContent = initials;
-            
-            document.getElementById('profile-name').textContent = userNode.name || 'Unknown User';
-            document.getElementById('profile-email').textContent = userNode.email || 'N/A';
-            document.getElementById('profile-phone').textContent = userNode.phone || 'No phone recorded';
-            document.getElementById('profile-role').textContent = userNode.role === 'admin' ? 'System Admin' : 'Verified Client';
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(`view-${tabId}`).classList.add('active');
-            const navBtn = document.querySelector(`.nav-item[data-target="${tabId}"]`);
-            if(navBtn) navBtn.classList.add('active');
-
-            if (tabId === 'chat') {
-                const thread = document.getElementById('chat-thread');
-                thread.scrollTop = thread.scrollHeight;
-            }
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.replace('login.html');
-        }
-
-        // ==========================================
-        // PHASE 5: FACEBOOK-STYLE COMMUNITY FEED
-        // ==========================================
-        function openSubmissionModal(presetType = 'portfolio') {
-            document.getElementById('post-type').value = presetType;
-            const modal = document.getElementById('post-submission-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('post-modal-content').classList.remove('translate-y-full');
-            }, 10);
-        }
-
-        function closeSubmissionModal() {
-            document.getElementById('post-modal-content').classList.add('translate-y-full');
-            setTimeout(() => {
-                document.getElementById('post-submission-modal').classList.add('hidden');
-            }, 300);
-        }
-
-        document.getElementById('content-submission-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const type = document.getElementById('post-type').value;
-            const payload = {
-                title: document.getElementById('post-title').value,
-                content: document.getElementById('post-content').value,
-                publisher_id: userNode.id,
-                is_approved: false // Strict master flow requirement
-            };
-
-            try {
-                // Post to respective architectural endpoints. 
-                // Assumes backend routing adapts to `POST /api/:table` dynamically.
-                const res = await fetch(`${API_BASE}/${type}`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (res.ok) {
-                    alert("Submission received successfully. Awaiting Administrator verification.");
-                    document.getElementById('content-submission-form').reset();
-                    closeSubmissionModal();
-                } else {
-                    alert("System error accepting submission.");
-                }
-            } catch (err) {
-                console.error("Submission failed:", err);
-            }
-        });
-
-        async function loadSocialFeed() {
-            const container = document.getElementById('feed-container');
-            try {
-                const [blogs, caseStudies, testimonials] = await Promise.all([
-                    fetch(`${API_BASE}/blogs`).then(res => res.json()).catch(() => []),
-                    fetch(`${API_BASE}/case-studies`).then(res => res.json()).catch(() => []),
-                    fetch(`${API_BASE}/testimonials/approved`).then(res => res.json()).catch(() => [])
-                ]);
-
-                let feedItems = [];
-
-                if (Array.isArray(blogs)) blogs.forEach(b => feedItems.push(formatFeedItem(b, 'Blog Post', 'fa-newspaper', 'text-blue-500')));
-                if (Array.isArray(caseStudies)) caseStudies.forEach(c => feedItems.push(formatFeedItem(c, 'Case Study', 'fa-chart-line', 'text-[#ff2a2a]')));
-                if (Array.isArray(testimonials)) testimonials.forEach(t => feedItems.push(formatFeedItem(t, 'Community Review', 'fa-star', 'text-[#ffd700]')));
-
-                feedItems.sort((a, b) => b.date - a.date);
-
-                container.innerHTML = '';
-                if (feedItems.length === 0) {
-                    container.innerHTML = `<div class="text-center p-8 bg-white text-gray-400 font-mono text-xs">No active verified network data found.</div>`;
-                    return;
-                }
-
-                feedItems.forEach(item => {
-                    const timeStr = new Date(item.rawDate).toLocaleDateString();
-                    const card = document.createElement('div');
-                    card.className = "bg-white shadow-sm border-y border-gray-100 mb-2";
-                    card.innerHTML = `
-                        <div class="px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-lg ${item.color}">
-                                    <i class="fa-solid ${item.icon}"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-gray-900">${item.author}</h4>
-                                    <div class="text-[10px] text-gray-500 font-mono flex items-center gap-1">
-                                        <span>${timeStr}</span> • <i class="fa-solid fa-earth-africa"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest px-2 py-1 bg-gray-50 rounded">${item.type}</span>
-                        </div>
-                        <div class="px-4 pb-2">
-                            <h3 class="text-base font-extrabold text-gray-900 leading-tight mb-1">${item.title}</h3>
-                            <p class="text-sm text-gray-700 leading-relaxed font-sans">${item.body}</p>
-                        </div>
-                        ${item.image ? `<img src="${item.image}" class="w-full max-h-72 object-cover bg-gray-100 border-y border-gray-50">` : ''}
-                        <div class="px-4 py-1 border-t border-gray-50 flex items-center justify-between">
-                            <div class="flex gap-1 py-2 text-[11px] text-gray-500 font-bold">
-                                <div class="flex items-center justify-center w-5 h-5 rounded-full bg-[#0044ff] text-white"><i class="fa-solid fa-thumbs-up text-[10px]"></i></div>
-                                <span>${item.likes}</span>
-                            </div>
-                            <div class="flex items-center text-gray-500 gap-4 text-xs font-bold">
-                                <button class="flex items-center gap-1.5 hover:text-[#0044ff] transition-colors"><i class="fa-regular fa-thumbs-up text-lg"></i> Support</button>
-                                <button onclick="switchTab('chat')" class="flex items-center gap-1.5 hover:text-[#0044ff] transition-colors"><i class="fa-regular fa-message text-lg"></i> Connect</button>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-
-            } catch (err) {
-                container.innerHTML = `<div class="p-6 text-center text-[#ff2a2a] text-xs font-mono">Feed sync failure: ${err.message}</div>`;
-            }
-        }
-
-        function formatFeedItem(obj, type, icon, color) {
-            return {
-                type: type, icon: icon, color: color,
-                author: obj.publisher_name || obj.client_name || 'DAN74TECH Community',
-                title: obj.title || `Rating: ${obj.rating} Stars`,
-                body: obj.content ? obj.content.substring(0, 150) + '...' : obj.review || obj.challenge,
-                image: obj.image_url || null,
-                date: new Date(obj.created_at).getTime(),
-                rawDate: obj.created_at,
-                likes: Math.floor(Math.random() * 50) + 5 
-            };
-        }
-
-        // ==========================================
-        // PHASE 5: REAL-TIME WEBSOCKET P2P CHAT
-        // ==========================================
-        function initSocketConnection() {
-            if (typeof io !== 'undefined') {
-                socket = io(SOCKET_URL);
-                socket.on('connect', () => {
-                    document.getElementById('socket-status-dot').classList.replace('bg-red-500', 'bg-emerald-500');
-                    socket.emit('join_thread', userNode.id.toString());
-                });
-
-                socket.on('receive_message', (msg) => {
-                    if(msg.sender_id === activeChatReceiverId || msg.receiver_id === activeChatReceiverId) {
-                        appendMessageToThread(msg);
-                        const thread = document.getElementById('chat-thread');
-                        thread.scrollTop = thread.scrollHeight;
-                    }
-                });
-
-                socket.on('disconnect', () => {
-                    document.getElementById('socket-status-dot').classList.replace('bg-emerald-500', 'bg-red-500');
-                });
+        const setViewState = () => {
+            if (token && userNode) {
+                document.getElementById('auth-section').classList.add('hide');
+                document.getElementById('dashboard-section').classList.remove('hide');
+                document.getElementById('user-greeting').innerText = `Clearance: ${userNode.name} (${userNode.role.toUpperCase()})`;
+                triggerTelemetryClockPulse();
+                executeModuleRegistrySync();
+                initializeWebSocketEngine();
             } else {
-                console.error("Socket.io library uninitialized. Fallback required.");
+                document.getElementById('auth-section').classList.remove('hide');
+                document.getElementById('dashboard-section').classList.add('hide');
             }
-        }
+        };
 
-        async function loadActiveDirectory() {
-            const directoryContainer = document.getElementById('active-users-directory');
-            try {
-                // Pull active user roster for P2P connection
-                const res = await fetch(`${API_BASE}/users`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                if (res.ok) {
-                    const users = await res.json();
-                    users.forEach(u => {
-                        if(u.id !== userNode.id && u.role !== 'admin') {
-                            const initial = u.name.substring(0, 1).toUpperCase();
-                            directoryContainer.innerHTML += `
-                                <div class="flex flex-col items-center gap-1 min-w-[60px] cursor-pointer opacity-70 hover:opacity-100 snap-center transition-opacity" onclick="setChatTarget(${u.id}, '${u.name}')">
-                                    <div class="w-12 h-12 rounded-full bg-blue-100 border border-[#0044ff] flex items-center justify-center text-[#0044ff] font-bold shadow-sm">
-                                        ${initial}
-                                    </div>
-                                    <span class="text-[10px] text-gray-500 text-center leading-tight truncate w-full px-1">${u.name.split(' ')[0]}</span>
-                                </div>
-                            `;
-                        }
-                    });
-                }
-            } catch (err) {
-                console.log("Directory fetching restricted by active role scope.");
-            }
-        }
-
-        function setChatTarget(id, name) {
-            activeChatReceiverId = id;
-            document.getElementById('current-chat-target').innerText = `Thread: ${name}`;
-            loadChatThread(); // Refresh thread based on new selection
-        }
-
-        async function loadChatThread() {
-            const threadContainer = document.getElementById('chat-thread');
-            const atBottom = threadContainer.scrollHeight - threadContainer.scrollTop <= threadContainer.clientHeight + 50;
-
-            try {
-                // Using generic portal thread fetch, backend logic processes query based on JWT
-                const res = await fetch(`${API_BASE}/client-portal/thread`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                if (!res.ok) throw new Error(`Communication error: HTTP ${res.status}`);
-                
-                const messages = await res.json();
-                threadContainer.innerHTML = '';
-                
-                // Filter messages visually if backend aggregates all
-                const filteredMessages = messages.filter(m => m.sender_id === activeChatReceiverId || m.receiver_id === activeChatReceiverId || activeChatReceiverId === 1);
-
-                if (filteredMessages.length === 0) {
-                    threadContainer.innerHTML = `
-                        <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 opacity-70">
-                            <i class="fa-solid fa-satellite-dish text-4xl mb-3 text-gray-300"></i>
-                            <p class="text-xs font-mono">Transmission channel is clear.<br>Send a message to initiate contact.</p>
-                        </div>`;
-                    return;
-                }
-
-                filteredMessages.forEach(msg => appendMessageToThread(msg));
-                if (atBottom) threadContainer.scrollTop = threadContainer.scrollHeight;
-
-            } catch (err) {
-                if (err.message.includes('Auth') || err.message.includes('401')) {
-                    logout();
-                }
-            }
-        }
-
-        function appendMessageToThread(msg) {
-            const threadContainer = document.getElementById('chat-thread');
-            const isClient = msg.sender_id === userNode.id;
-            const alignment = isClient ? 'justify-end' : 'justify-start';
-            const bubbleClass = isClient ? 'chat-user rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'chat-admin rounded-tl-2xl rounded-tr-2xl rounded-br-2xl';
-            const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        // Universal Network Interceptor
+        const apiCall = async (endpoint, method = 'GET', body = null) => {
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
             
-            // Render Status Ticks
-            let statusIcon = '<i class="fa-solid fa-clock status-pending msg-status"></i>';
-            if (msg.delivery_status === 'delivered') statusIcon = '<i class="fa-solid fa-check status-delivered msg-status"></i>';
-            if (msg.delivery_status === 'read' || msg.is_read) statusIcon = '<i class="fa-solid fa-check-double status-read msg-status"></i>';
-            if (!isClient) statusIcon = ''; // Hide receipt for incoming msgs
+            const config = { method, headers };
+            if (body) config.body = JSON.stringify(body);
 
-            let attachmentHtml = '';
-            if (msg.attachment_url) {
-                const isImage = msg.attachment_url.match(/\.(jpeg|jpg|gif|png|webp)/i);
-                if(isImage) {
-                    attachmentHtml = `<div class="mt-2"><img src="${msg.attachment_url}" class="rounded-lg max-w-full h-auto border border-white/20 shadow-sm" onclick="window.open('${msg.attachment_url}')"></div>`;
-                } else {
-                    attachmentHtml = `<a href="${msg.attachment_url}" target="_blank" class="mt-2 inline-flex items-center gap-2 px-3 py-2 bg-black/10 rounded-lg text-xs font-mono hover:bg-black/20 transition-colors"><i class="fa-solid fa-file-arrow-down"></i> ${msg.attachment_name || 'File'}</a>`;
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, config);
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || data.message || 'Network vector failed');
+                return data;
+            } catch (error) {
+                console.error(`API Fault [${endpoint}]:`, error);
+                alert(`System Error: ${error.message}`);
+                throw error;
+            }
+        };
+
+        // Auth Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+            };
+            const res = await apiCall('/auth/login', 'POST', payload);
+            if(res.success) { authorizeSession(res.token, res.user); }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                phone: document.getElementById('reg-phone').value,
+                password: document.getElementById('reg-password').value
+            };
+            const res = await apiCall('/auth/register', 'POST', payload);
+            if(res.success) { authorizeSession(res.token, res.user); }
+        });
+
+        const authorizeSession = (jwt, user) => {
+            localStorage.setItem('dan74tech_token', jwt);
+            localStorage.setItem('dan74tech_user', JSON.stringify(user));
+            token = jwt; userNode = user;
+            setViewState();
+        };
+
+        const logoutPipeline = () => {
+            localStorage.removeItem('dan74tech_token');
+            localStorage.removeItem('dan74tech_user');
+            token = null; userNode = null;
+            if (socket) socket.disconnect();
+            setViewState();
+        };
+
+        // Phase 4 Telemetry Discovery
+        const triggerTelemetryClockPulse = () => {
+            const statusNode = document.getElementById('telemetry-status');
+            setInterval(() => {
+                const date = new Date();
+                statusNode.innerText = `LOCKED ON EAT CLOCK: ${date.toLocaleTimeString('en-KE')} | SECURE CONNECTION`;
+            }, 1000);
+        };
+
+        // Master Sync Dispatcher
+        const executeModuleRegistrySync = async () => {
+            for (const [key, module] of Object.entries(MODULE_REGISTRY)) {
+                try {
+                    // Chat thread does not require user.id appended to URL in our server.js API
+                    const targetEndpoint = key === 'chat' ? module.endpoint : `${module.endpoint}${userNode.id}`;
+                    const data = await apiCall(targetEndpoint, 'GET');
+                    module.renderer(data);
+                } catch (e) {
+                    console.warn(`Module Sync Warning [${key}]: Missing data nodes.`);
                 }
             }
+        };
 
-            threadContainer.innerHTML += `
-                <div class="flex ${alignment} w-full">
-                    <div class="chat-bubble p-3 shadow-sm text-sm ${bubbleClass}">
-                        <p class="whitespace-pre-wrap leading-relaxed">${msg.message_body}</p>
-                        ${attachmentHtml}
-                        <div class="text-[9px] mt-1 font-mono text-right flex justify-end items-center gap-1 opacity-90">
-                            ${time} ${statusIcon}
-                        </div>
-                    </div>
+        // Render Functions
+        function renderOrders(orders) {
+            const tbody = document.getElementById('orders-registry-body');
+            tbody.innerHTML = '';
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-sm text-gray-500">No active deployments detected.</td></tr>`;
+                return;
+            }
+            orders.forEach(order => {
+                const statusColor = order.status === 'completed' ? 'text-green-600' : 'text-corporateYellow';
+                const row = `<tr class="border-b">
+                    <td class="px-4 py-3 text-xs font-bold">#ORD-${order.id}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">${order.service}</td>
+                    <td class="px-4 py-3 font-bold ${statusColor} uppercase text-xs">${order.status}</td>
+                    <td class="px-4 py-3 text-xs">
+                        <span class="px-2 py-1 rounded bg-gray-100 ${order.payment_status === 'paid' ? 'text-green-600' : 'text-actionRed'}">${order.payment_status.toUpperCase()}</span>
+                    </td>
+                </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        function renderFiles(files) {
+            const list = document.getElementById('files-registry-body');
+            list.innerHTML = '';
+            if (files.length === 0) {
+                list.innerHTML = `<li class="text-sm text-gray-500">No encrypted payloads ready for download.</li>`;
+                return;
+            }
+            files.forEach(file => {
+                const item = `<li class="flex items-center justify-between p-3 bg-gray-50 rounded border">
+                    <div class="flex items-center"><i class="fa-solid fa-file-pdf text-actionRed mr-3"></i> <span class="text-sm font-medium text-gray-700">${file.file_name}</span></div>
+                    <a href="${file.file_url}" target="_blank" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded font-bold transition">Decrypt & Download</a>
+                </li>`;
+                list.insertAdjacentHTML('beforeend', item);
+            });
+        }
+
+        // New Order Submission with WhatsApp Intercept
+        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                user_id: userNode.id,
+                customer_name: userNode.name,
+                phone: userNode.phone || 'N/A',
+                service: document.getElementById('order-service').value,
+                project_details: document.getElementById('order-details').value
+            };
+            
+            try {
+                const res = await apiCall('/orders', 'POST', payload);
+                if (res.success && res.whatsapp_redirect) {
+                    document.getElementById('order-modal').classList.add('hide');
+                    executeModuleRegistrySync(); // Refresh UI
+                    window.open(res.whatsapp_redirect, '_blank'); // Trigger Intercept
+                }
+            } catch (err) {
+                // Handled in apiCall
+            }
+        });
+
+        // =========================================================================
+        // ======================== WEBSOCKET DUPLEX CHAT ==========================
+        // =========================================================================
+        function initializeWebSocketEngine() {
+            // Bind to base URL, stripping /api
+            const socketUrl = API_BASE.replace('/api', '');
+            socket = io(socketUrl);
+
+            socket.on('connect', () => {
+                document.getElementById('socket-indicator').classList.replace('bg-red-500', 'bg-green-500');
+                document.getElementById('socket-indicator').title = "Socket Matrix Active";
+                socket.emit('join_thread', userNode.id);
+            });
+
+            socket.on('disconnect', () => {
+                document.getElementById('socket-indicator').classList.replace('bg-green-500', 'bg-red-500');
+                document.getElementById('socket-indicator').title = "Socket Matrix Severed";
+            });
+
+            socket.on('receive_message', (msgNode) => {
+                appendChatMessage(msgNode);
+                scrollToChatBottom();
+            });
+        }
+
+        function renderChatHistory(messages) {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.innerHTML = '';
+            if(messages.length === 0) {
+                chatWindow.innerHTML = '<div class="text-center text-xs text-gray-400 mt-4">Commence secure transmission. Admin is standing by.</div>';
+            }
+            messages.forEach(msg => appendChatMessage(msg));
+            scrollToChatBottom();
+        }
+
+        function appendChatMessage(msg) {
+            const chatWindow = document.getElementById('chat-window');
+            const isMe = msg.sender_id === userNode.id;
+            
+            const alignment = isMe ? 'self-end bg-professionalBlue text-white' : 'self-start bg-gray-200 text-gray-900';
+            const radius = isMe ? 'rounded-l-lg rounded-tr-lg' : 'rounded-r-lg rounded-tl-lg';
+            
+            const html = `
+                <div class="max-w-[80%] p-3 text-sm shadow-sm ${alignment} ${radius}">
+                    ${msg.message_body}
                 </div>
             `;
+            chatWindow.insertAdjacentHTML('beforeend', html);
         }
 
-        document.getElementById('client-message-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-send-chat');
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            
-            if (!text && !selectedFile) return;
+        function scrollToChatBottom() {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+        document.getElementById('chat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msgBody = input.value.trim();
+            if (!msgBody) return;
+
+            const payload = {
+                receiver_id: 1, // Assuming Lead System Architect Admin ID is 1
+                message_body: msgBody
+            };
+
+            // Optimistic UI Append
+            const optimisticMsg = { sender_id: userNode.id, message_body: msgBody };
+            appendChatMessage(optimisticMsg);
+            scrollToChatBottom();
+            input.value = '';
 
             try {
-                // Ensure form targets rectified communication API with receiver ID
-                let formData = new FormData();
-                formData.append('receiver_id', activeChatReceiverId);
-                formData.append('message_body', text || 'Secure Asset Delivered');
-                if (selectedFile) formData.append('attachment', selectedFile);
-
-                const res = await fetch(`${API_BASE}/communications/send`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}` },
-                    body: formData
-                });
-                
-                if (res.ok) {
-                    const sentMsg = await res.json();
-                    input.value = '';
-                    removeAttachment();
-                    // Append locally immediately for fluid UI feel before socket roundtrip
-                    appendMessageToThread(sentMsg.data || sentMsg);
-                    const thread = document.getElementById('chat-thread');
-                    thread.scrollTop = thread.scrollHeight;
-                }
+                await apiCall('/communications/send', 'POST', payload);
+                // Broadcast handled by socket on server side
             } catch (err) {
-                console.error("Transmission Error:", err);
-                alert("Message transmission failure. Target may be offline.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px]"></i>';
+                // Revert optimistic UI if failed (simplified error state)
+                input.value = msgBody; 
             }
         });
 
-        document.getElementById('chat-file-upload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                document.getElementById('attachment-preview').classList.remove('hidden');
-                document.getElementById('attachment-name').innerText = file.name;
-            }
-        });
+        // Init App State
+        window.onload = setViewState;
 
-        function removeAttachment() {
-            selectedFile = null;
-            document.getElementById('chat-file-upload').value = '';
-            document.getElementById('attachment-preview').classList.add('hidden');
-        }
     </script>
 </body>
 </html>
