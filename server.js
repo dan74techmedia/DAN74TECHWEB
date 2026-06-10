@@ -242,6 +242,32 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+
+// 2. GET /api/portfolio (Cleanly handled array output endpoint)
+app.get('/api/portfolio', async (req, res) => {
+    try {
+        const queryResult = await pool.query('SELECT * FROM portfolio_items ORDER BY id DESC;');
+        
+        // Return explicit array matching defensive checks on frontend layout logic matrix
+        return res.status(200).json(queryResult.rows);
+    } catch (err) {
+        console.error('Portfolio index array stream error:', err.message);
+        
+        // Static local matrix data pipeline fallback
+        const standardFallbackPayload = [
+            {
+                title: "DAN74TECH Official Hub Platform",
+                description: "Production grade tracking system and full-stack enterprise software system built using Tailwind CSS architecture metrics.",
+                category: "Web Engineering",
+                progress: 100,
+                status: "Live Node",
+                link: "index.html"
+            }
+        ];
+        return res.status(200).json(standardFallbackPayload);
+    }
+});
+
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
 // =========================================================================
