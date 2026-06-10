@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAN74TECH MEDIA — Admin Control Panel</title>
+    <title>DAN74TECH MEDIA — Unified Operations Control Matrix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -21,17 +22,13 @@
                     },
                     colors: {
                         brand: {
-                            blue: '#0044ff',
-                            red: '#ff2a2a',
-                            yellow: '#ffd700'
-                        },
-                        bg: {
-                            light: '#f8fafc',
-                            white: '#ffffff'
-                        },
-                        text: {
-                            main: '#0f172a',
-                            muted: '#475569'
+                            blue: '#0044FF',
+                            red: '#FF2A2A',
+                            yellow: '#FFD700',
+                            bg: '#F8FAFC',
+                            text: '#0F172A',
+                            muted: '#475569',
+                            border: '#E2E8F0'
                         }
                     }
                 }
@@ -39,172 +36,152 @@
         }
     </script>
     <style>
-        body { 
-            background-color: #f8fafc; 
-            color: #0f172a; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            overflow-x: hidden; 
-        }
+        body { background-color: #F8FAFC; color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-track { background: #F8FAFC; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #0044ff; }
+        ::-webkit-scrollbar-thumb:hover { background: #0044FF; }
         
-        .sidebar-link {
-            transition: all 0.2s ease-in-out;
-        }
-        .sidebar-link.active { 
-            background-color: #eff6ff; /* blue-50 */
-            border-left: 4px solid #0044ff; 
-            color: #0044ff; 
-            font-weight: 700;
-        }
-        .sidebar-link:hover:not(.active) {
-            background-color: #f1f5f9;
-            color: #0044ff;
-        }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+        .sidebar-link.active { background: #eff6ff; border-left: 4px solid #0044FF; color: #0044FF; font-weight: 700; }
         
-        /* Smooth Fade In */
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .animate-zoomIn { animation: zoomIn 0.2s ease-out forwards; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        /* Toast Slide Animation Matrix */
+        .toast-notification { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideInLeft {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-[#0044ff] selection:text-white">
 
-    <div id="systemLoader" class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-95 transition-opacity duration-300">
-        <div class="flex flex-col items-center gap-4">
-            <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-100 border-t-[#0044ff]"></div>
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-extrabold tracking-tight text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-            </div>
-            <p class="text-[10px] font-bold tracking-widest text-gray-400 uppercase font-mono">Initializing Matrix...</p>
+    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <div id="systemLoader" class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-90 backdrop-blur-sm transition-opacity duration-300">
+        <div class="flex flex-col items-center">
+            <div class="h-14 w-14 animate-spin rounded-full border-4 border-gray-100 border-t-[#0044FF]"></div>
+            <p class="mt-4 text-xs font-bold tracking-widest text-gray-500 uppercase font-mono">Synchronizing Matrix...</p>
         </div>
     </div>
 
     <div class="flex h-screen overflow-hidden">
         
         <aside class="w-64 h-full flex flex-col bg-white border-r border-gray-200 z-20 shrink-0 shadow-sm">
-            
-            <div class="h-16 border-b border-gray-100 flex items-center gap-3 px-6 shrink-0">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm">
-                    <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center overflow-hidden">
-                        <i class="fa-solid fa-microchip text-[#0044ff] text-xs"></i>
+            <div class="h-16 px-6 border-b border-gray-100 flex items-center gap-3 shrink-0">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1px] shadow-sm">
+                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-center overflow-hidden">
+                        <span class="text-[10px] font-extrabold font-mono text-[#0044ff]">D74</span>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-sm font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">ADMIN<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">CORE</span></span>
-                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">System Ops</span>
+                <div>
+                    <h1 class="text-xs font-extrabold tracking-tight text-gray-900 font-mono">DAN74TECH<span class="text-[#0044ff]">.</span></h1>
+                    <p class="text-[9px] text-gray-400 font-bold tracking-wider uppercase">System Operations</p>
                 </div>
             </div>
             
-            <nav class="flex-1 overflow-y-auto py-4 space-y-0.5" id="sidebarNav">
-                <button onclick="switchContext('dashboard')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide active" data-tab="dashboard">
-                    <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i> Dashboard Overview
+            <nav class="flex-1 overflow-y-auto p-4 space-y-1" id="sidebarNav">
+                <button onclick="switchContext('dashboard')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200 active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie w-4 text-center"></i> Operational Overview
                 </button>
                 
-                <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Operations & Commerce</div>
-                <button onclick="switchContext('orders')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="orders">
-                    <i class="fa-solid fa-folder-tree w-4 text-center text-sm"></i> Pipeline Orders
+                <div class="pt-4 pb-2 px-4 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Core Registries</div>
+                <button onclick="switchContext('users')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="users">
+                    <i class="fa-solid fa-user-shield w-4 text-center"></i> User Database
                 </button>
-                <button onclick="switchContext('invoices')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="invoices">
-                    <i class="fa-solid fa-file-invoice-dollar w-4 text-center text-sm"></i> Financial Invoices
+                <button onclick="switchContext('orders')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="orders">
+                    <i class="fa-solid fa-folder-tree w-4 text-center"></i> Pipeline Orders
                 </button>
-                <button onclick="switchContext('mpesa_transactions')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="mpesa_transactions">
-                    <i class="fa-solid fa-money-bill-transfer w-4 text-center text-sm"></i> Mpesa Ledgers
+                <button onclick="switchContext('services')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="services">
+                    <i class="fa-solid fa-cubes w-4 text-center"></i> Services Categories
+                </button>
+                <button onclick="switchContext('sub_services')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="sub_services">
+                    <i class="fa-solid fa-tags w-4 text-center"></i> Sub Pricing Packages
+                </button>
+                <button onclick="switchContext('invoices')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="invoices">
+                    <i class="fa-solid fa-file-invoice-dollar w-4 text-center"></i> Financial Invoices
                 </button>
                 
-                <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Catalog & Services</div>
-                <button onclick="switchContext('services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="services">
-                    <i class="fa-solid fa-cubes w-4 text-center text-sm"></i> Core Services
+                <div class="pt-4 pb-2 px-4 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Communications & CRM</div>
+                <button onclick="switchContext('consultations')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="consultations">
+                    <i class="fa-solid fa-calendar-check w-4 text-center"></i> Consultations Book
                 </button>
-                <button onclick="switchContext('sub_services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="sub_services">
-                    <i class="fa-solid fa-tags w-4 text-center text-sm"></i> Pricing Packages
+                <button onclick="switchContext('messages')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="messages">
+                    <i class="fa-solid fa-envelope w-4 text-center"></i> General Inquiries
                 </button>
-
-                <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Users & Communications</div>
-                <button onclick="switchContext('users')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="users">
-                    <i class="fa-solid fa-users-gear w-4 text-center text-sm"></i> User Database
+                <button onclick="switchContext('support_tickets')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="support_tickets">
+                    <i class="fa-solid fa-headset w-4 text-center"></i> Help Support Tickets
                 </button>
-                <button onclick="switchContext('consultations')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="consultations">
-                    <i class="fa-solid fa-calendar-check w-4 text-center text-sm"></i> Consultations
+                <button onclick="switchContext('client_communications')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="client_communications">
+                    <i class="fa-solid fa-shield-halved w-4 text-center"></i> Cryptographic Logs
                 </button>
-                <button onclick="switchContext('messages')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="messages">
-                    <i class="fa-solid fa-envelope-open-text w-4 text-center text-sm"></i> Contact Messages
-                </button>
-                <button onclick="switchContext('support_tickets')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="support_tickets">
-                    <i class="fa-solid fa-headset w-4 text-center text-sm"></i> Support Tickets
-                </button>
-                <button onclick="switchContext('client_communications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="client_communications">
-                    <i class="fa-solid fa-shield-halved w-4 text-center text-sm"></i> E2EE Chat Logs
-                </button>
-                <button onclick="switchContext('notifications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="notifications">
-                    <i class="fa-solid fa-bell w-4 text-center text-sm"></i> Notifications
+                <button onclick="switchContext('testimonials')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="testimonials">
+                    <i class="fa-solid fa-comment-dots w-4 text-center"></i> Client Reviews
                 </button>
 
-                <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Content Management</div>
-                <button onclick="switchContext('portfolio')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="portfolio">
-                    <i class="fa-solid fa-briefcase w-4 text-center text-sm"></i> Portfolio Assets
+                <div class="pt-4 pb-2 px-4 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Asset Systems</div>
+                <button onclick="switchContext('media_library')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="media_library">
+                    <i class="fa-solid fa-photo-film w-4 text-center"></i> Media Object CDN
                 </button>
-                <button onclick="switchContext('blog_posts')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="blog_posts">
-                    <i class="fa-solid fa-newspaper w-4 text-center text-sm"></i> Blog Publications
+                <button onclick="switchContext('file_deliveries')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="file_deliveries">
+                    <i class="fa-solid fa-cloud-arrow-up w-4 text-center"></i> Pipeline Deliveries
                 </button>
-                <button onclick="switchContext('case_studies')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="case_studies">
-                    <i class="fa-solid fa-chart-line w-4 text-center text-sm"></i> Case Studies
+                <button onclick="switchContext('subscribers')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="subscribers">
+                    <i class="fa-solid fa-users-viewfinder w-4 text-center"></i> Mailing Subscribers
                 </button>
-                <button onclick="switchContext('testimonials')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="testimonials">
-                    <i class="fa-solid fa-comment-dots w-4 text-center text-sm"></i> Testimonials
+                <button onclick="switchContext('email_campaigns')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="email_campaigns">
+                    <i class="fa-solid fa-bullhorn w-4 text-center"></i> Broadcast Campaigns
+                </button>
+                <button onclick="switchContext('notifications')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="notifications">
+                    <i class="fa-solid fa-bell w-4 text-center"></i> System Notifications
                 </button>
 
-                <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Assets & Marketing</div>
-                <button onclick="switchContext('media_library')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="media_library">
-                    <i class="fa-solid fa-photo-film w-4 text-center text-sm"></i> Media Cloud CDN
+                <div class="pt-4 pb-2 px-4 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Marketing & Publishing</div>
+                <button onclick="switchContext('portfolio')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="portfolio">
+                    <i class="fa-solid fa-briefcase w-4 text-center"></i> Showcase Portfolio
                 </button>
-                <button onclick="switchContext('file_deliveries')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="file_deliveries">
-                    <i class="fa-solid fa-cloud-arrow-up w-4 text-center text-sm"></i> File Deliveries
+                <button onclick="switchContext('blog_posts')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="blog_posts">
+                    <i class="fa-solid fa-newspaper w-4 text-center"></i> Corporate Blogs
                 </button>
-                <button onclick="switchContext('subscribers')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="subscribers">
-                    <i class="fa-solid fa-users-viewfinder w-4 text-center text-sm"></i> Mailing Subscribers
+                <button onclick="switchContext('case_studies')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="case_studies">
+                    <i class="fa-solid fa-graduation-cap w-4 text-center"></i> Case Studies
                 </button>
-                <button onclick="switchContext('email_campaigns')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="email_campaigns">
-                    <i class="fa-solid fa-bullhorn w-4 text-center text-sm"></i> Broadcast Campaigns
+                <button onclick="switchContext('mpesa_transactions')" class="sidebar-link w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:text-[#0044ff] hover:bg-gray-50 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200" data-tab="mpesa_transactions">
+                    <i class="fa-solid fa-money-bill-transfer w-4 text-center"></i> Mpesa Ledgers
                 </button>
             </nav>
             
-            <div class="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="h-8 w-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#0044ff] shadow-sm"><i class="fa-solid fa-user-shield text-xs"></i></div>
+            <div class="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <div class="h-8 w-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#0044ff] shadow-sm"><i class="fa-solid fa-user-gear text-xs"></i></div>
                     <div class="truncate">
-                        <p class="text-xs font-bold text-gray-900 truncate" id="adminUserIdentityName">Admin Root</p>
-                        <p class="text-[10px] text-gray-500 font-mono truncate" id="adminUserIdentityEmail">Authenticating...</p>
+                        <p class="text-[11px] font-bold text-gray-900 truncate" id="adminUserIdentityName">Admin Root</p>
+                        <p class="text-[9px] text-gray-500 truncate" id="adminUserIdentityEmail">Loading...</p>
                     </div>
                 </div>
-                <button onclick="invalidateSession()" class="text-gray-400 hover:text-[#ff2a2a] p-1.5 rounded-md hover:bg-red-50 transition-colors duration-150" title="Secure Logout">
-                    <i class="fa-solid fa-power-off text-sm"></i>
+                <button onclick="invalidateSession()" class="text-gray-400 hover:text-[#ff2a2a] p-1 text-sm transition-colors duration-150" title="De-authenticate Token">
+                    <i class="fa-solid fa-power-off"></i>
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col overflow-hidden bg-bg-light relative">
+        <main class="flex-1 flex flex-col overflow-hidden bg-brand-bg relative">
             
-            <header class="h-16 border-b border-gray-200 bg-white/90 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-10 shadow-sm">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-lg font-extrabold text-gray-900 tracking-tight" id="workspaceActiveHeader">Dashboard Overview</h2>
-                    <div class="px-2.5 py-0.5 rounded flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200">
-                        <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live
+            <header class="h-16 border-b border-gray-100 bg-white/90 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-10">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-sm font-extrabold text-gray-900 tracking-wide uppercase" id="workspaceActiveHeader">Operational Overview</h2>
+                    <div class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center gap-1.5 shadow-sm">
+                        <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span> Active
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-5">
+                <div class="flex items-center gap-4">
                     <div class="text-right hidden md:block">
-                        <p class="text-xs text-gray-900 font-mono font-bold tracking-tight" id="matrixLiveClock">00:00:00</p>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Africa/Nairobi</p>
+                        <p class="text-[11px] text-gray-800 font-bold tracking-wider font-mono" id="matrixLiveClock">00:00:00 EAT</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Global Ops Node</p>
                     </div>
                     <div class="h-8 w-[1px] bg-gray-200 hidden md:block"></div>
-                    <button onclick="triggerSystemBackup()" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-xs font-bold hover:bg-gray-50 text-gray-700 shadow-sm transition-all flex items-center gap-2 group">
-                        <i class="fa-solid fa-database text-[#0044ff] group-hover:scale-110 transition-transform"></i> S3 Snapshot
+                    <button onclick="triggerSystemBackup()" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#0044ff] hover:border-blue-100 transition-all flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-cloud-arrow-up text-[#0044ff]"></i> Snapshot S3
                     </button>
                 </div>
             </header>
@@ -212,70 +189,62 @@
             <div class="flex-1 overflow-y-auto p-6 md:p-8" id="workspaceScrollBody">
                 
                 <section id="ctx-dashboard" class="space-y-8 animate-fadeIn">
-                    
-                    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
-                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Revenue Yield</p>
-                            <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-earnings">Ksh 0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-vault"></i></div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
+                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Enterprise Yield</p>
+                            <p class="text-lg font-extrabold text-gray-900 mt-1" id="stat-earnings">Ksh 0.00</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-gray-800 group-hover:text-[#0044ff] group-hover:scale-110 transition-all"><i class="fa-solid fa-vault"></i></div>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
-                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Active Orders</p>
-                            <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-orders">0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
+                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Active Pipeline</p>
+                            <p class="text-lg font-extrabold text-gray-900 mt-1" id="stat-orders">0 Rows</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-gray-800 group-hover:text-[#0044ff] group-hover:scale-110 transition-all"><i class="fa-solid fa-truck-ramp-box"></i></div>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
-                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Pending Pipeline</p>
-                            <p class="text-xl font-extrabold text-[#ffd700] mt-1 font-mono tracking-tight" id="stat-pending-orders">0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#ffd700]"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
+                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Pending Orders</p>
+                            <p class="text-lg font-extrabold text-[#ffd700] mt-1" id="stat-pending-orders">0 Queue</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-[#ffd700] group-hover:scale-110 transition-all"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
-                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">User Profiles</p>
-                            <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-users">0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-users"></i></div>
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
+                            <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">User Directory</p>
+                            <p class="text-lg font-extrabold text-gray-900 mt-1" id="stat-users">0 Profiles</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-gray-800 group-hover:text-[#0044ff] group-hover:scale-110 transition-all"><i class="fa-solid fa-users"></i></div>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
                             <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Open Tickets</p>
-                            <p class="text-xl font-extrabold text-[#ff2a2a] mt-1 font-mono tracking-tight" id="stat-tickets">0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#ff2a2a]"><i class="fa-solid fa-circle-exclamation"></i></div>
+                            <p class="text-lg font-extrabold text-[#ff2a2a] mt-1" id="stat-tickets">0 Open</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-[#ff2a2a] group-hover:scale-110 transition-all"><i class="fa-solid fa-circle-exclamation"></i></div>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <div class="p-5 rounded-xl glass-panel relative overflow-hidden group">
                             <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Consultations</p>
-                            <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-consultations">0</p>
-                            <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-gray-400"><i class="fa-solid fa-envelope"></i></div>
+                            <p class="text-lg font-extrabold text-gray-900 mt-1" id="stat-consultations">0 Queue</p>
+                            <div class="absolute bottom-3 right-4 opacity-10 text-3xl text-gray-800 group-hover:text-[#0044ff] group-hover:scale-110 transition-all"><i class="fa-solid fa-calendar-check"></i></div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                        <div class="p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
-                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fa-solid fa-fire text-[#ff2a2a] mr-1.5"></i> Critical Pipeline Queue</h3>
-                                <button onclick="switchContext('orders')" class="text-[10px] font-bold text-[#0044ff] hover:underline uppercase tracking-wide font-mono">Manage Registry</button>
+                        <div class="p-6 rounded-xl glass-panel flex flex-col h-[380px]">
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+                                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider font-mono"><i class="fa-solid fa-fire text-[#ff2a2a] mr-1"></i> Critical Pending Orders</h3>
+                                <button onclick="switchContext('orders')" class="text-[10px] font-bold text-[#0044ff] hover:underline uppercase tracking-wide">Manage Registry</button>
                             </div>
-                            <div class="flex-1 overflow-y-auto space-y-3 pr-2" id="dashboardPendingOrdersList">
-                                <div class="flex flex-col items-center justify-center h-full text-gray-400">
-                                    <i class="fa-solid fa-check-double text-2xl mb-2 text-gray-200"></i>
-                                    <p class="text-xs font-medium">Operational pipeline clear.</p>
-                                </div>
+                            <div class="flex-1 overflow-y-auto space-y-3" id="dashboardPendingOrdersList">
+                                <p class="text-xs text-gray-400 py-4 text-center italic">Operational pipeline clear.</p>
                             </div>
                         </div>
-                        
-                        <div class="p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
-                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fa-solid fa-server text-[#0044ff] mr-1.5"></i> S3 Infrastructure Node</h3>
-                                <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-50 border border-emerald-100">
-                                    <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                                    <span class="text-[9px] font-bold text-emerald-600 font-mono">SYNCED</span>
-                                </div>
+                        <div class="p-6 rounded-xl glass-panel flex flex-col h-[380px]">
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+                                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider font-mono"><i class="fa-solid fa-server text-[#0044ff] mr-1"></i> S3 Storage Backup Status</h3>
+                                <div class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
                             </div>
-                            <div class="bg-gray-900 p-5 rounded-lg font-mono text-[11px] text-green-400 flex-1 space-y-3 overflow-y-auto shadow-inner border border-gray-800">
-                                <div><span class="text-blue-400">root@matrix:~#</span> systemctl status postgres-s3-sync</div>
-                                <div class="text-gray-300">► SYSTEM_STATUS: <span class="text-emerald-400 font-bold">HEALTHY</span></div>
-                                <div class="text-gray-300">► COLD_TARGET: <span class="text-yellow-400">AWS_S3_PRODUCTION_BUCKET</span></div>
-                                <div class="text-gray-300">► SCHEDULER: <span class="text-blue-300">CRON_JOB_ACTIVE [02:00 NAIROBI]</span></div>
-                                <div class="text-gray-300">► LAST_SNAPSHOT: <span id="backup-timestamp" class="text-gray-100">Syncing...</span></div>
-                                <div class="pt-4 mt-4 border-t border-gray-800 flex gap-2">
-                                    <button onclick="triggerSystemBackup()" class="px-4 py-1.5 bg-[#0044ff] text-white font-sans font-bold text-[10px] rounded hover:bg-blue-600 transition-colors shadow-sm tracking-wide">FORCE MANUAL DUMP</button>
+                            <div class="bg-[#0f172a] p-5 rounded-xl font-mono text-[11px] text-gray-300 flex-1 space-y-3 overflow-y-auto shadow-inner">
+                                <div><span class="text-[#0044ff]">root@dan74tech:~#</span> systemctl status postgres-s3-sync</div>
+                                <div><span class="text-emerald-400">► SYSTEM_STATUS:</span> HEALTHY_ACTIVE</div>
+                                <div><span class="text-emerald-400">► COLD_TARGET:</span> AWS_S3_PRODUCTION_BUCKET</div>
+                                <div><span class="text-emerald-400">► REPLICA_SCHEDULER:</span> CRON_JOB [02:00 AFRICA/NAIROBI]</div>
+                                <div><span class="text-emerald-400">► LAST_SNAPSHOT:</span> <span id="backup-timestamp">Syncing...</span></div>
+                                <div class="pt-5 mt-2 border-t border-gray-800/50 flex gap-2">
+                                    <button onclick="triggerSystemBackup()" class="px-4 py-1.5 bg-[#0044ff] hover:bg-blue-600 text-white rounded font-sans font-bold text-xs transition-all">FORCE DUMP</button>
                                 </div>
                             </div>
                         </div>
@@ -283,40 +252,35 @@
                 </section>
 
                 <section id="ctx-registry" class="hidden space-y-6 animate-fadeIn">
-                    
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <div class="relative max-w-sm w-full">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-sm">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </span>
-                            <input type="text" id="registryGlobalSearch" oninput="executeRegistrySearch()" placeholder="Scan database vectors..." class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] text-gray-900 transition-all">
+                            <input type="text" id="registryGlobalSearch" oninput="executeRegistrySearch()" placeholder="Scan table parameters..." class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#0044ff] focus:border-[#0044ff] text-gray-900 transition-all font-mono">
                         </div>
                         
                         <div class="flex items-center gap-3 self-end sm:self-auto">
-                            <button id="btnBulkDelete" onclick="executeBulkActionSoftDelete()" class="hidden px-4 py-2 bg-red-50 border border-red-200 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-trash-can"></i> Drop Selected (<span id="bulkDeleteCount">0</span>)
+                            <button id="btnBulkDelete" onclick="executeBulkActionSoftDelete()" class="hidden px-4 py-2.5 bg-red-50 border border-red-200 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-trash-can"></i> Bulk Drop (<span id="bulkDeleteCount">0</span>)
                             </button>
-                            <button id="btnRegistryAddRecord" onclick="openCreateRecordModal()" class="px-4 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-plus"></i> Append Record
+                            <button id="btnRegistryAddRecord" onclick="openCreateRecordModal()" class="px-4 py-2.5 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-circle-plus"></i> Append Row Vector
                             </button>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                    <div class="glass-panel rounded-xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse" id="primaryOpsGrid">
-                                <thead class="bg-gray-50 border-b border-gray-100 text-[10px] font-extrabold text-gray-500 tracking-wider uppercase font-mono">
+                                <thead class="bg-gray-50 border-b border-gray-200 text-[10px] font-extrabold text-gray-500 tracking-wider uppercase font-mono">
                                     <tr id="gridHeaderRow"></tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-100 text-xs text-gray-700" id="gridBodyRows"></tbody>
+                                <tbody class="divide-y divide-gray-100 text-xs text-gray-700 bg-white" id="gridBodyRows"></tbody>
                             </table>
                         </div>
-                        <div id="gridEmptyFallback" class="hidden p-16 text-center text-gray-400 flex flex-col items-center justify-center">
-                            <div class="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 border border-gray-100">
-                                <i class="fa-solid fa-database text-2xl text-gray-300 block"></i>
-                            </div>
-                            <p class="text-sm font-bold text-gray-600">No Vector Match</p>
-                            <p class="text-xs mt-1 font-mono">The requested matrix returns zero rows.</p>
+                        <div id="gridEmptyFallback" class="hidden p-16 text-center text-gray-400 text-xs font-medium">
+                            <i class="fa-solid fa-folder-open text-3xl text-gray-300 block mb-3"></i> No record matrix nodes matched criteria in database target.
                         </div>
                     </div>
                 </section>
@@ -325,286 +289,309 @@
         </main>
     </div>
 
-    <div id="crudSystemModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto animate-zoomIn border border-gray-100">
+    <div id="crudSystemModal" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-gray-900 bg-opacity-40 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto border border-gray-100 transform transition-all">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                 <div>
-                    <h4 class="text-sm font-extrabold text-gray-900 tracking-tight" id="modalActionTitle">Append Record</h4>
-                    <p class="text-[10px] text-gray-500 font-mono mt-0.5 uppercase tracking-wider" id="modalActionSubtitle">Database Injection Matrix</p>
+                    <h4 class="text-sm font-extrabold text-gray-900 tracking-tight font-mono" id="modalActionTitle">Append Row Vector</h4>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5" id="modalActionSubtitle">Target entity mapping sequence</p>
                 </div>
-                <button onclick="closeCrudSystemModal()" class="text-gray-400 hover:text-gray-900 text-lg transition-colors p-1"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeCrudSystemModal()" class="text-gray-400 hover:text-[#ff2a2a] text-lg transition-colors p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <form id="dynamicInputSchemaForm" onsubmit="commitFormPayload(event)" class="p-6 space-y-5 flex-1 overflow-y-auto max-h-[75vh]">
-                <div id="dynamicFormFieldsAnchor" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm"></div>
+            <form id="dynamicInputSchemaForm" onsubmit="commitFormPayload(event)" class="p-6 flex-1 overflow-y-auto max-h-[75vh]">
+                <div id="dynamicFormFieldsAnchor" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs"></div>
                 
-                <div class="pt-5 border-t border-gray-100 flex items-center justify-end gap-3">
-                    <button type="button" onclick="closeCrudSystemModal()" class="px-5 py-2.5 rounded-lg text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 bg-[#0044ff] text-white font-bold rounded-lg text-xs hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Commit Vector
-                    </button>
+                <div class="pt-6 mt-6 border-t border-gray-100 flex items-center justify-end gap-3">
+                    <button type="button" onclick="closeCrudSystemModal()" class="px-5 py-2.5 border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all bg-white shadow-sm">Abort Matrix Execution</button>
+                    <button type="submit" class="px-6 py-2.5 bg-[#0044ff] text-white font-bold rounded-lg text-xs hover:bg-blue-700 shadow-sm transition-all shadow-blue-500/20">Commit Vector Payload</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // CLIENT STATE MANAGEMENT
+        // CLIENT STATE MANAGEMENT SCHEMAS
         let currentContext = 'dashboard';
         let registrySearchQuery = '';
         let selectedRowVectorIds = [];
         let contextRowMutationTargetId = null;
 
-        // SYSTEM DATA DICTIONARY REFERENCE (Aligned with PostgreSQL Schema exactly)
+        // DB SCHEMA MAPPING - ALL TABLES CONFIGURED TO MATCH CSV EXACTLY
         const TABLE_METADATA_REGISTRY = {
             users: {
                 fields: {
-                    name: { label: 'Full Designation Name', type: 'text', required: true },
-                    email: { label: 'Email Vector', type: 'email', required: true },
-                    phone: { label: 'Contact Phone', type: 'text', required: false },
-                    role: { label: 'System Clearance Role', type: 'select', options: ['client', 'admin'], required: true },
-                    password: { label: 'Cryptographic Key (Leave Blank to Skip)', type: 'password', required: false }
+                    name: { label: 'Full Name', type: 'text', required: true },
+                    email: { label: 'Email Address', type: 'email', required: true },
+                    phone: { label: 'Phone Number', type: 'text', required: false },
+                    role: { label: 'System Role', type: 'select', options: ['client', 'admin'], required: true },
+                    password: { label: 'Password (Leave Blank to Skip update)', type: 'password', required: false },
+                    is_online: { label: 'Online Status Override', type: 'select', options: ['false', 'true'], required: false }
                 },
-                columns: ['id', 'name', 'email', 'phone', 'role', 'is_online', 'created_at']
-            },
-            orders: {
-                fields: {
-                    user_id: { label: 'User ID Mapping (Optional)', type: 'number', required: false },
-                    customer_name: { label: 'Client Reference Name', type: 'text', required: true },
-                    phone: { label: 'Communication Telephone', type: 'text', required: true },
-                    service: { label: 'Core Category Service', type: 'text', required: true },
-                    sub_service: { label: 'Detailed Package Tier', type: 'text', required: false },
-                    price: { label: 'Financial Value (Ksh)', type: 'number', required: false },
-                    status: { label: 'Pipeline Deployment Status', type: 'select', options: ['pending', 'processing', 'completed', 'cancelled'], required: false },
-                    payment_status: { label: 'Financial Ledger Clearance', type: 'select', options: ['unpaid', 'processing', 'paid', 'refunded'], required: false },
-                    project_details: { label: 'Technical Scope Specifications', type: 'textarea', required: false },
-                    domain: { label: 'Target Domain Reference', type: 'text', required: false },
-                    device_model: { label: 'Client Device Profile', type: 'text', required: false },
-                    staging_environment: { label: 'Staging Environment URL', type: 'text', required: false },
-                    domain_criteria: { label: 'Domain Criteria Info', type: 'text', required: false },
-                    hardware_serial: { label: 'Hardware Serial Node', type: 'text', required: false },
-                    cyber_tracking_key: { label: 'Tracking Key Vector', type: 'text', required: false }
-                },
-                columns: ['id', 'customer_name', 'service', 'price', 'status', 'payment_status', 'created_at']
+                columns: ['id', 'name', 'email', 'phone', 'role', 'is_online']
             },
             services: {
                 fields: {
-                    name: { label: 'Services Category Title', type: 'text', required: true },
+                    name: { label: 'Service Category Name', type: 'text', required: true },
                     icon: { label: 'FontAwesome Icon Class', type: 'text', required: true },
-                    description: { label: 'Marketing Description', type: 'textarea', required: false }
+                    description: { label: 'Service Description', type: 'textarea', required: true }
                 },
-                columns: ['id', 'name', 'icon', 'description', 'created_at']
+                columns: ['id', 'name', 'icon', 'description']
             },
             sub_services: {
                 fields: {
-                    service_id: { label: 'Parent Category Service ID', type: 'number', required: false },
-                    name: { label: 'Detailed Tier Package Name', type: 'text', required: true },
-                    price: { label: 'Financial Cost (Ksh)', type: 'number', required: false },
-                    description: { label: 'Feature Package Specs', type: 'textarea', required: false }
+                    service_id: { label: 'Parent Service ID', type: 'number', required: true },
+                    name: { label: 'Sub-Service Name', type: 'text', required: true },
+                    price: { label: 'Price (Ksh)', type: 'number', required: true },
+                    description: { label: 'Package Specifications', type: 'textarea', required: false }
                 },
-                columns: ['id', 'service_id', 'name', 'price', 'created_at']
+                columns: ['id', 'service_id', 'name', 'price']
             },
-            invoices: {
+            orders: {
                 fields: {
-                    order_id: { label: 'Associated Order ID', type: 'number', required: false },
-                    invoice_number: { label: 'Ledger Record Number', type: 'text', required: true },
-                    client_name: { label: 'Recipient Client Entity', type: 'text', required: true },
-                    client_email: { label: 'Recipient Transmission Link', type: 'email', required: false },
-                    amount: { label: 'Total Audited Value (Ksh)', type: 'number', required: true },
-                    status: { label: 'Ledger Settlement Status', type: 'select', options: ['unpaid', 'paid', 'overdue', 'void'], required: false },
-                    pdf_url: { label: 'Generated PDF Link', type: 'text', required: false }
+                    user_id: { label: 'Client User ID', type: 'number', required: false },
+                    customer_name: { label: 'Customer Name', type: 'text', required: true },
+                    phone: { label: 'Phone Contact', type: 'text', required: true },
+                    service: { label: 'Core Service', type: 'text', required: true },
+                    sub_service: { label: 'Sub Service Package', type: 'text', required: false },
+                    domain: { label: 'Target Domain', type: 'text', required: false },
+                    device_model: { label: 'Client Device', type: 'text', required: false },
+                    project_details: { label: 'Technical Scope Notes', type: 'textarea', required: false },
+                    price: { label: 'Total Value (Ksh)', type: 'number', required: true },
+                    status: { label: 'Fulfillment Status', type: 'select', options: ['pending', 'processing', 'completed', 'cancelled'], required: true },
+                    payment_status: { label: 'Ledger Status', type: 'select', options: ['unpaid', 'processing', 'paid', 'refunded'], required: true },
+                    staging_environment: { label: 'Staging Environment Link', type: 'text', required: false },
+                    domain_criteria: { label: 'Domain Criteria', type: 'text', required: false },
+                    hardware_serial: { label: 'Hardware Serial Number', type: 'text', required: false },
+                    cyber_tracking_key: { label: 'Cyber Tracking Key', type: 'text', required: false }
                 },
-                columns: ['id', 'invoice_number', 'client_name', 'amount', 'status', 'issued_at']
-            },
-            consultations: {
-                fields: {
-                    client_name: { label: 'Prospect Client Name', type: 'text', required: true },
-                    client_email: { label: 'Email Vector', type: 'email', required: true },
-                    booking_date: { label: 'Target Event Date', type: 'date', required: true },
-                    booking_time: { label: 'Target Event Time', type: 'time', required: true },
-                    platform: { label: 'Meeting Platform (e.g. Google Meet)', type: 'text', required: false },
-                    status: { label: 'Calendar Queue Status', type: 'select', options: ['pending', 'approved', 'completed', 'cancelled'], required: false }
-                },
-                columns: ['id', 'client_name', 'booking_date', 'booking_time', 'platform', 'status']
-            },
-            messages: {
-                fields: {
-                    name: { label: 'Sender Name', type: 'text', required: false },
-                    email: { label: 'Sender Email', type: 'email', required: false },
-                    subject: { label: 'Contact Subject', type: 'text', required: false },
-                    message: { label: 'Message Body Payload', type: 'textarea', required: true },
-                    status: { label: 'Message Read Status', type: 'select', options: ['unread', 'read', 'archived'], required: false }
-                },
-                columns: ['id', 'name', 'email', 'subject', 'status', 'created_at']
-            },
-            support_tickets: {
-                fields: {
-                    user_id: { label: 'Associated User ID', type: 'number', required: false },
-                    subject: { label: 'Problem Error Descriptor', type: 'text', required: true },
-                    description: { label: 'Help Desk Diagnostic Report', type: 'textarea', required: true },
-                    priority: { label: 'Escalation Priority', type: 'select', options: ['low', 'medium', 'high', 'critical'], required: false },
-                    status: { label: 'Resolution Routing Status', type: 'select', options: ['open', 'pending', 'resolved', 'closed'], required: false }
-                },
-                columns: ['id', 'user_id', 'subject', 'priority', 'status', 'created_at']
-            },
-            notifications: {
-                fields: {
-                    user_id: { label: 'Target User ID (Blank for Global)', type: 'number', required: false },
-                    title: { label: 'Alert Title', type: 'text', required: true },
-                    message: { label: 'Alert Detailed Payload', type: 'textarea', required: true },
-                    channel: { label: 'Delivery Vector', type: 'text', required: false },
-                    status: { label: 'Read Status', type: 'select', options: ['unread', 'read'], required: false }
-                },
-                columns: ['id', 'user_id', 'title', 'channel', 'status', 'created_at']
+                columns: ['id', 'customer_name', 'service', 'price', 'status', 'payment_status', 'created_at']
             },
             portfolio: {
                 fields: {
-                    order_id: { label: 'Mapped Order ID', type: 'number', required: false },
-                    title: { label: 'Architectural Title Header', type: 'text', required: true },
-                    category: { label: 'Classification Node', type: 'text', required: true },
-                    description: { label: 'Technical Scope Description', type: 'textarea', required: false },
-                    link: { label: 'Live Deployment Link', type: 'text', required: false },
-                    progress: { label: 'Completion Matrix %', type: 'number', required: false },
-                    publisher_name: { label: 'Author/Team Reference', type: 'text', required: false },
-                    status: { label: 'Deployment State', type: 'select', options: ['In Progress', 'Completed', 'Maintenance'], required: false },
-                    is_approved: { label: 'Moderation Approval', type: 'select', options: ['true', 'false'], required: false }
+                    order_id: { label: 'Associated Order ID', type: 'number', required: false },
+                    title: { label: 'Project Title', type: 'text', required: true },
+                    category: { label: 'Category', type: 'text', required: true },
+                    description: { label: 'Technical Execution Notes', type: 'textarea', required: false },
+                    link: { label: 'Live Deployment Link / Image', type: 'text', required: false },
+                    progress: { label: 'Progress Tracking (%)', type: 'number', required: false },
+                    status: { label: 'Deployment Status', type: 'select', options: ['In Progress', 'Completed', 'Archived'], required: true },
+                    publisher_id: { label: 'Publisher User ID', type: 'number', required: false },
+                    publisher_name: { label: 'Publisher Name Alias', type: 'text', required: false },
+                    is_approved: { label: 'Visibility Approved', type: 'select', options: ['false', 'true'], required: false }
                 },
-                columns: ['id', 'title', 'category', 'status', 'progress', 'is_approved']
-            },
-            blog_posts: {
-                fields: {
-                    title: { label: 'Editorial Publication Title', type: 'text', required: true },
-                    slug: { label: 'URL Routing Slug', type: 'text', required: true },
-                    category: { label: 'Classification Segment', type: 'text', required: false },
-                    summary: { label: 'Brief Excerpt Metadata', type: 'textarea', required: false },
-                    content: { label: 'Primary Structural Article Copy', type: 'textarea', required: true },
-                    image_url: { label: 'Cover Image Cloud Asset URL', type: 'text', required: false },
-                    status: { label: 'Editorial Pipeline State', type: 'select', options: ['draft', 'pending', 'published'], required: false },
-                    is_approved: { label: 'Moderation Portal Approval', type: 'select', options: ['true', 'false'], required: false }
-                },
-                columns: ['id', 'title', 'category', 'status', 'is_approved', 'views_count']
+                columns: ['id', 'title', 'category', 'progress', 'status', 'is_approved']
             },
             case_studies: {
                 fields: {
-                    title: { label: 'Enterprise Case Study Title', type: 'text', required: true },
-                    category: { label: 'Sector Taxonomy', type: 'text', required: false },
-                    challenge: { label: 'Diagnostic Problem Statement', type: 'textarea', required: false },
-                    solution: { label: 'Technical Implementation Details', type: 'textarea', required: false },
-                    result: { label: 'Empirical Outcomes Matrix', type: 'textarea', required: false },
-                    image_url: { label: 'Cover Graphic Media Link', type: 'text', required: false },
-                    status: { label: 'Visibility Status', type: 'select', options: ['draft', 'pending', 'published'], required: false },
-                    is_approved: { label: 'Audit Approval', type: 'select', options: ['true', 'false'], required: false }
+                    title: { label: 'Case Study Title', type: 'text', required: true },
+                    category: { label: 'Industry Category', type: 'text', required: false },
+                    challenge: { label: 'Challenge Description', type: 'textarea', required: false },
+                    solution: { label: 'Solution Architecture', type: 'textarea', required: false },
+                    result: { label: 'Final Output Data', type: 'textarea', required: false },
+                    image_url: { label: 'Cover Image Media URL', type: 'text', required: false },
+                    status: { label: 'Approval Status', type: 'select', options: ['pending', 'Approved', 'rejected'], required: true },
+                    publisher_id: { label: 'Publisher Context ID', type: 'number', required: false },
+                    is_approved: { label: 'Public Display Approved', type: 'select', options: ['false', 'true'], required: false }
                 },
-                columns: ['id', 'title', 'category', 'status', 'is_approved', 'views_count']
+                columns: ['id', 'title', 'category', 'status', 'is_approved']
             },
             testimonials: {
                 fields: {
-                    client_name: { label: 'Client Reviewer Name', type: 'text', required: true },
-                    client_designation: { label: 'Corporate Position', type: 'text', required: false },
-                    company: { label: 'Affiliated Corporate Brand', type: 'text', required: false },
-                    rating: { label: 'Metrics Scoring (1-5 Stars)', type: 'number', required: false },
-                    review: { label: 'Published Content Statement', type: 'textarea', required: true },
-                    is_featured: { label: 'Pin to Landing Page Engine', type: 'select', options: ['true', 'false'], required: false },
-                    status: { label: 'Moderation Visibility Status', type: 'select', options: ['pending', 'approved', 'rejected'], required: false }
+                    client_name: { label: 'Reviewer Name', type: 'text', required: true },
+                    client_designation: { label: 'Reviewer Job Title', type: 'text', required: false },
+                    company: { label: 'Brand / Company Name', type: 'text', required: false },
+                    client_avatar_url: { label: 'Avatar Icon Media URL', type: 'text', required: false },
+                    rating: { label: 'Rating (1-5)', type: 'number', required: false },
+                    review: { label: 'Testimonial Corpus', type: 'textarea', required: true },
+                    status: { label: 'Moderation Status', type: 'select', options: ['pending', 'approved', 'rejected'], required: true },
+                    is_featured: { label: 'Is Featured Entry', type: 'select', options: ['false', 'true'], required: false }
                 },
-                columns: ['id', 'client_name', 'company', 'rating', 'status', 'is_featured']
+                columns: ['id', 'client_name', 'company', 'rating', 'status']
             },
-            media_library: {
+            blog_posts: {
                 fields: {
-                    public_id: { label: 'Storage Node ID', type: 'text', required: true },
-                    url: { label: 'Secure CDN Storage URL', type: 'text', required: true },
-                    filename: { label: 'Resource Original Name', type: 'text', required: true },
-                    format: { label: 'Mime-Type Extension', type: 'text', required: false },
-                    bytes: { label: 'Memory Allocation (Bytes)', type: 'number', required: false }
+                    title: { label: 'Article Publication Title', type: 'text', required: true },
+                    category: { label: 'Article Category', type: 'text', required: false },
+                    content: { label: 'Primary Copy Text (Markup)', type: 'textarea', required: true },
+                    summary: { label: 'Short Preview Text', type: 'textarea', required: false },
+                    image_url: { label: 'Hero Image Cloud URL', type: 'text', required: false },
+                    slug: { label: 'URI Navigation Slug', type: 'text', required: true },
+                    seo_title: { label: 'SEO Metadata Title', type: 'text', required: false },
+                    seo_description: { label: 'SEO Meta Description', type: 'textarea', required: false },
+                    status: { label: 'Publishing Status', type: 'select', options: ['pending', 'Approved', 'archived'], required: true }
                 },
-                columns: ['id', 'filename', 'format', 'bytes', 'created_at']
+                columns: ['id', 'title', 'category', 'status', 'likes_count']
             },
-            file_deliveries: {
+            invoices: {
                 fields: {
-                    order_id: { label: 'Pipeline Fulfillment Order ID', type: 'number', required: false },
-                    client_id: { label: 'Consignee Client System ID', type: 'number', required: false },
-                    file_name: { label: 'System Artifact Package Name', type: 'text', required: true },
-                    file_url: { label: 'Secure Delivery Node Link', type: 'text', required: true },
-                    file_size: { label: 'Asset Payload Size (Bytes)', type: 'number', required: false },
-                    status: { label: 'Retrieval Matrix Status', type: 'select', options: ['available', 'expired', 'revoked'], required: false }
+                    order_id: { label: 'Order Database ID Link', type: 'number', required: false },
+                    invoice_number: { label: 'Invoice Reference Digits', type: 'text', required: true },
+                    client_name: { label: 'Recipient Name', type: 'text', required: true },
+                    client_email: { label: 'Recipient Email', type: 'email', required: false },
+                    amount: { label: 'Financial Matrix Value (Ksh)', type: 'number', required: true },
+                    pdf_url: { label: 'S3 PDF Backup Document Link', type: 'text', required: false },
+                    status: { label: 'Ledger Fulfillment Status', type: 'select', options: ['unpaid', 'paid', 'overdue', 'void'], required: true }
                 },
-                columns: ['id', 'order_id', 'client_id', 'file_name', 'status', 'created_at']
+                columns: ['id', 'invoice_number', 'client_name', 'amount', 'status', 'issued_at']
             },
             subscribers: {
                 fields: {
-                    email: { label: 'Subscriber Email Address', type: 'email', required: true },
-                    status: { label: 'Broadcast Active Status', type: 'select', options: ['active', 'unsubscribed'], required: false }
+                    email: { label: 'Newsletter Subscriber Target Email', type: 'email', required: true },
+                    status: { label: 'Broadcast Receiving Status', type: 'select', options: ['active', 'unsubscribed'], required: true }
                 },
                 columns: ['id', 'email', 'status', 'created_at']
             },
             email_campaigns: {
                 fields: {
-                    subject: { label: 'Broadcast Message Subject', type: 'text', required: true },
-                    content: { label: 'Payload Message HTML Markup', type: 'textarea', required: true },
-                    campaign_type: { label: 'Operational Campaign Categorization', type: 'text', required: false },
-                    recipients_count: { label: 'Target Metrics Vector Distribution', type: 'number', required: false }
+                    subject: { label: 'Broadcast Header Subject', type: 'text', required: true },
+                    content: { label: 'Email Communication Payload (HTML allowed)', type: 'textarea', required: true },
+                    campaign_type: { label: 'Campaign Dispatch Category', type: 'text', required: false },
+                    recipients_count: { label: 'Target Vector Hit Metric', type: 'number', required: false }
                 },
                 columns: ['id', 'subject', 'campaign_type', 'recipients_count', 'sent_at']
             },
+            consultations: {
+                fields: {
+                    client_name: { label: 'Prospect Client Name', type: 'text', required: true },
+                    client_email: { label: 'Prospect Email Connection', type: 'email', required: true },
+                    booking_date: { label: 'Target Event Matrix Date', type: 'date', required: true },
+                    booking_time: { label: 'Event Schedule Timing', type: 'time', required: true },
+                    platform: { label: 'Conference Integration Link', type: 'text', required: false },
+                    status: { label: 'Session Flow Status', type: 'select', options: ['pending', 'approved', 'completed', 'cancelled'], required: true }
+                },
+                columns: ['id', 'client_name', 'booking_date', 'booking_time', 'platform', 'status']
+            },
+            support_tickets: {
+                fields: {
+                    user_id: { label: 'Affected User Account Node', type: 'number', required: false },
+                    subject: { label: 'Diagnostic Help Descriptor', type: 'text', required: true },
+                    description: { label: 'Bug / Feature Feedback Log', type: 'textarea', required: true },
+                    status: { label: 'Engineering Queue Resolution', type: 'select', options: ['open', 'pending', 'resolved', 'closed'], required: true },
+                    priority: { label: 'Urgency Threshold Priority', type: 'select', options: ['low', 'medium', 'high', 'critical'], required: false }
+                },
+                columns: ['id', 'user_id', 'subject', 'status', 'priority', 'created_at']
+            },
+            messages: {
+                fields: {
+                    name: { label: 'Contact Sender Profile Name', type: 'text', required: false },
+                    email: { label: 'Sender Channel Email Address', type: 'email', required: false },
+                    subject: { label: 'Inquiry Topic String', type: 'text', required: false },
+                    message: { label: 'Raw Contact Form Corpus', type: 'textarea', required: true },
+                    status: { label: 'Desk Administration Pipeline Status', type: 'select', options: ['unread', 'read', 'archived'], required: false }
+                },
+                columns: ['id', 'name', 'email', 'subject', 'status', 'created_at']
+            },
+            notifications: {
+                fields: {
+                    user_id: { label: 'Designated User Node Address ID', type: 'number', required: false },
+                    title: { label: 'System Alert Title Header', type: 'text', required: true },
+                    message: { label: 'Alert Notification Body Data', type: 'textarea', required: true },
+                    channel: { label: 'Alert Stream Category', type: 'text', required: false },
+                    status: { label: 'User Interaction Read Status', type: 'select', options: ['unread', 'read'], required: false }
+                },
+                columns: ['id', 'user_id', 'title', 'channel', 'status']
+            },
+            media_library: {
+                fields: {
+                    public_id: { label: 'Cloudinary / CDN System Asset ID', type: 'text', required: true },
+                    url: { label: 'Secure Access Target URL', type: 'text', required: true },
+                    filename: { label: 'Original Upload Storage Filename', type: 'text', required: true },
+                    format: { label: 'MIME Asset Encoding Structure', type: 'text', required: false },
+                    bytes: { label: 'Memory Cost Signature (Bytes)', type: 'number', required: false }
+                },
+                columns: ['id', 'filename', 'format', 'bytes', 'created_at']
+            },
+            file_deliveries: {
+                fields: {
+                    order_id: { label: 'Fulfilled Pipeline Order Mapping ID', type: 'number', required: false },
+                    client_id: { label: 'Consignee Client Link ID', type: 'number', required: false },
+                    file_name: { label: 'Encrypted Software Artifact Name', type: 'text', required: true },
+                    file_url: { label: 'Deliveries Routing Node S3 Link', type: 'text', required: true },
+                    file_size: { label: 'Compiled Asset Dimensions (Bytes)', type: 'number', required: false },
+                    expiry_date: { label: 'Temporal Token Drop Deadline', type: 'datetime-local', required: false },
+                    download_count: { label: 'Client Asset Audit Retries', type: 'number', required: false },
+                    status: { label: 'Data Exchange Availability Status', type: 'select', options: ['available', 'expired', 'revoked'], required: false }
+                },
+                columns: ['id', 'order_id', 'file_name', 'download_count', 'status', 'created_at']
+            },
             client_communications: {
-                fields: {}, // Read-only E2EE tracking log
-                columns: ['id', 'sender_id', 'receiver_id', 'message_type', 'is_read', 'created_at']
+                read_only_form: true,
+                fields: {},
+                columns: ['id', 'sender_id', 'receiver_id', 'delivery_status', 'is_read', 'created_at']
             },
             mpesa_transactions: {
-                fields: {}, // Read-only Mpesa STK ledger
+                read_only_form: true,
+                fields: {}, 
                 columns: ['id', 'checkout_request_id', 'amount', 'mpesa_receipt_number', 'phone_number', 'status', 'created_at']
             }
         };
 
-        // BOOTSTRAP SYNCHRONIZATION
+        // DOM BOOTSTRAP INITIALIZATION ENGINE
         document.addEventListener("DOMContentLoaded", () => {
             verifyAuthenticationClearing();
             initializeRealtimeSystemClock();
             switchContext('dashboard');
-            setTimeout(() => { 
-                const loader = document.getElementById('systemLoader');
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => loader.style.display = 'none', 300); 
-            }, 800);
+            setTimeout(() => { document.getElementById('systemLoader').classList.add('opacity-0'); setTimeout(() => document.getElementById('systemLoader').style.display = 'none', 300); }, 800);
         });
 
-        // AUTHENTICATION VALIDATOR
+        // TOAST NOTIFICATION UI/UX ENGINE ALIGNED TO INDEX.HTML
+        function pushSystemOperationalToast(messageContext, messageType = 'info') {
+            const toastCenter = document.getElementById('applicationToastCenter');
+            if (!toastCenter) return;
+
+            const individualToastNode = document.createElement('div');
+            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
+            
+            if (messageType === 'success') {
+                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            } else if (messageType === 'error') {
+                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-[#ff2a2a] text-base"></i><div>${messageContext}</div>`;
+            } else {
+                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
+                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
+            }
+
+            toastCenter.appendChild(individualToastNode);
+            setTimeout(() => {
+                individualToastNode.style.opacity = '0';
+                individualToastNode.style.transform = 'translateY(10px)';
+                setTimeout(() => individualToastNode.remove(), 300);
+            }, 4000);
+        }
+
+        // JWT AUTHENTICATION STRUCTURAL VALIDATORS
         function verifyAuthenticationClearing() {
             const token = localStorage.getItem('token');
             if (!token) return routeToLoginGateway();
             try {
                 const parts = token.split('.');
-                if(parts.length !== 3) throw new Error("Malformed JWT Matrix Segment Error.");
+                if(parts.length !== 3) throw new Error("Malformed JWT Token Vector.");
                 const payload = JSON.parse(atob(parts[1]));
                 if (!payload.role || payload.role.toLowerCase() !== 'admin') { 
-                    alert("Access Forbidden: Clearance Authorization Deficit."); 
+                    pushSystemOperationalToast("Access Forbidden: Admin Clearance Deficit.", "error"); 
                     return invalidateSession(); 
                 }
-                document.getElementById('adminUserIdentityName').innerText = payload.name || 'System Supervisor';
+                document.getElementById('adminUserIdentityName').innerText = payload.name || 'System Supervisor Node';
                 document.getElementById('adminUserIdentityEmail').innerText = payload.email || 'root@dan74techmedia.com';
-            } catch (e) {
-                return routeToLoginGateway();
-            }
+            } catch (e) { return routeToLoginGateway(); }
         }
 
         function routeToLoginGateway() { window.location.href = '/login.html'; }
         function invalidateSession() { localStorage.removeItem('token'); localStorage.removeItem('user'); routeToLoginGateway(); }
 
-        // LIVE REALTIME SYSTEM CLOCK
+        // LIVE SYSTEM CLOCK ROUTER
         function initializeRealtimeSystemClock() {
             setInterval(() => {
                 const date = new Date();
                 const options = { timeZone: 'Africa/Nairobi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-                document.getElementById('matrixLiveClock').innerText = date.toLocaleTimeString('en-GB', options);
+                document.getElementById('matrixLiveClock').innerText = `${date.toLocaleTimeString('en-GB', options)} EAT`;
             }, 1000);
-            
-            const formatter = new Intl.DateTimeFormat('en-GB', { 
-                timeZone: 'Africa/Nairobi', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' 
-            });
-            document.getElementById('backup-timestamp').innerText = formatter.format(new Date());
+            document.getElementById('backup-timestamp').innerText = new Date().toISOString();
         }
 
-        // WORKSPACE ROUTING
+        // WORKSPACE RUNTIME NAVIGATION CONTROL ROUTERS
         async function switchContext(targetContext) {
             currentContext = targetContext;
             selectedRowVectorIds = [];
@@ -619,19 +606,18 @@
             const dataGridLayoutSegment = document.getElementById('ctx-registry');
 
             if (targetContext === 'dashboard') {
-                workspaceTitleHeader.innerText = "Dashboard Overview Engine";
+                workspaceTitleHeader.innerText = "Operational Overview Engine";
                 dashboardLayoutSegment.classList.remove('hidden');
                 dataGridLayoutSegment.classList.add('hidden');
                 await syncDashboardKPIAnalytics();
             } else {
-                const formattedTitle = targetContext.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                workspaceTitleHeader.innerText = `Registry Architecture: ${formattedTitle}`;
+                workspaceTitleHeader.innerText = `Registry Architecture: ${targetContext.replace(/_/g, ' ').toUpperCase()}`;
                 dashboardLayoutSegment.classList.add('hidden');
                 dataGridLayoutSegment.classList.remove('hidden');
                 
                 const meta = TABLE_METADATA_REGISTRY[targetContext];
                 const appendBtn = document.getElementById('btnRegistryAddRecord');
-                if (meta && Object.keys(meta.fields).length > 0) { 
+                if (meta && !meta.read_only_form && Object.keys(meta.fields).length > 0) { 
                     appendBtn.classList.remove('hidden'); 
                 } else { 
                     appendBtn.classList.add('hidden'); 
@@ -644,52 +630,47 @@
             document.getElementById('workspaceScrollBody').scrollTop = 0;
         }
 
-        // FETCH KPI DASHBOARD
+        // DASHBOARD KPI STATS SYNC RUNNER
         async function syncDashboardKPIAnalytics() {
             try {
                 const response = await fetch('/api/admin/dashboard-stats', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
-                if (!response.ok) throw new Error("KPI response mapping failed.");
+                if (!response.ok) throw new Error("KPI response parameters failed validation.");
                 const statistics = await response.json();
                 
                 document.getElementById('stat-earnings').innerText = `Ksh ${parseFloat(statistics.total_earnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                document.getElementById('stat-orders').innerText = statistics.orders || 0;
-                document.getElementById('stat-pending-orders').innerText = statistics.pending_orders || 0;
-                document.getElementById('stat-users').innerText = statistics.users || 0;
-                document.getElementById('stat-tickets').innerText = statistics.open_tickets || 0;
-                document.getElementById('stat-consultations').innerText = statistics.pending_consultations || 0;
+                document.getElementById('stat-orders').innerText = `${statistics.orders || 0} Records`;
+                document.getElementById('stat-pending-orders').innerText = `${statistics.pending_orders || 0} Queue`;
+                document.getElementById('stat-users').innerText = `${statistics.users || 0} Profiles`;
+                document.getElementById('stat-tickets').innerText = `${statistics.open_tickets || 0} Open`;
+                document.getElementById('stat-consultations').innerText = `${statistics.pending_consultations || 0} Queue`;
 
-                // Build mini queue list
-                const ordersRes = await fetch('/api/admin/orders?limit=6', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                // Fetch orders for mini dashboard layout queue
+                const ordersRes = await fetch('/api/admin/orders?limit=5', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
                 if (ordersRes.ok) {
                     const dataPack = await ordersRes.json();
                     const container = document.getElementById('dashboardPendingOrdersList');
                     container.innerHTML = '';
-                    const pendings = (dataPack.data || []).filter(o => String(o.status).toLowerCase() === 'pending');
-                    
+                    const pendings = (dataPack.data || []).filter(o => o.status === 'pending');
                     if(pendings.length === 0) {
-                        container.innerHTML = `
-                            <div class="flex flex-col items-center justify-center h-full text-gray-400 py-10">
-                                <i class="fa-solid fa-check-double text-2xl mb-2 text-gray-200"></i>
-                                <p class="text-xs font-medium">Operational pipeline clear.</p>
-                            </div>`;
+                        container.innerHTML = `<p class="text-xs text-gray-400 py-12 text-center font-medium italic">Operations pipeline clear. No outstanding critical entries.</p>`;
                     } else {
                         pendings.forEach(ord => {
                             container.innerHTML += `
-                                <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between text-xs transition-all hover:border-[#0044ff]/20">
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg flex items-center justify-between text-xs transition-all hover:border-[#0044ff] shadow-sm">
                                     <div>
-                                        <p class="font-extrabold text-gray-900">${ord.customer_name}</p>
+                                        <p class="font-bold text-gray-900">${ord.customer_name}</p>
                                         <p class="text-[10px] text-gray-500 mt-0.5">${ord.service} — <span class="font-mono text-[#0044ff] font-bold">Ksh ${ord.price || 0}</span></p>
                                     </div>
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide bg-amber-50 text-amber-600 border border-amber-200">Pending</span>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide bg-amber-50 text-amber-600 border border-amber-100">${ord.status}</span>
                                 </div>
                             `;
                         });
                     }
                 }
-            } catch (err) { console.error("KPI Sync Fault:", err); }
+            } catch (err) { console.error("KPI Dashboard Matrix Sync Fault:", err); }
         }
 
-        // REGISTRY DATA GRID ENGINE
+        // DATABASE REGISTRY MATRIX RENDER CONSOLE NODES
         async function syncRegistryGridArchitecture() {
             const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
             if (!schemaDef) return;
@@ -698,17 +679,16 @@
             const gridBodyRowsAnchor = document.getElementById('gridBodyRows');
             const fallbackAnchor = document.getElementById('gridEmptyFallback');
 
-            // Generate Headers
-            headerRowAnchor.innerHTML = `<th class="p-4 w-4"><input type="checkbox" onchange="toggleSelectAllRowsMatrix(this)" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></th>`;
+            headerRowAnchor.innerHTML = `<th class="p-4 w-4"><input type="checkbox" onchange="toggleSelectAllRowsMatrix(this)" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff] shadow-sm"></th>`;
             schemaDef.columns.forEach(col => {
-                headerRowAnchor.innerHTML += `<th class="p-4 tracking-wider text-[10px] font-extrabold uppercase">${col.replace(/_/g, ' ')}</th>`;
+                headerRowAnchor.innerHTML += `<th class="p-4 tracking-wider text-[10px] font-extrabold uppercase font-mono">${col.replace(/_/g, ' ')}</th>`;
             });
-            headerRowAnchor.innerHTML += `<th class="p-4 text-right">Row OPs</th>`;
+            headerRowAnchor.innerHTML += `<th class="p-4 text-right">Row Operations</th>`;
 
             try {
                 const targetEndpoint = `/api/admin/${currentContext}?search=${encodeURIComponent(registrySearchQuery)}&limit=250`;
                 const response = await fetch(targetEndpoint, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
-                if (!response.ok) throw new Error("Registry matrix stream failed.");
+                if (!response.ok) throw new Error("Registry matrix stream down.");
                 const dataset = await response.json();
                 
                 gridBodyRowsAnchor.innerHTML = '';
@@ -722,74 +702,61 @@
 
                 records.forEach(row => {
                     const isChecked = selectedRowVectorIds.includes(row.id);
-                    let rowHtmlStr = `<tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 ${isChecked ? 'bg-blue-50/50' : ''}">`;
-                    rowHtmlStr += `<td class="p-4"><input type="checkbox" data-row-id="${row.id}" ${isChecked ? 'checked' : ''} onchange="toggleSingleRowMatrix(this, ${row.id})" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></td>`;
+                    let rowHtmlStr = `<tr class="hover:bg-gray-50 transition-colors border-b border-gray-100 ${isChecked ? 'bg-blue-50/50' : ''}">`;
+                    rowHtmlStr += `<td class="p-4"><input type="checkbox" data-row-id="${row.id}" ${isChecked ? 'checked' : ''} onchange="toggleSingleRowMatrix(this, ${row.id})" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff] shadow-sm"></td>`;
                     
                     schemaDef.columns.forEach(col => {
                         let dynamicValue = row[col];
-                        if (dynamicValue === null || dynamicValue === undefined || dynamicValue === '') dynamicValue = '—';
+                        if (dynamicValue === null || dynamicValue === undefined) dynamicValue = '—';
                         
-                        // Humanize mappings
+                        // Conditionals for UI/UX matching Index.html styles
                         if (typeof dynamicValue === 'boolean' || dynamicValue === 'true' || dynamicValue === 'false') {
-                            const boolVal = String(dynamicValue).toLowerCase() === 'true';
-                            dynamicValue = boolVal ? 
-                            `<span class="text-emerald-500 font-bold"><i class="fa-solid fa-check"></i> True</span>` : 
-                            `<span class="text-gray-400"><i class="fa-solid fa-minus"></i> False</span>`;
-                        } else if (col === 'status' || col === 'payment_status') {
-                            let normal = String(dynamicValue).toLowerCase();
-                            let badgeClass = 'bg-gray-100 text-gray-600 border border-gray-200';
-                            
-                            if(['paid', 'completed', 'approved', 'success', 'resolved', 'published', 'active'].includes(normal)) 
-                                badgeClass = 'bg-emerald-50 text-emerald-600 border border-emerald-200';
-                            if(['pending', 'processing', 'open', 'draft', 'in progress'].includes(normal)) 
-                                badgeClass = 'bg-amber-50 text-amber-600 border border-amber-200';
-                            if(['failed', 'cancelled', 'rejected', 'void', 'closed', 'expired'].includes(normal)) 
-                                badgeClass = 'bg-red-50 text-red-600 border border-red-200';
-                                
-                            dynamicValue = `<span class="px-2 py-0.5 rounded flex w-max items-center justify-center text-[9px] font-extrabold uppercase tracking-wide ${badgeClass}">${normal}</span>`;
+                            const isTrue = String(dynamicValue).toLowerCase() === 'true';
+                            dynamicValue = isTrue ? 
+                            `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> True</span>` : 
+                            `<span class="text-gray-400"><i class="fa-solid fa-circle-minus"></i> False</span>`;
+                        } else if (col === 'status' || col === 'payment_status' || col === 'delivery_status') {
+                            let customBadgeClass = 'bg-gray-100 text-gray-600 border-gray-200';
+                            const normal = String(dynamicValue).toLowerCase();
+                            if(normal === 'paid' || normal === 'completed' || normal === 'approved' || normal === 'success' || normal === 'active' || normal === 'available') customBadgeClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                            if(normal === 'pending' || normal === 'processing' || normal === 'open' || normal === 'requested') customBadgeClass = 'bg-amber-50 text-amber-600 border-amber-100';
+                            if(normal === 'failed' || normal === 'cancelled' || normal === 'rejected' || normal === 'void' || normal === 'expired') customBadgeClass = 'bg-red-50 text-red-600 border-red-100';
+                            dynamicValue = `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wide border shadow-sm ${customBadgeClass}">${normal}</span>`;
                         } else if (col === 'price' || col === 'amount') {
-                            dynamicValue = `<span class="font-mono font-bold text-[#0f172a]">Ksh ${parseFloat(dynamicValue || 0).toLocaleString()}</span>`;
-                        } else if (col.includes('date') || col.includes('_at')) {
-                            if(dynamicValue !== '—') {
-                                const dt = new Date(dynamicValue);
-                                if (!isNaN(dt)) {
-                                    dynamicValue = `<span class="text-gray-500 font-medium text-[11px]">${dt.toLocaleDateString('en-GB')}</span>`;
-                                }
-                            }
-                        } else if (col === 'progress') {
-                            dynamicValue = `<span class="font-mono text-xs font-bold text-[#0044ff]">${dynamicValue}%</span>`;
+                            dynamicValue = `<span class="font-mono font-bold text-gray-900">Ksh ${parseFloat(dynamicValue || 0).toLocaleString()}</span>`;
+                        } else if (col === 'created_at' || col === 'sent_at' || col === 'issued_at' || col === 'booking_date') {
+                            dynamicValue = `<span class="text-gray-500 font-medium text-[11px]">${new Date(dynamicValue).toLocaleDateString()}</span>`;
                         }
                         
                         rowHtmlStr += `<td class="p-4 truncate max-w-[200px] font-medium text-gray-700">${dynamicValue}</td>`;
                     });
 
-                    // Action extensions
-                    let extActions = '';
+                    let structuralExtensionActions = '';
                     if (currentContext === 'invoices') {
-                        extActions = `<button onclick="dispatchInvoiceDownload(${row.id})" class="p-1.5 text-gray-400 hover:text-[#0044ff] transition-colors" title="Export PDF"><i class="fa-solid fa-file-pdf"></i></button>`;
+                        structuralExtensionActions = `<button onclick="dispatchInvoiceDownload(${row.id})" class="p-1.5 text-[#0044ff] hover:bg-blue-50 rounded-md transition-colors" title="Export Ledger PDF Target"><i class="fa-solid fa-file-pdf"></i></button>`;
                     }
                     if (currentContext === 'orders' && row.phone) {
-                        const encryptedText = encodeURIComponent(`Hello ${row.customer_name}, message from DAN74TECH MEDIA regarding your order structure.`);
-                        extActions = `<a href="https://wa.me/${row.phone}?text=${encryptedText}" target="_blank" class="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors" title="Trigger WhatsApp Router"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
+                        const encryptedText = encodeURIComponent(`Hello ${row.customer_name}, message from DAN74TECH MEDIA administration regarding your order.`);
+                        structuralExtensionActions = `<a href="https://wa.me/${row.phone}?text=${encryptedText}" target="_blank" class="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-md transition-colors inline-block" title="Trigger Operational Whatsapp Router Line"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
                     }
 
-                    // Check if table allows edits
-                    const allowsEdit = Object.keys(schemaDef.fields).length > 0;
+                    // For read_only_form tables, hide edit button
+                    const editBtn = schemaDef.read_only_form ? '' : `<button onclick="openUpdateRecordModal(${row.id})" class="p-1.5 text-gray-400 hover:text-[#0044ff] hover:bg-blue-50 rounded-md transition-colors" title="Mutate Data Field Vector"><i class="fa-solid fa-pen-to-square"></i></button>`;
 
                     rowHtmlStr += `
                         <td class="p-4 text-right space-x-1 whitespace-nowrap">
-                            ${extActions}
-                            ${allowsEdit ? `<button onclick="openUpdateRecordModal(${row.id})" class="p-1.5 text-gray-400 hover:text-[#0044ff] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-blue-200" title="Edit Vector"><i class="fa-solid fa-pen"></i></button>` : ''}
-                            <button onclick="executeSingleRowSoftDelete(${row.id})" class="p-1.5 text-gray-400 hover:text-[#ff2a2a] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-red-200" title="Drop Vector"><i class="fa-solid fa-trash"></i></button>
+                            ${structuralExtensionActions}
+                            ${editBtn}
+                            <button onclick="executeSingleRowSoftDelete(${row.id})" class="p-1.5 text-gray-400 hover:text-[#ff2a2a] hover:bg-red-50 rounded-md transition-colors" title="Drop Matrix Row Pointer"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     `;
                     rowHtmlStr += `</tr>`;
                     gridBodyRowsAnchor.innerHTML += rowHtmlStr;
                 });
-            } catch (err) { console.error("Operational Grid Sync Fault:", err); }
+            } catch (err) { pushSystemOperationalToast("Operational Grid Architectural Sync Fault: " + err.message, "error"); }
         }
 
-        // DEBOUNCED SEARCH
+        // GRID SEARCH FIELD DEBOUNCER ENGINE
         let searchDebounceMatrixTimer = null;
         function executeRegistrySearch() {
             clearTimeout(searchDebounceMatrixTimer);
@@ -799,7 +766,7 @@
             }, 350);
         }
 
-        // ROW SELECTION HANDLERS
+        // CHECKBOX DATA COLLECTION HANDLER FUNCTIONS
         function toggleSelectAllRowsMatrix(masterCheckbox) {
             const checkBoxes = document.querySelectorAll('#gridBodyRows input[type="checkbox"]');
             selectedRowVectorIds = [];
@@ -807,23 +774,24 @@
                 cb.checked = masterCheckbox.checked;
                 const rowId = parseInt(cb.getAttribute('data-row-id'));
                 if (masterCheckbox.checked && rowId) selectedRowVectorIds.push(rowId);
-                const tr = cb.closest('tr');
-                if(tr) {
-                    if(masterCheckbox.checked) tr.classList.add('bg-blue-50/50');
-                    else tr.classList.remove('bg-blue-50/50');
+                
+                const tableRow = cb.closest('tr');
+                if(tableRow) {
+                    if(masterCheckbox.checked) tableRow.classList.add('bg-blue-50/50');
+                    else tableRow.classList.remove('bg-blue-50/50');
                 }
             });
             updateBulkActionControlsUI();
         }
 
         function toggleSingleRowMatrix(checkbox, rowId) {
-            const tr = checkbox.closest('tr');
+            const tableRow = checkbox.closest('tr');
             if (checkbox.checked) {
                 if (!selectedRowVectorIds.includes(rowId)) selectedRowVectorIds.push(rowId);
-                if(tr) tr.classList.add('bg-blue-50/50');
+                if(tableRow) tableRow.classList.add('bg-blue-50/50');
             } else {
                 selectedRowVectorIds = selectedRowVectorIds.filter(id => id !== rowId);
-                if(tr) tr.classList.remove('bg-blue-50/50');
+                if(tableRow) tableRow.closest('tr').classList.remove('bg-blue-50/50');
             }
             updateBulkActionControlsUI();
         }
@@ -839,32 +807,47 @@
             }
         }
 
-        // MODAL HANDLERS
+        // FORM INJECTION MODAL SCHEMA MAPPING MUTATORS
         function openCreateRecordModal() {
+            const schema = TABLE_METADATA_REGISTRY[currentContext];
+            if(schema.read_only_form) return;
+
             contextRowMutationTargetId = null;
-            const fmt = currentContext.replace(/_/g, ' ');
-            document.getElementById('modalActionTitle').innerText = `Append ${fmt} Entry`;
-            document.getElementById('modalActionSubtitle').innerText = `Injecting new operational record parameter`;
+            document.getElementById('modalActionTitle').innerText = `Append ${currentContext.replace(/_/g, ' ')} Row Entry`;
+            document.getElementById('modalActionSubtitle').innerText = `Injecting new operational record to database context`;
             generateDynamicFormInterfaceFields({});
             document.getElementById('crudSystemModal').classList.remove('hidden');
             document.getElementById('crudSystemModal').classList.add('flex');
         }
 
         async function openUpdateRecordModal(rowId) {
+            const schema = TABLE_METADATA_REGISTRY[currentContext];
+            if(schema.read_only_form) return;
+
             contextRowMutationTargetId = rowId;
-            const fmt = currentContext.replace(/_/g, ' ');
-            document.getElementById('modalActionTitle').innerText = `Mutate ${fmt} Record`;
-            document.getElementById('modalActionSubtitle').innerText = `Target unique identifier node: ${rowId}`;
+            document.getElementById('modalActionTitle').innerText = `Mutate ${currentContext.replace(/_/g, ' ')} Record Map`;
+            document.getElementById('modalActionSubtitle').innerText = `Target unique structural matrix identifier ID: ${rowId}`;
             
             try {
-                const response = await fetch(`/api/${currentContext}/${rowId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
-                if(!response.ok) throw new Error("Data retrieval exception thrown.");
-                const activeRecord = await response.json();
+                const response = await fetch(`/api/admin/${currentContext}/${rowId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                
+                // Fallback to generic fetch if /api/admin/:table/:id is restricted or missing in strict testing, but standard design requires it.
+                // Assuming the generic fetch endpoint logic defined in Server.js line 872 handles this successfully.
+                let activeRecord;
+                if(!response.ok) {
+                   const fallback = await fetch(`/api/${currentContext}/${rowId}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+                   if (!fallback.ok) throw new Error("Data fetching exception thrown during remote extraction.");
+                   activeRecord = await fallback.json();
+                } else {
+                   const dataPacket = await response.json();
+                   // Determine if it returns wrapped data or direct object based on generic logic
+                   activeRecord = dataPacket.data ? dataPacket.data[0] || dataPacket : dataPacket; 
+                }
                 
                 generateDynamicFormInterfaceFields(activeRecord);
                 document.getElementById('crudSystemModal').classList.remove('hidden');
                 document.getElementById('crudSystemModal').classList.add('flex');
-            } catch (err) { alert(`Remote record retrieval mapping fault: ${err.message}`); }
+            } catch (err) { pushSystemOperationalToast(`Extraction Fault: ${err.message}`, "error"); }
         }
 
         function closeCrudSystemModal() {
@@ -883,54 +866,52 @@
                 let initialValue = recordData[fieldName];
                 if (initialValue === null || initialValue === undefined) initialValue = '';
                 
-                let inputMarkup = '';
-                // Clean UI form styling matches index.html
-                const baseStyles = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all mt-1.5 shadow-sm";
+                let inputElementMarkup = '';
+                const baseStyles = "w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] text-gray-900 transition-all mt-1.5 shadow-sm";
 
                 if (config.type === 'select') {
-                    let optsStr = '';
+                    let optionNodesStr = '';
                     config.options.forEach(opt => {
                         const isSel = String(opt).toLowerCase() === String(initialValue).toLowerCase();
-                        optsStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${opt.toUpperCase()}</option>`;
+                        optionNodesStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${String(opt).toUpperCase()}</option>`;
                     });
-                    inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
+                    inputElementMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optionNodesStr}</select>`;
                 } else if (config.type === 'textarea') {
-                    inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none">${initialValue}</textarea>`;
+                    inputElementMarkup = `<textarea name="${fieldName}" rows="4" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} col-span-1 md:col-span-2">${initialValue}</textarea>`;
+                } else if (config.type === 'datetime-local') {
+                    if (initialValue) { initialValue = new Date(initialValue).toISOString().slice(0, 16); }
+                    inputElementMarkup = `<input type="datetime-local" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
                 } else if (config.type === 'date') {
-                    if (initialValue) initialValue = new Date(initialValue).toISOString().split('T')[0];
-                    inputMarkup = `<input type="date" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
-                } else if (config.type === 'time') {
-                    inputMarkup = `<input type="time" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
+                    if (initialValue) { initialValue = new Date(initialValue).toISOString().slice(0, 10); }
+                    inputElementMarkup = `<input type="date" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
                 } else {
-                    // text, email, number, password
-                    inputMarkup = `<input type="${config.type}" name="${fieldName}" value="${config.type !== 'password' ? initialValue : ''}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
+                    inputElementMarkup = `<input type="${config.type}" name="${fieldName}" value="${config.type !== 'password' ? initialValue : ''}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
                 }
 
-                // If textarea span 2 columns
-                const colSpan = config.type === 'textarea' ? 'md:col-span-2' : '';
-
+                const wrapperClass = config.type === 'textarea' ? 'col-span-1 md:col-span-2' : '';
+                
                 anchor.innerHTML += `
-                    <div class="${colSpan}">
-                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wide font-mono">${config.label}</label>
-                        ${inputMarkup}
+                    <div class="${wrapperClass}">
+                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider font-mono">${config.label}</label>
+                        ${inputElementMarkup}
                     </div>
                 `;
             });
         }
 
-        // COMMIT FORM DATA TO BACKEND
+        // BACKEND MUTATION COMMIT SUBMIT HANDLERS
         async function commitFormPayload(event) {
             event.preventDefault();
             const formElement = document.getElementById('dynamicInputSchemaForm');
             const formDataInstance = new FormData(formElement);
-            const payload = {};
+            const plainObjectPayload = {};
 
             formDataInstance.forEach((value, key) => {
                 const schemaField = TABLE_METADATA_REGISTRY[currentContext].fields[key];
                 if(schemaField && schemaField.type === 'number') {
-                    payload[key] = value !== '' ? Number(value) : null;
-                } else if (value.trim() !== '') {
-                    payload[key] = value;
+                    plainObjectPayload[key] = value !== '' ? Number(value) : null;
+                } else {
+                    plainObjectPayload[key] = value;
                 }
             });
 
@@ -949,20 +930,21 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(plainObjectPayload)
                 });
 
                 const responseData = await response.json();
-                if (!response.ok) throw new Error(responseData.error || "System rejected execution mapping values.");
+                if (!response.ok) throw new Error(responseData.error || "System rejected operation mapping.");
                 
+                pushSystemOperationalToast("Vector Payload successfully committed to schema structure.", "success");
                 closeCrudSystemModal();
                 await syncRegistryGridArchitecture();
-            } catch (err) { alert(`Mutation Execution Aborted: ${err.message}`); }
+            } catch (err) { pushSystemOperationalToast(`Mutation Execution Interrupted: ${err.message}`, "error"); }
         }
 
-        // DELETION PIPELINES
+        // DESTRUCTIVE PROTOCOL DROPPING CONSOLE CONTROLLERS
         async function executeSingleRowSoftDelete(rowId) {
-            if(!confirm("Deploy destruction sequence? Record will be soft-deleted.")) return;
+            if(!confirm("Are you sure you want to deactivate and soft delete this entry record row?")) return;
             try {
                 const response = await fetch(`/api/admin/${currentContext}/${rowId}`, {
                     method: 'DELETE',
@@ -970,13 +952,15 @@
                 });
                 const resData = await response.json();
                 if(!response.ok) throw new Error(resData.error || "Soft delete operation failure.");
+                
+                pushSystemOperationalToast("Row node gracefully deactivated.", "success");
                 await syncRegistryGridArchitecture();
-            } catch (err) { alert(`Destruction sequence aborted: ${err.message}`); }
+            } catch (err) { pushSystemOperationalToast(`Destruction Aborted: ${err.message}`, "error"); }
         }
 
         async function executeBulkActionSoftDelete() {
             if(selectedRowVectorIds.length === 0) return;
-            if(!confirm(`Confirm destruction protocol deployment across [${selectedRowVectorIds.length}] selected matrix rows?`)) return;
+            if(!confirm(`Confirm destruction protocol deployment sequence across [${selectedRowVectorIds.length}] selected matrix rows?`)) return;
             
             try {
                 const response = await fetch(`/api/${currentContext}/bulk`, {
@@ -990,13 +974,14 @@
                 const resData = await response.json();
                 if(!response.ok) throw new Error(resData.error || "Bulk drop operation failure.");
                 
+                pushSystemOperationalToast(`Bulk Drop Sequence complete across ${selectedRowVectorIds.length} nodes.`, "success");
                 selectedRowVectorIds = [];
                 updateBulkActionControlsUI();
                 await syncRegistryGridArchitecture();
-            } catch(err) { alert(`Bulk operation failure: ${err.message}`); }
+            } catch(err) { pushSystemOperationalToast(`Bulk operation failure: ${err.message}`, "error"); }
         }
 
-        // SPECIALIZED ARCHITECTURE PIPELINES
+        // REPLICATED SPECIALIZED PIPELINE EXTRACTION CONSOLES
         async function dispatchInvoiceDownload(invoiceId) {
             try {
                 const response = await fetch(`/api/invoices/${invoiceId}/download`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
@@ -1004,24 +989,20 @@
                 const blobNode = await response.blob();
                 const downLink = document.createElement('a');
                 downLink.href = window.URL.createObjectURL(blobNode);
-                downLink.download = `Invoice_Ledger_DAN74TECH_${invoiceId}.pdf`;
+                downLink.download = `Invoice_Matrix_Ledger_Node_${invoiceId}.pdf`;
                 downLink.click();
-            } catch (err) { alert(`Asset streaming pipeline exception: ${err.message}`); }
+                pushSystemOperationalToast("Invoice matrix exported successfully.", "success");
+            } catch (err) { pushSystemOperationalToast(`Asset streaming pipeline exception: ${err.message}`, "error"); }
         }
 
         async function triggerSystemBackup() {
-            if(!confirm("Deploy explicit cryptographic dump parameters to remote AWS S3 cold storage bucket?")) return;
+            if(!confirm("Deploy explicit cryptographic dump parameters sequence to remote AWS S3 cold bucket storage?")) return;
             try {
                 const response = await fetch('/api/admin/backup/status', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
                 const backupStatusInfo = await response.json();
-                
-                const formatter = new Intl.DateTimeFormat('en-GB', { 
-                    timeZone: 'Africa/Nairobi', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' 
-                });
-                document.getElementById('backup-timestamp').innerText = formatter.format(new Date());
-                
-                alert(`Backup pipeline executed. Status returned: ${backupStatusInfo.status || 'Success'} mapped on S3.`);
-            } catch (err) { alert(`Backup pipeline fault: ${err.message}`); }
+                document.getElementById('backup-timestamp').innerText = new Date().toISOString();
+                pushSystemOperationalToast(`Backup pipeline executed. Status returned: ${backupStatusInfo.status || 'Success'} mapped on S3.`, "success");
+            } catch (err) { pushSystemOperationalToast(`Backup pipeline fault: ${err.message}`, "error"); }
         }
     </script>
 </body>
