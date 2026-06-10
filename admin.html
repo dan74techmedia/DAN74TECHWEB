@@ -424,7 +424,7 @@
                     title: { label: 'Project Title', type: 'text', required: true },
                     category: { label: 'Classification', type: 'text', required: true },
                     description: { label: 'Technical Output', type: 'textarea', required: false },
-                    link: { label: 'Live Implementation Asset', type: 'text', required: false },
+                    link: { label: 'Link Or Text', type: 'link', required: false },
                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     progress: { label: 'Progress Flow Matrix (%)', type: 'number', required: false },
                     status: { label: 'Deployment Stage', type: 'select', options: ['In Progress', 'Completed', 'Maintenance'], required: false },
@@ -448,9 +448,9 @@
             },
             blog_posts: {
                 fields: {
-                    title: { label: 'Publication Header', type: 'text', required: true },
-                    slug: { label: 'System URL Routing Slug', type: 'text', required: true },
-                    category: { label: 'Taxonomy Category', type: 'text', required: false },
+                    title: { label: 'Header', type: 'text', required: true },
+                    slug: { label: 'System Link', type: 'text', required: true },
+                    category: { label: 'Category', type: 'text', required: false },
                      file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     summary: { label: 'Excerpt Metadata', type: 'textarea', required: false },
                     content: { label: 'Full Binary Copy (Markdown/HTML)', type: 'textarea', required: true },
