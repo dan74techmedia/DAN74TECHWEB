@@ -1,6 +1,6 @@
 // =========================================================================
 // DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
-// STATUS: V4.1.0 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (COMPLETE)
+// STATUS: V4.1.1 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (FULLY RECTIFIED)
 // =========================================================================
 require('dotenv').config();
 const express = require('express');
@@ -54,7 +54,7 @@ pool.query("SELECT NOW()")
 
 // Configure Cloudinary Integration
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dan74tech',
     api_key: process.env.CLOUDINARY_API_KEY || '',
     api_secret: process.env.CLOUDINARY_API_SECRET || ''
 });
@@ -632,7 +632,7 @@ app.get('/api/media', async (req, res) => {
     }
 });
 
-
+// RECTIFIED: Aligned object properties with database column definitions 
 app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: "Required file node absent" });
@@ -642,10 +642,9 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
             async (error, result) => {
                 if (error) return res.status(500).json({ error: error.message });
                 try {
-                    // FIXED: Aligned strictly with database schema columns: public_id, filename, url, format, bytes
                     const dbInsert = await pool.query(
-                        `INSERT INTO media_library (public_id, filename, url, format, bytes) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-                        [result.public_id, req.file.originalname, result.secure_url, req.file.mimetype, req.file.size]
+                        `INSERT INTO media_library (public_id, url, filename, format, bytes) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                        [result.public_id, result.secure_url, req.file.originalname, result.format, req.file.size]
                     );
                     res.json({ success: true, data: dbInsert.rows[0] });
                 } catch (dbErr) {
@@ -658,6 +657,7 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
         res.status(500).json({ error: err.message });
     }
 });
+
 // =========================================================================
 // ================= MODULE 16: CONSULTATIONS ARCHIVE BLOCK ================
 // =========================================================================
@@ -670,12 +670,32 @@ app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// RECTIFIED: Aligned object parameters with database column constraints 
 app.post('/api/consultations', async (req, res) => {
     try {
-        const { name, email, phone, schedule_date, notes } = req.body;
+        const { name, client_name, email, client_email, schedule_date, booking_date, booking_time, platform } = req.body;
+        
+        const finalName = client_name || name;
+        const finalEmail = client_email || email;
+        let finalBookingDate = booking_date;
+        let finalBookingTime = booking_time || '10:00:00';
+
+        if (schedule_date) {
+            const dateObj = new Date(schedule_date);
+            if (!isNaN(dateObj.getTime())) {
+                finalBookingDate = schedule_date.split('T')[0];
+                if (!booking_time) {
+                    finalBookingTime = dateObj.toTimeString().split(' ')[0];
+                }
+            } else {
+                finalBookingDate = schedule_date;
+            }
+        }
+
         const result = await pool.query(
-            `INSERT INTO consultations (name, email, phone, schedule_date, notes, status) VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING *`,
-            [name, email, phone, schedule_date, notes]
+            `INSERT INTO consultations (client_name, client_email, booking_date, booking_time, platform, status) 
+             VALUES ($1, $2, $3, $4, COALESCE($5, 'Google Meet'), 'pending') RETURNING *`,
+            [finalName, finalEmail, finalBookingDate, finalBookingTime, platform]
         );
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
@@ -871,6 +891,7 @@ app.post('/api/payments/mpesa-stk', verifySystemToken, async (req, res) => {
     }
 });
 
+// RECTIFIED: Aligned database parameter with actual system column: result_desc 
 app.post('/api/payments/mpesa-callback', async (req, res) => {
     try {
         const callbackData = req.body.Body.stkCallback;
@@ -883,9 +904,15 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
             const phoneInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'PhoneNumber');
 
             await pool.query(
-                `INSERT INTO mpesa_transactions (checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_description) 
-                 VALUES ($1, $2, $3, $4, 'Success', $5)`,
-                [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc]
+                `INSERT INTO mpesa_transactions (checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_desc, result_code) 
+                 VALUES ($1, $2, $3, $4, 'Success', $5, $6)`,
+                [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc, resultCode]
+            );
+        } else {
+            await pool.query(
+                `INSERT INTO mpesa_transactions (checkout_request_id, status, result_desc, result_code, phone_number, amount) 
+                 VALUES ($1, 'Failed', $2, $3, 'N/A', 0.00)`,
+                [checkoutRequestId, callbackData.ResultDesc, resultCode]
             );
         }
         res.json({ ResultCode: 0, ResultDesc: "Transaction Accepted Confirmed" });
@@ -1039,6 +1066,68 @@ app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
 // ================= MASTER ADAPTIVE ADMINISTRATIVE CRUD CORE ==============
 // =========================================================================
 
+// VALID SCHEMATIC COLUMNS BLUEPRINT MAPPER FOR ALL REST TABLES
+const tableColumnSchema = {
+    users: ['name', 'email', 'password', 'role', 'phone', 'is_deleted', 'is_online', 'last_seen'],
+    services: ['name', 'icon', 'description', 'is_deleted'],
+    sub_services: ['service_id', 'name', 'price', 'description', 'is_deleted'],
+    orders: ['user_id', 'customer_name', 'phone', 'service', 'sub_service', 'domain', 'device_model', 'project_details', 'price', 'status', 'payment_status', 'is_deleted', 'staging_environment', 'domain_criteria', 'hardware_serial', 'cyber_tracking_key', 'service_metadata'],
+    portfolio: ['order_id', 'title', 'category', 'description', 'link', 'progress', 'status', 'is_deleted', 'publisher_id', 'publisher_name', 'is_approved', 'likes_count', 'views_count'],
+    case_studies: ['title', 'category', 'challenge', 'solution', 'result', 'image_url', 'is_deleted', 'publisher_id', 'is_approved', 'author_id', 'likes_count', 'views_count', 'status'],
+    testimonials: ['client_name', 'client_designation', 'company', 'client_avatar_url', 'rating', 'review', 'status', 'is_featured', 'is_deleted', 'publisher_id', 'is_approved'],
+    blog_posts: ['title', 'category', 'content', 'summary', 'image_url', 'slug', 'seo_title', 'seo_description', 'is_deleted', 'publisher_id', 'is_approved', 'author_id', 'likes_count', 'views_count', 'status'],
+    subscribers: ['email', 'status', 'is_deleted'],
+    media_library: ['public_id', 'url', 'filename', 'format', 'bytes', 'is_deleted'],
+    invoices: ['order_id', 'invoice_number', 'client_name', 'client_email', 'amount', 'pdf_url', 'status', 'is_deleted'],
+    notifications: ['user_id', 'title', 'message', 'channel', 'status', 'is_deleted'],
+    support_tickets: ['user_id', 'subject', 'description', 'status', 'priority', 'is_deleted'],
+    consultations: ['client_name', 'client_email', 'booking_date', 'booking_time', 'platform', 'status', 'is_deleted'],
+    file_deliveries: ['order_id', 'client_id', 'file_name', 'file_url', 'file_size', 'expiry_date', 'download_count', 'status', 'is_deleted'],
+    email_campaigns: ['subject', 'content', 'campaign_type', 'recipients_count', 'sent_by', 'is_deleted'],
+    client_communications: ['sender_id', 'receiver_id', 'message_body', 'attachment_url', 'attachment_name', 'is_read', 'is_deleted', 'delivery_status', 'message_type', 'channel', 'ciphertext', 'iv', 'sender_wrapped_key', 'receiver_wrapped_key'],
+    mpesa_transactions: ['order_id', 'user_id', 'phone_number', 'amount', 'mpesa_receipt_number', 'merchant_request_id', 'checkout_request_id', 'result_code', 'result_desc', 'status', 'is_deleted']
+};
+
+// HELPER FUNCTION: Maps frontend aliases and sanely strips invalid columns 
+const sanitizeAndMapPayload = (table, body) => {
+    let payload = { ...body };
+    
+    if (table === 'portfolio' && 'file_url' in payload) {
+        payload.link = payload.file_url;
+        delete payload.file_url;
+    }
+    if (table === 'media_library') {
+        if ('file_name' in payload) payload.filename = payload.file_name;
+        if ('file_url' in payload) payload.url = payload.file_url;
+    }
+    if (table === 'consultations') {
+        if ('name' in payload) payload.client_name = payload.name;
+        if ('email' in payload) payload.client_email = payload.email;
+        if ('schedule_date' in payload) {
+            const dateObj = new Date(payload.schedule_date);
+            if (!isNaN(dateObj.getTime())) {
+                payload.booking_date = payload.schedule_date.split('T')[0];
+                if (!payload.booking_time) {
+                    payload.booking_time = dateObj.toTimeString().split(' ')[0];
+                }
+            } else {
+                payload.booking_date = payload.schedule_date;
+            }
+        }
+        if (!payload.booking_time) payload.booking_time = '10:00:00';
+    }
+
+    const allowedColumns = tableColumnSchema[table];
+    if (allowedColumns) {
+        Object.keys(payload).forEach(key => {
+            if (!allowedColumns.includes(key)) {
+                delete payload[key];
+            }
+        });
+    }
+    return payload;
+};
+
 // 1. DYNAMIC ADMIN LISTING & ADVANCED SEARCH ENGINE
 app.get('/api/admin/:table', verifyAdminAccess, async (req, res) => {
     const whitelist = [
@@ -1068,7 +1157,7 @@ app.get('/api/admin/:table', verifyAdminAccess, async (req, res) => {
                 case 'services': searchColumns = ['name', 'description']; break;
                 case 'sub_services': searchColumns = ['name', 'description']; break;
                 case 'invoices': searchColumns = ['invoice_number', 'client_name', 'client_email', 'status']; break;
-                case 'consultations': searchColumns = ['name', 'email', 'phone', 'status']; break;
+                case 'consultations': searchColumns = ['client_name', 'client_email', 'status']; break;
                 case 'testimonials': searchColumns = ['client_name', 'company', 'review', 'status']; break;
                 case 'portfolio': searchColumns = ['title', 'description', 'status']; break;
                 case 'blog_posts': searchColumns = ['title', 'content', 'status']; break;
@@ -1076,6 +1165,7 @@ app.get('/api/admin/:table', verifyAdminAccess, async (req, res) => {
                 case 'support_tickets': searchColumns = ['subject', 'description', 'status']; break;
                 case 'subscribers': searchColumns = ['email', 'status']; break;
                 case 'file_deliveries': searchColumns = ['file_name', 'file_url']; break;
+                case 'media_library': searchColumns = ['filename', 'url']; break;
                 case 'mpesa_transactions': searchColumns = ['mpesa_receipt_number', 'phone_number', 'status']; break;
                 default: searchColumns = [];
             }
@@ -1121,16 +1211,16 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
     if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Write operations restricted on this table vectors." });
 
     try {
-        const payload = { ...req.body };
+        // RECTIFIED: Map incoming dynamic keys safely and sanitize payload
+        const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
-        // Dynamic password sanitation hashing layer
         if (requestedTable === 'users' && payload.password) {
             const salt = await bcrypt.genSalt(10);
             payload.password = await bcrypt.hash(payload.password, salt);
         }
 
         const keys = Object.keys(payload);
-        if(keys.length === 0) return res.status(400).json({ error: "Payload data vector empty." });
+        if(keys.length === 0) return res.status(400).json({ error: "Payload data vector empty or contained invalid columns." });
 
         const fields = keys.join(', ');
         const indices = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -1156,16 +1246,16 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
     if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Mutation operations restricted on this table vectors." });
 
     try {
-        const payload = { ...req.body };
+        // RECTIFIED: Map dynamic mutations safely and filter structural entities
+        const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
-        // Remove structural parameters that should not change manually
         delete payload.id;
         delete payload.created_at;
         delete payload.updated_at;
 
         if (requestedTable === 'users' && payload.password) {
             if (payload.password.trim() === '') {
-                delete payload.password; // Do not overwrite with empty password string
+                delete payload.password;
             } else {
                 const salt = await bcrypt.genSalt(10);
                 payload.password = await bcrypt.hash(payload.password, salt);
@@ -1173,7 +1263,7 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         }
 
         const keys = Object.keys(payload);
-        if(keys.length === 0) return res.status(400).json({ error: "Mutation vector matrix empty." });
+        if(keys.length === 0) return res.status(400).json({ error: "Mutation vector matrix empty or contained invalid columns." });
 
         const setClauses = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
         const values = Object.values(payload);
