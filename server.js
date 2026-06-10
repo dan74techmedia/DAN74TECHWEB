@@ -54,7 +54,7 @@ pool.query("SELECT NOW()")
 
 // Configure Cloudinary Integration
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dan74tech',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || '',
     api_key: process.env.CLOUDINARY_API_KEY || '',
     api_secret: process.env.CLOUDINARY_API_SECRET || ''
 });
