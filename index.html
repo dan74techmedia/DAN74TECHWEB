@@ -484,7 +484,7 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             if (!targetPortfolioViewContainer) return;
 
             try {
-               const items = await response.json();
+              const items = await response.rows || await response.json();
                 if (!response.ok) throw new Error("Portfolio dynamic query failed.");
 
                 const projectsArray = await response.json();
