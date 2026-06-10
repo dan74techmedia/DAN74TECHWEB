@@ -479,18 +479,29 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
         }
         
         // DYNAMIC FEATURED PORTFOLIO INJECTION METHOD (GET /api/portfolio)
-        async function fetchFeaturedPortfolioPreview() {
+       async function fetchFeaturedPortfolioPreview() {
             const targetPortfolioViewContainer = document.getElementById('dynamicFeaturedPortfolioContainer');
             if (!targetPortfolioViewContainer) return;
 
             try {
-              const items = await response.json();
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/portfolio`);
                 if (!response.ok) throw new Error("Portfolio dynamic query failed.");
 
-                const projectsArray = await response.json();
+                const rawData = await response.json();
+                
+                // Defensive extraction to verify if response is wrapped inside an envelope (.rows or .data)
+                let projectsArray = [];
+                if (Array.isArray(rawData)) {
+                    projectsArray = rawData;
+                } else if (rawData && Array.isArray(rawData.rows)) {
+                    projectsArray = rawData.rows;
+                } else if (rawData && Array.isArray(rawData.data)) {
+                    projectsArray = rawData.data;
+                }
+
                 targetPortfolioViewContainer.innerHTML = '';
 
-                if (!projectsArray || projectsArray.length === 0) {
+                if (projectsArray.length === 0) {
                     targetPortfolioViewContainer.innerHTML = `
                         <div class="col-span-full p-6 bg-white border border-gray-100 rounded-xl text-center text-xs font-mono text-gray-400">
                             <i class="fa-solid fa-folder-open block text-xl mb-2 text-gray-300"></i>
@@ -560,7 +571,6 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
                     </div>`;
             }
         }
-
         // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
         document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
             formSubmissionEvent.preventDefault();
