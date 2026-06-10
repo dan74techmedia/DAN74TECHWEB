@@ -407,6 +407,18 @@ app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
     }
 });
 
+// Public Portfolio Matrix Query Route
+app.get('/api/portfolio', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id, title, category, description, link, progress, status, publisher_name, likes_count, views_count FROM portfolio WHERE is_deleted = FALSE AND is_approved = TRUE ORDER BY created_at DESC'
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // =========================================================================
 // ================= MODULE 4: OPERATIONS & ORDER FLOW ENGINE ==============
 // =========================================================================
