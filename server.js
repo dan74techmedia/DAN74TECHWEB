@@ -242,6 +242,44 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+// =========================================================================
+// ================= MISSING MODULE: PUBLIC CASE STUDIES ENGINE ============
+// =========================================================================
+app.get('/api/case-studies', async (req, res) => {
+    try {
+        // Fetches only non-deleted, approved case studies for the public UI
+        const result = await pool.query(
+            `SELECT id, title, category, challenge, solution, result, image_url, likes_count, views_count, status, created_at 
+             FROM case_studies 
+             WHERE is_deleted = FALSE AND (status = 'Approved' OR is_approved = TRUE)
+             ORDER BY id DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("❌ Case Studies Database Mapping Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+// =========================================================================
+// =================== MODULE: PUBLIC BLOG INSIGHTS ENGINE =================
+// =========================================================================
+app.get('/api/blog-posts', async (req, res) => {
+    try {
+        // Synchronizes only non-deleted, approved technical logs for public consumption
+        const result = await pool.query(
+            `SELECT id, title, category, summary, content, image_url, slug, seo_title, seo_description, likes_count, views_count, status, created_at 
+             FROM blog_posts 
+             WHERE is_deleted = FALSE AND (status = 'Approved' OR is_approved = TRUE)
+             ORDER BY id DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("❌ Blog Posts Database Mapping Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 
 // Public Portfolio Matrix Query Route
 app.get('/api/portfolio', async (req, res) => {
@@ -252,7 +290,29 @@ app.get('/api/portfolio', async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
+
+        
     }
+    
+// =========================================================================
+// ==================== MODULE: PUBLIC TESTIMONIALS ENGINE =================
+// =========================================================================
+app.get('/api/testimonials', async (req, res) => {
+    try {
+        // Pulls verified, active client appraisal profiles from the production ledger
+        const result = await pool.query(
+            `SELECT id, client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, created_at 
+             FROM testimonials 
+             WHERE is_deleted = FALSE AND (status = 'Approved' OR is_approved = TRUE)
+             ORDER BY id DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("❌ Testimonials Database Mapping Error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+    
 });
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
