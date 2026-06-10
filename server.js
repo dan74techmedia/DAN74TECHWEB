@@ -279,21 +279,6 @@ app.get('/api/blog-posts', async (req, res) => {
     }
 });
 
-
-
-// Public Portfolio Matrix Query Route
-app.get('/api/portfolio', async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, title, category, description, link, progress, status, publisher_name, likes_count, views_count FROM portfolio WHERE is_deleted = FALSE AND is_approved = TRUE ORDER BY created_at DESC'
-        );
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-
-        
-    }
-    
 // =========================================================================
 // ==================== MODULE: PUBLIC TESTIMONIALS ENGINE =================
 // =========================================================================
@@ -312,8 +297,24 @@ app.get('/api/testimonials', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+
+
+
+// Public Portfolio Matrix Query Route
+app.get('/api/portfolio', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id, title, category, description, link, progress, status, publisher_name, likes_count, views_count FROM portfolio WHERE is_deleted = FALSE AND is_approved = TRUE ORDER BY created_at DESC'
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+
+        
+    }
     
-});
+
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
 // =========================================================================
