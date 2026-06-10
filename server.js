@@ -632,6 +632,7 @@ app.get('/api/media', async (req, res) => {
     }
 });
 
+
 app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: "Required file node absent" });
@@ -641,9 +642,10 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
             async (error, result) => {
                 if (error) return res.status(500).json({ error: error.message });
                 try {
+                    // FIXED: Aligned strictly with database schema columns: public_id, filename, url, format, bytes
                     const dbInsert = await pool.query(
-                        `INSERT INTO media_library (file_name, file_url, file_type, file_size) VALUES ($1, $2, $3, $4) RETURNING *`,
-                        [req.file.originalname, result.secure_url, req.file.mimetype, req.file.size]
+                        `INSERT INTO media_library (public_id, filename, url, format, bytes) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                        [result.public_id, req.file.originalname, result.secure_url, req.file.mimetype, req.file.size]
                     );
                     res.json({ success: true, data: dbInsert.rows[0] });
                 } catch (dbErr) {
@@ -656,7 +658,6 @@ app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), as
         res.status(500).json({ error: err.message });
     }
 });
-
 // =========================================================================
 // ================= MODULE 16: CONSULTATIONS ARCHIVE BLOCK ================
 // =========================================================================
