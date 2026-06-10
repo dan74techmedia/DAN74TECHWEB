@@ -245,11 +245,8 @@ app.post('/api/auth/login', async (req, res) => {
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
 // =========================================================================
-// ================= MODULE 2 (C): COMMUNITY ROSTER ========================
-// Allows clients to see other users for end-to-end chat routing
 app.get('/api/community/users', verifySystemToken, async (req, res) => {
     try {
-        // Excludes sensitive data like email, phone, passwords, and roles
         const result = await pool.query(
             'SELECT id, name, is_online FROM users WHERE is_deleted = FALSE ORDER BY is_online DESC, name ASC'
         );
@@ -744,7 +741,21 @@ app.post('/api/file-deliveries', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 18: SECURE E2EE COMMUNICATION ENGINE =================
 
+// Secure Token Connection Handshake Middleware for Socket.IO
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token || socket.handshake.query.token;
+    if (!token) {
+        return next(new Error("Cryptographic Handshake Denied: Token missing"));
+    }
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) return next(new Error("Cryptographic Handshake Denied: Structural validation failure"));
+        socket.user = decoded;
+        next();
+    });
+});
+
 io.on('connection', (socket) => {
+    console.log(`🔒 Secure Socket Connection tunnel initialized for user node: ${socket.user.id}`);
     
     // 1. BLIND RELAY: Socket-based encrypted messaging
     socket.on('send_encrypted_message', async (data) => {
@@ -774,10 +785,26 @@ io.on('connection', (socket) => {
         io.emit('presence_update', { userId, status: 'online' });
     });
 
-    // ... (Keep your existing typing_start, typing_stop, and disconnect logic here)
+    // 3. TYPING RECEPTOR SIGNALS
+    socket.on('typing_start', (data) => {
+        io.to(`user_${data.receiver_id}`).emit('typing_start', { sender_id: socket.user.id });
+    });
+
+    socket.on('typing_stop', (data) => {
+        io.to(`user_${data.receiver_id}`).emit('typing_stop', { sender_id: socket.user.id });
+    });
+
+    // 4. DEACTIVATION METADATA ON DISCONNECT
+    socket.on('disconnect', async () => {
+        if (socket.userId) {
+            await pool.query('UPDATE users SET is_online = FALSE, last_seen = NOW() WHERE id = $1', [socket.userId]);
+            io.emit('presence_update', { userId: socket.userId, status: 'offline' });
+            console.log(`🔌 Secure Socket Connection dropped cleanly for node: ${socket.userId}`);
+        }
+    });
 });
 
-// 3. E2EE THREAD RETRIEVAL: Only select non-sensitive fields
+// E2EE THREAD RETRIEVAL: Only select non-sensitive fields
 app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     try {
         const userId = req.user.id;
@@ -803,7 +830,7 @@ app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     }
 });
 
-// 4. REST API SEND (E2EE Compliant)
+// REST API SEND (E2EE Compliant)
 app.post('/api/communications/send', verifySystemToken, async (req, res) => {
     const { receiver_id, ciphertext, iv, sender_key, receiver_key } = req.body;
     const sender_id = req.user.id;
@@ -822,6 +849,7 @@ app.post('/api/communications/send', verifySystemToken, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 // =========================================================================
 // ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
 // =========================================================================
@@ -1004,6 +1032,182 @@ app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+
+// =========================================================================
+// ================= MASTER ADAPTIVE ADMINISTRATIVE CRUD CORE ==============
+// =========================================================================
+
+// 1. DYNAMIC ADMIN LISTING & ADVANCED SEARCH ENGINE
+app.get('/api/admin/:table', verifyAdminAccess, async (req, res) => {
+    const whitelist = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'messages', 'consultations', 'file_deliveries', 'email_campaigns', 
+        'client_communications', 'mpesa_transactions' 
+    ];
+    
+    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
+    if (!whitelist.includes(requestedTable)) {
+        return res.status(403).json({ error: "Access to the requested database entity has been restricted." });
+    }
+
+    try {
+        let { page = 1, limit = 200, sort = 'id', order = 'DESC', search = '' } = req.query;
+        let whereClauses = [`is_deleted = FALSE`];
+        let values = [];
+        let valueIndex = 1;
+
+        if (search) {
+            let searchColumns = [];
+            switch(requestedTable) {
+                case 'users': searchColumns = ['name', 'email', 'phone', 'role']; break;
+                case 'orders': searchColumns = ['customer_name', 'phone', 'service', 'status', 'payment_status']; break;
+                case 'services': searchColumns = ['name', 'description']; break;
+                case 'sub_services': searchColumns = ['name', 'description']; break;
+                case 'invoices': searchColumns = ['invoice_number', 'client_name', 'client_email', 'status']; break;
+                case 'consultations': searchColumns = ['name', 'email', 'phone', 'status']; break;
+                case 'testimonials': searchColumns = ['client_name', 'company', 'review', 'status']; break;
+                case 'portfolio': searchColumns = ['title', 'description', 'status']; break;
+                case 'blog_posts': searchColumns = ['title', 'content', 'status']; break;
+                case 'case_studies': searchColumns = ['title', 'challenge', 'solution', 'status']; break;
+                case 'support_tickets': searchColumns = ['subject', 'description', 'status']; break;
+                case 'subscribers': searchColumns = ['email', 'status']; break;
+                case 'file_deliveries': searchColumns = ['file_name', 'file_url']; break;
+                case 'mpesa_transactions': searchColumns = ['mpesa_receipt_number', 'phone_number', 'status']; break;
+                default: searchColumns = [];
+            }
+
+            if (searchColumns.length > 0) {
+                const searchClauses = searchColumns.map(col => `${col} ILIKE $${valueIndex}`);
+                whereClauses.push(`(${searchClauses.join(' OR ')})`);
+                values.push(`%${search}%`);
+                valueIndex++;
+            }
+        }
+
+        const whereString = `WHERE ${whereClauses.join(' AND ')}`;
+        const offset = (parseInt(page) - 1) * parseInt(limit);
+        const safeSort = sort.replace(/[^a-zA-Z0-9_]/g, '');
+        const safeOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+        const queryStr = `SELECT * FROM ${requestedTable} ${whereString} ORDER BY ${safeSort} ${safeOrder} LIMIT ${parseInt(limit)} OFFSET ${offset}`;
+        const countStr = `SELECT COUNT(*) FROM ${requestedTable} ${whereString}`;
+
+        const data = await pool.query(queryStr, values);
+        const countData = await pool.query(countStr, values);
+
+        res.json({
+            success: true,
+            data: data.rows,
+            total: parseInt(countData.rows[0].count || '0')
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. DYNAMIC ADMIN RECORD CREATOR
+app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
+    const whitelist = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'consultations', 'file_deliveries', 'email_campaigns'
+    ];
+    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
+    if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Write operations restricted on this table vectors." });
+
+    try {
+        const payload = { ...req.body };
+        
+        // Dynamic password sanitation hashing layer
+        if (requestedTable === 'users' && payload.password) {
+            const salt = await bcrypt.genSalt(10);
+            payload.password = await bcrypt.hash(payload.password, salt);
+        }
+
+        const keys = Object.keys(payload);
+        if(keys.length === 0) return res.status(400).json({ error: "Payload data vector empty." });
+
+        const fields = keys.join(', ');
+        const indices = keys.map((_, i) => `$${i + 1}`).join(', ');
+        const values = Object.values(payload);
+
+        const queryStr = `INSERT INTO ${requestedTable} (${fields}) VALUES (${indices}) RETURNING *`;
+        const result = await pool.query(queryStr, values);
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. DYNAMIC ADMIN RECORD MODIFIER
+app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
+    const whitelist = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'consultations', 'file_deliveries', 'email_campaigns'
+    ];
+    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
+    if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Mutation operations restricted on this table vectors." });
+
+    try {
+        const payload = { ...req.body };
+        
+        // Remove structural parameters that should not change manually
+        delete payload.id;
+        delete payload.created_at;
+        delete payload.updated_at;
+
+        if (requestedTable === 'users' && payload.password) {
+            if (payload.password.trim() === '') {
+                delete payload.password; // Do not overwrite with empty password string
+            } else {
+                const salt = await bcrypt.genSalt(10);
+                payload.password = await bcrypt.hash(payload.password, salt);
+            }
+        }
+
+        const keys = Object.keys(payload);
+        if(keys.length === 0) return res.status(400).json({ error: "Mutation vector matrix empty." });
+
+        const setClauses = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
+        const values = Object.values(payload);
+        values.push(req.params.id);
+
+        const queryStr = `UPDATE ${requestedTable} SET ${setClauses}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length} RETURNING *`;
+        const result = await pool.query(queryStr, values);
+        
+        if (result.rows.length === 0) return res.status(404).json({ error: "Target row reference not found mapping to ID vector." });
+        res.json({ success: true, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 4. SINGLE RECORD INDEPENDENT DELETION DISPATCHER
+app.delete('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
+    const whitelist = [
+        'users', 'services', 'sub_services', 'orders', 'portfolio', 
+        'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
+        'media_library', 'invoices', 'notifications', 'support_tickets', 
+        'consultations', 'file_deliveries', 'email_campaigns'
+    ];
+    const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
+    if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Destructive operations vector unauthorized." });
+
+    try {
+        const queryStr = `UPDATE ${requestedTable} SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1`;
+        await pool.query(queryStr, [req.params.id]);
+        res.json({ success: true, message: "Target entity soft deactivation executed successfully." });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 // =========================================================================
 // ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =============
