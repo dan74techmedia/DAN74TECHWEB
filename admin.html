@@ -420,11 +420,12 @@
             },
             portfolio: {
                 fields: {
-                    order_id: { label: 'Parent Order Ledger Reference', type: 'relation', relation: { table: 'orders', label: 'customer_name' }, required: false },
-                    title: { label: 'Architectural Feature Title', type: 'text', required: true },
-                    category: { label: 'Classification Segment', type: 'text', required: true },
-                    description: { label: 'Technical Output Summary', type: 'textarea', required: false },
+                    order_id: { label: 'Order Reference', type: 'relation', relation: { table: 'orders', label: 'customer_name' }, required: false },
+                    title: { label: 'Project Title', type: 'text', required: true },
+                    category: { label: 'Classification', type: 'text', required: true },
+                    description: { label: 'Technical Output', type: 'textarea', required: false },
                     link: { label: 'Live Implementation Asset', type: 'text', required: false },
+                    file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     progress: { label: 'Progress Flow Matrix (%)', type: 'number', required: false },
                     status: { label: 'Deployment Stage', type: 'select', options: ['In Progress', 'Completed', 'Maintenance'], required: false },
                     publisher_name: { label: 'Author Identity', type: 'text', required: false },
@@ -439,7 +440,7 @@
                     challenge: { label: 'Diagnostic Problem Node', type: 'textarea', required: false },
                     solution: { label: 'Applied Technical Solution', type: 'textarea', required: false },
                     result: { label: 'Metric Deliverables', type: 'textarea', required: false },
-                    image_url: { label: 'Visual Blueprint Upload', type: 'file', required: false },
+                    image_url: { label: 'Pic/Vid Upload', type: 'file', required: false },
                     status: { label: 'Auditing Status', type: 'select', options: ['pending', 'draft', 'published'], required: false },
                     is_approved: { label: 'Global Publishing Auth', type: 'boolean', required: false }
                 },
@@ -450,6 +451,7 @@
                     title: { label: 'Publication Header', type: 'text', required: true },
                     slug: { label: 'System URL Routing Slug', type: 'text', required: true },
                     category: { label: 'Taxonomy Category', type: 'text', required: false },
+                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     summary: { label: 'Excerpt Metadata', type: 'textarea', required: false },
                     content: { label: 'Full Binary Copy (Markdown/HTML)', type: 'textarea', required: true },
                     image_url: { label: 'Cover Poster Graphic', type: 'file', required: false },
@@ -465,7 +467,7 @@
                     client_name: { label: 'Auditor Name', type: 'text', required: true },
                     client_designation: { label: 'Corporate Title', type: 'text', required: false },
                     company: { label: 'Corporate Entity', type: 'text', required: false },
-                    client_avatar_url: { label: 'Profile Render Graphic', type: 'file', required: false },
+                    client_avatar_url: { label: 'Profile Picture', type: 'file', required: false },
                     rating: { label: 'Satisfaction Metric (1-5)', type: 'number', required: false },
                     review: { label: 'Published Context Statement', type: 'textarea', required: true },
                     status: { label: 'Pipeline Auth', type: 'select', options: ['pending', 'approved', 'rejected'], required: false },
@@ -492,7 +494,7 @@
                     client_name: { label: 'Billable Recipient Name', type: 'text', required: true },
                     client_email: { label: 'Billable Mail Vector', type: 'email', required: false },
                     amount: { label: 'Final Accounting Yield (Ksh)', type: 'number', required: true },
-                    pdf_url: { label: 'PDF Archive Ledger Upload', type: 'file', required: false },
+                    pdf_url: { label: 'PDF  Upload', type: 'file', required: false },
                     status: { label: 'Clearing Stage', type: 'select', options: ['unpaid', 'paid', 'overdue', 'void'], required: false }
                 },
                 columns: ['id', 'invoice_number', 'client_name', 'amount', 'status', 'issued_at']
@@ -549,6 +551,7 @@
                 fields: {
                     subject: { label: 'Mass Broadcast Context Header', type: 'text', required: true },
                     content: { label: 'Full HTML Payload Architecture', type: 'textarea', required: true },
+                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     campaign_type: { label: 'Operational Designation Code', type: 'text', required: false },
                     recipients_count: { label: 'Target Scope Distribution Total', type: 'number', required: false }
                 },
