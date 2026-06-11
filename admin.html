@@ -1030,96 +1030,102 @@
             }
         }
 
-        // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
-        async function commitFormPayload(event) {
-            event.preventDefault();
-            const formElement = event.target;
-            const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
-            const payload = {};
-            const overlay = document.getElementById('uploadLoaderOverlay');
 
-            // 1. Scan and dispatch upload file stream binaries
-            let fileUploadFaults = 0;
-            for (const [key, config] of Object.entries(schemaDef.fields)) {
-                if (config.type === 'file') {
-                    const fileInputNode = formElement.elements[key];
-                    if (fileInputNode && fileInputNode.files && fileInputNode.files.length > 0 && !fileInputNode.disabled) {
-                        overlay.classList.remove('hidden');
-                        overlay.classList.add('flex');
-                        
-                        const binaryFormContext = new FormData();
-                        binaryFormContext.append('file', fileInputNode.files[0]);
+       // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
+async function commitFormPayload(event) {
+    event.preventDefault();
+    
+    // [FIX 1]: We must actually define formElement from the event target so the script doesn't crash!
+    const formElement = event.target; 
+    
+    const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
+    const payload = {};
+    const overlay = document.getElementById('uploadLoaderOverlay');
 
-                        try {
-                            const uploadResponse = await fetch(`${SYSTEM_API_BASE_URL}/media/upload`, {
-                                method: 'POST',
-                                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                                body: binaryFormContext
-                            });
-                            const extractUploadData = await uploadResponse.json();
-                            if(!uploadResponse.ok) throw new Error(extractUploadData.error || "CDN transmission denied");
-                            
-                            payload[key] = extractUploadData.data.file_url || extractUploadData.data.url;
-                        } catch (uploaderErr) {
-                            fileUploadFaults++;
-                            alert(`File Cloud Push Fault on ${key}: ${uploaderErr.message}`);
-                        }
-                    } else {
-                        const hiddenNode = formElement.elements[`${key}_existing`];
-                        if (hiddenNode) payload[key] = hiddenNode.value || null;
-                    }
-                }
-            }
-
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-            if (fileUploadFaults > 0) return;
-
-            // 2. Transpile Remaining Text Elements Sequence
-            for (const [key, config] of Object.entries(schemaDef.fields)) {
-                if (config.type === 'file') continue; 
-
-                const domNode = formElement.elements[key];
-                if (!domNode) continue;
+    // 1. Scan and dispatch upload file stream binaries
+    let fileUploadFaults = 0;
+    for (const [key, config] of Object.entries(schemaDef.fields)) {
+        if (config.type === 'file') {
+            const fileInputNode = formElement.elements[key];
+            if (fileInputNode && fileInputNode.files && fileInputNode.files.length > 0 && !fileInputNode.disabled) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
                 
-                const rawValue = domNode.value;
+                const binaryFormContext = new FormData();
+                binaryFormContext.append('file', fileInputNode.files[0]);
 
-                if (config.type === 'number' || config.type === 'relation') {
-                    payload[key] = rawValue !== '' ? Number(rawValue) : null;
-                } else if (config.type === 'boolean') {
-                    payload[key] = rawValue === 'true' || rawValue === 'on';
-                } else {
-                    if (rawValue.trim() !== '' || config.type === 'password') {
-                        payload[key] = rawValue;
-                    }
+                try {
+                    const uploadResponse = await fetch(`${SYSTEM_API_BASE_URL}/media/upload`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                        body: binaryFormContext
+                    });
+                    const extractUploadData = await uploadResponse.json();
+                    if(!uploadResponse.ok) throw new Error(extractUploadData.error || "CDN transmission denied");
+                    
+                    payload[key] = extractUploadData.data.file_url || extractUploadData.data.url;
+                } catch (uploaderErr) {
+                    fileUploadFaults++;
+                    alert(`File Cloud Push Fault on ${key}: ${uploaderErr.message}`);
                 }
+            } else {
+                const hiddenNode = formElement.elements[`${key}_existing`];
+                if (hiddenNode) payload[key] = hiddenNode.value || null;
             }
-
-            let backendApiEndpoint = `${SYSTEM_API_BASE_URL}/admin/${currentContext}`;
-            let httpMethodDispatch = 'POST';
-
-            if (contextRowMutationTargetId) {
-                backendApiEndpoint += `/${contextRowMutationTargetId}`;
-                httpMethodDispatch = 'PUT';
-            }
-
-            try {
-                const execResponse = await fetch(backendApiEndpoint, {
-                    method: httpMethodDispatch,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const returnedPayloadAck = await execResponse.json();
-                if (!execResponse.ok) throw new Error(returnedPayloadAck.error || "System constraints denied map overrides.");
-                
-                closeCrudSystemModal();
-                await syncRegistryGridArchitecture();
-            } catch (err) { alert(`Transmission Dispatch Aborted: ${err.message}`); }
         }
+    }
+
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+    if (fileUploadFaults > 0) return; // Halt commit payload sequence if file nodes compromised.
+
+    // 2. Transpile Remaining Text Elements Sequence
+    for (const [key, config] of Object.entries(schemaDef.fields)) {
+        if (config.type === 'file') continue; 
+
+        const domNode = formElement.elements[key];
+        if (!domNode) continue;
+        
+        // [FIX 2]: Boolean checkboxes must be evaluated via .checked, not .value
+        if (config.type === 'boolean') {
+            payload[key] = domNode.checked;
+        } else if (config.type === 'number' || config.type === 'relation') {
+            payload[key] = domNode.value !== '' ? Number(domNode.value) : null;
+        } else {
+            if (domNode.value.trim() !== '' || config.type === 'password') {
+                payload[key] = domNode.value;
+            }
+        }
+    }
+
+    let backendApiEndpoint = `${SYSTEM_API_BASE_URL}/admin/${currentContext}`;
+    let httpMethodDispatch = 'POST';
+
+    // If an ID exists in state, map this as an UPDATE rather than a CREATE
+    if (contextRowMutationTargetId) {
+        backendApiEndpoint += `/${contextRowMutationTargetId}`;
+        httpMethodDispatch = 'PUT';
+    }
+
+    try {
+        const execResponse = await fetch(backendApiEndpoint, {
+            method: httpMethodDispatch,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const returnedPayloadAck = await execResponse.json();
+        if (!execResponse.ok) throw new Error(returnedPayloadAck.error || "System constraints denied map overrides.");
+        
+        closeCrudSystemModal();
+        await syncRegistryGridArchitecture();
+    } catch (err) { 
+        alert(`Transmission Dispatch Aborted: ${err.message}`); 
+    }
+}
 
         // DATABASE RECORD OVERRIDE ARCHITECTURE (DELETIONS)
         async function executeSingleRowSoftDelete(rowId) {
