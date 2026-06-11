@@ -424,7 +424,7 @@
                     title: { label: 'Project Title', type: 'text', required: true },
                     category: { label: 'Classification', type: 'text', required: true },
                     description: { label: 'Technical Output', type: 'textarea', required: false },
-                    link: { label: 'Link Or Text', type: 'link', required: false },
+                    link: { label: 'Link Or Text', type: 'text', required: false },
                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     progress: { label: 'Progress Flow Matrix (%)', type: 'number', required: false },
                     status: { label: 'Deployment Stage', type: 'select', options: ['In Progress', 'Completed', 'Maintenance'], required: false },
@@ -451,7 +451,6 @@
                     title: { label: 'Header', type: 'text', required: true },
                     slug: { label: 'System Link', type: 'text', required: true },
                     category: { label: 'Category', type: 'text', required: false },
-                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     summary: { label: 'Excerpt Metadata', type: 'textarea', required: false },
                     content: { label: 'Full Binary Copy (Markdown/HTML)', type: 'textarea', required: true },
                     image_url: { label: 'Cover Poster Graphic', type: 'file', required: false },
@@ -494,7 +493,7 @@
                     client_name: { label: 'Billable Recipient Name', type: 'text', required: true },
                     client_email: { label: 'Billable Mail Vector', type: 'email', required: false },
                     amount: { label: 'Final Accounting Yield (Ksh)', type: 'number', required: true },
-                    pdf_url: { label: 'PDF  Upload', type: 'file', required: false },
+                    pdf_url: { label: 'PDF Upload', type: 'file', required: false },
                     status: { label: 'Clearing Stage', type: 'select', options: ['unpaid', 'paid', 'overdue', 'void'], required: false }
                 },
                 columns: ['id', 'invoice_number', 'client_name', 'amount', 'status', 'issued_at']
@@ -551,7 +550,6 @@
                 fields: {
                     subject: { label: 'Mass Broadcast Context Header', type: 'text', required: true },
                     content: { label: 'Full HTML Payload Architecture', type: 'textarea', required: true },
-                     file_url: { label: 'Upload Picture/video', type: 'file', required: false },
                     campaign_type: { label: 'Operational Designation Code', type: 'text', required: false },
                     recipients_count: { label: 'Target Scope Distribution Total', type: 'number', required: false }
                 },
@@ -889,7 +887,7 @@
             
             await extractRelationalDataDependencies(TABLE_METADATA_REGISTRY[currentContext].fields);
             
-            generateDynamicFormInterfaceFields({});
+            renderDynamicInputSchemaFields(currentContext, TABLE_METADATA_REGISTRY[currentContext], {});
             document.getElementById('crudSystemModal').classList.remove('hidden');
             document.getElementById('crudSystemModal').classList.add('flex');
         }
@@ -907,7 +905,7 @@
                 if(!response.ok) throw new Error("Data streaming retrieval blocked.");
                 const activeRecord = await response.json();
                 
-                generateDynamicFormInterfaceFields(activeRecord);
+                renderDynamicInputSchemaFields(currentContext, TABLE_METADATA_REGISTRY[currentContext], activeRecord);
                 document.getElementById('crudSystemModal').classList.remove('hidden');
                 document.getElementById('crudSystemModal').classList.add('flex');
             } catch (err) { alert(`Remote sequence streaming fault: ${err.message}`); }
@@ -919,240 +917,123 @@
             document.getElementById('dynamicInputSchemaForm').reset();
         }
 
-        // DYNAMIC FORM FIELD GENERATOR ALGORITHM
-        function generateDynamicFormInterfaceFields(recordData = {}) {
-            const anchor = document.getElementById('dynamicFormFieldsAnchor');
-            anchor.innerHTML = '';
-            const schema = TABLE_METADATA_REGISTRY[currentContext];
-            if (!schema) return;
+        // RECTIFIED SCHEMATIC FORM FIELD GENERATOR PIPELINE WITH INPUT MUTUAL EXCLUSIVITY MATRIX
+        async function renderDynamicInputSchemaFields(tableName, currentFieldConfig, initialRowDataset = null) {
+            const fieldsAnchorContainer = document.getElementById('dynamicFormFieldsAnchor');
+            fieldsAnchorContainer.innerHTML = ''; 
 
-            Object.entries(schema.fields).forEach(([fieldName, config]) => {
-                let initialValue = recordData[fieldName];
-                if (initialValue === null || initialValue === undefined) initialValue = '';
-                
+            await extractRelationalDataDependencies(currentFieldConfig.fields);
+
+            for (const fieldName in currentFieldConfig.fields) {
+                const config = currentFieldConfig.fields[fieldName];
+                const initialValue = initialRowDataset ? (initialRowDataset[fieldName] !== null ? initialRowDataset[fieldName] : '') : '';
+
+                const fieldWrapperNode = document.createElement('div');
+                fieldWrapperNode.className = "flex flex-col gap-1.5 animate-fadeIn animate-duration-200";
+                fieldWrapperNode.setAttribute('data-field-name', fieldName);
+
+                const labelElement = document.createElement('label');
+                labelElement.className = "text-[11px] font-extrabold text-gray-700 font-mono tracking-wide uppercase flex items-center gap-1";
+                labelElement.innerHTML = `${config.label} ${config.required ? '<span class="text-[#ff2a2a] text-xs">*</span>' : ''}`;
+                fieldWrapperNode.appendChild(labelElement);
+
+                const baseStyles = "w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:bg-white transition-all duration-200 disabled:opacity-40 disabled:bg-gray-200/60 disabled:cursor-not-allowed disabled:border-gray-300";
+
                 let inputMarkup = '';
-                const baseStyles = "w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all mt-1.5 shadow-sm";
 
-                if (config.type === 'select') {
-                    let optsStr = '';
-                    config.options.forEach(opt => {
-                        const isSel = String(opt).toLowerCase() === String(initialValue).toLowerCase();
-                        optsStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${opt.toUpperCase()}</option>`;
-                    });
-                    inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
-                
-                } else if (config.type === 'boolean') {
-                    const isTrue = initialValue === true || initialValue === 'true';
-                    inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">
-                        <option value="true" ${isTrue ? 'selected' : ''}>TRUE</option>
-                        <option value="false" ${!isTrue ? 'selected' : ''}>FALSE</option>
-                    </select>`;
-
-                } else if (config.type === 'relation') {
-                    const lookupData = relationalDataCache[config.relation.table] || [];
-                    let optsStr = `<option value="">Select Referenced Entity...</option>`;
-                    lookupData.forEach(node => {
+                if (config.type === 'relation' && config.relation) {
+                    const dataPool = relationalDataCache[config.relation.table] || [];
+                    let optsStr = `<option value="">Select Mapped Reference Matrix</option>`;
+                    dataPool.forEach(node => {
                         const isSel = String(node.id) === String(initialValue);
                         optsStr += `<option value="${node.id}" ${isSel ? 'selected' : ''}>${node[config.relation.label]}</option>`;
                     });
                     inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
-
                 } else if (config.type === 'textarea') {
-                    inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none custom-scrollbar">${initialValue}</textarea>`;
-                
-                } else if (config.type === 'date') {
-                    if (initialValue) initialValue = new Date(initialValue).toISOString().split('T')[0];
-                    inputMarkup = `<input type="date" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
-                
-                } else if (config.type === 'time') {
-                    inputMarkup = `<input type="time" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
-                
-                } else if (config.type === 'file') {
-                    // Uploads logic component
-                    const extBlock = initialValue ? `
-                        <div class="mb-1 text-[10px] font-mono"><a href="${initialValue}" target="_blank" class="text-[#0044ff] font-bold underline"><i class="fa-solid fa-cloud"></i> View Current Stored File Segment</a></div>
-                    ` : '';
+                    inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none">${initialValue}</textarea>`;
+                } else if (config.type === 'select') {
+                    let optsStr = '';
+                    config.options.forEach(opt => {
+                        const isSel = String(opt).toLowerCase() === String(initialValue).toLowerCase();
+                        optsStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
+                } else if (config.type === 'boolean') {
+                    const isChecked = initialValue === true || String(initialValue) === 'true';
                     inputMarkup = `
-                        ${extBlock}
-                        <input type="file" accept="*/*" name="${fieldName}" class="${baseStyles} !p-1.5 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#0044ff] hover:file:bg-blue-100" ${config.required && !initialValue && !contextRowMutationTargetId ? 'required' : ''}>
-                        <input type="hidden" name="${fieldName}_existing" value="${initialValue}">
+                        <label class="relative inline-flex items-center cursor-pointer my-1 select-none">
+                            <input type="checkbox" name="${fieldName}" ${isChecked ? 'checked' : ''} class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0044ff]"></div>
+                        </label>
+                    `;
+                } else if (config.type === 'file') {
+                    inputMarkup = `
+                        <div class="flex flex-col gap-2">
+                            <input type="file" name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:font-bold file:bg-blue-50 file:text-[#0044ff] hover:file:bg-blue-100/80 file:cursor-pointer transition-all ${baseStyles}">
+                            ${initialValue ? `<input type="hidden" name="${fieldName}_existing" value="${initialValue}"><p class="text-[10px] font-mono font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 max-w-max truncate flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Present: ${initialValue.split('/').pop()}</p>` : ''}
+                        </div>
                     `;
                 } else {
-                    // text, email, number, password pass
-                    inputMarkup = `<input type="${config.type}" name="${fieldName}" value="${config.type !== 'password' ? initialValue : ''}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">`;
+                    // Text, Email, Link, Number Inputs
+                    inputMarkup = `<input type="${config.type}" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}" placeholder="Provide payload entry for ${config.label.toLowerCase()}...">`;
                 }
 
-                const colSpan = (config.type === 'textarea' || config.type === 'file') ? 'md:col-span-2' : '';
+                const parserWrapper = document.createElement('div');
+                parserWrapper.innerHTML = inputMarkup.trim();
+                const generatedInputNode = parserWrapper.firstChild;
+                fieldWrapperNode.appendChild(generatedInputNode);
+                fieldsAnchorContainer.appendChild(fieldWrapperNode);
+            }
 
-                anchor.innerHTML += `
-                    <div class="${colSpan}">
-                        <label class="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wide font-mono">${config.label}</label>
-                        ${inputMarkup}
-                    </div>
-                `;
-            });
-        }
+            // Active Mutual Exclusivity Matrix Listener Attachment (Portfolio Table Only)
+            if (tableName === 'portfolio') {
+                const linkFieldNode = fieldsAnchorContainer.querySelector('input[name="link"]');
+                const fileFieldNode = fieldsAnchorContainer.querySelector('input[name="file_url"]');
 
+                if (linkFieldNode && fileFieldNode) {
+                    const assessExclusivityLocks = () => {
+                        const linkVal = linkFieldNode.value.trim();
+                        const fileSelected = fileFieldNode.files && fileFieldNode.files.length > 0;
 
+                        if (linkVal !== '') {
+                            fileFieldNode.disabled = true;
+                            fileFieldNode.value = ''; 
+                            fileFieldNode.required = false;
+                        } else if (fileSelected) {
+                            linkFieldNode.disabled = true;
+                            linkFieldNode.value = '';
+                            linkFieldNode.required = false;
+                        } else {
+                            linkFieldNode.disabled = false;
+                            fileFieldNode.disabled = false;
+                            
+                            if (currentFieldConfig.fields.link.required) linkFieldNode.required = true;
+                            if (currentFieldConfig.fields.file_url.required && !contextRowMutationTargetId) fileFieldNode.required = true;
+                        }
+                    };
 
-        // RECTIFIED SCHEMATIC FORM FIELD GENERATOR PIPELINE WITH INPUT MUTUAL EXCLUSIVITY MATRIX
-async function renderDynamicInputSchemaFields(tableName, currentFieldConfig, initialRowDataset = null) {
-    const fieldsAnchorContainer = document.getElementById('dynamicFormFieldsAnchor');
-    fieldsAnchorContainer.innerHTML = ''; // Flush existing nodes
+                    linkFieldNode.addEventListener('input', assessExclusivityLocks);
+                    fileFieldNode.addEventListener('change', assessExclusivityLocks);
 
-    await extractRelationalDataDependencies(currentFieldConfig.fields);
-
-    for (const fieldName in currentFieldConfig.fields) {
-        const config = currentFieldConfig.fields[fieldName];
-        const initialValue = initialRowDataset ? (initialRowDataset[fieldName] !== null ? initialRowDataset[fieldName] : '') : '';
-
-        const fieldWrapperNode = document.createElement('div');
-        fieldWrapperNode.className = "flex flex-col gap-1.5 animate-fadeIn animate-duration-200";
-        fieldWrapperNode.setAttribute('data-field-name', fieldName);
-
-        const labelElement = document.createElement('label');
-        labelElement.className = "text-[11px] font-extrabold text-gray-700 font-mono tracking-wide uppercase flex items-center gap-1";
-        labelElement.innerHTML = `${config.label} ${config.required ? '<span class="text-[#ff2a2a] text-xs">*</span>' : ''}`;
-        fieldWrapperNode.appendChild(labelElement);
-
-        const baseStyles = "w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:bg-white transition-all duration-200 disabled:opacity-40 disabled:bg-gray-200/60 disabled:cursor-not-allowed disabled:border-gray-300";
-
-        let inputMarkup = '';
-
-        if (config.type === 'relation' && config.relation) {
-            const dataPool = relationalDataCache[config.relation.table] || [];
-            let optsStr = `<option value="">Select Mapped Reference Matrix</option>`;
-            dataPool.forEach(node => {
-                const isSel = String(node.id) === String(initialValue);
-                optsStr += `<option value="${node.id}" ${isSel ? 'selected' : ''}>${node[config.relation.label]}</option>`;
-            });
-            inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
-        } else if (config.type === 'textarea') {
-            inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none">${initialValue}</textarea>`;
-        } else if (config.type === 'select') {
-            let optsStr = '';
-            config.options.forEach(opt => {
-                const isSel = String(opt).toLowerCase() === String(initialValue).toLowerCase();
-                optsStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${opt}</option>`;
-            });
-            inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
-        } else if (config.type === 'boolean') {
-            const isChecked = initialValue === true || String(initialValue) === 'true';
-            inputMarkup = `
-                <label class="relative inline-flex items-center cursor-pointer my-1 select-none">
-                    <input type="checkbox" name="${fieldName}" ${isChecked ? 'checked' : ''} class="sr-only peer">
-                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0044ff]"></div>
-                </label>
-            `;
-        } else if (config.type === 'file') {
-            inputMarkup = `
-                <div class="flex flex-col gap-2">
-                    <input type="file" name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:font-bold file:bg-blue-50 file:text-[#0044ff] hover:file:bg-blue-100/80 file:cursor-pointer transition-all ${baseStyles}">
-                    ${initialValue ? `<input type="hidden" name="${fieldName}_existing" value="${initialValue}"><p class="text-[10px] font-mono font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 max-w-max truncate flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Present: ${initialValue.split('/').pop()}</p>` : ''}
-                </div>
-            `;
-        } else {
-            // Text, Email, Link, Number Inputs
-            inputMarkup = `<input type="${config.type}" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}" placeholder="Provide payload entry for ${config.label.toLowerCase()}...">`;
-        }
-
-        const parserWrapper = document.createElement('div');
-        parserWrapper.innerHTML = inputMarkup.trim();
-        const generatedInputNode = parserWrapper.firstChild;
-        fieldWrapperNode.appendChild(generatedInputNode);
-        fieldsAnchorContainer.appendChild(fieldWrapperNode);
-    }
-
-    // Active Mutual Exclusivity Matrix Listener Attachment (Portfolio Table Only)
-    if (tableName === 'portfolio') {
-        const linkFieldNode = fieldsAnchorContainer.querySelector('input[name="link"]');
-        const fileFieldNode = fieldsAnchorContainer.querySelector('input[name="file_url"]');
-
-        if (linkFieldNode && fileFieldNode) {
-            // Function to evaluate live operational locks
-            const assessExclusivityLocks = () => {
-                const linkVal = linkFieldNode.value.trim();
-                const fileSelected = fileFieldNode.files && fileFieldNode.files.length > 0;
-
-                if (linkVal !== '') {
-                    // Lock down the file upload system
-                    fileFieldNode.disabled = true;
-                    fileFieldNode.value = ''; // Flush stray selections
-                    fileFieldNode.required = false;
-                } else if (fileSelected) {
-                    // Lock down the text input system
-                    linkFieldNode.disabled = true;
-                    linkFieldNode.value = '';
-                    linkFieldNode.required = false;
-                } else {
-                    // Reset matrix to zero state if both are empty
-                    linkFieldNode.disabled = false;
-                    fileFieldNode.disabled = false;
-                    
-                    // Recover structural rules if schema dictates they were required
-                    if (currentFieldConfig.fields.link.required) linkFieldNode.required = true;
-                    if (currentFieldConfig.fields.file_url.required && !contextRowMutationTargetId) fileFieldNode.required = true;
-                }
-            };
-
-            // Bind listeners to trigger pulse locks immediately on keyboard interaction
-            linkFieldNode.addEventListener('input', assessExclusivityLocks);
-            fileFieldNode.addEventListener('change', assessExclusivityLocks);
-
-            // Execute immediate validation pass for pre-populated dataset rows during edit modes
-            if (initialRowDataset) {
-                setTimeout(() => {
-                    const existingFileHidden = fieldsAnchorContainer.querySelector('input[name="file_url_existing"]');
-                    if (existingFileHidden && existingFileHidden.value) {
-                        linkFieldNode.disabled = true;
-                        linkFieldNode.value = '';
-                    } else if (linkFieldNode.value.trim() !== '') {
-                        fileFieldNode.disabled = true;
+                    if (initialRowDataset) {
+                        setTimeout(() => {
+                            const existingFileHidden = fieldsAnchorContainer.querySelector('input[name="file_url_existing"]');
+                            if (existingFileHidden && existingFileHidden.value) {
+                                linkFieldNode.disabled = true;
+                                linkFieldNode.value = '';
+                            } else if (linkFieldNode.value.trim() !== '') {
+                                fileFieldNode.disabled = true;
+                            }
+                        }, 50);
                     }
-                }, 50);
+                }
             }
         }
-    }
-}
 
-        // Locate your generic commit / save function in admin.html
-async function commitTableData(tableName, actionType, recordId = null) {
-    const payload = getFormData(); // Captures current form fields
-
-    // Determine target API endpoint
-    const url = actionType === 'update' 
-        ? `${SYSTEM_API_BASE_URL}/admin/manage/${tableName}/${recordId}`
-        : `${SYSTEM_API_BASE_URL}/admin/manage/${tableName}`;
-
-    try {
-        const response = await fetch(url, {
-            method: actionType === 'update' ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json', // CRITICAL: Ensures express.json() parses the payload
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // CRITICAL: Validates admin privileges
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message || 'Transaction failed');
-        
-        alert('Database matrix updated successfully.');
-        closeModal();
-        reloadTableData(tableName);
-    } catch (err) {
-        console.error('Commit Pipeline Fault:', err);
-        alert(`Commit Failed: ${err.message}`);
-    }
-}
         // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
         async function commitFormPayload(event) {
             event.preventDefault();
-           // Double check your commitFormPayload gathers file_url safely:
-             const fileInput = formElement.elements['file_url'];
-              if (fileInput && fileInput.files && fileInput.files.length > 0 && !fileInput.disabled) {
-              // Treat as upload action block
-             }
+            const formElement = event.target;
             const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
             const payload = {};
             const overlay = document.getElementById('uploadLoaderOverlay');
@@ -1162,7 +1043,7 @@ async function commitTableData(tableName, actionType, recordId = null) {
             for (const [key, config] of Object.entries(schemaDef.fields)) {
                 if (config.type === 'file') {
                     const fileInputNode = formElement.elements[key];
-                    if (fileInputNode && fileInputNode.files.length > 0) {
+                    if (fileInputNode && fileInputNode.files && fileInputNode.files.length > 0 && !fileInputNode.disabled) {
                         overlay.classList.remove('hidden');
                         overlay.classList.add('flex');
                         
@@ -1178,14 +1059,12 @@ async function commitTableData(tableName, actionType, recordId = null) {
                             const extractUploadData = await uploadResponse.json();
                             if(!uploadResponse.ok) throw new Error(extractUploadData.error || "CDN transmission denied");
                             
-                            // Map secure URL link back to master parameter config payload
                             payload[key] = extractUploadData.data.file_url || extractUploadData.data.url;
                         } catch (uploaderErr) {
                             fileUploadFaults++;
                             alert(`File Cloud Push Fault on ${key}: ${uploaderErr.message}`);
                         }
                     } else {
-                        // Restore existing context pointer node
                         const hiddenNode = formElement.elements[`${key}_existing`];
                         if (hiddenNode) payload[key] = hiddenNode.value || null;
                     }
@@ -1194,7 +1073,7 @@ async function commitTableData(tableName, actionType, recordId = null) {
 
             overlay.classList.add('hidden');
             overlay.classList.remove('flex');
-            if (fileUploadFaults > 0) return; // Halt commit payload sequence if file nodes compromised.
+            if (fileUploadFaults > 0) return;
 
             // 2. Transpile Remaining Text Elements Sequence
             for (const [key, config] of Object.entries(schemaDef.fields)) {
@@ -1208,7 +1087,7 @@ async function commitTableData(tableName, actionType, recordId = null) {
                 if (config.type === 'number' || config.type === 'relation') {
                     payload[key] = rawValue !== '' ? Number(rawValue) : null;
                 } else if (config.type === 'boolean') {
-                    payload[key] = rawValue === 'true';
+                    payload[key] = rawValue === 'true' || rawValue === 'on';
                 } else {
                     if (rawValue.trim() !== '' || config.type === 'password') {
                         payload[key] = rawValue;
