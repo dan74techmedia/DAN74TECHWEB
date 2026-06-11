@@ -993,10 +993,136 @@
             });
         }
 
+
+
+        // RECTIFIED SCHEMATIC FORM FIELD GENERATOR PIPELINE WITH INPUT MUTUAL EXCLUSIVITY MATRIX
+async function renderDynamicInputSchemaFields(tableName, currentFieldConfig, initialRowDataset = null) {
+    const fieldsAnchorContainer = document.getElementById('dynamicFormFieldsAnchor');
+    fieldsAnchorContainer.innerHTML = ''; // Flush existing nodes
+
+    await extractRelationalDataDependencies(currentFieldConfig.fields);
+
+    for (const fieldName in currentFieldConfig.fields) {
+        const config = currentFieldConfig.fields[fieldName];
+        const initialValue = initialRowDataset ? (initialRowDataset[fieldName] !== null ? initialRowDataset[fieldName] : '') : '';
+
+        const fieldWrapperNode = document.createElement('div');
+        fieldWrapperNode.className = "flex flex-col gap-1.5 animate-fadeIn animate-duration-200";
+        fieldWrapperNode.setAttribute('data-field-name', fieldName);
+
+        const labelElement = document.createElement('label');
+        labelElement.className = "text-[11px] font-extrabold text-gray-700 font-mono tracking-wide uppercase flex items-center gap-1";
+        labelElement.innerHTML = `${config.label} ${config.required ? '<span class="text-[#ff2a2a] text-xs">*</span>' : ''}`;
+        fieldWrapperNode.appendChild(labelElement);
+
+        const baseStyles = "w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:bg-white transition-all duration-200 disabled:opacity-40 disabled:bg-gray-200/60 disabled:cursor-not-allowed disabled:border-gray-300";
+
+        let inputMarkup = '';
+
+        if (config.type === 'relation' && config.relation) {
+            const dataPool = relationalDataCache[config.relation.table] || [];
+            let optsStr = `<option value="">Select Mapped Reference Matrix</option>`;
+            dataPool.forEach(node => {
+                const isSel = String(node.id) === String(initialValue);
+                optsStr += `<option value="${node.id}" ${isSel ? 'selected' : ''}>${node[config.relation.label]}</option>`;
+            });
+            inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
+        } else if (config.type === 'textarea') {
+            inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none">${initialValue}</textarea>`;
+        } else if (config.type === 'select') {
+            let optsStr = '';
+            config.options.forEach(opt => {
+                const isSel = String(opt).toLowerCase() === String(initialValue).toLowerCase();
+                optsStr += `<option value="${opt}" ${isSel ? 'selected' : ''}>${opt}</option>`;
+            });
+            inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
+        } else if (config.type === 'boolean') {
+            const isChecked = initialValue === true || String(initialValue) === 'true';
+            inputMarkup = `
+                <label class="relative inline-flex items-center cursor-pointer my-1 select-none">
+                    <input type="checkbox" name="${fieldName}" ${isChecked ? 'checked' : ''} class="sr-only peer">
+                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0044ff]"></div>
+                </label>
+            `;
+        } else if (config.type === 'file') {
+            inputMarkup = `
+                <div class="flex flex-col gap-2">
+                    <input type="file" name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:font-bold file:bg-blue-50 file:text-[#0044ff] hover:file:bg-blue-100/80 file:cursor-pointer transition-all ${baseStyles}">
+                    ${initialValue ? `<input type="hidden" name="${fieldName}_existing" value="${initialValue}"><p class="text-[10px] font-mono font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 max-w-max truncate flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Present: ${initialValue.split('/').pop()}</p>` : ''}
+                </div>
+            `;
+        } else {
+            // Text, Email, Link, Number Inputs
+            inputMarkup = `<input type="${config.type}" name="${fieldName}" value="${initialValue}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}" placeholder="Provide payload entry for ${config.label.toLowerCase()}...">`;
+        }
+
+        const parserWrapper = document.createElement('div');
+        parserWrapper.innerHTML = inputMarkup.trim();
+        const generatedInputNode = parserWrapper.firstChild;
+        fieldWrapperNode.appendChild(generatedInputNode);
+        fieldsAnchorContainer.appendChild(fieldWrapperNode);
+    }
+
+    // Active Mutual Exclusivity Matrix Listener Attachment (Portfolio Table Only)
+    if (tableName === 'portfolio') {
+        const linkFieldNode = fieldsAnchorContainer.querySelector('input[name="link"]');
+        const fileFieldNode = fieldsAnchorContainer.querySelector('input[name="file_url"]');
+
+        if (linkFieldNode && fileFieldNode) {
+            // Function to evaluate live operational locks
+            const assessExclusivityLocks = () => {
+                const linkVal = linkFieldNode.value.trim();
+                const fileSelected = fileFieldNode.files && fileFieldNode.files.length > 0;
+
+                if (linkVal !== '') {
+                    // Lock down the file upload system
+                    fileFieldNode.disabled = true;
+                    fileFieldNode.value = ''; // Flush stray selections
+                    fileFieldNode.required = false;
+                } else if (fileSelected) {
+                    // Lock down the text input system
+                    linkFieldNode.disabled = true;
+                    linkFieldNode.value = '';
+                    linkFieldNode.required = false;
+                } else {
+                    // Reset matrix to zero state if both are empty
+                    linkFieldNode.disabled = false;
+                    fileFieldNode.disabled = false;
+                    
+                    // Recover structural rules if schema dictates they were required
+                    if (currentFieldConfig.fields.link.required) linkFieldNode.required = true;
+                    if (currentFieldConfig.fields.file_url.required && !contextRowMutationTargetId) fileFieldNode.required = true;
+                }
+            };
+
+            // Bind listeners to trigger pulse locks immediately on keyboard interaction
+            linkFieldNode.addEventListener('input', assessExclusivityLocks);
+            fileFieldNode.addEventListener('change', assessExclusivityLocks);
+
+            // Execute immediate validation pass for pre-populated dataset rows during edit modes
+            if (initialRowDataset) {
+                setTimeout(() => {
+                    const existingFileHidden = fieldsAnchorContainer.querySelector('input[name="file_url_existing"]');
+                    if (existingFileHidden && existingFileHidden.value) {
+                        linkFieldNode.disabled = true;
+                        linkFieldNode.value = '';
+                    } else if (linkFieldNode.value.trim() !== '') {
+                        fileFieldNode.disabled = true;
+                    }
+                }, 50);
+            }
+        }
+    }
+}
+
         // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
         async function commitFormPayload(event) {
             event.preventDefault();
-            const formElement = document.getElementById('dynamicInputSchemaForm');
+           // Double check your commitFormPayload gathers file_url safely:
+             const fileInput = formElement.elements['file_url'];
+              if (fileInput && fileInput.files && fileInput.files.length > 0 && !fileInput.disabled) {
+              // Treat as upload action block
+             }
             const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
             const payload = {};
             const overlay = document.getElementById('uploadLoaderOverlay');
