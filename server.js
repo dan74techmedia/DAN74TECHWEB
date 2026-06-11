@@ -683,25 +683,43 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 14: TESTIMONIALS ENGINE ========================
 // =========================================================================
-app.get('/api/testimonials', async (req, res) => {
+// GET: Fetch verified and approved testimonials for UI mapping
+app.get('/api/testimonials/approved', async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM testimonials WHERE is_deleted = FALSE ORDER BY id DESC");
+        // Adjust the WHERE clause to match your exact column schema (e.g., status = 'approved')
+        const queryText = `
+            SELECT client_name, company, rating, review 
+            FROM testimonials 
+            WHERE status = 'approved' 
+            ORDER BY id DESC
+        `;
+        const result = await pool.query(queryText);
         res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Testimonials matrix sync failure:", err);
+        res.status(500).json({ error: "Database processing anomaly detected during discovery." });
     }
 });
 
+// POST: Commit client appraisal parameters into the ledger
 app.post('/api/testimonials', async (req, res) => {
+    const { client_name, company, rating, review } = req.body;
+
+    if (!client_name || !rating || !review) {
+        return res.status(400).json({ error: "Required structural parameters missing." });
+    }
+
     try {
-        const { client_name, company, rating, review } = req.body;
-        const result = await pool.query(
-            `INSERT INTO testimonials (client_name, company, rating, review, status) VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
-            [client_name, company, rating, review]
-        );
-        res.json({ success: true, data: result.rows[0] });
+        const insertText = `
+            INSERT INTO testimonials (client_name, company, rating, review, status) 
+            VALUES ($1, $2, $3, $4, 'pending') 
+            RETURNING id
+        `;
+        await pool.query(insertText, [client_name, company, rating, review]);
+        res.status(201).json({ success: true, message: "Appraisal successfully appended to staging matrix." });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Testimonial commit failure:", err);
+        res.status(500).json({ error: "Database rejected configuration input fields." });
     }
 });
 
