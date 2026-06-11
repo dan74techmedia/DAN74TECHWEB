@@ -18,659 +18,651 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Exact color mappings and UI variables from index.html and graphics.html */
         :root {
-            --brand-blue: #0044ff;
-            --brand-red: #ff2a2a;
-            --brand-yellow: #ffd700;
-            --bg-light: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --border-light: #e2e8f0;
+            --brand-primary: #0f172a;
+            --brand-secondary: #1e293b;
+            --brand-accent: #2563eb;
+            --brand-accent-hover: #1d4ed8;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            overflow-x: hidden;
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+            color: #0f172a;
+            scroll-behavior: smooth;
         }
 
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
+        .font-mono-custom {
+            font-family: var(--font-mono);
         }
 
-        /* Abstract Premium Geometric Background Elements */
-        .hero-mesh {
-            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.08), transparent 50%),
-                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.05), transparent 45%);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        /* Toast Slide Animation Matrix */
-        .toast-notification {
-            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes slideInLeft {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Custom scrollbar to match clean aesthetic */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
+        ::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
+        ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: var(--brand-blue);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="antialiased selection:bg-[#0044ff] selection:text-white custom-scrollbar">
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
-
-    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
-            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105">
-                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
-                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    </div>
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                         <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+                           <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                         </div>
+                          </div>
+                        <div class="flex flex-col">
+                            <span class="text-slate-900 font-extrabold text-lg tracking-tight uppercase leading-none">DAN74TECH</span>
+                            <span class="text-blue-600 font-semibold text-xs tracking-wider font-mono-custom uppercase mt-1">MEDIA HUB</span>
+                        </div>
+                    </a>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-lg font-extrabold tracking-tight text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Professional Tech Solutions</span>
+
+                <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
+                    <a href="index.html" class="hover:text-blue-600 transition-colors duration-200">Home</a>
+                    <a href="index.html#services" class="hover:text-blue-600 transition-colors duration-200">Services</a>
+                    <a href="index.html#portfolio" class="hover:text-blue-600 transition-colors duration-200">Portfolio</a>
+                    <a href="blog.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Blog</a>
+                    <a href="index.html#contact" class="hover:text-blue-600 transition-colors duration-200">Contact</a>
+                    <a href="login.html" class="bg-slate-900 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-xs"></i> Portal Login
+                    </a>
+                </nav>
+
+                <div class="flex md:hidden">
+                    <button id="mobileNavigationToggleTrigger" type="button" class="text-slate-700 hover:text-blue-600 p-2 rounded-lg focus:outline-none" aria-label="Toggle Menu">
+                        <i class="fa-solid fa-bars-staggered text-2xl"></i>
+                    </button>
                 </div>
-            </a>
-
-            <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold tracking-wide text-gray-600">
-                <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
-                <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
-                <a href="services.html" class="hover:text-[#0044ff] transition-colors">Services</a>
-                <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
-                <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
-                <a href="blog.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-1 font-bold">Blog Insights</a>
-                <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
-                <a href="contact.html" class="px-4 py-2 rounded-lg bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Get In Touch</a>
-            </nav>
-
-            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
-                <i class="fa-solid fa-bars-staggered text-xl"></i>
-            </button>
+            </div>
         </div>
 
-        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-6 flex flex-col gap-4 text-base font-semibold">
-            <a href="index.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Home</a>
-            <a href="about.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">About Us</a>
-            <a href="services.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Services</a>
-            <a href="portfolio.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
-            <a href="case-studies.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Case Studies</a>
-            <a href="blog.html" class="text-[#0044ff] bg-blue-50/50 p-2.5 rounded-lg">Blog Insights</a>
-            <a href="testimonials.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Testimonials</a>
-            <a href="contact.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Get In Touch</a>
+        <div id="navbarLinksList" class="hidden md:hidden border-t border-slate-200 bg-white shadow-xl animate-fadeIn">
+            <div class="px-4 pt-3 pb-6 space-y-3 font-medium text-slate-700">
+                <a href="index.html" class="block px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-colors">Home</a>
+                <a href="index.html#services" class="block px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-colors">Services</a>
+                <a href="index.html#portfolio" class="block px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-colors">Portfolio</a>
+                <a href="blog.html" class="block px-3 py-2 bg-blue-50 text-blue-600 font-semibold rounded-lg">Blog</a>
+                <a href="index.html#contact" class="block px-3 py-2 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-colors">Contact</a>
+                <div class="pt-2">
+                    <a href="login.html" class="block w-full text-center bg-slate-900 hover:bg-blue-600 text-white px-4 py-3 rounded-xl font-medium shadow-md transition-all">
+                        <i class="fa-solid fa-user-shield mr-2"></i> Portal Login
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
-    <section class="relative hero-mesh border-b border-gray-100 bg-white pt-16 pb-20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-[#0044ff] text-xs font-bold font-mono tracking-wider mb-6 uppercase">
-                <span class="flex h-2 w-2 rounded-full bg-[#0044ff] animate-ping"></span>
-                💢ACTIVE
-            </div>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight max-w-4xl mx-auto leading-[1.1]">
-                Technical Knowledge Matrices & <span class="text-[#0044ff]">Digital Engineering</span> Logs.
+    <section class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white py-16 sm:py-20 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent opacity-70"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-widest font-mono-custom mb-4">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span> Production Feed Logs
+            </span>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                Technical Logs & Architecture Insights
             </h1>
-            <p class="mt-6 text-base sm:text-lg text-gray-500 max-w-2xl mx-auto font-medium leading-relaxed">
-                Deep dives into full-stack development structures, cyber security audit mechanisms, user behavior architectures, and creative content automation.
+            <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                Deep dives into cybersecurity systems, premium web engine architectures, full-stack workflows, and engineering processes documented by the DAN74TECH development team.
             </p>
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-            
-            <div id="blogCategoryPillsWrapper" class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none snap-x">
-                <button data-category="All" class="blog-category-pill snap-start text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl border transition-all bg-[#0044ff] text-white border-[#0044ff] font-mono">
-                    All Nodes
-                </button>
-                </div>
-
-            <div class="relative w-full md:w-80">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                </span>
-                <input type="text" id="blogSearchInputField" placeholder="Query technical strings..." class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all font-mono font-medium">
-            </div>
-        </div>
-    </section>
-
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
         
-        <div id="blogDataGridSkeleton" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="animate-pulse bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm h-[420px]">
-                <div class="bg-gray-200 h-48 w-full"></div>
-                <div class="p-6 space-y-4">
-                    <div class="bg-gray-200 h-4 w-24 rounded"></div>
-                    <div class="bg-gray-200 h-6 w-full rounded"></div>
-                    <div class="bg-gray-200 h-4 w-5/6 rounded"></div>
-                    <div class="bg-gray-200 h-4 w-2/3 rounded"></div>
-                </div>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+            
+            <div id="blogCategoriesFilterContainer" class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-3 md:pb-0 scrollbar-none snap-x">
+                <button data-category="All" class="category-toggle-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 bg-blue-600 text-white shadow-sm snap-start">
+                    All Matrix
+                </button>
+                <button data-category="Cybersecurity" class="category-toggle-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-600 hover:bg-slate-200 snap-start">
+                    Cybersecurity
+                </button>
+                <button data-category="Web Development" class="category-toggle-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-600 hover:bg-slate-200 snap-start">
+                    Web Development
+                </button>
+                <button data-category="Cloud Architecture" class="category-toggle-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-600 hover:bg-slate-200 snap-start">
+                    Cloud Architecture
+                </button>
+                <button data-category="ICT Systems" class="category-toggle-pill px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 bg-slate-100 text-slate-600 hover:bg-slate-200 snap-start">
+                    ICT Systems
+                </button>
             </div>
-            <div class="animate-pulse bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm h-[420px] hidden sm:block">
-                <div class="bg-gray-200 h-48 w-full"></div>
-                <div class="p-6 space-y-4">
-                    <div class="bg-gray-200 h-4 w-24 rounded"></div>
-                    <div class="bg-gray-200 h-6 w-full rounded"></div>
-                    <div class="bg-gray-200 h-4 w-5/6 rounded"></div>
-                    <div class="bg-gray-200 h-4 w-2/3 rounded"></div>
-                </div>
-            </div>
-            <div class="animate-pulse bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm h-[420px] hidden lg:block">
-                <div class="bg-gray-200 h-48 w-full"></div>
-                <div class="p-6 space-y-4">
-                    <div class="bg-gray-200 h-4 w-24 rounded"></div>
-                    <div class="bg-gray-200 h-6 w-full rounded"></div>
-                    <div class="bg-gray-200 h-4 w-5/6 rounded"></div>
-                    <div class="bg-gray-200 h-4 w-2/3 rounded"></div>
-                </div>
+
+            <div class="relative w-full md:w-80 flex-shrink-0">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" id="blogPipelineSearchFieldInput" placeholder="Query records, slugs, title..." class="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm rounded-xl pl-10 pr-10 py-3 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200">
+                <button id="clearSearchPipelineFieldAction" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 hidden" title="Clear Query">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
             </div>
         </div>
 
-        <div id="blogLiveDatabaseGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
+        <div id="blogDatabaseLoadingStateSkeleton" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 animate-pulse">
+                <div class="h-48 bg-slate-200 rounded-xl w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+                <div class="h-6 bg-slate-200 rounded w-3/4"></div>
+                <div class="h-4 bg-slate-200 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 animate-pulse">
+                <div class="h-48 bg-slate-200 rounded-xl w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+                <div class="h-6 bg-slate-200 rounded w-3/4"></div>
+                <div class="h-4 bg-slate-200 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4 animate-pulse">
+                <div class="h-48 bg-slate-200 rounded-xl w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+                <div class="h-6 bg-slate-200 rounded w-3/4"></div>
+                <div class="h-4 bg-slate-200 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+            </div>
+        </div>
+
+        <div id="blogLiveDatabasePostsGridDeck" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             </div>
 
-        <div id="blogEmptyStateFeedback" class="hidden text-center py-20 bg-white border border-gray-100 rounded-2xl p-8 max-w-xl mx-auto shadow-sm">
-            <div class="w-16 h-16 rounded-2xl bg-red-50 text-[#ff2a2a] flex items-center justify-center text-2xl mx-auto mb-4">
-                <i class="fa-solid fa-database"></i>
+        <div id="blogSystemDataGridFallbackEmptyPrompt" class="hidden max-w-md mx-auto text-center py-16 px-4">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-slate-200">
+                <i class="fa-solid fa-folder-open"></i>
             </div>
-            <h3 class="text-base font-bold text-gray-900 font-mono">No Knowledge Nodes Found</h3>
-            <p class="text-xs text-gray-500 mt-2 max-w-xs mx-auto font-medium">
-                Your search query parameters mismatch all active records in the blog_posts schema table.
-            </p>
-            <button id="resetSearchMatrixTrigger" class="mt-5 text-xs font-bold text-[#0044ff] hover:underline font-mono focus:outline-none">
-                Wipe Filter Constraints
+            <h3 class="text-slate-900 font-bold text-lg mb-1">No matching logs identified</h3>
+            <p class="text-slate-500 text-sm mb-6">We couldn't find any approved database matrix items matching that combination or query filters.</p>
+            <button id="resetOperationalFiltersActionTrigger" class="bg-slate-900 text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-blue-600 shadow-sm transition-all duration-200">
+                Reset Workspace Framework
             </button>
         </div>
-    </section>
+    </main>
 
-    <div id="articleViewModalPortal" class="fixed inset-0 z-50 overflow-y-auto hidden" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-        
-        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6 lg:p-8 relative z-10">
-            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all my-8 w-full max-w-4xl flex flex-col border border-gray-100">
+    <div id="articleViewModalPortal" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 md:p-10 hidden" role="dialog" aria-modal="true">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="articleModalInnerBoxContentContainer">
+            
+            <div class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
+                <div class="flex items-center gap-2 text-xs font-mono-custom text-slate-500">
+                    <span id="modalHeaderCategoryFieldTag" class="px-2.5 py-1 bg-slate-100 rounded-md text-slate-700 font-medium uppercase tracking-wider">Log Record</span>
+                    <span class="text-slate-300">•</span>
+                    <span id="modalHeaderTimestampFieldText">Timestamp Parsing</span>
+                </div>
+                <button id="closeArticleModalControl" type="button" class="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center justify-center" title="Close Workspace Layer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 sm:p-8 space-y-6 flex-grow">
                 
-                <div class="absolute top-4 right-4 z-20">
-                    <button id="closeArticleModalControl" type="button" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-md text-gray-500 hover:text-gray-900 shadow-sm border border-gray-200/60 transition-all hover:scale-105 focus:outline-none" aria-label="Close Interface">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                <div id="modalTargetFeaturedGraphicWrapper" class="w-full h-64 sm:h-96 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200/60 overflow-hidden relative shadow-inner">
+                    <img id="modalTargetFeaturedGraphicSource" src="" alt="Post banner graphic element" class="w-full h-full object-cover">
                 </div>
 
-                <div class="overflow-y-auto max-h-[85vh] custom-scrollbar">
+                <div class="space-y-3">
+                    <h2 id="modalTargetHeadlineContentTitle" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Null Record Structure Title
+                    </h2>
                     
-                    <div class="relative w-full h-64 sm:h-80 lg:h-96 bg-gray-900 overflow-hidden">
-                        <img id="modalArticleHeaderImage" src="" alt="" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
-                        
-                        <div class="absolute bottom-6 left-6 right-6 sm:bottom-8 sm:left-8 sm:right-8">
-                            <span id="modalArticleCategoryTag" class="inline-block text-[10px] font-bold tracking-widest text-[#ffd700] uppercase font-mono mb-3">
-                                CATEGORY MAPPING
-                            </span>
-                            <h2 id="modalArticleMainTitle" class="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
-                                Dynamic Ingestion Block
-                            </h2>
+                    <div class="flex flex-wrap items-center gap-4 text-xs font-mono-custom text-slate-500 border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-eye text-blue-500"></i>
+                            <span id="modalTargetViewsCounterMetrics">0</span> views
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-heart text-rose-500"></i>
+                            <span id="modalTargetLikesCounterMetrics">0</span> engagement approvals
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-fingerprint text-emerald-500"></i>
+                            <span id="modalTargetSlugIdentString" class="text-slate-600">slug-checksum-hash</span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="p-6 sm:p-8 lg:p-10 bg-white">
-                        <div class="flex flex-wrap items-center gap-6 text-xs text-gray-400 border-b border-gray-100 pb-6 mb-8 font-mono">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] text-white font-bold font-sans">DT</div>
-                                <span class="font-bold text-gray-700">DAN74TECH MEDIA</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="fa-regular fa-calendar text-gray-400"></i>
-                                <span id="modalArticleTimestampDisplay">-- --, ----</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 ml-auto text-[#0044ff]">
-                                <i class="fa-solid fa-shield-halved"></i>
-                                <span>Verify / Authenticate</span>
-                            </div>
-                        </div>
+                <article id="modalTargetRawBodyContentOutputParagraph" class="text-slate-700 leading-relaxed text-base prose prose-slate max-w-none space-y-4">
+                    </article>
+            </div>
 
-                        <div id="modalArticleDynamicBodyMarkup" class="text-sm sm:text-base text-gray-700 leading-relaxed font-normal space-y-6">
-                            </div>
-
-                        <div id="modalArticleSeoFeedbackZone" class="mt-12 p-4 rounded-xl bg-slate-50 border border-slate-100 hidden">
-                            <h4 class="text-xs font-bold uppercase text-slate-400 font-mono tracking-wider mb-2">[SEO METADATA INTERFACES]</h4>
-                            <p class="text-xs font-medium text-slate-600 font-mono" id="modalArticleSeoDescriptionDisplay"></p>
-                        </div>
-                    </div>
+            <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <p class="text-xs text-slate-500 font-mono-custom">
+                    Audit Tracking Node ID Reference: <span id="modalFooterSystemTrackingRecordIdHash" class="text-slate-900 font-bold">#0000</span>
+                </p>
+                <div class="flex items-center gap-2">
+                    <button id="modalActionEngagementLikeTriggerBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200">
+                        <i class="fa-solid fa-heart"></i> Approve Record Log
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-       <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
-        <i class="fa-brands fa-whatsapp text-2xl"></i>
-        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 text-xs font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
-    </a>
-
-    <footer class="bg-[#0b0f19] text-gray-400 border-t border-slate-900 pt-16 pb-12 font-sans relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-10 items-start relative z-10">
-            
-            <div class="md:col-span-5 space-y-4">
-                <a href="index.html" class="flex items-center gap-3 focus:outline-none">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px]">
-                        <div class="w-full h-full bg-[#0b0f19] rounded-[9px] flex items-center justify-center overflow-hidden">
-                            <img src="images/logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                        </div>
-                    </div>
-                    <span class="text-base font-extrabold tracking-tight text-white font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                </a>
-                <p class="text-xs text-gray-500 leading-relaxed max-w-sm font-medium">
-                    High-fidelity engineering merging software development with optimized marketing visual assets. Managed by Daniel - Meru, Kenya.
-                </p>
-                <div class="flex items-center gap-3 pt-2 text-sm">
-                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-[#0044ff] hover:text-white transition-colors flex items-center justify-center"><i class="fa-brands fa-whatsapp"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-[#0044ff] hover:text-white transition-colors flex items-center justify-center"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-[#0044ff] hover:text-white transition-colors flex items-center justify-center"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
+    <section class="bg-white border-t border-slate-200 py-12 px-4">
+        <div class="max-w-4xl mx-auto text-center space-y-6">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mx-auto shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i>
             </div>
-
-            <div class="md:col-span-3 space-y-4">
-                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">System Flow</h4>
-                <ul class="space-y-2 text-xs font-medium">
-                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1.5">📂 Service Parameters</a></li>
-                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1.5">📁 Project Repository</a></li>
-                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1.5">📈 Performance Records</a></li>
-                    <li><a href="blog.html" class="text-white transition-colors flex items-center gap-1.5 font-bold">📑 Technical Logs</a></li>
-                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1.5">💬 Audit Appraisals</a></li>
-                </ul>
+            <div class="space-y-2">
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Subscribe to Engineering Changelogs</h3>
+                <p class="text-slate-500 text-sm max-w-md mx-auto">Get notified immediately when new core architectural patches or cybersecurity warnings are deployed.</p>
             </div>
-
-            <div class="md:col-span-4 space-y-4">
-                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">Subscribe</h4>
-                <p class="text-xs text-gray-500 font-medium">Input secure email validation line to track active core system updates directly.</p>
-                <form id="footerNewsletterForm" class="space-y-2">
-                    <div class="relative">
-                        <input type="email" id="subscriberEmailField" required placeholder="name@domain.com" class="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-[#0044ff] font-mono font-medium">
-                        <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 px-3 rounded-lg bg-[#0044ff] hover:bg-blue-600 text-white text-xs font-bold transition-colors flex items-center justify-center">
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        </button>
-                    </div>
-                </form>
-                <div class="flex items-center gap-2 text-[11px] font-mono font-bold text-gray-500">
-                    <i class="fa-solid fa-chart-line text-[#0044ff]"></i>
-                    <span>Sync Count:</span>
-                    <span id="footerSubscriberCounter" class="text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">-- Pool</span>
-                </div>
-            </div>
+            <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <input type="email" placeholder="Enter corporate email signature address..." required class="flex-grow bg-slate-50 text-slate-900 text-sm rounded-xl px-4 py-3 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                <button type="submit" class="bg-slate-900 hover:bg-blue-600 text-white font-medium text-sm px-6 py-3 rounded-xl transition-all shadow-sm shrink-0">
+                    Join Pipeline Stream
+                </button>
+            </form>
         </div>
+    </section>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono font-semibold text-gray-600">
-            <span>&copy; 2026 DAN74TECH MEDIA. PRODUCTION FRAMEWORK LAYER.</span>
-            <span class="flex items-center gap-1.5 text-gray-400">
-                <i class="fa-solid fa-code-branch text-[#ff2a2a]"></i>
-                Engineered by DAN74TECH MEDIA
-            </span>
+    <footer class="bg-slate-950 text-slate-400 border-t border-slate-900 text-xs font-mono-custom">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-white font-bold text-sm tracking-wider uppercase">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> DAN74TECH MEDIA
+                    </div>
+                    <p class="text-slate-500 max-w-xs leading-relaxed">
+                        High-fidelity electronic system deployment, database engineering operations, and modern creative production node pipelines.
+                    </p>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-slate-300 font-semibold uppercase tracking-wider text-[11px]">Repository Shortcuts</div>
+                    <div class="grid grid-cols-2 gap-2 text-slate-500">
+                        <a href="index.html" class="hover:text-blue-400 transition-colors">Home Matrix</a>
+                        <a href="index.html#services" class="hover:text-blue-400 transition-colors">Core Systems</a>
+                        <a href="index.html#portfolio" class="hover:text-blue-400 transition-colors">Case Portfolio</a>
+                        <a href="blog.html" class="text-blue-400 font-bold">Insights Feed</a>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-slate-300 font-semibold uppercase tracking-wider text-[11px]">System Status Center</div>
+                    <div class="text-slate-500 space-y-1">
+                        <div>Location Context: <span class="text-slate-300">Meru, Kenya</span></div>
+                        <div>Operational Linkage: <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Synchronized</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-600 text-[11px]">
+                <p>&copy; 2026 DAN74TECH MEDIA. Engineered and Managed by Daniel Ngumi. All rights reserved.</p>
+                <div class="flex items-center gap-4 text-base">
+                    <a href="#" class="hover:text-blue-500 transition-colors" title="GitHub Infrastructure"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="hover:text-blue-500 transition-colors" title="LinkedIn Professional Network"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="https://wa.me/254746740614" target="_blank" class="hover:text-emerald-500 transition-colors" title="Direct WhatsApp Pipeline Secure Comms"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
 
+    <div id="globalSystemTelemetryToastStackContainer" class="fixed bottom-5 right-5 z-50 space-y-3 max-w-sm w-full pointer-events-none">
+        </div>
+
+
     <script>
-        /* * DESIGN CONTEXT BLUEPRINT CONFORMITY ANALYSIS COMMENT:
-         * 1. Architecture template derived completely from graphics (2).html layout structures.
-         * 2. Component references, styling paradigms, and global variables mapped exactly from index (1).html blueprints.
-         * 3. Public API queries matching exact schema endpoint routes deployed inside server.js.
-         * 4. 100% database driven utilizing backend endpoints to ingest dataset models avoiding hardcoded parameters.
-         */
+        // BACKEND ENDPOINT CONSTANTS DEFINITIONS (Configured targeting system configuration host)
+        const BASE_SYSTEM_URL_ENDPOINT = window.location.origin;
 
-        // 1. DYNAMIC SYSTEM PORT APPARATUS BASE PATH ROUTING MATRIX
-        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
-            ? 'http://localhost:10000/api' 
-            : '/api';
-
-        // 2. INTERNAL MEMORY STORAGE APPARATUS CONTEXT STATE ENGINE
+        // SYSTEM TELEMETRY LOCAL CONTROLLER ARCHITECTURE RUNTIME MEMORY STATE BUFFER
         const state = {
-            blogPosts: [],
-            categories: ['All'],
-            currentCategory: 'All',
             searchQuery: '',
-            isSubmittingSubscriber: false
+            currentCategory: 'All',
+            cachedDatasetRecords: [],
+            selectedActiveLogRecordObject: null
         };
 
-        // 3. GLOBAL APPLICATION INTERFACES SYSTEM OPERATIONAL TOAST DISPLAY MATRIX
-        function pushSystemOperationalToast(messageContext, messageType = 'info') {
-            const toastCenter = document.getElementById('applicationToastCenter');
-            if (!toastCenter) return;
+        // 1. GLOBAL SYSTEM OPERATIONAL TOAST DISPATCH NOTIFIER
+        function pushSystemOperationalToast(messageTextPayload, statusTypeClassClassification = 'success') {
+            const toastStackNodeAnchor = document.getElementById('globalSystemTelemetryToastStackContainer');
+            if (!toastStackNodeAnchor) return;
 
-            const individualToastNode = document.createElement('div');
-            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
-
-            let visualIconBlock = '';
-            if (messageType === 'success' || messageType === 'success-variant') {
-                individualToastNode.classList.add('border-emerald-100', 'text-emerald-900');
-                visualIconBlock = `<div class="w-5 h-5 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs"><i class="fa-solid fa-circle-check"></i></div>`;
-            } else if (messageType === 'error') {
-                individualToastNode.classList.add('border-red-100', 'text-red-900');
-                visualIconBlock = `<div class="w-5 h-5 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-xs"><i class="fa-solid fa-circle-exclamation"></i></div>`;
+            const trackingToastItemDiv = document.createElement('div');
+            trackingToastItemDiv.className = `pointer-events-auto flex items-center gap-3 bg-white border px-4 py-3.5 rounded-xl shadow-xl transform transition-all duration-300 translate-y-2 opacity-0 font-mono-custom text-xs max-w-full`;
+            
+            if (statusTypeClassClassification === 'success') {
+                trackingToastItemDiv.classList.add('border-emerald-100', 'text-emerald-700', 'bg-emerald-50/20');
+                trackingToastItemDiv.innerHTML = `<i class="fa-solid fa-circle-check text-base text-emerald-500"></i> <span>${messageTextPayload}</span>`;
+            } else if (statusTypeClassClassification === 'error') {
+                trackingToastItemDiv.classList.add('border-rose-100', 'text-rose-700', 'bg-rose-50/20');
+                trackingToastItemDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation text-base text-rose-500"></i> <span>${messageTextPayload}</span>`;
             } else {
-                individualToastNode.classList.add('border-blue-100', 'text-blue-900');
-                visualIconBlock = `<div class="w-5 h-5 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-circle-info"></i></div>`;
+                trackingToastItemDiv.classList.add('border-blue-100', 'text-blue-700', 'bg-blue-50/20');
+                trackingToastItemDiv.innerHTML = `<i class="fa-solid fa-info text-base text-blue-500"></i> <span>${messageTextPayload}</span>`;
             }
 
-            individualToastNode.innerHTML = `
-                ${visualIconBlock}
-                <div class="flex-1 leading-snug">${messageContext}</div>
-                <button class="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none ml-auto" onclick="this.parentElement.remove()">
-                    <i class="fa-solid fa-xmark text-[10px]"></i>
-                </button>
-            `;
+            toastStackNodeAnchor.appendChild(trackingToastItemDiv);
 
-            toastCenter.appendChild(individualToastNode);
+            // Force Reflow Execution Rendering Pipeline
             setTimeout(() => {
-                individualToastNode.style.opacity = '0';
-                individualToastNode.style.transform = 'translateY(10px)';
-                setTimeout(() => individualToastNode.remove(), 300);
-            }, 4500);
+                trackingToastItemDiv.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Self-Destruct Garbage Collection Timeout Event Scheduler
+            setTimeout(() => {
+                trackingToastItemDiv.classList.add('opacity-0', 'translate-y-1');
+                setTimeout(() => {
+                    trackingToastItemDiv.remove();
+                }, 300);
+            }, 4000);
         }
 
-        // 4. DATABASE INGESTION PARSING INTERFACE OPERATIONS LOGIC LAYER
-        async function fetchLiveBlogDatabaseRecords(searchString = '') {
+        // 2. RUNTIME SYSTEM TELEMETRY CLOCK PULSE HANDLER
+        function triggerTelemetryClockPulse() {
+            fetch(`${BASE_SYSTEM_URL_ENDPOINT}/api/telemetry/pulse`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ referrerSource: document.referrer || 'Direct Context Execution', routePathName: window.location.pathname })
+            }).catch(() => {/* Silent fallback trace metrics containment */});
+        }
+
+        // 3. TELEMETRY SYNCHRONIZER
+        function runSystemTelemetryDatabaseSynchronization() {
+            fetch(`${BASE_SYSTEM_URL_ENDPOINT}/api/telemetry/sync`)
+                .then(res => res.json())
+                .then(syncMetaPacket => {
+                    console.log("Telemetry matrix state synchronized completely: ", syncMetaPacket);
+                })
+                .catch(() => {/* Analytics resilience protection layer */});
+        }
+
+        // 4. DATABASE RETRIEVAL MATRIX AND FIELD RENDER PIPELINE PIPES
+        async function fetchLiveBlogDatabaseRecords() {
+            const layoutSkeletonDeck = document.getElementById('blogDatabaseLoadingStateSkeleton');
+            const visualPostsTargetContainerGrid = document.getElementById('blogLiveDatabasePostsGridDeck');
+            const structuralFallbackEmptyNode = document.getElementById('blogSystemDataGridFallbackEmptyPrompt');
+
+            if (layoutSkeletonDeck) layoutSkeletonDeck.classList.remove('hidden');
+            if (visualPostsTargetContainerGrid) visualPostsTargetContainerGrid.classList.add('opacity-40');
+            if (structuralFallbackEmptyNode) structuralFallbackEmptyNode.classList.add('hidden');
+
             try {
-                document.getElementById('blogLiveDatabaseGrid').classList.add('hidden');
-                document.getElementById('blogEmptyStateFeedback').classList.add('hidden');
-                document.getElementById('blogDataGridSkeleton').classList.remove('hidden');
-
-                // Query structure matches Module 9 blog/search specifications directly from server.js
-                const targetEndpointUrl = searchString 
-                    ? `${SYSTEM_API_BASE_URL}/blog/search?q=${encodeURIComponent(searchString)}`
-                    : `${SYSTEM_API_BASE_URL}/blog/search`;
-
-                const httpContextResponse = await fetch(targetEndpointUrl);
-                if (!httpContextResponse.ok) throw new Error("Database knowledge pipeline access matrix rejected.");
+                // Fetch query from approved public unified backend endpoints mapping approved items
+                const networkQueryUrlResponse = await fetch(`${BASE_SYSTEM_URL_ENDPOINT}/api/blogs`);
+                if (!networkQueryUrlResponse.ok) {
+                    throw new Error("HTTP Handshake failure parsing network data packet structures.");
+                }
                 
-                const responsePayloadData = await httpContextResponse.ok ? await httpContextResponse.json() : [];
-                state.blogPosts = responsePayloadData;
+                const responseDataPayload = await networkQueryUrlResponse.json();
+                
+                // Assign server records array. Ensure arrays parse smoothly even if root context changes
+                state.cachedDatasetRecords = Array.isArray(responseDataPayload) ? responseDataPayload : (responseDataPayload.data || []);
+                
+                renderFilteredBlogWorkspaceGrid();
 
-                // Extract custom unique category index values dynamically from database rows
-                const extractedCategoryStrings = responsePayloadData.map(post => post.category).filter(Boolean);
-                state.categories = ['All', ...new Set(extractedCategoryStrings)];
-
-                renderDynamicCategoryFilteringPills();
-                processBlogFilteringExecutionEngine();
-
-            } catch (runtimeContextExceptionFault) {
-                console.error("Database Extraction Fault Execution Error:", runtimeContextExceptionFault);
-                pushSystemOperationalToast("Failed to retrieve structural blog indices from data schema records.", "error");
+            } catch (runtimeDataFetchError) {
+                console.error("Critical Engine failure communicating with blog records tables: ", runtimeDataFetchError);
+                pushSystemOperationalToast("Failed to connect with live database cluster posts table layer.", "error");
+                
+                if (visualPostsTargetContainerGrid) {
+                    visualPostsTargetContainerGrid.innerHTML = `
+                        <div class="col-span-full border border-dashed border-rose-200 rounded-2xl text-center p-8 text-xs font-mono-custom text-rose-500 bg-rose-50/10">
+                            <i class="fa-solid fa-triangle-exclamation block text-2xl mb-2 text-rose-400"></i>
+                            Failed to synchronize data records with NeonDB production cluster instance.
+                        </div>`;
+                }
             } finally {
-                document.getElementById('blogDataGridSkeleton').classList.add('hidden');
+                if (layoutSkeletonDeck) layoutSkeletonDeck.classList.add('hidden');
+                if (visualPostsTargetContainerGrid) visualPostsTargetContainerGrid.classList.remove('opacity-40');
             }
         }
 
-        // 5. INTERACTIVE RENDER LAYER FOR CATEGORY pills SELECTORS
-        function renderDynamicCategoryFilteringPills() {
-            const pillarContainerWrapper = document.getElementById('blogCategoryPillsWrapper');
-            if (!pillarContainerWrapper) return;
+        // 5. LOCAL REAL-TIME RENDERING FILTER MATRIX ENGINE
+        function renderFilteredBlogWorkspaceGrid() {
+            const visualPostsTargetContainerGrid = document.getElementById('blogLiveDatabasePostsGridDeck');
+            const structuralFallbackEmptyNode = document.getElementById('blogSystemDataGridFallbackEmptyPrompt');
+            
+            if (!visualPostsTargetContainerGrid) return;
+            visualPostsTargetContainerGrid.innerHTML = '';
 
-            pillarContainerWrapper.innerHTML = '';
-            state.categories.forEach(categoryNode => {
-                const isSelectedNode = state.currentCategory === categoryNode;
-                const dynamicPillElement = document.createElement('button');
-                dynamicPillElement.setAttribute('data-category', categoryNode);
-                dynamicPillElement.className = `blog-category-pill snap-start text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl border transition-all font-mono whitespace-nowrap focus:outline-none ${
-                    isSelectedNode 
-                        ? 'bg-[#0044ff] text-white border-[#0044ff]' 
-                        : 'bg-white text-gray-500 border-gray-200/80 hover:bg-gray-50 hover:text-gray-900'
-                }`;
-                dynamicPillElement.textContent = categoryNode === 'All' ? 'All Nodes' : `[ ${categoryNode} ]`;
+            // Run conditional inline filter metrics validation checking state fields
+            const processingFilterRecordsOutputArray = state.cachedDatasetRecords.filter(itemRecordElement => {
+                const criteriaCategoryMatches = (state.currentCategory === 'All') || 
+                    (itemRecordElement.category && itemRecordElement.category.toLowerCase().trim() === state.currentCategory.toLowerCase().trim());
                 
-                dynamicPillElement.addEventListener('click', () => {
-                    state.currentCategory = categoryNode;
-                    renderDynamicCategoryFilteringPills();
-                    processBlogFilteringExecutionEngine();
-                });
+                const searchableKeywordStringPool = `${itemRecordElement.title || ''} ${itemRecordElement.summary || ''} ${itemRecordElement.slug || ''} ${itemRecordElement.category || ''}`.toLowerCase();
+                const criteriaSearchInputMatches = searchableKeywordStringPool.includes(state.searchQuery.toLowerCase().trim());
 
-                pillarContainerWrapper.appendChild(dynamicPillElement);
-            });
-        }
-
-        // 6. PROCESSING EVALUATION INTERFACE: CLIENT-SIDE DISPATCH MATRIX SORT
-        function processBlogFilteringExecutionEngine() {
-            const databaseGridNode = document.getElementById('blogLiveDatabaseGrid');
-            if (!databaseGridNode) return;
-
-            databaseGridNode.innerHTML = '';
-
-            // Compute targeted selection filtering loops
-            const processedPostsDataset = state.blogPosts.filter(postElement => {
-                const categoryMatchState = state.currentCategory === 'All' || postElement.category === state.currentCategory;
-                return categoryMatchState;
+                return criteriaCategoryMatches && criteriaSearchInputMatches;
             });
 
-            if (processedPostsDataset.length === 0) {
-                databaseGridNode.classList.add('hidden');
-                document.getElementById('blogEmptyStateFeedback').classList.remove('hidden');
+            if (processingFilterRecordsOutputArray.length === 0) {
+                if (structuralFallbackEmptyNode) structuralFallbackEmptyNode.classList.remove('hidden');
                 return;
             }
 
-            document.getElementById('blogEmptyStateFeedback').classList.add('hidden');
-            databaseGridNode.classList.remove('hidden');
+            if (structuralFallbackEmptyNode) structuralFallbackEmptyNode.classList.add('hidden');
 
-            // Render loop architectures replicating the premium card aesthetic of graphics (2).html
-            processedPostsDataset.forEach(postRowObject => {
-                const formattedDateString = postRowObject.created_at 
-                    ? new Date(postRowObject.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                    : 'System Default Log';
+            // Render matching database instances into clean cards
+            processingFilterRecordsOutputArray.forEach(postRecordUnit => {
+                const executionFallbackGraphicUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=85';
+                const resolutionDisplayImageSource = postRecordUnit.image_url ? postRecordUnit.image_url : executionFallbackGraphicUrl;
+                
+                // Formulate system dynamic time strings
+                const parsingCalendarTimestamp = postRecordUnit.created_at ? new Date(postRecordUnit.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                }) : 'System Logs Dynamic';
 
-                const optimizedImageFallbackSource = postRowObject.image_url 
-                    ? postRowObject.image_url 
-                    : `https://placehold.co/600x400/0b0f19/ffffff?text=${encodeURIComponent(postRowObject.title)}`;
+                const targetCardHtmlTemplateMarkup = `
+                    <article class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+                        <div>
+                            <div class="h-52 w-full bg-slate-100 overflow-hidden relative border-b border-slate-100">
+                                <img src="${resolutionDisplayImageSource}" alt="${postRecordUnit.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                                <span class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-md tracking-wider font-mono-custom uppercase border border-white/10">
+                                    ${postRecordUnit.category || 'General Logs'}
+                                </span>
+                            </div>
 
-                const cleanPostSummaryString = postRowObject.summary || (postRowObject.content ? postRowObject.content.substring(0, 110) + '...' : '');
-
-                const individualArticleCardStructure = `
-                    <div class="group relative flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-[#0044ff]/40 transition-all duration-300 h-full">
-                        
-                        <div class="relative h-48 w-full bg-slate-900 overflow-hidden">
-                            <img src="${optimizedImageFallbackSource}" alt="${postRowObject.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/600x400/0b0f19/ffffff?text=DAN74TECH'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent"></div>
-                            
-                            <span class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-[#0044ff] text-[10px] font-extrabold font-mono tracking-widest px-2.5 py-1 rounded-md uppercase border border-white">
-                                ${postRowObject.category || 'LOG'}
-                            </span>
-                        </div>
-
-                        <div class="p-6 flex flex-col flex-1 justify-between space-y-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-1.5 text-[11px] font-mono font-bold text-gray-400">
-                                    <i class="fa-regular fa-clock"></i>
-                                    <span>${formattedDateString}</span>
+                            <div class="p-5 sm:p-6 space-y-3">
+                                <div class="flex items-center gap-2 text-xs font-mono-custom text-slate-400">
+                                    <span>${parsingCalendarTimestamp}</span>
+                                    <span>•</span>
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-eye text-[10px]"></i> ${postRecordUnit.views_count || 0}</span>
                                 </div>
-                                <h3 class="text-base font-extrabold text-gray-900 leading-snug tracking-tight font-sans group-hover:text-[#0044ff] transition-colors line-clamp-2">
-                                    ${postRowObject.title}
+                                <h3 class="text-slate-900 font-bold text-lg sm:text-xl line-clamp-2 group-hover:text-blue-600 transition-colors tracking-tight">
+                                    ${postRecordUnit.title}
                                 </h3>
-                                <p class="text-xs text-gray-500 font-medium leading-relaxed line-clamp-3">
-                                    ${cleanPostSummaryString}
+                                <p class="text-slate-500 text-sm line-clamp-3 leading-relaxed">
+                                    ${postRecordUnit.summary || 'No tracking digest log summary compiled for this index record unit.'}
                                 </p>
                             </div>
-
-                            <div class="pt-2 border-t border-gray-50">
-                                <button onclick="launchSingleArticleViewerMatrix('${postRowObject.slug}')" class="w-full text-center px-4 py-2.5 rounded-xl bg-gray-50 text-gray-700 hover:bg-[#0044ff] hover:text-white font-bold font-mono text-xs tracking-wider transition-all shadow-sm flex items-center justify-center gap-2 group/btn focus:outline-none">
-                                    <span>PARSE SYSTEM CORE</span>
-                                    <i class="fa-solid fa-terminal text-[10px] opacity-60 group-hover/btn:translate-x-1 transition-transform"></i>
-                                </button>
-                            </div>
                         </div>
-                    </div>
+
+                        <div class="px-5 sm:px-6 pb-6 pt-2">
+                            <button onclick="triggerInspectRecordOverlayPortalPopup(${postRecordUnit.id})" class="w-full text-center inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-600 text-slate-700 hover:text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 border border-slate-200/60 hover:border-blue-600 shadow-sm">
+                                Read Full Article <i class="fa-solid fa-arrow-right-long text-[11px]"></i>
+                            </button>
+                        </div>
+                    </article>
                 `;
-
-                databaseGridNode.insertAdjacentHTML('beforeend', individualArticleCardStructure);
+                visualPostsTargetContainerGrid.insertAdjacentHTML('beforeend', targetCardHtmlTemplateMarkup);
             });
         }
 
-        // 7. ARTICLE DATA DETAIL LOADER: ISOLATES RECORD BY TARGET SLUG KEY
-        async function launchSingleArticleViewerMatrix(postSlugString) {
-            if (!postSlugString) return;
+        // 6. VIEWPORT MODAL OVERLAY PORTAL ACTION CONTROLLER IMPLEMENTATION
+        async function triggerInspectRecordOverlayPortalPopup(targetDatabaseRecordId) {
+            const matchedPostPayloadObject = state.cachedDatasetRecords.find(item => item.id === targetDatabaseRecordId);
+            if (!matchedPostPayloadObject) return;
 
+            state.selectedActiveLogRecordObject = matchedPostPayloadObject;
+
+            // Element ID assignments inside DOM tree frame layers
+            const modalPortalNodeWindow = document.getElementById('articleViewModalPortal');
+            const modalInnerContainerBox = document.getElementById('articleModalInnerBoxContentContainer');
+            
+            if (!modalPortalNodeWindow || !modalInnerContainerBox) return;
+
+            // Map and safely sanitize model nodes structure strings
+            document.getElementById('modalHeaderCategoryFieldTag').innerText = matchedPostPayloadObject.category || 'System General';
+            document.getElementById('modalHeaderTimestampFieldText').innerText = matchedPostPayloadObject.created_at ? new Date(matchedPostPayloadObject.created_at).toUTCString() : 'Active Static Log';
+            document.getElementById('modalTargetHeadlineContentTitle').innerText = matchedPostPayloadObject.title;
+            document.getElementById('modalTargetSlugIdentString').innerText = matchedPostPayloadObject.slug || 'no-checksum-slug';
+            document.getElementById('modalTargetViewsCounterMetrics').innerText = parseInt(matchedPostPayloadObject.views_count || 0) + 1;
+            document.getElementById('modalTargetLikesCounterMetrics').innerText = matchedPostPayloadObject.likes_count || 0;
+            document.getElementById('modalFooterSystemTrackingRecordIdHash').innerText = `#LOG-${matchedPostPayloadObject.id}`;
+            
+            // Text rendering mapping body paragraphs with breakline split operations natively
+            const rawOutputBodyText = matchedPostPayloadObject.content || 'Payload database log text elements empty context arrays.';
+            document.getElementById('modalTargetRawBodyContentOutputParagraph').innerHTML = rawOutputBodyText.split('\n').map(pLine => pLine.trim() ? `<p class="mb-4">${pLine}</p>` : '').join('');
+
+            // Graphic image verification fallback asset checking logic structure
+            const graphicMediaSourceElement = document.getElementById('modalTargetFeaturedGraphicSource');
+            if (graphicMediaSourceElement) {
+                graphicMediaSourceElement.src = matchedPostPayloadObject.image_url ? matchedPostPayloadObject.image_url : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=85';
+            }
+
+            // Lock document background body scrolling operations tracking framework layout components
+            modalPortalNodeWindow.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+
+            // Fire animate trigger frames
+            setTimeout(() => {
+                modalInnerContainerBox.classList.remove('scale-95', 'opacity-0');
+                modalInnerContainerBox.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // Trigger view metrics increment tracking logic pipeline request route safely towards node backend server
             try {
-                // Ingest single row matching route endpoint app.get('/api/blog/:slug') from server.js
-                const requestUrlContextTarget = `${SYSTEM_API_BASE_URL}/blog/${postSlugString}`;
-                const fetchMatrixResponse = await fetch(requestUrlContextTarget);
-                
-                if (!fetchMatrixResponse.ok) throw new Error("Article slug verification mismatch identifier code.");
-                const dataRowRecord = await fetchMatrixResponse.json();
-
-                // Bind content variables directly into the modal markup components
-                document.getElementById('modalArticleHeaderImage').src = dataRowRecord.image_url || `https://placehold.co/800x450/0b0f19/ffffff?text=${encodeURIComponent(dataRowRecord.title)}`;
-                document.getElementById('modalArticleHeaderImage').alt = dataRowRecord.title;
-                document.getElementById('modalArticleCategoryTag').textContent = dataRowRecord.category || 'TECHNICAL INSIGHT';
-                document.getElementById('modalArticleMainTitle').textContent = dataRowRecord.title;
-                
-                const rawDateObject = dataRowRecord.created_at ? new Date(dataRowRecord.created_at) : new Date();
-                document.getElementById('modalArticleTimestampDisplay').textContent = rawDateObject.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-                // Content ingestion formatting logic layer
-                const dynamicBodyDisplayTarget = document.getElementById('modalArticleDynamicBodyMarkup');
-                dynamicBodyDisplayTarget.innerHTML = '';
-                
-                if (dataRowRecord.content) {
-                    // Split paragraphs on double linebreaks and wrap in design segments cleanly
-                    const unifiedParagraphArrays = dataRowRecord.content.split('\n\n');
-                    unifiedParagraphArrays.forEach(paragraphText => {
-                        if (paragraphText.trim()) {
-                            const paraElementNode = document.createElement('p');
-                            paraElementNode.className = 'leading-relaxed font-normal text-sm sm:text-base text-gray-700';
-                            paraElementNode.textContent = paragraphText.trim();
-                            dynamicBodyDisplayTarget.appendChild(paraElementNode);
+                fetch(`${BASE_SYSTEM_URL_ENDPOINT}/api/blogs/${targetDatabaseRecordId}/view`, { method: 'POST' })
+                    .then(res => {
+                        if(res.ok) {
+                            // Update local states buffer record counters tracking dynamically
+                            matchedPostPayloadObject.views_count = parseInt(matchedPostPayloadObject.views_count || 0) + 1;
                         }
                     });
-                }
+            } catch(silentTraceViewsCounterFailure) {
+                /* System resilience handling containment shield framework */
+            }
+        }
 
-                // Append search query optimization visibility indexes if present
-                const seoFeedbackContainer = document.getElementById('modalArticleSeoFeedbackZone');
-                if (dataRowRecord.seo_description) {
-                    seoFeedbackContainer.classList.remove('hidden');
-                    document.getElementById('modalArticleSeoDescriptionDisplay').textContent = `Index String Focus: ${dataRowRecord.seo_description}`;
+        // 7. ARTICLE ENGAGEMENT APPROVAL LIKE HIT HANDLER LINKAGE
+        document.getElementById('modalActionEngagementLikeTriggerBtn')?.addEventListener('click', async function() {
+            if (!state.selectedActiveLogRecordObject) return;
+            
+            const targetedIdentifierId = state.selectedActiveLogRecordObject.id;
+            const engagementHeartBtn = this;
+
+            try {
+                engagementHeartBtn.disabled = true;
+                const incrementalLikeResponse = await fetch(`${BASE_SYSTEM_URL_ENDPOINT}/api/blogs/${targetedIdentifierId}/like`, { method: 'POST' });
+                
+                if (incrementalLikeResponse.ok) {
+                    state.selectedActiveLogRecordObject.likes_count = parseInt(state.selectedActiveLogRecordObject.likes_count || 0) + 1;
+                    document.getElementById('modalTargetLikesCounterMetrics').innerText = state.selectedActiveLogRecordObject.likes_count;
+                    
+                    pushSystemOperationalToast("Log signature cryptographic verification alignment approved.", "success");
+                    renderFilteredBlogWorkspaceGrid(); // Re-render live cards context values configuration
                 } else {
-                    seoFeedbackContainer.classList.add('hidden');
+                    pushSystemOperationalToast("System engagement request rate-limit threshold reached.", "error");
                 }
-
-                // Launch portal node visibility smoothly
-                const portalModalLayoutElement = document.getElementById('articleViewModalPortal');
-                portalModalLayoutElement.classList.remove('hidden');
-                document.body.classList.add('overflow-hidden');
-
-            } catch (errContextFault) {
-                console.error("Single Node Data Ingestion Error Exception:", errContextFault);
-                pushSystemOperationalToast("Could not mount database row node tracking parameters.", "error");
+            } catch (err) {
+                pushSystemOperationalToast("Transmission socket failure recording log parameters validation.", "error");
+            } finally {
+                setTimeout(() => { engagementHeartBtn.disabled = false; }, 1000);
             }
-        }
+        });
 
-        // 8. SUBSCRIBER PIPELINE ENGINE INTEGRATION LAYER (Source of Truth: graphics (2).html)
-        function initializeNewsletterSubscriptionFormFramework() {
-            const subscriberForm = document.getElementById('footerNewsletterForm');
-            subscriberForm?.addEventListener('submit', async function(eventContextEvent) {
-                eventContextEvent.preventDefault();
+        // 8. INTERACTION EVENT LISTENERS ATTACHMENT MANAGER
+        function bindSearchPipelineInteractionListeners() {
+            const searchFieldElement = document.getElementById('blogPipelineSearchFieldInput');
+            const filterClearActionCross = document.getElementById('clearSearchPipelineFieldAction');
+            const categoryPillControlsCollection = document.querySelectorAll('.category-toggle-pill');
+
+            // Listening real-time search user keystroke entries input queries loops
+            searchFieldElement?.addEventListener('input', (keyboardEvent) => {
+                state.searchQuery = keyboardEvent.target.value;
                 
-                if (state.isSubmittingSubscriber) return;
-                
-                const emailInput = document.getElementById('subscriberEmailField');
-                if (!emailInput || !emailInput.value.trim()) return;
+                if (state.searchQuery.length > 0) {
+                    filterClearActionCross?.classList.remove('hidden');
+                } else {
+                    filterClearActionCross?.classList.add('hidden');
+                }
+                renderFilteredBlogWorkspaceGrid();
+            });
 
-                const registrationPayload = { email: emailInput.value.trim() };
-                state.isSubmittingSubscriber = true;
+            // Clean action close cross execution button matrix triggers handler channel
+            filterClearActionCross?.addEventListener('click', () => {
+                if (searchFieldElement) searchFieldElement.value = '';
+                state.searchQuery = '';
+                filterClearActionCross.classList.add('hidden');
+                renderFilteredBlogWorkspaceGrid();
+            });
 
-                try {
-                    const serverPipelineResponse = await fetch(`${SYSTEM_API_BASE_URL}/subscribers`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(registrationPayload)
+            // Loop and hook interactive clicks across custom UI components categories lists array
+            categoryPillControlsCollection.forEach(pBtnNodeElement => {
+                pBtnNodeElement.addEventListener('click', function() {
+                    categoryPillControlsCollection.forEach(bNode => {
+                        bNode.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                        bNode.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
                     });
 
-                    if (serverPipelineResponse.ok) {
-                        pushSystemOperationalToast("Corporate pipeline synchronization complete.", "success-variant");
-                        emailInput.value = '';
-                        
-                        // Increment client layout pool metrics instantly on front facing interface
-                        const numericalCounterNode = document.getElementById('footerSubscriberCounter');
-                        if (numericalCounterNode) {
-                            const numericalBaseInteger = parseInt(numericalCounterNode.textContent) || 140;
-                            numericalCounterNode.textContent = `${numericalBaseInteger + 1}+ Pool`;
-                        }
-                    } else {
-                        const parsingExceptionPayload = await serverPipelineResponse.json();
-                        throw new Error(parsingExceptionPayload.error || "Subscription registration error failure.");
-                    }
-                } catch (executionExceptionContextError) {
-                    pushSystemOperationalToast(executionExceptionContextError.message || "Email pipeline failure code triggered.", "error");
-                } finally {
-                    state.isSubmittingSubscriber = false;
-                }
-            });
-        }
+                    this.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                    this.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
 
-        // 9. CORE TELEMETRY STATISTICS SYSTEM DATABASE SYNCHRONIZATION (Source of Truth: index (1).html)
-        async function runSystemTelemetryDatabaseSynchronization() {
-            try {
-                const telemetryQueryResponse = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
-                if (!telemetryQueryResponse.ok) throw new Error("Telemetry database pipeline verification missing.");
-                
-                const telemetryPayloadMetadata = await telemetryQueryResponse.json();
-                
-                const usersCountInteger = parseInt(telemetryPayloadMetadata.users) || 24;
-                const ordersCountInteger = parseInt(telemetryPayloadMetadata.orders) || 68;
-
-                const subCounterNodeTarget = document.getElementById('footerSubscriberCounter');
-                if (subCounterNodeTarget) {
-                    subCounterNodeTarget.textContent = `${usersCountInteger + ordersCountInteger + 32}+ Pool`;
-                }
-            } catch (telemetrySyncExceptionContext) {
-                console.error("Telemetry Processing Interrupted:", telemetrySyncExceptionContext);
-                // Fallback graceful telemetry metrics assignments
-                const internalCounterNode = document.getElementById('footerSubscriberCounter');
-                if (internalCounterNode) internalCounterNode.textContent = "180+ Pool";
-            }
-        }
-
-        // 10. REAL-TIME INPUT KEY SELECTION LISTENER DISPATCH HOOKS
-        function bindSearchPipelineInteractionListeners() {
-            const searchFieldElement = document.getElementById('blogSearchInputField');
-            let typingDebounceTimeoutApparatusID;
-
-            searchFieldElement?.addEventListener('input', (event) => {
-                clearTimeout(typingDebounceTimeoutApparatusID);
-                state.searchQuery = event.target.value;
-                
-                // Debounce performance tuning layer to prevent network connection flooding
-                typingDebounceTimeoutApparatusID = setTimeout(() => {
-                    fetchLiveBlogDatabaseRecords(state.searchQuery);
-                }, 400);
+                    state.currentCategory = this.getAttribute('data-category') || 'All';
+                    renderFilteredBlogWorkspaceGrid();
+                });
             });
 
-            // Wipe filters button initialization hooks
-            document.getElementById('resetSearchMatrixTrigger')?.addEventListener('click', () => {
+            // Frame error fallback system resets buttons execution action
+            document.getElementById('resetOperationalFiltersActionTrigger')?.addEventListener('click', () => {
                 if (searchFieldElement) searchFieldElement.value = '';
                 state.searchQuery = '';
                 state.currentCategory = 'All';
-                fetchLiveBlogDatabaseRecords('');
+                filterClearActionCross?.classList.add('hidden');
+
+                categoryPillControlsCollection.forEach((pillBtn, index) => {
+                    if (index === 0) {
+                        pillBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                        pillBtn.classList.add('bg-blue-600', 'text-white');
+                    } else {
+                        pillBtn.classList.add('bg-slate-100', 'text-slate-600');
+                        pillBtn.classList.remove('bg-blue-600', 'text-white');
+                    }
+                });
+
+                renderFilteredBlogWorkspaceGrid();
             });
 
-            // Close single view overlay control triggers
+            // Close single view modal overlay control triggers configuration framework anchors
             document.getElementById('closeArticleModalControl')?.addEventListener('click', () => {
-                document.getElementById('articleViewModalPortal').classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
+                const targetBox = document.getElementById('articleModalInnerBoxContentContainer');
+                targetBox.classList.remove('scale-100', 'opacity-100');
+                targetBox.classList.add('scale-95', 'opacity-0');
+
+                setTimeout(() => {
+                    document.getElementById('articleViewModalPortal').classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                    state.selectedActiveLogRecordObject = null;
+                }, 200);
             });
         }
 
-        // 11. MOBILE RECONSTRUCT NAVIGATION UI TOGGLER PROCESS
+        // 9. CORPORATE NEWSLETTER SUBSCRIPTION ENGINE ALIGNMENT
+        function initializeNewsletterSubscriptionFormFramework() {
+            document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+                formSubmissionEvent.preventDefault();
+                window.location.href = 'login.html';
+            });
+        }
+
+        // 10. MOBILE RECONSTRUCT NAVIGATION UI TOGGLER PROCESS
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
             const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
             if (dropdownLinksTargetMenu) {
@@ -678,12 +670,13 @@
             }
         });
 
-        // 12. RUNTIME SYSTEM TELEMETRY INITIALIZATION SCHEDULER
+        // 11. RUNTIME SYSTEM TELEMETRY INITIALIZATION SCHEDULER
         document.addEventListener('DOMContentLoaded', () => {
+            triggerTelemetryClockPulse();
             runSystemTelemetryDatabaseSynchronization();
             initializeNewsletterSubscriptionFormFramework();
             bindSearchPipelineInteractionListeners();
-            fetchLiveBlogDatabaseRecords('');
+            fetchLiveBlogDatabaseRecords();
 
             setTimeout(() => {
                 pushSystemOperationalToast("DAN74TECH MEDIA Blog Repository synchronized.", "success");
