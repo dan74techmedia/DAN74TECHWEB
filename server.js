@@ -1283,7 +1283,9 @@ app.get('/api/admin/:table', verifyAdminAccess, async (req, res) => {
     }
 });
 
-// 2. DYNAMIC ADMIN RECORD CREATOR
+// =========================================================================
+// 2. DYNAMIC ADMIN RECORD CREATOR (POST)
+// =========================================================================
 app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
     const whitelist = [
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
@@ -1292,15 +1294,13 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
         'consultations', 'file_deliveries', 'email_campaigns'
     ];
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Write operations restricted on this table vectors." });
+    if (!whitelist.includes(requestedTable)) {
+        return res.status(403).json({ error: "Write operations restricted on this table vectors." });
+    }
 
     try {
-        // RECTIFIED: Map incoming dynamic keys safely and sanitize payload
-    const payload = sanitizeAndMapPayload(req.params.table, req.body);
-    // Continue DB operation...
-             } catch (err) {
-             return res.status(400).json({ error: err.message });
-             }
+        // RECTIFIED: Map incoming dynamic keys safely and sanitize payload within scope
+        const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
         if (requestedTable === 'users' && payload.password) {
             const salt = await bcrypt.genSalt(10);
@@ -1308,7 +1308,9 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
         }
 
         const keys = Object.keys(payload);
-        if(keys.length === 0) return res.status(400).json({ error: "Payload data vector empty or contained invalid columns." });
+        if (keys.length === 0) {
+            return res.status(400).json({ error: "Payload data vector empty or contained invalid columns." });
+        }
 
         const fields = keys.join(', ');
         const indices = keys.map((_, i) => `$${i + 1}`).join(', ');
@@ -1318,11 +1320,15 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
         const result = await pool.query(queryStr, values);
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        // Capture validation exclusivity errors and map to 400 Bad Request, otherwise 500
+        const statusCode = err.message.includes("Validation Matrix Error") ? 400 : 500;
+        res.status(statusCode).json({ error: err.message });
     }
 });
 
-// 3. DYNAMIC ADMIN RECORD MODIFIER
+// =========================================================================
+// 3. DYNAMIC ADMIN RECORD MODIFIER (PUT)
+// =========================================================================
 app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
     const whitelist = [
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
@@ -1331,10 +1337,12 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         'consultations', 'file_deliveries', 'email_campaigns'
     ];
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
-    if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Mutation operations restricted on this table vectors." });
+    if (!whitelist.includes(requestedTable)) {
+        return res.status(403).json({ error: "Mutation operations restricted on this table vectors." });
+    }
 
     try {
-        // RECTIFIED: Map dynamic mutations safely and filter structural entities
+        // RECTIFIED: Map dynamic mutations safely and filter structural entities within scope
         const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
         delete payload.id;
@@ -1351,7 +1359,9 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         }
 
         const keys = Object.keys(payload);
-        if(keys.length === 0) return res.status(400).json({ error: "Mutation vector matrix empty or contained invalid columns." });
+        if (keys.length === 0) {
+            return res.status(400).json({ error: "Mutation vector matrix empty or contained invalid columns." });
+        }
 
         const setClauses = keys.map((key, i) => `${key} = $${i + 1}`).join(', ');
         const values = Object.values(payload);
@@ -1360,12 +1370,16 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         const queryStr = `UPDATE ${requestedTable} SET ${setClauses}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length} RETURNING *`;
         const result = await pool.query(queryStr, values);
         
-        if (result.rows.length === 0) return res.status(404).json({ error: "Target row reference not found mapping to ID vector." });
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Target row reference not found mapping to ID vector." });
+        }
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        const statusCode = err.message.includes("Validation Matrix Error") ? 400 : 500;
+        res.status(statusCode).json({ error: err.message });
     }
 });
+
 
 // 4. SINGLE RECORD INDEPENDENT DELETION DISPATCHER
 app.delete('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
