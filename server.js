@@ -1,6 +1,6 @@
 // =========================================================================
 // DAN74TECH MEDIA - UNIFIED BACKEND SERVER PLATFORM (server.js)
-// STATUS: V4.1.1 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (FULLY RECTIFIED)
+// STATUS: V4.1.2 PRODUCTION ENTERPRISE SYSTEM INTEGRATION (FULLY RECTIFIED)
 // =========================================================================
 require('dotenv').config();
 const express = require('express');
@@ -247,7 +247,6 @@ app.post('/api/auth/login', async (req, res) => {
 // =========================================================================
 app.get('/api/case-studies', async (req, res) => {
     try {
-        // Fetches only non-deleted, approved case studies for the public UI
         const result = await pool.query(
             `SELECT id, title, category, challenge, solution, result, image_url, likes_count, views_count, status, created_at 
              FROM case_studies 
@@ -260,12 +259,12 @@ app.get('/api/case-studies', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 // =========================================================================
 // =================== MODULE: PUBLIC BLOG INSIGHTS ENGINE =================
 // =========================================================================
 app.get('/api/blog-posts', async (req, res) => {
     try {
-        // Synchronizes only non-deleted, approved technical logs for public consumption
         const result = await pool.query(
             `SELECT id, title, category, summary, content, image_url, slug, seo_title, seo_description, likes_count, views_count, status, created_at 
              FROM blog_posts 
@@ -284,7 +283,6 @@ app.get('/api/blog-posts', async (req, res) => {
 // =========================================================================
 app.get('/api/testimonials', async (req, res) => {
     try {
-        // Pulls verified, active client appraisal profiles from the production ledger
         const result = await pool.query(
             `SELECT id, client_name, client_designation, company, client_avatar_url, rating, review, status, is_featured, created_at 
              FROM testimonials 
@@ -298,9 +296,6 @@ app.get('/api/testimonials', async (req, res) => {
     }
 });
 
-
-
-
 // Public Portfolio Matrix Query Route
 app.get('/api/portfolio', async (req, res) => {
     try {
@@ -310,10 +305,8 @@ app.get('/api/portfolio', async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
-
-        
-    }});
-    
+    }
+});
 
 // =========================================================================
 // ================= MODULE 2: USERS MANAGEMENT INTERFACE ==================
@@ -475,18 +468,6 @@ app.delete('/api/sub-services/:id', verifyAdminAccess, async (req, res) => {
     try {
         await pool.query('UPDATE sub_services SET is_deleted = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [req.params.id]);
         res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Public Portfolio Matrix Query Route
-app.get('/api/portfolio', async (req, res) => {
-    try {
-        const result = await pool.query(
-            'SELECT id, title, category, description, link, progress, status, publisher_name, likes_count, views_count FROM portfolio WHERE is_deleted = FALSE AND is_approved = TRUE ORDER BY created_at DESC'
-        );
-        res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -683,10 +664,8 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
 // =========================================================================
 // ================= MODULE 14: TESTIMONIALS ENGINE ========================
 // =========================================================================
-// GET: Fetch verified and approved testimonials for UI mapping
 app.get('/api/testimonials/approved', async (req, res) => {
     try {
-        // Adjust the WHERE clause to match your exact column schema (e.g., status = 'approved')
         const queryText = `
             SELECT client_name, company, rating, review 
             FROM testimonials 
@@ -701,7 +680,6 @@ app.get('/api/testimonials/approved', async (req, res) => {
     }
 });
 
-// POST: Commit client appraisal parameters into the ledger
 app.post('/api/testimonials', async (req, res) => {
     const { client_name, company, rating, review } = req.body;
 
@@ -735,7 +713,6 @@ app.get('/api/media', async (req, res) => {
     }
 });
 
-// RECTIFIED: Aligned object properties with database column definitions 
 app.post('/api/media/upload', verifyAdminAccess, uploadMemory.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: "Required file node absent" });
@@ -773,7 +750,6 @@ app.get('/api/consultations', verifyAdminAccess, async (req, res) => {
     }
 });
 
-// RECTIFIED: Aligned object parameters with database column constraints 
 app.post('/api/consultations', async (req, res) => {
     try {
         const { name, client_name, email, client_email, schedule_date, booking_date, booking_time, platform } = req.body;
@@ -886,7 +862,6 @@ io.on('connection', (socket) => {
         const { receiver_id, ciphertext, iv, sender_key, receiver_key } = data;
         
         try {
-            // Save blind payload
             const result = await pool.query(
                 `INSERT INTO client_communications 
                  (sender_id, receiver_id, ciphertext, iv, sender_wrapped_key, receiver_wrapped_key) 
@@ -894,7 +869,6 @@ io.on('connection', (socket) => {
                 [socket.user.id, receiver_id, ciphertext, iv, sender_key, receiver_key]
             );
             
-            // Relay ciphertext to recipient (Socket.IO remains the pipe)
             io.to(`user_${receiver_id}`).emit('receive_encrypted_message', result.rows[0]);
         } catch (err) {
             console.error("❌ E2EE Relay Error:", err);
@@ -903,7 +877,7 @@ io.on('connection', (socket) => {
 
     // 2. PRESENCE & STATUS MANAGEMENT
     socket.on('join_thread', async (userId) => {
-        socket.join(`user_${userId}`); // Namespacing user rooms
+        socket.join(`user_${userId}`);
         socket.userId = userId;
         await pool.query('UPDATE users SET is_online = TRUE, last_seen = NOW() WHERE id = $1', [userId]);
         io.emit('presence_update', { userId, status: 'online' });
@@ -933,13 +907,11 @@ app.get('/api/client-portal/thread', verifySystemToken, async (req, res) => {
     try {
         const userId = req.user.id;
         
-        // Mark as read (Metadata operation)
         await pool.query(
             `UPDATE client_communications SET is_read = TRUE WHERE receiver_id = $1 AND is_read = FALSE`,
             [userId]
         );
 
-        // Fetch encrypted payload - message_body is intentionally excluded
         const thread = await pool.query(
             `SELECT id, sender_id, receiver_id, ciphertext, iv, 
                     sender_wrapped_key, receiver_wrapped_key, created_at, is_read 
@@ -994,11 +966,12 @@ app.post('/api/payments/mpesa-stk', verifySystemToken, async (req, res) => {
     }
 });
 
-// RECTIFIED: Aligned database parameter with actual system column: result_desc 
+// RECTIFIED: Exact DB mapping (merchant_request_id strictly enforced NOT NULL)
 app.post('/api/payments/mpesa-callback', async (req, res) => {
     try {
         const callbackData = req.body.Body.stkCallback;
         const checkoutRequestId = callbackData.CheckoutRequestID;
+        const merchantRequestId = callbackData.MerchantRequestID || 'UNKNOWN_MERCHANT_REQ';
         const resultCode = callbackData.ResultCode;
 
         if (resultCode === 0) {
@@ -1007,15 +980,15 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
             const phoneInfo = callbackData.CallbackMetadata.Item.find(item => item.Name === 'PhoneNumber');
 
             await pool.query(
-                `INSERT INTO mpesa_transactions (checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_desc, result_code) 
-                 VALUES ($1, $2, $3, $4, 'Success', $5, $6)`,
-                [checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc, resultCode]
+                `INSERT INTO mpesa_transactions (merchant_request_id, checkout_request_id, amount, mpesa_receipt_number, phone_number, status, result_desc, result_code) 
+                 VALUES ($1, $2, $3, $4, $5, 'Success', $6, $7)`,
+                [merchantRequestId, checkoutRequestId, amountInfo.Value, receiptInfo.Value, phoneInfo.Value, callbackData.ResultDesc, resultCode]
             );
         } else {
             await pool.query(
-                `INSERT INTO mpesa_transactions (checkout_request_id, status, result_desc, result_code, phone_number, amount) 
-                 VALUES ($1, 'Failed', $2, $3, 'N/A', 0.00)`,
-                [checkoutRequestId, callbackData.ResultDesc, resultCode]
+                `INSERT INTO mpesa_transactions (merchant_request_id, checkout_request_id, status, result_desc, result_code, phone_number, amount) 
+                 VALUES ($1, $2, 'Failed', $3, $4, 'N/A', 0.00)`,
+                [merchantRequestId, checkoutRequestId, callbackData.ResultDesc, resultCode]
             );
         }
         res.json({ ResultCode: 0, ResultDesc: "Transaction Accepted Confirmed" });
@@ -1169,7 +1142,7 @@ app.put('/api/notifications/:id', verifyAdminAccess, async (req, res) => {
 // ================= MASTER ADAPTIVE ADMINISTRATIVE CRUD CORE ==============
 // =========================================================================
 
-// VALID SCHEMATIC COLUMNS BLUEPRINT MAPPER FOR ALL REST TABLES
+// VALID SCHEMATIC COLUMNS BLUEPRINT MAPPER FOR ALL REST TABLES (RECTIFIED)
 const tableColumnSchema = {
     users: ['name', 'email', 'password', 'role', 'phone', 'is_deleted', 'is_online', 'last_seen'],
     services: ['name', 'icon', 'description', 'is_deleted'],
@@ -1184,6 +1157,7 @@ const tableColumnSchema = {
     invoices: ['order_id', 'invoice_number', 'client_name', 'client_email', 'amount', 'pdf_url', 'status', 'is_deleted'],
     notifications: ['user_id', 'title', 'message', 'channel', 'status', 'is_deleted'],
     support_tickets: ['user_id', 'subject', 'description', 'status', 'priority', 'is_deleted'],
+    messages: ['name', 'email', 'subject', 'message', 'status', 'is_deleted'],
     consultations: ['client_name', 'client_email', 'booking_date', 'booking_time', 'platform', 'status', 'is_deleted'],
     file_deliveries: ['order_id', 'client_id', 'file_name', 'file_url', 'file_size', 'expiry_date', 'download_count', 'status', 'is_deleted'],
     email_campaigns: ['subject', 'content', 'campaign_type', 'recipients_count', 'sent_by', 'is_deleted'],
@@ -1213,12 +1187,8 @@ const sanitizeAndMapPayload = (table, body) => {
         }
     }
 
-    if (table === 'media_library') {
-        // Keep existing logic if any
-    }
-
     // Standard platform column schemas allocation checklist
-    const allowedColumns = tableFieldsMappingMatrix[table] || [];
+    const allowedColumns = tableColumnSchema[table] || [];
     
     // Clean and remove any unmapped input key structures from the mutation vector
     Object.keys(payload).forEach(key => {
@@ -1309,7 +1279,7 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
         'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
         'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'consultations', 'file_deliveries', 'email_campaigns'
+        'consultations', 'file_deliveries', 'email_campaigns', 'messages'
     ];
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
     if (!whitelist.includes(requestedTable)) {
@@ -1317,7 +1287,6 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
     }
 
     try {
-        // RECTIFIED: Map incoming dynamic keys safely and sanitize payload within scope
         const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
         if (requestedTable === 'users' && payload.password) {
@@ -1338,7 +1307,6 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
         const result = await pool.query(queryStr, values);
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
-        // Capture validation exclusivity errors and map to 400 Bad Request, otherwise 500
         const statusCode = err.message.includes("Validation Matrix Error") ? 400 : 500;
         res.status(statusCode).json({ error: err.message });
     }
@@ -1352,7 +1320,7 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
         'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
         'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'consultations', 'file_deliveries', 'email_campaigns'
+        'consultations', 'file_deliveries', 'email_campaigns', 'messages'
     ];
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
     if (!whitelist.includes(requestedTable)) {
@@ -1360,7 +1328,6 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
     }
 
     try {
-        // RECTIFIED: Map dynamic mutations safely and filter structural entities within scope
         const payload = sanitizeAndMapPayload(requestedTable, req.body);
         
         delete payload.id;
@@ -1398,14 +1365,13 @@ app.put('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
     }
 });
 
-
 // 4. SINGLE RECORD INDEPENDENT DELETION DISPATCHER
 app.delete('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
     const whitelist = [
         'users', 'services', 'sub_services', 'orders', 'portfolio', 
         'case_studies', 'testimonials', 'blog_posts', 'subscribers', 
         'media_library', 'invoices', 'notifications', 'support_tickets', 
-        'consultations', 'file_deliveries', 'email_campaigns'
+        'consultations', 'file_deliveries', 'email_campaigns', 'messages'
     ];
     const requestedTable = req.params.table.replace(/[^a-z_]/g, '');
     if (!whitelist.includes(requestedTable)) return res.status(403).json({ error: "Destructive operations vector unauthorized." });
@@ -1418,6 +1384,7 @@ app.delete('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 // Generic Admin Data Management Route Handler
 app.put('/admin/manage/:table/:id', async (req, res) => {
     const { table, id } = req.params;
