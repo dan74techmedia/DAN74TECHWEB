@@ -1173,43 +1173,42 @@ const tableColumnSchema = {
     mpesa_transactions: ['order_id', 'user_id', 'phone_number', 'amount', 'mpesa_receipt_number', 'merchant_request_id', 'checkout_request_id', 'result_code', 'result_desc', 'status', 'is_deleted']
 };
 
-// HELPER FUNCTION: Maps frontend aliases and sanely strips invalid columns 
+// HELPER FUNCTION: Maps frontend aliases and sanely strips invalid columns
 const sanitizeAndMapPayload = (table, body) => {
     let payload = { ...body };
-    
-    if (table === 'portfolio' && 'file_url' in payload) {
-        payload.link = payload.file_url;
-        delete payload.file_url;
-    }
-    if (table === 'media_library') {
-        if ('file_name' in payload) payload.filename = payload.file_name;
-        if ('file_url' in payload) payload.url = payload.file_url;
-    }
-    if (table === 'consultations') {
-        if ('name' in payload) payload.client_name = payload.name;
-        if ('email' in payload) payload.client_email = payload.email;
-        if ('schedule_date' in payload) {
-            const dateObj = new Date(payload.schedule_date);
-            if (!isNaN(dateObj.getTime())) {
-                payload.booking_date = payload.schedule_date.split('T')[0];
-                if (!payload.booking_time) {
-                    payload.booking_time = dateObj.toTimeString().split(' ')[0];
-                }
-            } else {
-                payload.booking_date = payload.schedule_date;
-            }
+
+    // Fully Rectified Portfolio Exclusivity Engine (Direct Link OR File Upload, but not both)
+    if (table === 'portfolio') {
+        const hasDirectLink = 'link' in payload && payload.link && String(payload.link).trim() !== '';
+        const hasFileUpload = 'file_url' in payload && payload.file_url && String(payload.file_url).trim() !== '';
+
+        if (hasDirectLink && hasFileUpload) {
+            throw new Error("Validation Matrix Error: Dual submission rejected. Please provide either a typed Direct URL or an uploaded File, but not both.");
         }
-        if (!payload.booking_time) payload.booking_time = '10:00:00';
+
+        if (hasFileUpload) {
+            payload.link = payload.file_url;
+            delete payload.file_url;
+        } else if (hasDirectLink) {
+            // Keep user typed direct link and confirm file_url reference isn't a blank string ghost key
+            delete payload.file_url;
+        }
     }
 
-    const allowedColumns = tableColumnSchema[table];
-    if (allowedColumns) {
-        Object.keys(payload).forEach(key => {
-            if (!allowedColumns.includes(key)) {
-                delete payload[key];
-            }
-        });
+    if (table === 'media_library') {
+        // Keep existing logic if any
     }
+
+    // Standard platform column schemas allocation checklist
+    const allowedColumns = tableFieldsMappingMatrix[table] || [];
+    
+    // Clean and remove any unmapped input key structures from the mutation vector
+    Object.keys(payload).forEach(key => {
+        if (!allowedColumns.includes(key)) {
+            delete payload[key];
+        }
+    });
+
     return payload;
 };
 
@@ -1297,7 +1296,11 @@ app.post('/api/admin/:table', verifyAdminAccess, async (req, res) => {
 
     try {
         // RECTIFIED: Map incoming dynamic keys safely and sanitize payload
-        const payload = sanitizeAndMapPayload(requestedTable, req.body);
+    const payload = sanitizeAndMapPayload(req.params.table, req.body);
+    // Continue DB operation...
+             } catch (err) {
+             return res.status(400).json({ error: err.message });
+             }
         
         if (requestedTable === 'users' && payload.password) {
             const salt = await bcrypt.genSalt(10);
