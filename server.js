@@ -1418,7 +1418,37 @@ app.delete('/api/admin/:table/:id', verifyAdminAccess, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+// Generic Admin Data Management Route Handler
+app.put('/admin/manage/:table/:id', async (req, res) => {
+    const { table, id } = req.params;
+    
+    // 1. Strip out automatic system fields that cannot be manually written
+    const data = { ...req.body };
+    delete data.id;
+    delete data.created_at;
+    delete data.updated_at;
 
+    const keys = Object.keys(data);
+    if (keys.length === 0) return res.status(400).json({ message: "No payload data detected" });
+
+    // 2. Build explicit column mappings: "column_name = $1, column_name = $2"
+    const setClause = keys.map((key, index) => `"${key}" = $${index + 1}`).join(', ');
+    
+    // 3. Append the ID placeholder at the very final index position
+    const idPlaceholderIndex = keys.length + 1;
+    const sqlText = `UPDATE ${table} SET ${setClause} WHERE id = $${idPlaceholderIndex}`;
+    
+    // 4. Align values array order to accurately match placeholder numbers
+    const queryValues = [...keys.map(k => data[k]), id];
+
+    try {
+        await pool.query(sqlText, queryValues);
+        res.json({ success: true, message: `Table ${table} record updated.` });
+    } catch (err) {
+        console.error(`Database Execution Fault on table ${table}:`, err.message);
+        res.status(500).json({ message: "Internal Database execution rejection.", error: err.message });
+    }
+});
 
 // =========================================================================
 // ================= UNIVERSAL BULK ACTION & CORE FETCH ENGINE =============
