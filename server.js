@@ -25,7 +25,12 @@ const { exec } = require('child_process');
 const AWS = require('aws-sdk'); 
 
 // Initialize Express App Engine & HTTP Server for WebSockets
+// Initialize Express App Engine & HTTP Server for WebSockets
 const app = express();
+
+// 👉 ADD THIS LINE BELOW TO TRUST RENDER'S REVERSE PROXY
+app.set('trust proxy', 1); 
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
