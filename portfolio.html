@@ -45,13 +45,11 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Abstract Premium Geometric Background Elements */
         .hero-mesh {
             background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%),
                         radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.04), transparent 45%);
         }
 
-        /* Continuous Smooth Subtle Rotation Effect */
         .subtle-pulse-glow {
             box-shadow: 0 0 25px rgba(0, 68, 255, 0.1);
             animation: pulseGlow 4s ease-in-out infinite alternate;
@@ -62,7 +60,6 @@
             100% { transform: translateY(-4px); box-shadow: 0 0 35px rgba(255, 42, 42, 0.12); }
         }
 
-        /* Toast Slide Animation Matrix */
         .toast-notification {
             animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -72,7 +69,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Hide Scrollbar for filter container utilities */
         .scrollbar-none::-webkit-scrollbar {
             display: none;
         }
@@ -270,17 +266,14 @@
     </footer>
 
     <script>
-        // CONFIGURATION PARAMETER BASE URL ENDPOINT LOGIC
         const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
             ? 'http://localhost:10000/api' 
             : '/api';
 
-        // CLIENT DATA MEMORY STORES FOR LOCAL ENGINE FILTERING
         let backendPortfolioSourceDataArray = [];
         let activeFilteringCategoryKey = 'all';
         let activeFilteringSearchQueryString = '';
 
-        // GLOBAL APPLICATION NOTIFICATION ALERTS CONTROLLER
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
             if (!toastCenter) return;
@@ -308,7 +301,6 @@
             }, 4000);
         }
 
-        // TELEMETRY LIVE DIGITAL CLOCK PULSE
         function triggerTelemetryClockPulse() {
             setInterval(() => {
                 const clockNode = document.getElementById('telemetryPulseTimestamp');
@@ -319,14 +311,12 @@
             }, 1000);
         }
 
-        // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
                 const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
                 if (!response.ok) throw new Error("Telemetry matrix payload sync rejected.");
                 
                 const responseData = await response.json();
-                
                 const activeUsersCount = parseInt(responseData.users) || 28;
                 const activeOrdersCount = parseInt(responseData.orders) || 64;
 
@@ -334,18 +324,23 @@
                 if (footerCounter) {
                     footerCounter.textContent = `${activeUsersCount + activeOrdersCount}+ Pool`;
                 }
-
             } catch (exceptionContextError) {
                 console.error("Database counter synchronization offline:", exceptionContextError);
             }
         }
 
-        // INTEGRATED SEARCH & CATEGORY LOGIC MAPPING FUNCTION
+        // HELPER LOGIC TO EXTRACT YOUTUBE VIDEO ID FOR THUMBNAIL DEPLOYMENTS
+        function parseYouTubeVideoId(url) {
+            if (!url) return null;
+            const separationRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const identityMatch = url.match(separationRegex);
+            return (identityMatch && identityMatch[2].length === 11) ? identityMatch[2] : null;
+        }
+
         function processAndRenderPortfolioMatrix() {
             const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
             if (!targetContainer) return;
 
-            // Apply search filter and category tracking conditions natively
             const computationalFilteredArray = backendPortfolioSourceDataArray.filter(projectItem => {
                 let checkCategoryMatch = true;
                 if (activeFilteringCategoryKey !== 'all') {
@@ -377,25 +372,37 @@
                 return;
             }
 
-            // Loop and parse matched records dynamically
             computationalFilteredArray.forEach(projectItem => {
                 const projectProgressPercent = projectItem.progress || 100;
                 const projectStatusValue = projectItem.status || 'Completed';
                 const targetProjectLink = projectItem.link || '#';
 
+                // Setup default fallback template
                 let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
                 
-                if (projectItem.image_url) {
+                // MULTI-STREAM INTELLIGENT ASSET DETECTION TUNNEL
+                const youTubeId = parseYouTubeVideoId(targetProjectLink);
+
+                if (projectItem.image_url && projectItem.image_url.trim() !== '') {
+                    // Priority 1: Explicit image url from dashboard uploads
                     calculatedThumbnailAssetUrl = projectItem.image_url;
-                } else if (projectItem.link && (projectItem.link.includes('/uploads/') || projectItem.link.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
-                    calculatedThumbnailAssetUrl = projectItem.link;
+                } else if (youTubeId) {
+                    // Priority 2: Admin provided direct YouTube video URL link
+                    calculatedThumbnailAssetUrl = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
+                } else if (targetProjectLink && (targetProjectLink.includes('/uploads/') || targetProjectLink.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
+                    // Priority 3: Target link itself is a standard uploaded image file
+                    calculatedThumbnailAssetUrl = targetProjectLink;
+                } else if (targetProjectLink && targetProjectLink.startsWith('http') && !targetProjectLink.includes('localhost')) {
+                    // Priority 4: Admin entered standard production live website link
+                    calculatedThumbnailAssetUrl = `https://image.thum.io/get/width/600/crop/800/maxAge/12/${targetProjectLink}`;
                 }
 
                 const cardHTMLStructure = `
                     <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
                         <div class="relative w-full h-44 bg-gray-50 overflow-hidden border-b border-gray-100">
                             <img src="${calculatedThumbnailAssetUrl}" alt="${projectItem.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/600x350/0044ff/ffffff?text=DAN74TECH+MEDIA'">
-                            <div class="absolute top-2 right-2">
+                            <div class="absolute top-2 right-2 flex gap-1">
+                                ${youTubeId ? '<span class="px-2 py-0.5 rounded-md bg-rose-600 border border-rose-700 text-[9px] font-mono font-bold text-white shadow-sm"><i class="fa-brands fa-youtube"></i> VIDEO</span>' : ''}
                                 <span class="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm border border-gray-100 text-[9px] font-mono font-bold text-gray-800 shadow-sm">${projectStatusValue}</span>
                             </div>
                         </div>
@@ -417,8 +424,8 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between pt-0.5">
-                                    <a href="${targetProjectLink}" target="_blank" class="text-[11px] font-bold text-[#0044ff] hover:underline flex items-center gap-0.5">
-                                        VIEW DETAILS <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                                    <a href="${targetProjectLink}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[#0044ff] hover:underline flex items-center gap-0.5">
+                                        LAUNCH PLATFORM <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
                                     </a>
                                 </div>
                             </div>
@@ -429,7 +436,6 @@
             });
         }
 
-        // DISPATCH ENGINE PIPELINE FOR COMPLETE PORTFOLIO INDEX SCHEMA LOOKUPS
         async function fetchCompleteSystemPortfolio() {
             const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
             if (!targetContainer) return;
@@ -440,7 +446,6 @@
 
                 const rawData = await response.json();
                 
-                // Safety envelope resolution matrix
                 if (Array.isArray(rawData)) {
                     backendPortfolioSourceDataArray = rawData;
                 } else if (rawData && Array.isArray(rawData.rows)) {
@@ -450,7 +455,6 @@
                 }
 
                 processAndRenderPortfolioMatrix();
-
             } catch (errorContextException) {
                 console.error("Portfolio Rendering Fault Matrix:", errorContextException);
                 targetContainer.innerHTML = `
@@ -461,18 +465,15 @@
             }
         }
 
-        // ATTACH EVENT LOGIC FOR FILTER CONTROL INTERACTIVE SYSTEMS
         function setupCategoricalFilterInteractions() {
             const filteringButtons = document.querySelectorAll('.portfolio-filter-trigger-node');
             filteringButtons.forEach(buttonNode => {
                 buttonNode.addEventListener('click', function() {
-                    // Reset styling on all filtering buttons elements
                     filteringButtons.forEach(btn => {
                         btn.classList.remove('bg-[#0044ff]', 'text-white', 'shadow-sm', 'shadow-blue-500/10');
                         btn.classList.add('bg-gray-50', 'border', 'border-gray-200', 'text-gray-600', 'hover:bg-gray-100');
                     });
 
-                    // Highlight currently chosen element parameter node
                     this.classList.remove('bg-gray-50', 'border', 'border-gray-200', 'text-gray-600', 'hover:bg-gray-100');
                     this.classList.add('bg-[#0044ff]', 'text-white', 'shadow-sm', 'shadow-blue-500/10');
 
@@ -481,7 +482,6 @@
                 });
             });
 
-            // Live Keyup/Input Tracking pipeline configuration
             const searchInputBoxNode = document.getElementById('portfolioSearchInputNode');
             searchInputBoxNode?.addEventListener('input', function(inputEvent) {
                 activeFilteringSearchQueryString = inputEvent.target.value;
@@ -489,13 +489,11 @@
             });
         }
 
-        // NEWSLETTER DISPATCH REDIRECT STRATEGY
         document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
             formSubmissionEvent.preventDefault();
             window.location.href = 'login.html';
         });
 
-        // NAVBAR MOBILE DRAWER DRAWDOWNS MATRIX ACTIONS
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
             const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
             if (dropdownLinksTargetMenu) {
@@ -503,7 +501,6 @@
             }
         });
 
-        // DOCUMENT READINESS OPERATIONAL TRIGGER
         document.addEventListener('DOMContentLoaded', () => {
             triggerTelemetryClockPulse();
             runSystemTelemetryDatabaseSynchronization();
