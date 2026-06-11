@@ -1115,6 +1115,36 @@ async function renderDynamicInputSchemaFields(tableName, currentFieldConfig, ini
     }
 }
 
+        // Locate your generic commit / save function in admin.html
+async function commitTableData(tableName, actionType, recordId = null) {
+    const payload = getFormData(); // Captures current form fields
+
+    // Determine target API endpoint
+    const url = actionType === 'update' 
+        ? `${SYSTEM_API_BASE_URL}/admin/manage/${tableName}/${recordId}`
+        : `${SYSTEM_API_BASE_URL}/admin/manage/${tableName}`;
+
+    try {
+        const response = await fetch(url, {
+            method: actionType === 'update' ? 'PUT' : 'POST',
+            headers: {
+                'Content-Type': 'application/json', // CRITICAL: Ensures express.json() parses the payload
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // CRITICAL: Validates admin privileges
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Transaction failed');
+        
+        alert('Database matrix updated successfully.');
+        closeModal();
+        reloadTableData(tableName);
+    } catch (err) {
+        console.error('Commit Pipeline Fault:', err);
+        alert(`Commit Failed: ${err.message}`);
+    }
+}
         // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
         async function commitFormPayload(event) {
             event.preventDefault();
