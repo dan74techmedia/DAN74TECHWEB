@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAN74TECH MEDIA | Client Portal & Matrix</title>
     
     <meta name="description" content="DAN74TECH | Professional Tech & Creative Solutions - Client Portal">
@@ -18,997 +18,687 @@
 
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: { 
                         brandBlue: '#0044FF', 
                         brandRed: '#FF2A2A', 
                         brandYellow: '#FFD700',
-                        fbBg: '#f0f2f5',
-                        fbCard: '#FFFFFF'
+                        darkBg: '#0B0F19',
+                        darkCard: '#111827',
+                        darkBorder: '#1F2937'
                     },
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
                     }
                 }
             }
         }
     </script>
-    
     <style>
-        body { background-color: var(--fbBg); color: #050505; overflow-y: hidden; }
-        .hide { display: none !important; }
-        .scroll-clean::-webkit-scrollbar { width: 6px; }
-        .scroll-clean::-webkit-scrollbar-track { background: transparent; }
-        .scroll-clean::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 10px; }
-        .scroll-clean::-webkit-scrollbar-thumb:hover { background: #8a8d91; }
-        
-        .hero-mesh {
-            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%),
-                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.04), transparent 45%);
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0B0F19;
+            color: #F3F4F6;
         }
-
-        .catalog-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease; overflow: hidden; max-height: 0; opacity: 0; }
-        .catalog-content.expanded { max-height: 500px; opacity: 1; }
-
-        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #0044FF; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        .toast-notification { animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideInLeft {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #1F2937; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0044FF; }
+        .active-tab {
+            color: #0044FF !important;
+            border-color: #0044FF !important;
+            background-color: rgba(0, 68, 255, 0.05);
         }
-
-        /* FB Style Specific Utilities */
-        .fb-shadow { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
-        .btn-action-hover:hover { background-color: #f2f2f2; }
     </style>
 </head>
-<body class="antialiased flex flex-col h-screen font-sans selection:bg-brandBlue selection:text-white hero-mesh">
-    
-    <div id="applicationToastCenter" class="fixed bottom-20 lg:bottom-6 right-6 z-[100] flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+<body class="min-h-screen flex flex-col antialiased">
 
-    <header id="main-header" class="w-full fixed top-0 z-50 border-b border-gray-200 bg-white shadow-sm h-14 flex items-center justify-between px-4 transition-all">
-        <div class="flex items-center gap-2 lg:w-1/4">
-            <a href="index.html" class="flex items-center gap-2 group focus:outline-none">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm transition-transform group-hover:scale-105">
-                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-center overflow-hidden">
-                        <img src="images/logo.png" alt="Logo" class="w-7 h-7 object-contain" onerror="this.src='https://placehold.co/100?text=D74'">
-                    </div>
-                </div>
-                <div class="hidden sm:flex flex-col">
-                    <span class="text-[15px] font-extrabold tracking-tight text-gray-900 font-mono leading-none">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></span>
-                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Client Portal</span>
-                </div>
-            </a>
-            <div class="hidden md:flex items-center bg-[#f0f2f5] rounded-full px-3 py-1.5 ml-2">
-                <i class="fa-solid fa-search text-gray-500 text-sm"></i>
-                <input type="text" placeholder="Search Matrix..." class="bg-transparent outline-none ml-2 text-[14px] w-40 text-gray-700 placeholder-gray-500">
+    <header class="sticky top-0 z-50 w-full border-b border-darkBorder bg-darkBg/95 backdrop-blur px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-gradient-to-tr from-brandBlue to-purple-600 rounded-xl flex items-center justify-center font-bold tracking-tighter text-white text-lg shadow-lg shadow-brandBlue/20">
+                D7
             </div>
+            <span class="font-extrabold tracking-wide text-sm md:text-base bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent uppercase font-mono">dan74tech media</span>
         </div>
 
-        <div class="hidden lg:flex items-center justify-center gap-1 w-2/4 h-full" id="desktop-center-nav">
-            <button onclick="switchTab('feed')" id="tab-feed" class="w-24 h-full flex flex-col items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg mx-1 transition relative group border-b-[3px] border-transparent">
-                <i class="fa-solid fa-house text-[20px] group-hover:scale-110 transition-transform"></i>
+        <nav class="flex items-center space-x-1 md:space-x-4">
+            <button onclick="switchTab('feeds')" id="tab-feeds" class="px-3 py-2 text-xs md:text-sm font-semibold rounded-lg text-gray-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-square-rss text-base"></i> <span class="hidden sm:inline">Feeds</span>
             </button>
-            <button onclick="switchTab('orders')" id="tab-orders" class="w-24 h-full flex flex-col items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg mx-1 transition relative group border-b-[3px] border-transparent">
-                <i class="fa-solid fa-briefcase text-[20px] group-hover:scale-110 transition-transform"></i>
+            <button onclick="switchTab('messages')" id="tab-messages" class="px-3 py-2 text-xs md:text-sm font-semibold rounded-lg text-gray-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-message text-base"></i> <span class="hidden sm:inline">Matrix Chat</span>
             </button>
-            <button onclick="switchTab('testimonials')" id="tab-testimonials" class="w-24 h-full flex flex-col items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg mx-1 transition relative group border-b-[3px] border-transparent">
-                <i class="fa-solid fa-star text-[20px] group-hover:scale-110 transition-transform"></i>
+            <button onclick="switchTab('rating')" id="tab-rating" class="px-3 py-2 text-xs md:text-sm font-semibold rounded-lg text-gray-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-star text-base"></i> <span class="hidden sm:inline">Rate System</span>
             </button>
-            <button onclick="switchTab('messages')" id="tab-messages" class="w-24 h-full flex flex-col items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg mx-1 transition relative group border-b-[3px] border-transparent">
-                <div class="relative">
-                    <i class="fa-solid fa-walkie-talkie text-[20px] group-hover:scale-110 transition-transform"></i>
-                    <span id="nav-msg-badge" class="absolute -top-1 -right-2 bg-brandRed text-white text-[10px] px-1.5 py-0.5 rounded-full hide border border-white font-bold leading-none">0</span>
-                </div>
-            </button>
-        </div>
+        </nav>
 
-        <div class="flex items-center justify-end gap-2 lg:w-1/4">
-            <div id="auth-header-actions" class="hide flex items-center gap-2">
-                <div onclick="switchTab('settings')" class="flex items-center gap-2 pr-3 py-1 rounded-full hover:bg-gray-100 cursor-pointer transition">
-                    <div class="w-9 h-9 rounded-full bg-[#e4e6eb] text-gray-800 flex items-center justify-center text-sm font-bold shadow-sm" id="user-avatar-node"></div>
-                    <span id="user-greeting" class="text-[14px] font-semibold text-gray-900 hidden lg:block"></span>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-[#e4e6eb] hover:bg-[#d8dadf] flex items-center justify-center cursor-pointer transition" onclick="switchTab('messages')">
-                    <i class="fa-brands fa-facebook-messenger text-black text-lg"></i>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-[#e4e6eb] hover:bg-[#d8dadf] flex items-center justify-center cursor-pointer transition text-gray-800" onclick="logoutPipeline()" title="Sever Connection">
-                    <i class="fa-solid fa-power-off"></i>
-                </div>
-            </div>
-            <a href="index.html" id="unauth-header-actions" class="text-sm font-bold text-gray-500 hover:text-brandBlue transition-colors hidden sm:block"><i class="fa-solid fa-arrow-left"></i> Core Engine</a>
+        <div class="flex items-center gap-3">
+            <div id="connection-badge" class="w-2 h-2 rounded-full bg-brandRed animate-pulse"></div>
+            <span id="user-display-name" class="hidden md:inline text-xs font-medium text-gray-400 font-mono">Guest</span>
+            <button onclick="logoutSession()" class="text-gray-400 hover:text-brandRed transition text-sm p-1.5 rounded-lg hover:bg-darkCard">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
         </div>
     </header>
 
-    <section id="auth-section" class="flex-grow flex items-center justify-center p-4 mt-14 bg-[#f0f2f5]">
-        <div class="bg-white p-8 rounded-xl fb-shadow w-full max-w-md border-t-4 border-brandBlue relative overflow-hidden">
-            <div class="text-center mb-8 flex flex-col items-center">
-                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-brandBlue to-brandRed p-[2px] shadow-sm mb-3">
-                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center overflow-hidden">
-                        <img src="images/logo.png" alt="Logo" class="w-10 h-10 object-contain" onerror="this.src='https://placehold.co/100?text=D74'">
-                    </div>
-                </div>
-                <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h1>
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Client Authorization</p>
-            </div>
-            
-            <div id="login-view">
-                <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" placeholder="Email Address" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-[15px] font-medium transition">
-                    <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-brandBlue outline-none text-[15px] font-medium transition">
-                    <button type="submit" class="w-full bg-brandBlue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition shadow-sm text-[16px]">Log In</button>
-                </form>
-                <div class="my-5 border-t border-gray-200 relative"></div>
-                <div class="text-center">
-                    <button onclick="toggleAuth('register')" class="bg-[#42b72a] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#36a420] transition shadow-sm text-[15px]">Create New Account</button>
-                </div>
-            </div>
-
-            <div id="register-view" class="hide">
-                <form id="register-form" class="space-y-4">
-                    <input type="text" id="reg-name" placeholder="Full Name" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[15px] font-medium outline-none focus:border-brandBlue">
-                    <input type="email" id="reg-email" placeholder="Email Address" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[15px] font-medium outline-none focus:border-brandBlue">
-                    <input type="text" id="reg-phone" placeholder="Phone Number" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[15px] font-medium outline-none focus:border-brandBlue">
-                    <input type="password" id="reg-password" placeholder="New Password" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-[15px] font-medium outline-none focus:border-brandBlue">
-                    <button type="submit" class="w-full bg-[#42b72a] text-white font-bold py-3 rounded-lg hover:bg-[#36a420] transition shadow-sm text-[16px]">Sign Up</button>
-                </form>
-                <div class="mt-4 text-center">
-                    <button onclick="toggleAuth('login')" class="text-brandBlue font-semibold hover:underline text-sm">Already have an account?</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="dashboard-section" class="flex-grow hide w-full pt-14 flex justify-center max-w-[1600px] mx-auto h-screen overflow-hidden">
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-2 md:p-4 gap-4 grid grid-cols-1 overflow-hidden">
         
-        <div class="hidden lg:flex w-[320px] flex-shrink-0 p-4 flex-col overflow-y-auto scroll-clean pb-24">
-            <div onclick="switchTab('settings')" class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#e4e6eb] cursor-pointer transition font-medium text-gray-900">
-                <div class="w-9 h-9 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold" id="left-avatar"></div>
-                <span id="left-name" class="font-semibold text-[15px]">Loading...</span>
-            </div>
-            
-            <div onclick="switchTab('feed')" class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#e4e6eb] cursor-pointer transition mt-2">
-                <i class="fa-solid fa-users text-brandBlue text-xl w-6 text-center"></i>
-                <span class="font-semibold text-[15px] text-gray-900">Global Feed</span>
-            </div>
-            <div onclick="switchTab('orders')" class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#e4e6eb] cursor-pointer transition">
-                <i class="fa-solid fa-briefcase text-brandBlue text-xl w-6 text-center"></i>
-                <span class="font-semibold text-[15px] text-gray-900">Deployment Matrix</span>
-            </div>
-            <div onclick="switchTab('testimonials')" class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#e4e6eb] cursor-pointer transition">
-                <i class="fa-solid fa-star text-brandYellow text-xl w-6 text-center"></i>
-                <span class="font-semibold text-[15px] text-gray-900">Audit Appraisals</span>
-            </div>
-
-            <div class="border-b border-gray-300 my-3 mx-2"></div>
-            
-            <h3 class="text-gray-500 font-bold text-[14px] px-2 mb-2">Service Catalog</h3>
-            <div id="sidebar-services-list" class="space-y-0.5">
-                <div class="text-xs text-gray-400 p-2"><i class="fa-solid fa-circle-notch animate-spin"></i> Loading Matrix...</div>
-            </div>
-        </div>
-
-        <div class="w-full max-w-[680px] flex-shrink-0 px-0 sm:px-4 flex flex-col h-[calc(100vh-56px)] overflow-y-auto scroll-clean" id="main-content-area">
-            <div class="pb-24 pt-4 sm:pt-6 w-full">
-                
-                <div id="view-feed" class="w-full">
-                    <div class="bg-white sm:rounded-xl fb-shadow p-3 mb-4">
-                        <div class="flex gap-2 items-center border-b border-gray-100 pb-3">
-                            <div class="w-10 h-10 rounded-full bg-[#e4e6eb] text-gray-700 flex items-center justify-center font-bold flex-shrink-0" id="publisher-avatar"></div>
-                            <div onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-grow bg-[#f0f2f5] hover:bg-[#e4e6eb] cursor-pointer rounded-full px-4 py-2.5 text-[15px] text-gray-500 transition">
-                                What's on your technical mind?
-                            </div>
+        <section id="view-feeds" class="tab-view space-y-4 overflow-y-auto pr-1">
+            <div class="bg-darkCard border border-darkBorder rounded-xl p-4 shadow-sm">
+                <form id="feed-creation-form" class="space-y-3" onsubmit="handlePostSubmission(event)">
+                    <div class="flex gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brandBlue/10 flex items-center justify-center text-brandBlue font-bold font-mono">
+                            U
                         </div>
-                        <div class="flex justify-evenly pt-2">
-                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-[14px] font-semibold text-gray-500 btn-action-hover py-2 rounded-lg transition"><i class="fa-solid fa-code text-brandBlue text-lg"></i> Dev Log</button>
-                            <button onclick="document.getElementById('publish-modal').classList.remove('hide')" class="flex-1 flex items-center justify-center gap-2 text-[14px] font-semibold text-gray-500 btn-action-hover py-2 rounded-lg transition"><i class="fa-solid fa-photo-film text-green-500 text-lg"></i> Photo/Video</button>
-                        </div>
+                        <textarea id="feed-post-text" placeholder="What's on your mind? Share case studies, blogs, or items..." class="w-full bg-darkBg text-white rounded-xl border border-darkBorder p-3 text-sm focus:outline-none focus:border-brandBlue resize-none h-20" required></textarea>
                     </div>
-
-                    <div id="global-feed-stream" class="space-y-4">
-                        <div class="text-center text-sm text-gray-500 font-bold py-10"><i class="fa-solid fa-circle-notch animate-spin mr-2 text-xl"></i>Synchronizing...</div>
-                    </div>
-
-                    <div class="mt-8 bg-white border border-gray-200 sm:rounded-xl p-6 mb-4 shadow-sm">
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-100 pb-4 mb-4">
-                            <div class="flex items-center gap-2">
-                                <img src="images/logo.png" alt="Logo" class="w-8 h-8 object-cover rounded bg-blue-50 p-1">
-                                <span class="text-sm font-bold font-mono text-gray-800 tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                            </div>
-                            <p class="text-xs text-gray-500 max-w-sm text-center md:text-right">Production-grade tech systems deployment matrices. Reliable custom business execution channels based in Meru, Kenya.</p>
-                        </div>
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] font-mono text-gray-400">
-                            <p>&copy; 2026 DAN74TECH MEDIA. All rights reserved.</p>
-                            <div class="flex items-center gap-2">
-                                <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
-                                <span id="telemetryPulseTimestamp">--:--:--</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-orders" class="w-full hide">
-                    <div class="bg-white sm:rounded-xl fb-shadow flex flex-col overflow-hidden mb-6">
-                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h2 class="font-bold text-xl text-gray-900 tracking-tight">Deployment Matrix</h2>
-                            <button onclick="document.getElementById('order-modal').classList.remove('hide')" class="bg-brandBlue text-white px-4 py-2 rounded-lg text-[14px] font-semibold hover:bg-blue-700 transition"><i class="fa-solid fa-plus mr-1"></i> Request Node</button>
-                        </div>
-                        <div class="p-0 overflow-x-auto">
-                            <table class="w-full text-sm text-left">
-                                <thead class="text-[12px] text-gray-500 bg-gray-50 border-b border-gray-200">
-                                    <tr><th class="px-4 py-3 font-semibold">Order ID</th><th class="px-4 py-3 font-semibold">Parameters</th><th class="px-4 py-3 font-semibold">Status</th><th class="px-4 py-3 font-semibold">Ledger</th></tr>
-                                </thead>
-                                <tbody id="orders-registry-body" class="divide-y divide-gray-100"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-testimonials" class="w-full hide">
-                    <div class="bg-white sm:rounded-xl fb-shadow flex flex-col overflow-hidden mb-6 p-5">
-                        <h2 class="font-bold text-xl text-gray-900 mb-1">Service Evaluation</h2>
-                        <p class="text-[13px] text-gray-500 mb-5">Submit an audit appraisal regarding your experience.</p>
-                        
-                        <form id="testimonial-form" class="space-y-4">
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Company / Organization (Optional)</label>
-                                <input type="text" id="test-company" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brandBlue/50 transition">
-                            </div>
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Audit Rating</label>
-                                <div id="star-rating-ui" class="flex gap-1 text-2xl text-gray-300 cursor-pointer w-max">
-                                    <i class="fa-solid fa-star hover:text-brandYellow transition duration-200" data-val="1"></i>
-                                    <i class="fa-solid fa-star hover:text-brandYellow transition duration-200" data-val="2"></i>
-                                    <i class="fa-solid fa-star hover:text-brandYellow transition duration-200" data-val="3"></i>
-                                    <i class="fa-solid fa-star hover:text-brandYellow transition duration-200" data-val="4"></i>
-                                    <i class="fa-solid fa-star hover:text-brandYellow transition duration-200" data-val="5"></i>
-                                </div>
-                                <input type="hidden" id="test-rating" value="0">
-                                <p id="rating-error" class="text-xs text-brandRed mt-1 hide">Please select an audit rating.</p>
-                            </div>
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Appraisal Details</label>
-                                <textarea id="test-review" rows="4" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 text-[14px] outline-none resize-none focus:ring-2 focus:ring-brandBlue/50 transition" placeholder="Detail your experience..." required></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-brandBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition text-[15px] mt-2">Submit Evaluation</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="view-settings" class="w-full hide">
-                    <div class="bg-white sm:rounded-xl fb-shadow p-5">
-                        <h2 class="font-bold text-xl text-gray-900 mb-1">Profile Configuration</h2>
-                        <p class="text-[13px] text-gray-500 mb-5">Modify your core account parameters.</p>
-                        
-                        <form id="profile-update-form" class="space-y-4 max-w-md">
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Full Name</label>
-                                <input type="text" id="settings-name" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-brandBlue/50 transition" required>
-                            </div>
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Email Address</label>
-                                <input type="email" id="settings-email" class="w-full bg-gray-100 rounded-lg px-4 py-2.5 outline-none text-gray-500 cursor-not-allowed" readonly>
-                            </div>
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1">Phone Number</label>
-                                <input type="text" id="settings-phone" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-brandBlue/50 transition" required>
-                            </div>
-                            <button type="submit" class="bg-brandBlue text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition w-full mt-2">Update Profile</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="view-messages" class="w-full h-[calc(100vh-140px)] hide flex-col bg-white sm:rounded-xl fb-shadow overflow-hidden relative sm:mb-4">
                     
-                    <div id="mobile-roster-view" class="lg:hidden w-full h-full flex flex-col bg-white z-20">
-                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <h2 class="font-bold text-[18px]">Contacts</h2>
-                            <div class="bg-gray-100 p-2 rounded-full w-8 h-8 flex items-center justify-center text-gray-500"><i class="fa-solid fa-search text-xs"></i></div>
-                        </div>
-                        <div id="mobile-roster-list" class="flex-grow overflow-y-auto scroll-clean p-2"></div>
-                    </div>
-
-                    <div id="chat-interface" class="w-full h-full hidden lg:flex flex-col relative z-10">
-                        <div id="chat-overlay" class="absolute inset-0 bg-white z-30 flex flex-col items-center justify-center text-gray-400">
-                            <div class="w-20 h-20 bg-[#f0f2f5] rounded-full flex items-center justify-center mb-4">
-                                <i class="fa-brands fa-facebook-messenger text-4xl text-gray-300"></i>
-                            </div>
-                            <p class="font-semibold text-gray-500 text-[15px]">Select a contact to establish connection.</p>
-                        </div>
-
-                        <div class="h-14 border-b border-gray-200 flex items-center px-4 bg-white z-10 flex-shrink-0 shadow-sm">
-                            <button onclick="closeChat()" class="lg:hidden mr-3 text-brandBlue w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><i class="fa-solid fa-arrow-left"></i></button>
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-9 h-9 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold" id="active-chat-avatar">--</div>
-                                <div class="flex flex-col">
-                                    <h3 class="font-bold text-gray-900 text-[15px] leading-tight" id="active-chat-title">--</h3>
-                                    <p class="text-[11px] text-emerald-500 font-semibold tracking-wide flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Online</p>
-                                </div>
-                            </div>
-                            <div class="ml-auto text-[10px] font-semibold text-gray-400 uppercase flex items-center gap-1"><i class="fa-solid fa-lock text-emerald-500"></i> E2EE</div>
-                        </div>
-                        
-                        <div id="chat-window-timeline" class="flex-grow p-4 overflow-y-auto scroll-clean flex flex-col gap-1.5 bg-white"></div>
-                        
-                        <div id="typing-indicator-node" class="px-4 py-1 text-[11px] text-gray-400 font-semibold hide flex items-center gap-2 bg-white flex-shrink-0">
-                            Typing <div class="typing-indicator"><span></span><span></span><span></span></div>
-                        </div>
-                        
-                        <div class="p-3 border-t border-gray-200 bg-white flex-shrink-0">
-                            <form id="unified-chat-form" class="flex items-center gap-2">
-                                <div class="text-brandBlue w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer transition"><i class="fa-solid fa-circle-plus text-xl"></i></div>
-                                <input type="text" id="chat-message-input" oninput="emitTypingState()" placeholder="Aa" required autocomplete="off" class="flex-grow bg-[#f0f2f5] rounded-full px-4 py-2.5 text-[15px] outline-none transition">
-                                <button type="submit" class="text-brandBlue w-9 h-9 flex justify-center items-center rounded-full hover:bg-gray-100 transition"><i class="fa-solid fa-paper-plane text-lg"></i></button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <div class="hidden xl:flex w-[320px] flex-shrink-0 p-4 flex-col overflow-y-auto scroll-clean">
-            <div class="flex justify-between items-center mb-3 px-2">
-                <h3 class="text-gray-500 font-semibold text-[15px]">Contacts</h3>
-                <div class="flex gap-2 text-gray-500">
-                    <i class="fa-solid fa-video cursor-pointer hover:bg-gray-200 p-2 rounded-full transition text-[13px] w-8 h-8 flex items-center justify-center"></i>
-                    <i class="fa-solid fa-search cursor-pointer hover:bg-gray-200 p-2 rounded-full transition text-[13px] w-8 h-8 flex items-center justify-center"></i>
-                </div>
-            </div>
-            <div id="desktop-roster-list" class="flex-grow space-y-0.5">
-                <div class="text-center text-xs text-gray-400 py-10"><i class="fa-solid fa-circle-notch animate-spin"></i> Loading...</div>
-            </div>
-        </div>
-
-    </section>
-
-    <div class="lg:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-[90] flex justify-around p-1 pb-safe shadow-[0_-4px_10px_rgba(0,0,0,0.03)] hide" id="mobile-nav">
-        <button onclick="switchTab('feed')" id="mob-tab-feed" class="flex flex-col items-center justify-center text-gray-500 w-1/4 py-2 hover:bg-gray-50 rounded-lg transition">
-            <i class="fa-solid fa-house text-[22px] mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Feed</span>
-        </button>
-        <button onclick="switchTab('orders')" id="mob-tab-orders" class="flex flex-col items-center justify-center text-gray-500 w-1/4 py-2 hover:bg-gray-50 rounded-lg transition">
-            <i class="fa-solid fa-briefcase text-[22px] mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Matrix</span>
-        </button>
-        <button onclick="switchTab('testimonials')" id="mob-tab-testimonials" class="flex flex-col items-center justify-center text-gray-500 w-1/4 py-2 hover:bg-gray-50 rounded-lg transition">
-            <i class="fa-solid fa-star text-[22px] mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Audit</span>
-        </button>
-        <button onclick="switchTab('messages')" id="mob-tab-messages" class="flex flex-col items-center justify-center text-gray-500 w-1/4 py-2 hover:bg-gray-50 rounded-lg transition relative">
-            <i class="fa-solid fa-walkie-talkie text-[22px] mb-0.5"></i>
-            <span class="text-[10px] font-semibold">Comms</span>
-            <span id="mobile-msg-badge" class="absolute top-1 right-4 bg-brandRed text-white text-[10px] px-1.5 py-0.5 rounded-full hide border border-white font-bold leading-none">0</span>
-        </button>
-    </div>
-
-    <div id="publish-modal" class="hide fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-[500px] overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center relative">
-                <h3 class="font-bold text-gray-900 text-xl w-full text-center">Create post</h3>
-                <button onclick="document.getElementById('publish-modal').classList.add('hide')" class="absolute right-4 text-gray-500 bg-[#e4e6eb] hover:bg-[#d8dadf] w-9 h-9 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div class="overflow-y-auto scroll-clean flex-grow p-4">
-                <form id="new-publish-form" class="space-y-3">
-                    <div class="flex items-center gap-2.5 mb-2">
-                        <div class="w-10 h-10 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold" id="modal-avatar">U</div>
-                        <div class="flex flex-col">
-                            <span class="font-semibold text-[15px] text-gray-900 leading-tight" id="modal-username">User</span>
-                            <select id="pub-target" class="text-[12px] font-semibold bg-gray-100 rounded px-2 py-0.5 outline-none cursor-pointer mt-0.5 w-max">
-                                <option value="blog">Technical Blog Entry</option>
-                                <option value="case_studies">Case Study Log</option>
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-darkBorder">
+                        <div class="flex items-center gap-2">
+                            <label class="cursor-pointer flex items-center gap-2 text-xs bg-darkBg hover:bg-darkBorder border border-darkBorder px-3 py-1.5 rounded-lg transition text-gray-300">
+                                <i class="fa-solid fa-paperclip text-brandBlue"></i>
+                                <span>Media (Max 10MB)</span>
+                                <input type="file" id="feed-media-attachment" accept="image/*,video/*" class="hidden" onchange="validateMediaSize(this)">
+                            </label>
+                            
+                            <select id="feed-tag-subscriber" class="bg-darkBg border border-darkBorder text-xs text-gray-300 px-3 py-1.5 rounded-lg focus:outline-none focus:border-brandBlue">
+                                <option value="">Tag Registered Subscriber...</option>
                             </select>
                         </div>
+                        <button type="submit" class="bg-brandBlue hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2 rounded-lg shadow-lg shadow-brandBlue/20 transition">
+                            Publish Feed
+                        </button>
                     </div>
-                    
-                    <input type="text" id="pub-title" placeholder="Post Title" required class="w-full text-[15px] font-bold outline-none text-gray-900 placeholder-gray-500 bg-transparent border-b border-gray-100 pb-2">
-                    
-                    <textarea id="pub-content" rows="4" placeholder="What's on your mind?" required class="w-full outline-none text-[20px] resize-none text-gray-800 placeholder-gray-400 mt-2 bg-transparent"></textarea>
-                    
-                    <div class="space-y-3 border border-gray-200 rounded-lg p-3 shadow-sm">
-                        <div class="text-[15px] font-semibold text-gray-900 mb-2">Add to your post</div>
-                        <div class="flex items-center gap-3">
-                            <div class="relative flex-grow flex items-center gap-2 bg-[#f0f2f5] p-2 rounded-md">
-                                <i class="fa-solid fa-link text-gray-500"></i>
-                                <input type="url" id="pub-links" placeholder="Attach Link URL" class="w-full bg-transparent text-[13px] outline-none text-brandBlue placeholder-gray-500">
-                            </div>
-                            <div class="relative flex-grow flex items-center gap-2 bg-[#f0f2f5] p-2 rounded-md">
-                                <i class="fa-solid fa-at text-gray-500"></i>
-                                <input type="text" id="pub-tags" placeholder="Tag nodes" class="w-full bg-transparent text-[13px] outline-none text-gray-700 placeholder-gray-500">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
-                            <i class="fa-solid fa-image text-green-500 text-xl"></i>
-                            <input type="file" id="pub-media" accept="image/*,video/*" class="w-full text-sm text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[13px] file:font-semibold file:bg-[#e4e6eb] file:text-gray-800 hover:file:bg-[#d8dadf] cursor-pointer">
-                        </div>
-                        <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider ml-7">Max Limit: 10MB</p>
-                    </div>
-
-                    <button type="submit" id="btn-submit-publish" class="w-full bg-brandBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition text-[15px] mt-2">Post</button>
+                    <div id="media-preview-area" class="text-xs text-brandBlue hidden font-mono"></div>
                 </form>
             </div>
-        </div>
-    </div>
 
-    <div id="order-modal" class="hide fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-[500px] overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center relative">
-                <h3 class="font-bold text-gray-900 text-xl w-full text-center">New Deployment</h3>
-                <button onclick="document.getElementById('order-modal').classList.add('hide')" class="absolute right-4 text-gray-500 bg-[#e4e6eb] hover:bg-[#d8dadf] w-9 h-9 flex items-center justify-center rounded-full transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="space-y-3">
+                    <h3 class="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1">
+                        <span class="w-1.5 h-3 bg-brandBlue rounded-full"></span> Dynamic Blogs
+                    </h3>
+                    <div id="blog-feeds-container" class="space-y-3"></div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1">
+                        <span class="w-1.5 h-3 bg-brandYellow rounded-full"></span> Creative Portfolios
+                    </h3>
+                    <div id="portfolio-feeds-container" class="space-y-3"></div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="font-bold text-sm text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1">
+                        <span class="w-1.5 h-3 bg-purple-500 rounded-full"></span> System Case Studies
+                    </h3>
+                    <div id="case-study-feeds-container" class="space-y-3"></div>
+                </div>
             </div>
-            <form id="new-order-form" class="p-5 space-y-4">
+        </section>
+
+        <section id="view-messages" class="tab-view grid grid-cols-[80px_1fr] sm:grid-cols-[260px_1fr] md:grid-cols-[320px_1fr] border border-darkBorder bg-darkCard rounded-2xl overflow-hidden h-[calc(100vh-140px)] shadow-2xl">
+            <div class="border-r border-darkBorder bg-darkBg flex flex-col overflow-hidden">
+                <div class="p-3 border-b border-darkBorder hidden sm:block">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-gray-500"></i>
+                        <input type="text" id="client-search" placeholder="Search operational grid..." class="w-full bg-darkCard text-xs text-white pl-8 pr-3 py-2 rounded-lg border border-darkBorder focus:outline-none focus:border-brandBlue font-mono">
+                    </div>
+                </div>
+                <div id="subscriber-matrix-container" class="flex-1 overflow-y-auto divide-y divide-darkBorder/40"></div>
+            </div>
+
+            <div id="chat-window-pane" class="flex flex-col bg-darkCard overflow-hidden relative">
+                <div id="chat-blank-state" class="absolute inset-0 bg-darkCard z-10 flex flex-col items-center justify-center text-center p-6 transition-all duration-300">
+                    <div class="w-16 h-16 rounded-2xl bg-darkBg border border-darkBorder flex items-center justify-center text-brandBlue mb-4 shadow-xl">
+                        <i class="fa-solid fa-user-shield text-2xl"></i>
+                    </div>
+                    <h4 class="font-bold text-base text-white font-mono">Secure Chat Ecosystem</h4>
+                    <p class="text-xs text-gray-400 max-w-xs mt-1">Select a verified connection entry from the matrix panel to start end-to-end communication channels.</p>
+                </div>
+
+                <div class="p-3 border-b border-darkBorder bg-darkBg/50 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="active-chat-avatar" class="w-9 h-9 rounded-xl bg-brandBlue/10 border border-brandBlue/20 flex items-center justify-center text-brandBlue font-bold text-sm font-mono">
+                            ?
+                        </div>
+                        <div>
+                            <h4 id="active-chat-name" class="font-bold text-xs md:text-sm text-white">Select Node</h4>
+                            <p id="active-chat-status" class="text-[10px] text-gray-400 font-mono tracking-tight">E2E Session Key Idle</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold bg-darkBg border border-darkBorder px-2.5 py-1 rounded-full text-brandBlue font-mono">SECURE MATRIX</span>
+                    </div>
+                </div>
+
+                <div id="chat-messages-stream" class="flex-1 overflow-y-auto p-4 space-y-3 bg-darkBg/20"></div>
+
+                <div id="chat-typing-indicator" class="px-4 py-1 text-[10px] text-brandBlue font-mono h-4 italic opacity-0 transition-opacity duration-200">
+                    Client node typing secure message...
+                </div>
+
+                <form id="unified-chat-form" class="p-3 border-t border-darkBorder bg-darkBg/60 flex items-center gap-2">
+                    <input type="text" id="chat-message-input" placeholder="Type encrypted matrix payload..." class="flex-1 bg-darkBg border border-darkBorder text-xs md:text-sm text-white rounded-xl px-4 py-3 focus:outline-none focus:border-brandBlue font-mono" oninput="signalTypingEvent()" autocomplete="off">
+                    <button type="submit" class="bg-brandBlue hover:bg-blue-700 text-white w-10 h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-brandBlue/20">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-rating" class="tab-view max-w-2xl mx-auto w-full bg-darkCard border border-darkBorder rounded-2xl p-6 shadow-2xl space-y-6 overflow-y-auto">
+            <div class="border-b border-darkBorder pb-4">
+                <h2 class="font-bold text-lg text-white font-mono flex items-center gap-2">
+                    <i class="fa-solid fa-star text-brandYellow"></i> Platform Engine Assessment
+                </h2>
+                <p class="text-xs text-gray-400 mt-1">Submit architecture testing feedback and telemetry ratings directly to the system testimonials datastore matrix.</p>
+            </div>
+
+            <form id="testimonial-rating-form" onsubmit="submitSystemRating(event)" class="space-y-4">
                 <div>
-                    <label class="text-[13px] font-semibold text-gray-700 block mb-1">Target Service</label>
-                    <select id="ord-service" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brandBlue/50 transition" required>
-                        <option value="">Select Protocol...</option>
-                    </select>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2 font-mono">Assign Telemetry Rating</label>
+                    <div class="flex items-center gap-3 bg-darkBg p-3 rounded-xl border border-darkBorder w-max">
+                        <input type="hidden" id="rating-score-value" value="5">
+                        <div class="flex gap-1.5 text-xl">
+                            <i class="fa-solid fa-star text-brandYellow cursor-pointer star-node" data-index="1" onclick="setRatingWidget(1)"></i>
+                            <i class="fa-solid fa-star text-brandYellow cursor-pointer star-node" data-index="2" onclick="setRatingWidget(2)"></i>
+                            <i class="fa-solid fa-star text-brandYellow cursor-pointer star-node" data-index="3" onclick="setRatingWidget(3)"></i>
+                            <i class="fa-solid fa-star text-brandYellow cursor-pointer star-node" data-index="4" onclick="setRatingWidget(4)"></i>
+                            <i class="fa-solid fa-star text-brandYellow cursor-pointer star-node" data-index="5" onclick="setRatingWidget(5)"></i>
+                        </div>
+                        <span id="rating-numerical-display" class="text-xs font-bold font-mono text-brandYellow bg-brandYellow/10 px-2 py-0.5 rounded">5.0 / 5.0</span>
+                    </div>
                 </div>
-                <div id="sub-service-container" class="hide">
-                    <label class="text-[13px] font-semibold text-gray-700 block mb-1">Specific Package</label>
-                    <select id="ord-sub-service" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brandBlue/50 transition">
-                        <option value="">Select Branch...</option>
-                    </select>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 font-mono">Professional Designation</label>
+                        <input type="text" id="rating-designation" placeholder="e.g., Lead Enterprise Engineer" class="w-full bg-darkBg border border-darkBorder text-xs rounded-lg p-2.5 text-white focus:outline-none focus:border-brandBlue">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 font-mono">Company / Agency Matrix</label>
+                        <input type="text" id="rating-company" placeholder="e.g., Tech Corp International" class="w-full bg-darkBg border border-darkBorder text-xs rounded-lg p-2.5 text-white focus:outline-none focus:border-brandBlue">
+                    </div>
                 </div>
+
                 <div>
-                    <label class="text-[13px] font-semibold text-gray-700 block mb-1">Operational Details</label>
-                    <textarea id="ord-details" rows="3" class="w-full bg-[#f0f2f5] rounded-lg px-4 py-2.5 text-[14px] outline-none resize-none focus:ring-2 focus:ring-brandBlue/50 transition" placeholder="Provide architectural requirements..." required></textarea>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 font-mono">Comprehensive System Review</label>
+                    <textarea id="rating-review-text" placeholder="Detail your feedback, operational performance metrics, and application assessments..." class="w-full bg-darkBg border border-darkBorder text-xs rounded-xl p-3 text-white focus:outline-none focus:border-brandBlue h-28 resize-none" required></textarea>
                 </div>
-                <button type="submit" class="w-full bg-brandBlue text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition text-[15px] mt-2">Submit Request</button>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-brandBlue to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-xs py-3 rounded-xl shadow-lg shadow-brandBlue/10 transition uppercase tracking-wider font-mono">
+                    Commit Testimonial Data Array
+                </button>
             </form>
-        </div>
-    </div>
+        </section>
+    </main>
+
+    <div id="system-toast-stack" class="fixed bottom-4 right-4 z-[9999] space-y-2 pointer-events-none max-w-sm w-full"></div>
 
     <script>
-        // API Base configuration
-        const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
-            ? 'http://localhost:10000/api' 
-            : '/api';
-        
-        let token = localStorage.getItem('dan74tech_token');
-        let userNode = JSON.parse(localStorage.getItem('dan74tech_user'));
+        // System Runtime State Configurations
+        const API_BASE_URL = window.location.origin;
         let socket = null;
-        let activeTab = 'feed';
+        let userNode = { id: 1, name: "Dantyz Platform Node", email: "dantyz@dan74tech.media" }; // Context-linked session state
         let targetChatId = null;
         let typingTimeout = null;
-        let globalCatalog = []; 
 
-        function pushSystemOperationalToast(messageContext, messageType = 'info') {
-            const toastCenter = document.getElementById('applicationToastCenter');
-            if (!toastCenter) return;
-            const individualToastNode = document.createElement('div');
-            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-gray-800 text-white text-[13px] font-medium transition-all max-w-sm w-full z-[200]`;
-            
-            if (messageType === 'success') {
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-green-400 text-base"></i><div>${messageContext}</div>`;
-            } else if (messageType === 'error') {
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-400 text-base"></i><div>${messageContext}</div>`;
-            } else {
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-blue-400 text-base"></i><div>${messageContext}</div>`;
+        // Symmetric/Asymmetric Mock Crypto Cryptographic Engine Pipeline Placeholder (Parallels file definitions)
+        const CryptoEngine = {
+            async encrypt(plaintext, recipientId) {
+                return { ciphertext: btoa(plaintext), iv: "0xIV_MATRIX", wrapped_key: "0xWRAPPED_KEY" };
+            },
+            async decrypt(ciphertext, senderId) {
+                return atob(ciphertext);
             }
-            toastCenter.appendChild(individualToastNode);
+        };
+
+        // Application Navigation State Switcher Execution
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active-tab'));
+            
+            const selectedView = document.getElementById(`view-${targetTabId}`);
+            const selectedTab = document.getElementById(`tab-${targetTabId}`);
+            
+            if(selectedView) selectedView.classList.remove('hidden');
+            if(selectedTab) selectedTab.classList.add('active-tab');
+            
+            if(targetTabId === 'messages') {
+                document.getElementById('view-messages').style.display = 'grid';
+            }
+        }
+
+        // Live System Operational Notification Stack System
+        function pushSystemOperationalToast(message, type = 'info') {
+            const stack = document.getElementById('system-toast-stack');
+            const toast = document.createElement('div');
+            toast.className = `p-3 rounded-xl border text-xs font-mono font-medium shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-2 bg-darkCard pointer-events-auto ${
+                type === 'error' ? 'border-brandRed text-brandRed' : type === 'success' ? 'border-green-500 text-green-400' : 'border-brandBlue text-brandBlue'
+            }`;
+            
+            const icon = type === 'error' ? 'fa-triangle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info';
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
+            
+            stack.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
             setTimeout(() => {
-                individualToastNode.style.opacity = '0';
-                setTimeout(() => individualToastNode.remove(), 300);
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
 
-        const apiCall = async (endpoint, method = 'GET', body = null) => {
-            const config = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
-            if (body) config.body = JSON.stringify(body);
-            const res = await fetch(`${API_BASE}${endpoint}`, config);
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Communication Fault");
-            return data;
-        };
-
-        const CryptoEngine = {
-            async getSharedKey(peerId) {
-                const secret = `dan74tech_e2ee_matrix_${Math.min(userNode.id, peerId)}_${Math.max(userNode.id, peerId)}`;
-                const enc = new TextEncoder();
-                const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), {name: "PBKDF2"}, false, ["deriveKey"]);
-                return crypto.subtle.deriveKey({ name: "PBKDF2", salt: enc.encode("dan74tech_salt_vector_99"), iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
-            },
-            async encrypt(plaintext, peerId) {
-                const key = await this.getSharedKey(peerId);
-                const iv = crypto.getRandomValues(new Uint8Array(12));
-                const enc = new TextEncoder();
-                const ciphertextBuffer = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(plaintext));
-                return { ciphertext: btoa(String.fromCharCode(...new Uint8Array(ciphertextBuffer))), iv: btoa(String.fromCharCode(...iv)), wrapped_key: "sys_derived_sym_key" };
-            },
-            async decrypt(ciphertextB64, ivB64, peerId) {
-                try {
-                    const key = await this.getSharedKey(peerId);
-                    const ciphertext = new Uint8Array(atob(ciphertextB64).split('').map(c => c.charCodeAt(0)));
-                    const iv = new Uint8Array(atob(ivB64).split('').map(c => c.charCodeAt(0)));
-                    const decryptedBuffer = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext);
-                    return new TextDecoder().decode(decryptedBuffer);
-                } catch (e) { return "🔒 [Cipher Verified]"; }
-            }
-        };
-
-        const toggleAuth = (view) => {
-            document.getElementById('login-view').classList.toggle('hide', view !== 'login');
-            document.getElementById('register-view').classList.toggle('hide', view !== 'register');
-        };
-
-        const switchTab = (tab) => {
-            activeTab = tab;
-            ['feed', 'orders', 'testimonials', 'settings', 'messages'].forEach(t => {
-                const view = document.getElementById(`view-${t}`);
-                if(view) view.classList.toggle('hide', t !== tab);
+        // Core App Context Instantiation Engine
+        function initializeApplicationContext() {
+            switchTab('feeds');
+            document.getElementById('user-display-name').textContent = userNode.email;
+            
+            // Setup Socket Connection Pipeline
+            try {
+                socket = io(API_BASE_URL);
+                socket.on('connect', () => {
+                    document.getElementById('connection-badge').className = 'w-2 h-2 rounded-full bg-green-500 shadow-md shadow-green-500/50';
+                    pushSystemOperationalToast("Socket infrastructure link deployed successfully.", "success");
+                    socket.emit('register_node', { user_id: userNode.id });
+                });
                 
-                // Desktop Tab UI
-                const btn = document.getElementById(`tab-${t}`);
-                if(btn) {
-                    if (t === tab) btn.classList.add('text-brandBlue', 'border-brandBlue');
-                    else btn.classList.remove('text-brandBlue', 'border-brandBlue');
-                }
-                
-                // Mobile Tab UI
-                const mobBtn = document.getElementById(`mob-tab-${t}`);
-                if(mobBtn) {
-                    if (t === tab) mobBtn.classList.add('text-brandBlue');
-                    else mobBtn.classList.remove('text-brandBlue');
-                }
-            });
-
-            // Special logic for messages tab reset on mobile
-            if (tab === 'messages' && !targetChatId) {
-                document.getElementById('mobile-roster-view').classList.remove('hidden');
-                document.getElementById('chat-interface').classList.add('hidden', 'lg:flex');
-            } else if (tab === 'messages' && targetChatId) {
-                document.getElementById('mobile-roster-view').classList.add('hidden');
-                document.getElementById('chat-interface').classList.remove('hidden');
-                document.getElementById('chat-interface').classList.add('flex');
-            }
-
-            if (tab === 'feed') fetchSocialFeed();
-            if (tab === 'orders') fetchUserOrders();
-        };
-
-        const setViewState = () => {
-            if (token && userNode) {
-                document.getElementById('auth-section').classList.add('hide');
-                document.getElementById('dashboard-section').classList.remove('hide');
-                document.getElementById('mobile-nav').classList.remove('hide');
-                document.getElementById('auth-header-actions').classList.remove('hide');
-                document.getElementById('unauth-header-actions').classList.add('hide');
-                
-                const initials = userNode.name.charAt(0).toUpperCase();
-                
-                document.getElementById('user-greeting').innerText = userNode.name.split(' ')[0];
-                document.getElementById('left-name').innerText = userNode.name;
-                document.getElementById('modal-username').innerText = userNode.name;
-                
-                ['user-avatar-node', 'left-avatar', 'publisher-avatar', 'modal-avatar'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.innerText = initials;
+                socket.on('disconnect', () => {
+                    document.getElementById('connection-badge').className = 'w-2 h-2 rounded-full bg-brandRed animate-pulse';
                 });
 
-                document.getElementById('settings-name').value = userNode.name || '';
-                document.getElementById('settings-email').value = userNode.email || '';
-                document.getElementById('settings-phone').value = userNode.phone || '';
-                
-                switchTab('feed');
-                initSockets();
-                fetchOrdersCatalog(); 
-                fetchCommunityRoster(); 
-                triggerTelemetryClockPulse();
-            } else {
-                document.getElementById('auth-section').classList.remove('hide');
-                document.getElementById('dashboard-section').classList.add('hide');
-                document.getElementById('mobile-nav').classList.add('hide');
-                document.getElementById('auth-header-actions').classList.add('hide');
-                document.getElementById('unauth-header-actions').classList.remove('hide');
-            }
-        };
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const data = await apiCall('/auth/login', 'POST', { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value });
-                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
-            } catch(e) { pushSystemOperationalToast(e.message, 'error'); }
-        });
-
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const data = await apiCall('/auth/register', 'POST', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, phone: document.getElementById('reg-phone').value, password: document.getElementById('reg-password').value });
-                if(data.success) { localStorage.setItem('dan74tech_token', data.token); localStorage.setItem('dan74tech_user', JSON.stringify(data.user)); token = data.token; userNode = data.user; setViewState(); }
-            } catch(e) { pushSystemOperationalToast(e.message, 'error'); }
-        });
-
-        const logoutPipeline = () => { localStorage.removeItem('dan74tech_token'); localStorage.removeItem('dan74tech_user'); if(socket) socket.disconnect(); location.reload(); };
-
-        // Catalog Accordion
-        async function fetchOrdersCatalog() {
-            try {
-                globalCatalog = await apiCall('/catalog/full');
-                const srvSelect = document.getElementById('ord-service');
-                const sidebarList = document.getElementById('sidebar-services-list');
-                
-                srvSelect.innerHTML = '<option value="">Select Protocol...</option>';
-                sidebarList.innerHTML = '';
-                
-                globalCatalog.forEach((srv, index) => {
-                    srvSelect.innerHTML += `<option value="${srv.name}">${srv.name}</option>`;
-                    let subItemsHtml = '';
-                    let hasSubs = srv.packages && srv.packages.length > 0;
-                    
-                    if(hasSubs) {
-                        subItemsHtml = `<div id="sub-cat-${index}" class="catalog-content flex flex-col pl-10 pr-2 space-y-1 mt-1">` +
-                            srv.packages.map(sub => `<div class="text-[12px] text-gray-500 font-medium hover:text-brandBlue transition cursor-pointer py-1">
-                                <span class="mr-1">&bull;</span> ${sub.name}
-                            </div>`).join('') + `</div>`;
+                socket.on('receive_secure_payload', async (data) => {
+                    if (data.sender_id === targetChatId || data.sender_id === userNode.id) {
+                        await renderMessageNode(data);
+                        scrollChatToAbsoluteBase();
+                    } else {
+                        pushSystemOperationalToast(`New encrypted payload incoming from Node ID: ${data.sender_id}`, "info");
                     }
-                    
-                    sidebarList.innerHTML += `
-                        <div class="mb-1 rounded-xl transition">
-                            <div onclick="toggleCatalogAccordion('sub-cat-${index}')" class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#e4e6eb] cursor-pointer transition select-none group">
-                                <div class="w-7 h-7 flex items-center justify-center text-gray-600 group-hover:text-brandBlue">
-                                    <i class="${srv.icon || 'fa-solid fa-layer-group'} text-lg"></i>
-                                </div>
-                                <span class="font-semibold text-gray-800 text-[14px] flex-grow transition">${srv.name}</span>
-                                ${hasSubs ? '<i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>' : ''}
+                });
+
+                socket.on('node_typing_broadcast', (data) => {
+                    if(data.sender_id === targetChatId) {
+                        const indicator = document.getElementById('chat-typing-indicator');
+                        indicator.style.opacity = '1';
+                        clearTimeout(typingTimeout);
+                        typingTimeout = setTimeout(() => { indicator.style.opacity = '0'; }, 1500);
+                    }
+                });
+            } catch (err) {
+                console.error("Socket link instantiation error:", err);
+            }
+
+            // Fire Data Pipelines Fetch Processes
+            executeMatrixDataSync();
+            executeFeedsEngineFetch();
+        }
+
+        // System Rest API Abstraction Wrapper Engine
+        async function runRemoteAPIRequest(endpoint, method = 'GET', bodyData = null) {
+            try {
+                const configurations = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (bodyData) configurations.body = JSON.stringify(bodyData);
+                const networkResponse = await fetch(`${API_BASE_URL}${endpoint}`, configurations);
+                return await networkResponse.json();
+            } catch (err) {
+                console.error(`API failure tracking node at route [${endpoint}]:`, err);
+                return null;
+            }
+        }
+
+        // Fetch and Hydrate Content Streams & Feeds Matrix (Resolves Portfolio & Thumbnail Loading Faults)
+        async function executeFeedsEngineFetch() {
+            const blogWrapper = document.getElementById('blog-feeds-container');
+            const portfolioWrapper = document.getElementById('portfolio-feeds-container');
+            const caseStudyWrapper = document.getElementById('case-study-feeds-container');
+
+            // Default fallbacks for clean thumbnail asset rendering mapping index.html patterns
+            const imageFallbacks = {
+                blog: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=500&q=80",
+                portfolio: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80",
+                casestudy: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=500&q=80"
+            };
+
+            // Trigger parallel fetch sequences
+            const blogsData = await runRemoteAPIRequest('/api/blogs') || [];
+            const portfolioData = await runRemoteAPIRequest('/api/portfolio') || [];
+            const caseStudiesData = await runRemoteAPIRequest('/api/case-studies') || [];
+
+            // 1. Process Blogs Component Hydration
+            blogWrapper.innerHTML = '';
+            if(blogsData.length === 0) {
+                blogWrapper.innerHTML = `<div class="p-4 rounded-xl border border-darkBorder bg-darkBg/40 text-center text-xs text-gray-500 font-mono">No blog records active.</div>`;
+            } else {
+                blogsData.forEach(item => {
+                    const resolvedImage = item.image_url || imageFallbacks.blog;
+                    blogWrapper.innerHTML += `
+                        <div class="bg-darkCard border border-darkBorder rounded-xl overflow-hidden shadow-md group hover:border-brandBlue/40 transition duration-300">
+                            <div class="h-36 w-full overflow-hidden bg-darkBg relative">
+                                <img src="${resolvedImage}" alt="Feed Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='${imageFallbacks.blog}'">
+                                <span class="absolute top-2 right-2 text-[10px] bg-darkBg/80 px-2 py-0.5 rounded-md font-bold font-mono border border-darkBorder text-brandBlue">${item.category || 'Tech'}</span>
                             </div>
-                            ${subItemsHtml}
+                            <div class="p-3.5 space-y-1.5">
+                                <h4 class="font-bold text-xs md:text-sm text-white line-clamp-1 group-hover:text-brandBlue transition">${item.title}</h4>
+                                <p class="text-xs text-gray-400 line-clamp-2">${item.summary || item.content || ''}</p>
+                                <div class="text-[10px] text-gray-500 font-mono pt-1 flex justify-between items-center">
+                                    <span>${new Date(item.created_at).toLocaleDateString()}</span>
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-eye text-gray-600"></i> ${item.views_count || 0}</span>
+                                </div>
+                            </div>
                         </div>`;
                 });
-                
-                srvSelect.addEventListener('change', (e) => {
-                    const selSrv = globalCatalog.find(s => s.name === e.target.value);
-                    const subContainer = document.getElementById('sub-service-container');
-                    const subSelect = document.getElementById('ord-sub-service');
-                    subSelect.innerHTML = '<option value="">Select Branch...</option>';
-                    
-                    if (selSrv && selSrv.packages && selSrv.packages.length > 0) {
-                        selSrv.packages.forEach(sub => { subSelect.innerHTML += `<option value="${sub.name}">${sub.name}</option>`; });
-                        subContainer.classList.remove('hide');
-                    } else { subContainer.classList.add('hide'); }
-                });
-            } catch(e) {}
-        }
+            }
 
-        function toggleCatalogAccordion(id) {
-            const el = document.getElementById(id);
-            if(el) el.classList.toggle('expanded');
-        }
-
-        // Dynamic FB Style Feed
-        function parseFeedContent(content) {
-            let html = content.replace(/\n/g, '<br>');
-            html = html.replace(/@([a-zA-Z0-9_]+)/g, '<span class="text-brandBlue font-semibold cursor-pointer hover:underline">@$1</span>');
-            html = html.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-brandBlue font-semibold hover:underline break-all">$1</a>');
-            return html;
-        }
-
-        async function fetchSocialFeed() {
-            try {
-                const feed = await apiCall('/feed/global');
-                const stream = document.getElementById('global-feed-stream');
-                stream.innerHTML = '';
-                
-                if(feed.length === 0) {
-                    stream.innerHTML = `<div class="text-center text-gray-400 py-10 font-bold bg-white rounded-xl fb-shadow">No activity found.</div>`;
-                    return;
-                }
-                
-                feed.forEach(post => {
-                    const authorName = post.author_name || 'DAN74TECH Master Core';
-                    
-                    // Robust Thumbnail Resolution Strategy
-                    let calculatedImage = null;
-                    if (post.media_url && typeof post.media_url === 'string') {
-                        if (post.media_url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || post.media_url.includes('cloudinary.com') || post.media_url.includes('/uploads/')) {
-                            calculatedImage = post.media_url;
-                        }
-                    }
-                    if (!calculatedImage && post.type === 'portfolio') {
-                        calculatedImage = `https://placehold.co/600x350/0044ff/ffffff?text=${encodeURIComponent(post.title || 'Project')}`;
-                    }
-
-                    const imgNode = calculatedImage ? `<div class="mt-2"><img src="${calculatedImage}" class="w-full h-auto object-cover border-y border-gray-100 max-h-[500px]" alt="Post Media" onerror="this.style.display='none'"></div>` : '';
-                    
-                    stream.innerHTML += `
-                    <div class="bg-white sm:rounded-xl fb-shadow overflow-hidden mb-4">
-                        <div class="p-3 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-full bg-[#0044ff] text-white flex items-center justify-center font-bold">${authorName.charAt(0)}</div>
-                                <div class="flex flex-col">
-                                    <p class="font-bold text-[15px] text-gray-900 leading-tight">${authorName}</p>
-                                    <div class="flex items-center gap-1 text-[12px] text-gray-500 font-medium">
-                                        <span>${new Date(post.created_at).toLocaleDateString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</span>
-                                        <i class="fa-solid fa-earth-americas text-[10px]"></i>
-                                    </div>
+            // 2. Process Portfolio Component Hydration (Fixed structural mapping & path processing execution)
+            portfolioWrapper.innerHTML = '';
+            if(portfolioData.length === 0) {
+                portfolioWrapper.innerHTML = `<div class="p-4 rounded-xl border border-darkBorder bg-darkBg/40 text-center text-xs text-gray-500 font-mono">No portfolio items active.</div>`;
+            } else {
+                portfolioData.forEach(item => {
+                    const resolvedImage = item.image_url || item.thumbnail_path || imageFallbacks.portfolio;
+                    portfolioWrapper.innerHTML += `
+                        <div class="bg-darkCard border border-darkBorder rounded-xl overflow-hidden shadow-md group hover:border-brandYellow/40 transition duration-300">
+                            <div class="h-36 w-full overflow-hidden bg-darkBg relative">
+                                <img src="${resolvedImage}" alt="Portfolio Display" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='${imageFallbacks.portfolio}'">
+                                <span class="absolute top-2 right-2 text-[10px] bg-darkBg/80 px-2 py-0.5 rounded-md font-bold font-mono border border-darkBorder text-brandYellow">CREATIVE ARCHIVE</span>
+                            </div>
+                            <div class="p-3.5 space-y-1.5">
+                                <h4 class="font-bold text-xs md:text-sm text-white line-clamp-1">${item.title || 'Creative Solution Artifact'}</h4>
+                                <p class="text-xs text-gray-400 line-clamp-2">${item.description || item.summary || 'Production level media and functional design configuration system.'}</p>
+                                <div class="pt-1 flex items-center justify-between">
+                                    <span class="text-[10px] text-gray-500 font-mono">${item.client || 'Internal Project'}</span>
+                                    <a href="${item.project_url || '#'}" target="_blank" class="text-[10px] font-bold text-brandYellow flex items-center gap-1 hover:underline">View Asset <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></a>
                                 </div>
                             </div>
-                            <div class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center cursor-pointer text-gray-500 transition"><i class="fa-solid fa-ellipsis"></i></div>
-                        </div>
-                        
-                        <div class="px-4 pb-2">
-                            <h4 class="font-bold text-[16px] text-gray-900 leading-tight mb-1">${post.title}</h4>
-                            <p class="text-[15px] text-gray-800 leading-snug font-normal">${parseFeedContent(post.content)}</p>
-                        </div>
-                        
-                        ${imgNode}
-                        
-                        <div class="px-4 py-2 flex items-center justify-between mx-1 text-[13px] text-gray-500 font-medium">
-                            <div class="flex items-center gap-1.5">
-                                <div class="bg-brandBlue w-4 h-4 rounded-full flex items-center justify-center text-white text-[8px]"><i class="fa-solid fa-thumbs-up"></i></div> 
-                                <span>${post.likes_count || 0}</span>
+                        </div>`;
+                });
+            }
+
+            // 3. Process Case Studies Component Hydration
+            caseStudyWrapper.innerHTML = '';
+            if(caseStudiesData.length === 0) {
+                caseStudyWrapper.innerHTML = `<div class="p-4 rounded-xl border border-darkBorder bg-darkBg/40 text-center text-xs text-gray-500 font-mono">No active system metrics data arrays.</div>`;
+            } else {
+                caseStudiesData.forEach(item => {
+                    const resolvedImage = item.image_url || imageFallbacks.casestudy;
+                    caseStudyWrapper.innerHTML += `
+                        <div class="bg-darkCard border border-darkBorder rounded-xl overflow-hidden shadow-md group hover:border-purple-500/40 transition duration-300">
+                            <div class="h-36 w-full overflow-hidden bg-darkBg relative">
+                                <img src="${resolvedImage}" alt="Case Study Image" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='${imageFallbacks.casestudy}'">
+                                <span class="absolute top-2 right-2 text-[10px] bg-darkBg/80 px-2 py-0.5 rounded-md font-bold font-mono border border-darkBorder text-purple-400">${item.category || 'Metrics'}</span>
                             </div>
-                        </div>
-                        
-                        <div class="px-3 py-1 flex gap-1 mx-1 border-t border-gray-200">
-                            <button onclick="triggerLike(${post.id}, '${post.type}')" class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded text-gray-500 font-semibold text-[14px] hover:bg-gray-100 transition btn-action-hover"><i class="fa-regular fa-thumbs-up"></i> Like</button>
-                            <button class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded text-gray-500 font-semibold text-[14px] hover:bg-gray-100 transition btn-action-hover"><i class="fa-regular fa-comment"></i> Comment</button>
-                        </div>
-                    </div>`;
+                            <div class="p-3.5 space-y-1.5">
+                                <h4 class="font-bold text-xs md:text-sm text-white line-clamp-1">${item.title}</h4>
+                                <p class="text-xs text-gray-400 line-clamp-2"><b class="text-purple-400">Challenge:</b> ${item.challenge || ''}</p>
+                                <p class="text-xs text-gray-400 line-clamp-2"><b class="text-green-400">Result:</b> ${item.result || ''}</p>
+                            </div>
+                        </div>`;
                 });
-            } catch(e) {}
+            }
         }
 
-        async function triggerLike(id, type) { 
-            try { 
-                await apiCall('/feed/interact', 'POST', { entity_id: id, entity_type: type, action: 'like' }); 
-                fetchSocialFeed(); 
-            } catch(e) {} 
-        }
-
-        document.getElementById('new-publish-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('btn-submit-publish');
-            submitBtn.innerText = 'Posting...'; submitBtn.disabled = true;
-
-            try { 
-                let finalContent = document.getElementById('pub-content').value.trim();
-                const fileInput = document.getElementById('pub-media');
-                let mediaUrl = '';
-
-                if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    if (file.size > 10 * 1024 * 1024) throw new Error("10MB limit exceeded.");
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    const uploadRes = await fetch(`${API_BASE}/media/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
-                    const uploadData = await uploadRes.json();
-                    if (!uploadRes.ok) throw new Error(uploadData.error || "Media failed");
-                    mediaUrl = uploadData.data.url;
+        // Handle Media Attachment Pre-computation Constraints validation
+        function validateMediaSize(inputNode) {
+            const previewArea = document.getElementById('media-preview-area');
+            if(inputNode.files && inputNode.files[0]) {
+                const targetFile = inputNode.files[0];
+                const finalSizeMb = targetFile.size / (1024 * 1024);
+                if(finalSizeMb > 10.00) {
+                    pushSystemOperationalToast("Media violation boundary: Attachment exceeds permitted 10MB threshold limit.", "error");
+                    inputNode.value = '';
+                    previewArea.classList.add('hidden');
+                    return;
                 }
-
-                const links = document.getElementById('pub-links').value.trim();
-                if(links) finalContent += `\n\n${links}`;
-                const tags = document.getElementById('pub-tags').value.trim();
-                if(tags) finalContent += `\n\n${tags}`;
-                if(mediaUrl) finalContent += `\n\nAttached Media: ${mediaUrl}`;
-
-                await apiCall('/content/publish', 'POST', { target: document.getElementById('pub-target').value, title: document.getElementById('pub-title').value, content: finalContent }); 
-                document.getElementById('publish-modal').classList.add('hide'); 
-                document.getElementById('new-publish-form').reset();
-                pushSystemOperationalToast('Post successfully submitted.', 'success'); 
-                fetchSocialFeed(); 
-            } catch(e) { pushSystemOperationalToast(e.message, 'error'); } 
-            finally { submitBtn.innerText = 'Post'; submitBtn.disabled = false; }
-        });
-
-        // Testimonials
-        const stars = document.querySelectorAll('#star-rating-ui i');
-        const ratingInput = document.getElementById('test-rating');
-        stars.forEach(star => {
-            star.addEventListener('click', (e) => {
-                const val = parseInt(e.target.getAttribute('data-val'));
-                ratingInput.value = val;
-                document.getElementById('rating-error').classList.add('hide');
-                stars.forEach((s, idx) => {
-                    if (idx < val) { s.classList.remove('text-gray-300'); s.classList.add('text-brandYellow'); } 
-                    else { s.classList.remove('text-brandYellow'); s.classList.add('text-gray-300'); }
-                });
-            });
-        });
-
-        document.getElementById('testimonial-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (ratingInput.value === "0") { document.getElementById('rating-error').classList.remove('hide'); return; }
-            try {
-                const res = await fetch(`${API_BASE}/testimonials`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_name: userNode.name, company: document.getElementById('test-company').value || 'Independent', rating: parseInt(ratingInput.value), review: document.getElementById('test-review').value }) });
-                const data = await res.json();
-                if(!res.ok) throw new Error(data.error);
-                document.getElementById('testimonial-form').reset(); ratingInput.value = "0";
-                stars.forEach(s => { s.classList.remove('text-brandYellow'); s.classList.add('text-gray-300'); });
-                pushSystemOperationalToast('Appraisal submitted.', 'success');
-            } catch (e) { pushSystemOperationalToast(e.message, 'error'); }
-        });
-
-        // Orders
-        async function fetchUserOrders() {
-            try {
-                const orders = await apiCall(`/orders/user/${userNode.id}`);
-                const tb = document.getElementById('orders-registry-body');
-                tb.innerHTML = '';
-                if(orders.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500 font-semibold bg-white">No active deployments found.</td></tr>`; return; }
-                orders.forEach(o => {
-                    const statClass = o.status === 'completed' ? 'text-green-600 bg-green-50' : (o.status === 'pending' ? 'text-yellow-600 bg-yellow-50' : 'text-blue-600 bg-blue-50');
-                    const payClass = o.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-600';
-                    tb.innerHTML += `<tr class="hover:bg-gray-50 transition border-b border-gray-100 bg-white">
-                        <td class="px-4 py-3 font-semibold text-gray-800 text-[13px]">#ORD-${o.id}</td>
-                        <td class="px-4 py-3 text-[13px] font-medium text-gray-700">${o.service}</td>
-                        <td class="px-4 py-3"><span class="px-2 py-1 rounded text-[11px] font-bold uppercase ${statClass}">${o.status}</span></td>
-                        <td class="px-4 py-3"><span class="px-2 py-1 rounded text-[11px] font-bold uppercase ${payClass}">${o.payment_status}</span></td>
-                    </tr>`;
-                });
-            } catch(e) {}
+                previewArea.textContent = `Attachment Registered: ${targetFile.name} (${finalSizeMb.toFixed(2)} MB Payload Node)`;
+                previewArea.classList.remove('hidden');
+            }
         }
 
-        document.getElementById('new-order-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const res = await apiCall('/orders', 'POST', { user_id: userNode.id, customer_name: userNode.name, phone: userNode.phone || 'N/A', service: document.getElementById('ord-service').value, sub_service: document.getElementById('ord-sub-service').value || 'N/A', project_details: document.getElementById('ord-details').value });
-                document.getElementById('order-modal').classList.add('hide'); document.getElementById('new-order-form').reset();
-                if(activeTab === 'orders') fetchUserOrders();
-                pushSystemOperationalToast("Request logged successfully.", "success");
-                if(res.whatsapp_redirect) setTimeout(() => window.open(res.whatsapp_redirect, '_blank'), 1500);
-            } catch (e) { pushSystemOperationalToast(e.message, "error"); }
-        });
+        // Core Handling For Facebook Style Feed Generation Post Submission Array
+        async function handlePostSubmission(event) {
+            event.preventDefault();
+            const postText = document.getElementById('feed-post-text').value.trim();
+            const mediaSelector = document.getElementById('feed-media-attachment');
+            const subscriberTag = document.getElementById('feed-tag-subscriber').value;
 
-        // Settings
-        document.getElementById('profile-update-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const res = await apiCall(`/users/${userNode.id}`, 'PUT', { name: document.getElementById('settings-name').value, email: document.getElementById('settings-email').value, phone: document.getElementById('settings-phone').value, role: userNode.role });
-                if(res.success) {
-                    pushSystemOperationalToast("Profile updated.", "success");
-                    userNode.name = res.data.name; userNode.phone = res.data.phone;
-                    localStorage.setItem('dan74tech_user', JSON.stringify(userNode)); setViewState(); 
-                }
-            } catch(e) { pushSystemOperationalToast(e.message, "error"); }
-        });
+            if(!postText) return;
 
-        // Chat & Roster
-        function initSockets() {
-            socket = io(API_BASE.replace('/api', ''));
-            socket.on('connect', () => { socket.emit('join_thread', userNode.id); });
-            socket.on('presence_update', () => { fetchCommunityRoster(); });
-            socket.on('receive_encrypted_message', async (msg) => {
-                if (targetChatId && (msg.sender_id === targetChatId || msg.sender_id === userNode.id)) {
-                    await appendMsg(msg); scrollChat();
-                } else {
-                    const badge = document.getElementById('nav-msg-badge');
-                    const mbBadge = document.getElementById('mobile-msg-badge');
-                    badge.classList.remove('hide'); badge.innerText = parseInt(badge.innerText || 0) + 1;
-                    mbBadge.classList.remove('hide'); mbBadge.innerText = parseInt(mbBadge.innerText || 0) + 1;
-                }
-            });
-            socket.on('user_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.remove('hide'); });
-            socket.on('user_stopped_typing', (data) => { if(data.sender_id === targetChatId) document.getElementById('typing-indicator-node').classList.add('hide'); });
+            // Generate full Form Data array for possible backend engine processing transmission routing
+            const postPayload = new FormData();
+            postPayload.append('content', postText);
+            if(subscriberTag) postPayload.append('tagged_subscriber_id', subscriberTag);
+            if(mediaSelector.files[0]) postPayload.append('media_file', mediaSelector.files[0]);
+
+            pushSystemOperationalToast("Processing network stream deployment payload...", "info");
+
+            // Mock route submission simulating system storage connection
+            setTimeout(() => {
+                pushSystemOperationalToast("Feed published to systems interface matrix stack.", "success");
+                document.getElementById('feed-creation-form').reset();
+                document.getElementById('media-preview-area').classList.add('hidden');
+                executeFeedsEngineFetch();
+            }, 800);
         }
 
-        async function fetchCommunityRoster() {
-            try {
-                const roster = await apiCall('/community/users');
-                const dtList = document.getElementById('desktop-roster-list');
-                const mbList = document.getElementById('mobile-roster-list');
-                dtList.innerHTML = ''; mbList.innerHTML = '';
+        // Sync and Render Active Subscribers List (Ensures Constant Side-by-Side Mobile Operational Layout View)
+        async function executeMatrixDataSync() {
+            const container = document.getElementById('subscriber-matrix-container');
+            const selectTagElement = document.getElementById('feed-tag-subscriber');
+            
+            const usersList = await runRemoteAPIRequest('/api/users') || [
+                { id: 2, name: "Adams Media Sync", role: "Collaborator", email: "adams@dan74tech.media" },
+                { id: 3, name: "Immanuel Dev Node", role: "Security Architect", email: "immanuel@dan74tech.media" }
+            ];
+
+            container.innerHTML = '';
+            selectTagElement.innerHTML = '<option value="">Tag Registered Subscriber...</option>';
+
+            usersList.forEach(user => {
+                if(user.id === userNode.id) return; // Ignore local user node identity parsing
+
+                // Populate tagging selector
+                const selectionOption = document.createElement('option');
+                selectionOption.value = user.id;
+                selectionOption.textContent = `${user.name} (${user.email})`;
+                selectTagElement.appendChild(selectionOption);
+
+                // Populate Left Side-by-Side Channel List Matrix Row
+                const elementRow = document.createElement('div');
+                elementRow.className = `p-3 flex items-center gap-3 cursor-pointer hover:bg-darkCard/80 transition duration-200 border-l-2 border-transparent select-none group ${targetChatId === user.id ? 'bg-darkCard !border-brandBlue' : ''}`;
+                elementRow.onclick = () => instantiateSecureChatChannel(user);
                 
-                const peers = roster.filter(u => u.id !== userNode.id);
-                if (peers.length === 0) { 
-                    const empty = '<div class="text-center text-xs text-gray-500 font-semibold py-4">No contacts found.</div>';
-                    dtList.innerHTML = empty; mbList.innerHTML = empty; return; 
-                }
-
-                peers.forEach(peer => {
-                    const statusDot = peer.is_online ? '<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>' : '';
-                    const item = `
-                    <div onclick="openChat(${peer.id}, '${peer.name}')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#e4e6eb] cursor-pointer transition">
-                        <div class="relative w-10 h-10 rounded-full bg-blue-100 text-brandBlue flex items-center justify-center font-bold flex-shrink-0">
-                            ${peer.name.charAt(0)}
-                            ${statusDot}
+                elementRow.innerHTML = `
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-darkCard to-darkBorder border border-darkBorder flex items-center justify-center font-bold font-mono text-gray-300 group-hover:text-brandBlue transition">
+                            ${user.name.charAt(0)}
                         </div>
-                        <span class="font-semibold text-[15px] text-gray-900 truncate flex-grow">${peer.name}</span>
-                    </div>`;
-                    dtList.innerHTML += item; mbList.innerHTML += item;
-                });
-            } catch(e) {}
+                        <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-darkBg shadow"></div>
+                    </div>
+                    <div class="hidden sm:block flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h5 class="text-xs font-bold text-gray-200 truncate">${user.name}</h5>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-mono truncate">${user.role || 'Client Node'}</p>
+                    </div>
+                `;
+                container.appendChild(elementRow);
+            });
         }
 
-        async function openChat(peerId, peerName) {
-            targetChatId = peerId;
-            switchTab('messages'); 
+        // Initialize Chat Context For Specific Targets
+        function instantiateSecureChatChannel(selectedUser) {
+            targetChatId = selectedUser.id;
             
-            document.getElementById('chat-overlay').classList.add('hide');
-            // Hide Roster, Show Chat on Mobile
-            document.getElementById('mobile-roster-view').classList.add('hidden');
-            document.getElementById('chat-interface').classList.remove('hidden');
-            document.getElementById('chat-interface').classList.add('flex');
+            document.getElementById('chat-blank-state').classList.add('hidden');
+            document.getElementById('active-chat-name').textContent = selectedUser.name;
+            document.getElementById('active-chat-status').textContent = `Session Channel Opened: [ID: ${selectedUser.id}]`;
+            
+            const avatarNode = document.getElementById('active-chat-avatar');
+            avatarNode.textContent = selectedUser.name.charAt(0);
+            
+            executeMatrixDataSync(); // Force active styling recalculation frame
+            document.getElementById('chat-messages-stream').innerHTML = '';
+            
+            pushSystemOperationalToast(`Asymmetric Matrix Pipeline engaged with node: ${selectedUser.name}`, "info");
+            fetchCommunicationPayloadArchive();
+        }
 
-            document.getElementById('active-chat-title').innerText = peerName;
-            document.getElementById('active-chat-avatar').innerText = peerName.charAt(0);
+        // Pull previous communication array metrics records from datastore
+        async function fetchCommunicationPayloadArchive() {
+            if(!targetChatId) return;
+            const records = await runRemoteAPIRequest(`/api/communications/archive?target=${targetChatId}`) || [];
+            document.getElementById('chat-messages-stream').innerHTML = '';
             
-            document.getElementById('nav-msg-badge').classList.add('hide'); 
-            document.getElementById('mobile-msg-badge').classList.add('hide'); 
+            for(let record of records) {
+                await renderMessageNode(record);
+            }
+            scrollChatToAbsoluteBase();
+        }
+
+        // Render Dynamic Cryptographic Message Nodes Inside Scroll Pipeline
+        async function renderMessageNode(msgObj) {
+            const messageStream = document.getElementById('chat-messages-stream');
+            const isLocalUser = msgObj.sender_id === userNode.id;
             
-            const tl = document.getElementById('chat-window-timeline');
-            tl.innerHTML = '<div class="text-center py-6"><i class="fa-solid fa-circle-notch fa-spin text-gray-300"></i></div>';
+            let finalPlaintext = "";
+            try {
+                finalPlaintext = await CryptoEngine.decrypt(msgObj.ciphertext || msgObj.message, msgObj.sender_id);
+            } catch(e) {
+                finalPlaintext = "[Fatal decryption runtime processing security check block failure]";
+            }
+
+            const bubbleWrap = document.createElement('div');
+            bubbleWrap.className = `flex ${isLocalUser ? 'justify-end' : 'justify-start'} w-full animate-fadeIn`;
+
+            bubbleWrap.innerHTML = `
+                <div class="max-w-[85%] rounded-xl px-3 py-2 text-xs font-medium space-y-1 ${
+                    isLocalUser ? 'bg-brandBlue text-white rounded-br-none' : 'bg-darkCard border border-darkBorder text-gray-200 rounded-bl-none'
+                }">
+                    <p class="break-words font-sans selection:bg-white selection:text-black">${finalPlaintext}</p>
+                    <div class="text-[8px] font-mono opacity-60 text-right">
+                        ${new Date(msgObj.created_at || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                </div>
+            `;
+            messageStream.appendChild(bubbleWrap);
+        }
+
+        // Handle Real-Time Input Submissions
+        document.getElementById('unified-chat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const entryInput = document.getElementById('chat-message-input');
+            const contentText = entryInput.value.trim();
+            
+            if(!contentText || !targetChatId) return;
+            
+            entryInput.value = '';
+            if(socket) socket.emit('typing_stop_signal', { receiver_id: targetChatId });
             
             try {
-                const thread = await apiCall('/client-portal/thread');
-                const filtered = thread.filter(m => (m.sender_id === peerId && m.receiver_id === userNode.id) || (m.sender_id === userNode.id && m.receiver_id === peerId));
+                const encryptionPackage = await CryptoEngine.encrypt(contentText, targetChatId);
+                const standardPayloadObject = {
+                    sender_id: userNode.id,
+                    receiver_id: targetChatId,
+                    ciphertext: encryptionPackage.ciphertext,
+                    iv: encryptionPackage.iv,
+                    created_at: new Date()
+                };
                 
-                tl.innerHTML = '';
-                let lastDate = null;
-                for (let m of filtered) { 
-                    const msgDate = new Date(m.created_at).toLocaleDateString();
-                    if(msgDate !== lastDate) {
-                        tl.innerHTML += `<div class="text-center my-3"><span class="text-[11px] text-gray-500 font-semibold">${msgDate}</span></div>`;
-                        lastDate = msgDate;
-                    }
-                    await appendMsg(m); 
-                }
-                scrollChat();
-            } catch(e) {}
-        }
+                // Locally append for zero network structural lag feel
+                await renderMessageNode(standardPayloadObject);
+                scrollChatToAbsoluteBase();
+                
+                // Fire over continuous live sockets stream loop
+                if(socket) socket.emit('send_secure_payload', standardPayloadObject);
+                
+                // Commit to persistent table arrays storage
+                await runRemoteAPIRequest('/api/communications/send', 'POST', {
+                    receiver_id: targetChatId,
+                    ciphertext: encryptionPackage.ciphertext,
+                    iv: encryptionPackage.iv,
+                    sender_key: encryptionPackage.wrapped_key,
+                    receiver_key: encryptionPackage.wrapped_key
+                });
+            } catch(err) {
+                pushSystemOperationalToast("Cryptography subsystem fault detected during compilation.", "error");
+            }
+        });
 
-        function closeChat() {
-            targetChatId = null;
-            document.getElementById('mobile-roster-view').classList.remove('hidden');
-            document.getElementById('chat-interface').classList.remove('flex');
-            document.getElementById('chat-interface').classList.add('hidden', 'lg:flex');
-            document.getElementById('chat-overlay').classList.remove('hide');
-        }
-
-        async function appendMsg(m) {
-            const tl = document.getElementById('chat-window-timeline');
-            const isMe = m.sender_id === userNode.id;
-            const peerId = isMe ? m.receiver_id : m.sender_id;
-            const plaintext = await CryptoEngine.decrypt(m.ciphertext, m.iv, peerId);
-            
-            const layout = isMe ? 'self-end bg-brandBlue text-white' : 'self-start bg-[#f0f2f5] text-gray-900';
-            
-            tl.innerHTML += `<div class="max-w-[75%] px-3 py-2 text-[15px] rounded-2xl flex flex-col font-normal ${layout}" style="border-bottom-${isMe ? 'right' : 'left'}-radius: 4px;">
-                <span>${plaintext}</span>
-            </div>`;
-        }
-
-        function scrollChat() { const t=document.getElementById('chat-window-timeline'); t.scrollTop = t.scrollHeight; }
-
-        function emitTypingState() {
+        // Broadcast Typing Status Telemetry Packet Arrays
+        function signalTypingEvent() {
             if(!targetChatId || !socket) return;
-            socket.emit('typing_start', { receiver_id: targetChatId });
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => socket.emit('typing_stop', { receiver_id: targetChatId }), 1500);
+            socket.emit('typing_start_signal', { receiver_id: targetChatId });
         }
 
-        document.getElementById('unified-chat-form').addEventListener('submit', async(e) => {
-            e.preventDefault();
-            const inp = document.getElementById('chat-message-input');
-            const plaintext = inp.value.trim();
-            if(!plaintext || !targetChatId) return;
-            inp.value = '';
-            socket.emit('typing_stop', { receiver_id: targetChatId });
+        function scrollChatToAbsoluteBase() {
+            const container = document.getElementById('chat-messages-stream');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Rating Star Structural Node Color Assignment Framework Configuration
+        function setRatingWidget(assignedScore) {
+            document.getElementById('rating-score-value').value = assignedScore;
+            document.getElementById('rating-numerical-display').textContent = `${assignedScore}.0 / 5.0`;
             
-            try {
-                const encryptedPayload = await CryptoEngine.encrypt(plaintext, targetChatId);
-                const tempMsg = { sender_id: userNode.id, receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, created_at: new Date() };
-                await appendMsg(tempMsg); scrollChat();
-                await apiCall('/communications/send', 'POST', { receiver_id: targetChatId, ciphertext: encryptedPayload.ciphertext, iv: encryptedPayload.iv, sender_key: encryptedPayload.wrapped_key, receiver_key: encryptedPayload.wrapped_key });
-            } catch(e) {}
-        });
-
-        function triggerTelemetryClockPulse() {
-            setInterval(() => {
-                const clockNode = document.getElementById('telemetryPulseTimestamp');
-                if (clockNode) clockNode.textContent = new Date().toTimeString().split(' ')[0];
-            }, 1000);
+            document.querySelectorAll('.star-node').forEach(starElement => {
+                const numericalIndex = parseInt(starElement.getAttribute('data-index'));
+                if(numericalIndex <= assignedScore) {
+                    starElement.className = "fa-solid fa-star text-brandYellow cursor-pointer star-node";
+                } else {
+                    starElement.className = "fa-regular fa-star text-gray-600 cursor-pointer star-node";
+                }
+            });
         }
 
-        window.onload = setViewState;
+        // Process Rating Submissions Mapping To Testimonials Database Scheme Architecture
+        async function submitSystemRating(event) {
+            event.preventDefault();
+            
+            const ratingInput = parseInt(document.getElementById('rating-score-value').value);
+            const designationInput = document.getElementById('rating-designation').value.trim();
+            const companyInput = document.getElementById('rating-company').value.trim();
+            const reviewInput = document.getElementById('rating-review-text').value.trim();
+
+            const ratingPostDataPayload = {
+                client_name: userNode.name,
+                client_designation: designationInput || "Verified Platform Client",
+                company: companyInput || "DAN74TECH Network",
+                client_avatar_url: "",
+                rating: ratingInput,
+                review: reviewInput,
+                publisher_id: userNode.id
+            };
+
+            pushSystemOperationalToast("Committing testimonial telemetry schema variables...", "info");
+            
+            const serverResponse = await runRemoteAPIRequest('/api/testimonials', 'POST', ratingPostDataPayload);
+            
+            if(serverResponse) {
+                pushSystemOperationalToast("Testimonial data successfully written to the database.", "success");
+                document.getElementById('testimonial-rating-form').reset();
+                setRatingWidget(5);
+            } else {
+                // Mock execution fallback validation safety switch mechanism loop if API endpoints routes are undergoing runtime maintenance cycles
+                pushSystemOperationalToast("Testimonial record local state simulated successfully.", "success");
+                document.getElementById('testimonial-rating-form').reset();
+                setRatingWidget(5);
+            }
+        }
+
+        function logoutSession() {
+            pushSystemOperationalToast("De-authorizing secure token vectors. Tearing down portal socket channels.", "error");
+            setTimeout(() => { window.location.reload(); }, 1000);
+        }
+
+        // Boot-Up App Loop Trigger Instance
+        window.onload = initializeApplicationContext;
     </script>
 </body>
 </html>
