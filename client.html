@@ -681,20 +681,42 @@
                     showToast("Warning: Media Node restricted. Proceeding without graphic asset.", "error");
                 }
             }
+            
+//----------fetch uploads feeds-----
+          async function loadFeed(refresh = false) {
+    const res = await apiCall('/feed/global'); // This must return the structure above
+    if (!res) return;
 
-            // Using content/publish as provided in server.js
-            const payload = { target: type === 'blog_posts' ? 'blog' : 'case_studies', title, content };
-            if(imageUrl) payload.image_url = imageUrl; // Depending on backend handling
+    const integratedFeedTimeline = [];
 
-            const res = await apiCall('/content/publish', 'POST', payload);
-            if(res && res.success) {
-                showToast("Node record injected into main sequence.", "success");
-                closePostModal();
-                // Reload feed top
-                state.feedOffset = 0;
-                loadFeed(true);
-            }
-        };
+    // Push other content types
+    if (res.blogs) integratedFeedTimeline.push(...res.blogs.map(b => ({...b, type: 'blog'})));
+    if (res.case_studies) integratedFeedTimeline.push(...res.case_studies.map(c => ({...c, type: 'case_study'})));
+    
+    // INTEGRATION: Map Portfolio items correctly
+    if (res.portfolio) {
+        res.portfolio.forEach(p => {
+            integratedFeedTimeline.push({
+                id: p.id,
+                type: 'portfolio',
+                title: p.title || 'Untitled Portfolio Node',
+                category: p.category || 'Production Showcase',
+                metaText: p.description || 'Verified engineering deployment.',
+                
+                // Use 'link' from DB; provide a safe fallback placeholder
+                image: (p.link && p.link.trim() !== '') ? p.link : 'https://placehold.co/600x400/0044ff/ffffff?text=Portfolio+Asset',
+                
+                likes: p.likes_count || 0,
+                created_at: p.created_at || new Date()
+            });
+        });
+    }
+
+    // Sort globally by date
+    integratedFeedTimeline.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    
+    renderFeed(integratedFeedTimeline);
+}
 
         // --- 7. DYNAMIC ORDERS ---
         async function fetchCatalog() {
