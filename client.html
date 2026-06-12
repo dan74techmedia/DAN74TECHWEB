@@ -642,21 +642,59 @@
         }
 
         function toggleAuthView(targetView) { [cite: 16]
-            document.getElementById('login-view').classList.toggle('hide', targetView !== 'login'); [cite: 16]
-            document.getElementById('register-view').classList.toggle('hide', targetView !== 'register'); [cite: 16]
+          document.getElementById('login-submission-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const emailInput = document.getElementById('login-email-field')?.value.trim();
+    const passwordInput = document.getElementById('login-password-field')?.value;
+    const submitButton = document.getElementById('login-submit-btn');
+
+    if (!emailInput || !passwordInput) {
+        pushSystemOperationalToast("Please provide both email and password vectors.", "error");
+        return;
+    }
+
+    try {
+        // Set loading state
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Verifying Matrix Token...`;
         }
 
-        async function executeAuthentication(event, methodPointer) {
-            event.preventDefault();
-            const targetEndpoint = methodPointer === 'login' ? '/auth/login' : '/auth/register';
-            const payload = methodPointer === 'login' 
-                ? { email: document.getElementById('login-email').value.trim(), password: document.getElementById('login-password').value }
-                : { 
-                    name: document.getElementById('reg-name').value.trim(), 
-                    email: document.getElementById('reg-email').value.trim(), 
-                    phone: document.getElementById('reg-phone').value.trim(), 
-                    password: document.getElementById('reg-password').value 
-                  };
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailInput, password: passwordInput })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Authentication handshake rejected.");
+        }
+
+        // CRITICAL: Must use the exact keys expected by client (10).html
+        localStorage.setItem('dan74tech_token', data.token);
+        localStorage.setItem('dan74tech_user', JSON.stringify(data.user));
+
+        pushSystemOperationalToast("Handshake confirmed. Synchronizing portal view...", "success");
+        
+        // Reload page or redirect to let checkApplicationAuthenticationRouting() initialize the workspace
+        setTimeout(() => {
+            window.location.href = 'client.html';
+        }, 1000);
+
+    } catch (err) {
+        console.error("Auth Engine Exception:", err);
+        pushSystemOperationalToast(err.message, "error");
+        
+        // CRITICAL FIX: Unlock button state if login fails so it's not permanently stuck
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> Authorize Session`;
+        }
+    }
+});
 
             pushSystemOperationalToast(`Executing auth protocol mapping sequence...`, 'info');
             const dataResult = await runRemoteAPIRequest(targetEndpoint, 'POST', payload);
