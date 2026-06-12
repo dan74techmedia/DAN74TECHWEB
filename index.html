@@ -517,13 +517,23 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
                     const projectStatusValue = projectItem.status || 'In Progress';
                     const targetProjectLink = projectItem.link || 'portfolio.html';
 
-                    let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
-                    
-                    if (projectItem.image_url) {
-                        calculatedThumbnailAssetUrl = projectItem.image_url;
-                    } else if (projectItem.link && (projectItem.link.includes('/uploads/') || projectItem.link.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
-                        calculatedThumbnailAssetUrl = projectItem.link;
-                    }
+                 // 1. Set the default placeholder in case there is no image at all
+                 let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
+
+                  // 2. Trust the database: If a URL exists in either field, use it.
+                    if (projectItem.image_url && projectItem.image_url.trim() !== '') {
+                calculatedThumbnailAssetUrl = projectItem.image_url;
+             } else if (projectItem.link && projectItem.link.trim() !== '') {
+                calculatedThumbnailAssetUrl = projectItem.link;
+             }
+
+              // 3. (Optional but recommended) Handle potential broken images gracefully
+          // This ensures that if the link is invalid, the UI doesn't look broken
+                  const thumbnailElement = document.createElement('img');
+               thumbnailElement.src = calculatedThumbnailAssetUrl;
+                     thumbnailElement.onerror = function() {
+                    this.src = 'https://placehold.co/600x350/cccccc/ffffff?text=Image+Unavailable';
+              };
 
                     const projectCardStructure = `
                         <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
