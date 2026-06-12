@@ -641,70 +641,62 @@
             }
         }
 
-        function toggleAuthView(targetView) { [cite: 16]
-          document.getElementById('login-submission-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const emailInput = document.getElementById('login-email-field')?.value.trim();
-    const passwordInput = document.getElementById('login-password-field')?.value;
-    const submitButton = document.getElementById('login-submit-btn');
-
-    if (!emailInput || !passwordInput) {
-        pushSystemOperationalToast("Please provide both email and password vectors.", "error");
-        return;
-    }
-
-    try {
-        // Set loading state
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Verifying Matrix Token...`;
+        // 1. Properly toggles the UI between Login and Registration views
+        function toggleAuthView(targetView) {
+            const loginView = document.getElementById('login-view');
+            const registerView = document.getElementById('register-view');
+            
+            if (targetView === 'register') {
+                loginView.classList.add('hide');
+                registerView.classList.remove('hide');
+            } else {
+                loginView.classList.remove('hide');
+                registerView.classList.add('hide');
+            }
         }
 
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: emailInput, password: passwordInput })
-        });
+      // 2. Handles both Login and Registration submissions dynamically
+        async function executeAuthentication(event, action) {
+            event.preventDefault();
+            
+            const endpoint = action === 'login' ? '/auth/login' : '/auth/register';
+            let payload = {};
 
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-            throw new Error(data.error || "Authentication handshake rejected.");
-        }
-
-        // CRITICAL: Must use the exact keys expected by client (10).html
-        localStorage.setItem('dan74tech_token', data.token);
-        localStorage.setItem('dan74tech_user', JSON.stringify(data.user));
-
-        pushSystemOperationalToast("Handshake confirmed. Synchronizing portal view...", "success");
-        
-        // Reload page or redirect to let checkApplicationAuthenticationRouting() initialize the workspace
-        setTimeout(() => {
-            window.location.href = 'client.html';
-        }, 1000);
-
-    } catch (err) {
-        console.error("Auth Engine Exception:", err);
-        pushSystemOperationalToast(err.message, "error");
-        
-        // CRITICAL FIX: Unlock button state if login fails so it's not permanently stuck
-        if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> Authorize Session`;
-        }
-    }
-});
+            // Extract values based on the exact IDs in your HTML
+            if (action === 'login') {
+                const emailInp = document.getElementById('login-email').value.trim();
+                const passInp = document.getElementById('login-password').value;
+                
+                if (!emailInp || !passInp) return pushSystemOperationalToast("Please provide both email and password vectors.", "error");
+                payload = { email: emailInp, password: passInp };
+            } else {
+                const nameInp = document.getElementById('reg-name').value.trim();
+                const emailInp = document.getElementById('reg-email').value.trim();
+                const phoneInp = document.getElementById('reg-phone').value.trim();
+                const passInp = document.getElementById('reg-password').value;
+                
+                if (!nameInp || !emailInp || !passInp) return pushSystemOperationalToast("Please provide all required registration vectors.", "error");
+                payload = { name: nameInp, email: emailInp, phone: phoneInp, password: passInp };
+            }
 
             pushSystemOperationalToast(`Executing auth protocol mapping sequence...`, 'info');
-            const dataResult = await runRemoteAPIRequest(targetEndpoint, 'POST', payload);
             
+            // Dispatch to the server API
+            const dataResult = await runRemoteAPIRequest(endpoint, 'POST', payload);
+            
+            // If successful, commit tokens and initialize the portal
             if (dataResult && dataResult.token) {
                 localStorage.setItem('dan74tech_token', dataResult.token);
                 localStorage.setItem('dan74tech_user', JSON.stringify(dataResult.user));
+                
                 token = dataResult.token;
-                userNode = dataResult.user; [cite: 14]
+                userNode = dataResult.user;
+                
                 pushSystemOperationalToast(`Authentication protocol clear. Session tokens committed.`, 'success');
+                
+                document.getElementById('system-login-form').reset();
+                document.getElementById('system-register-form').reset();
+                
                 checkApplicationAuthenticationRouting();
             }
         }
@@ -713,11 +705,10 @@
             pushSystemOperationalToast("De-authorizing secure token vectors. Tearing down portal socket channels.", "error");
             localStorage.clear();
             token = null;
-            userNode = null; [cite: 14]
-            if (socket) { socket.disconnect(); socket = null; } [cite: 15]
+            userNode = null;
+            if (socket) { socket.disconnect(); socket = null; }
             setTimeout(() => { window.location.reload(); }, 1000);
         }
-
         // --- APPLICATION MODULE VIEW PANEL CONTROLLER ---
         function switchTab(targetTabId) { [cite: 17]
             activeTab = targetTabId; [cite: 15, 17]
