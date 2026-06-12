@@ -772,7 +772,24 @@
                 }
             }
 
-            const res = await apiCall('/content/publish', 'POST', { target: type === 'blog_posts' ? 'blog' : 'case_study', title, content });
+            // Generate clean URL slug if it's a blog post
+            let slug = null;
+            if (type === 'blog_posts') {
+                slug = title
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+                    .replace(/\s+/g, '-')         // Replace spaces with -
+                    .replace(/-+/g, '-');         // Deduplicate sequential hyphens
+            }
+
+            const res = await apiCall('/content/publish', 'POST', { 
+                target: type === 'blog_posts' ? 'blog' : 'case_study', 
+                title, 
+                content,
+                image_url: imageUrl,
+                slug: slug
+            });
             
             btn.innerHTML = originalText;
             btn.disabled = false;
@@ -782,7 +799,7 @@
                 closePostModal();
             }
         };
-
+        
         // --- 7. DYNAMIC ORDERS ---
         async function fetchCatalog() {
             const res = await apiCall('/catalog/full');
