@@ -1006,23 +1006,20 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
 // =========================================================================
 // ================= MODULE 20: COMMUNITY SOCIAL FEED ENGINE ==========================
 // =========================================================================
-app.get('/api/feed/global', verifySystemToken, async (req, res) => {
+app.get('/api/feed/global', async (req, res) => {
     try {
-        const query = `
-            SELECT id, title, description as content, link as media_url, 'portfolio' as type, created_at, likes_count, views_count, NULL as author_name
-            FROM portfolio WHERE is_deleted = FALSE AND status = 'Approved'
-            UNION ALL
-            SELECT b.id, b.title, b.content, b.image_url as media_url, 'blog' as type, b.created_at, b.likes_count, b.views_count, u.name as author_name
-            FROM blog_posts b LEFT JOIN users u ON b.author_id = u.id WHERE b.is_deleted = FALSE AND b.status = 'Approved'
-            UNION ALL
-            SELECT c.id, c.title, c.challenge || ' ' || c.solution as content, c.image_url as media_url, 'case_study' as type, c.created_at, c.likes_count, c.views_count, u.name as author_name
-            FROM case_studies c LEFT JOIN users u ON c.author_id = u.id WHERE c.is_deleted = FALSE AND c.status = 'Approved'
-            ORDER BY created_at DESC LIMIT 50;
-        `;
-        const result = await pool.query(query);
-        res.json(result.rows);
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
+        const blogs = await pool.query("SELECT * FROM blog_posts WHERE is_approved = TRUE");
+        const studies = await pool.query("SELECT * FROM case_studies WHERE is_approved = TRUE");
+        // Ensure portfolio is fetched and included here
+        const portfolio = await pool.query("SELECT * FROM portfolio WHERE is_approved = TRUE ORDER BY created_at DESC");
+        
+        res.json({
+            blogs: blogs.rows,
+            case_studies: studies.rows,
+            portfolio: portfolio.rows // Add this
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
