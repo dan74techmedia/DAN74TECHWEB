@@ -1060,17 +1060,44 @@ app.get('/api/catalog/full', verifySystemToken, async (req, res) => {
         res.status(500).json({ error: err.message }); 
     }
 });
-
 app.post('/api/content/publish', verifySystemToken, async (req, res) => {
     try {
-        const { target, title, content } = req.body;
+        const { target, title, content, image_url } = req.body;
         const authorId = req.user.id;
-        const table = target === 'blog' ? 'blog_posts' : 'case_studies';
-        
-        await pool.query(`INSERT INTO ${table} (title, ${target === 'blog' ? 'content' : 'challenge'}, status, author_id) VALUES ($1, $2, 'pending', $3)`, [title, content, authorId]);
+
+        if (target === 'blog') {
+            // Safe fallback slug generator if client-side payload bypasses it
+            const slug = req.body.slug || title
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+
+            const queryText = `
+                INSERT INTO blog_posts (title, content, slug, image_url, status, author_id) 
+                VALUES ($1, $2, $3, $4, 'pending', $5) 
+                RETURNING *;
+            `;
+            const values = [title, content, slug, image_url || null, authorId];
+            await pool.query(queryText, values);
+            
+        } else if (target === 'case_study') {
+            const queryText = `
+                INSERT INTO case_studies (title, challenge, image_url, status, author_id) 
+                VALUES ($1, $2, $3, 'pending', $4) 
+                RETURNING *;
+            `;
+            const values = [title, content, image_url || null, authorId];
+            await pool.query(queryText, values);
+        } else {
+            return res.status(400).json({ error: "Invalid target publishing domain matrix." });
+        }
+
         res.json({ success: true });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
+    } catch (err) {
+        console.error("❌ Content Publish Execution Fault:", err.message);
+        res.status(500).json({ error: err.message });
     }
 });
 
