@@ -612,51 +612,85 @@
         };
 
         // DOM BOOTSTRAP PIPELINE
-        document.addEventListener("DOMContentLoaded", () => {
-            verifyAuthenticationClearing();
-            initializeRealtimeSystemClock();
-            switchContext('dashboard');
-            setTimeout(() => { 
-                const loader = document.getElementById('systemLoader');
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => loader.style.display = 'none', 300); 
-            }, 800);
-        });
+document.addEventListener("DOMContentLoaded", async () => {
+    // Absolute fail-safe: Force loader removal after 3.5s regardless of thread state
+    const failSafeLoader = setTimeout(() => hideSystemLoader(), 3500);
 
-        // SECURITY CLEARANCE VERIFICATION ENGINE
-        function verifyAuthenticationClearing() {
-            const token = localStorage.getItem('token');
-            if (!token) return routeToLoginGateway();
-            try {
-                const parts = token.split('.');
-                if(parts.length !== 3) throw new Error("Malformed JWT Security Exception");
-                const payload = JSON.parse(atob(parts[1]));
-                if (!payload.role || payload.role.toLowerCase() !== 'admin') { 
-                    alert("Authorization Violation: Root privileges absent."); 
-                    return invalidateSession(); 
-                }
-                document.getElementById('adminUserIdentityName').innerText = payload.name || 'DAN74TECH ADMIN';
-                document.getElementById('adminUserIdentityEmail').innerText = payload.email || 'root_access@dan74tech';
-            } catch (e) { return routeToLoginGateway(); }
+    try {
+        verifyAuthenticationClearing();
+        initializeRealtimeSystemClock();
+        await switchContext('dashboard');
+    } catch (error) {
+        console.error("Matrix Boot Sequence Halted:", error);
+        // Do not crash silently; log it, but let the loader clear
+    } finally {
+        clearTimeout(failSafeLoader);
+        hideSystemLoader();
+    }
+});
+
+function hideSystemLoader() {
+    const loader = document.getElementById('systemLoader');
+    if (loader && !loader.classList.contains('hidden')) {
+        loader.classList.add('opacity-0');
+        setTimeout(() => {
+            loader.style.display = 'none';
+            loader.classList.add('hidden');
+        }, 300);
+    }
+}
+
+// 2. BULLETPROOF JWT DECODER
+function verifyAuthenticationClearing() {
+    const token = localStorage.getItem('token');
+    if (!token) return routeToLoginGateway();
+    
+    try {
+        const parts = token.split('.');
+        if(parts.length !== 3) throw new Error("Malformed JWT Sequence");
+
+        // Sanitize Base64Url to Standard Base64 to prevent atob() DOMExceptions
+        const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+
+        if (!payload.role || payload.role.toLowerCase() !== 'admin') {
+            alert("Authorization Violation: Root privileges absent.");
+            return invalidateSession();
         }
+        document.getElementById('adminUserIdentityName').innerText = payload.name || 'DAN74TECH ADMIN';
+        document.getElementById('adminUserIdentityEmail').innerText = payload.email || 'root_access@dan74tech';
+    } catch (e) {
+        console.error("Token decoding fault. Routing to login...", e);
+        return routeToLoginGateway();
+    }
+}
 
-        function routeToLoginGateway() { window.location.href = '/login.html'; }
-        function invalidateSession() { localStorage.removeItem('token'); localStorage.removeItem('user'); routeToLoginGateway(); }
+// 3. TIMEZONE FALLBACK HANDLER
+function initializeRealtimeSystemClock() {
+    try {
+        setInterval(() => {
+            const options = { timeZone: 'Africa/Nairobi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            document.getElementById('matrixLiveClock').innerText = new Date().toLocaleTimeString('en-GB', options);
+        }, 1000);
 
-        // LIVE SYSTEM METRICS CLOCK
-        function initializeRealtimeSystemClock() {
-            setInterval(() => {
-                const date = new Date();
-                const options = { timeZone: 'Africa/Nairobi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-                document.getElementById('matrixLiveClock').innerText = date.toLocaleTimeString('en-GB', options);
-            }, 1000);
-            
-            const formatter = new Intl.DateTimeFormat('en-GB', { 
-                timeZone: 'Africa/Nairobi', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' 
-            });
-            document.getElementById('backup-timestamp').innerText = formatter.format(new Date());
-                    }
-
+        const formatter = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Africa/Nairobi', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit'
+        });
+        document.getElementById('backup-timestamp').innerText = formatter.format(new Date());
+    } catch (err) {
+        // If device kernel lacks IANA data, fallback to local timezone
+        console.warn("Timezone missing in device kernel. Using local time fallback.");
+        setInterval(() => {
+            document.getElementById('matrixLiveClock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+        document.getElementById('backup-timestamp').innerText = new Date().toLocaleString();
+    }
+                                       }
+        
        // NAVIGATION ARCHITECTURE ENGINE
         async function switchContext(targetContext) {
             currentContext = targetContext;
