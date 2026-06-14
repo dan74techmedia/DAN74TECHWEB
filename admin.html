@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DAN74TECH MEDIA — Unified Operations Control Matrix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,11 +27,13 @@
                         },
                         bg: {
                             light: '#f8fafc',
-                            white: '#ffffff'
+                            white: '#ffffff',
+                            dark: '#0b0f19'
                         },
                         text: {
                             main: '#0f172a',
-                            muted: '#475569'
+                            muted: '#475569',
+                            darkMuted: '#9ca3af'
                         }
                     }
                 }
@@ -50,18 +52,24 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #0044ff; }
         
+        /* Dark Sidebar Specific Scrollbar */
+        #sidebarNav::-webkit-scrollbar-track { background: #0b0f19; }
+        #sidebarNav::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        #sidebarNav::-webkit-scrollbar-thumb:hover { background: #374151; }
+
         .sidebar-link {
             transition: all 0.2s ease-in-out;
+            color: #9ca3af;
         }
         .sidebar-link.active { 
-            background-color: #eff6ff; 
+            background-color: rgba(17, 24, 39, 0.8); 
             border-left: 4px solid #0044ff; 
-            color: #0044ff; 
+            color: #ffffff; 
             font-weight: 700;
         }
         .sidebar-link:hover:not(.active) {
-            background-color: #f1f5f9;
-            color: #0044ff;
+            background-color: rgba(31, 41, 55, 0.5);
+            color: #ffffff;
         }
         
         .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
@@ -77,9 +85,9 @@
         }
     </style>
 </head>
-<body class="antialiased selection:bg-[#0044ff] selection:text-white flex h-screen overflow-hidden">
+<body class="antialiased selection:bg-[#0044ff] selection:text-white flex h-[100dvh] overflow-hidden">
 
-    <div id="systemLoader" class="fixed inset-0 z-50 flex items-center justify-center glass-loader transition-opacity duration-300">
+    <div id="systemLoader" class="fixed inset-0 z-[100] flex items-center justify-center glass-loader transition-opacity duration-300">
         <div class="flex flex-col items-center gap-4">
             <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-100 border-t-[#0044ff]"></div>
             <div class="flex items-center gap-2">
@@ -89,8 +97,8 @@
         </div>
     </div>
 
-    <div id="uploadLoaderOverlay" class="fixed inset-0 z-[60] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
-        <div class="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center gap-4 max-w-xs w-full">
+    <div id="uploadLoaderOverlay" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-xl shadow-xl flex flex-col items-center gap-4 max-w-xs w-full mx-4">
             <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#0044ff] animate-bounce"></i>
             <p class="text-xs font-bold font-mono text-gray-800 text-center" id="uploadLoaderText">Transmitting Binary Data to CDN...</p>
             <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
@@ -99,169 +107,180 @@
         </div>
     </div>
 
-    <aside class="w-64 h-full flex flex-col bg-white border-r border-gray-200 z-20 shrink-0 shadow-sm overflow-hidden">
-        <div class="h-16 border-b border-gray-100 flex items-center gap-3 px-6 shrink-0">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm">
-                <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center overflow-hidden">
-                    <i class="fa-solid fa-microchip text-[#0044ff] text-xs"></i>
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-[#0b0f19]/80 z-[60] hidden backdrop-blur-sm transition-opacity" onclick="toggleMobileSidebar()"></div>
+
+    <aside id="mainSidebar" class="w-64 h-full flex flex-col bg-[#0b0f19] border-r border-gray-900 z-[70] fixed md:relative transform -translate-x-full md:translate-x-0 transition-transform duration-300 shrink-0 shadow-2xl md:shadow-none">
+        <div class="h-16 border-b border-gray-800 flex items-center justify-between gap-3 px-6 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm">
+                    <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-microchip text-[#0044ff] text-xs"></i>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-sm font-extrabold tracking-tight text-white font-mono leading-none">ADMIN<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">PANEL</span></span>
+                    <span class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 leading-none">System Admin</span>
                 </div>
             </div>
-            <div class="flex flex-col">
-                <span class="text-sm font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">ADMIN<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">PANEL</span></span>
-                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">System Admin</span>
-            </div>
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-gray-400 hover:text-white p-1 text-lg focus:outline-none">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
         
         <nav class="flex-1 overflow-y-auto py-4 space-y-0.5" id="sidebarNav">
-            <button onclick="switchContext('dashboard')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide active" data-tab="dashboard">
+            <button onclick="switchContext('dashboard')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide active" data-tab="dashboard">
                 <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i> Dashboard
             </button>
             
-            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Subscribers & Clients</div>
-            <button onclick="switchContext('users')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="users">
+            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-600 uppercase font-mono">Subscribers & Clients</div>
+            <button onclick="switchContext('users')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="users">
                 <i class="fa-solid fa-user-shield w-4 text-center text-sm"></i> Users
             </button>
-            <button onclick="switchContext('subscribers')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="subscribers">
+            <button onclick="switchContext('subscribers')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="subscribers">
                 <i class="fa-solid fa-users-viewfinder w-4 text-center text-sm"></i>Subscribers
             </button>
 
-            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Commerce</div>
-            <button onclick="switchContext('orders')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="orders">
+            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-600 uppercase font-mono">Commerce</div>
+            <button onclick="switchContext('orders')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="orders">
                 <i class="fa-solid fa-folder-tree w-4 text-center text-sm"></i> Orders
             </button>
-            <button onclick="switchContext('invoices')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="invoices">
+            <button onclick="switchContext('invoices')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="invoices">
                 <i class="fa-solid fa-file-invoice-dollar w-4 text-center text-sm"></i> Invoices
             </button>
-            <button onclick="switchContext('mpesa_transactions')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="mpesa_transactions">
+            <button onclick="switchContext('mpesa_transactions')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="mpesa_transactions">
                 <i class="fa-solid fa-money-bill-transfer w-4 text-center text-sm"></i> Mpesa Transactions(on hold)
             </button>
 
-            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Systems & Data</div>
-            <button onclick="switchContext('services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="services">
+            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-600 uppercase font-mono">Systems & Data</div>
+            <button onclick="switchContext('services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="services">
                 <i class="fa-solid fa-cubes w-4 text-center text-sm"></i> Main Services
             </button>
-            <button onclick="switchContext('sub_services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="sub_services">
+            <button onclick="switchContext('sub_services')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="sub_services">
                 <i class="fa-solid fa-tags w-4 text-center text-sm"></i> Sub Services/Packages
             </button>
-            <button onclick="switchContext('file_deliveries')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="file_deliveries">
+            <button onclick="switchContext('file_deliveries')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="file_deliveries">
                 <i class="fa-solid fa-cloud-arrow-up w-4 text-center text-sm"></i> Files Deliveries
             </button>
 
-            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Media & Publications</div>
-            <button onclick="switchContext('portfolio')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="portfolio">
+            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-600 uppercase font-mono">Media & Publications</div>
+            <button onclick="switchContext('portfolio')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="portfolio">
                 <i class="fa-solid fa-briefcase w-4 text-center text-sm"></i> Portfolio Assets
             </button>
-            <button onclick="switchContext('blog_posts')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="blog_posts">
+            <button onclick="switchContext('blog_posts')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="blog_posts">
                 <i class="fa-solid fa-newspaper w-4 text-center text-sm"></i> Blogs Engine
             </button>
-            <button onclick="switchContext('case_studies')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="case_studies">
+            <button onclick="switchContext('case_studies')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="case_studies">
                 <i class="fa-solid fa-graduation-cap w-4 text-center text-sm"></i> Case Studies
             </button>
-            <button onclick="switchContext('testimonials')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="testimonials">
+            <button onclick="switchContext('testimonials')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="testimonials">
                 <i class="fa-solid fa-comment-dots w-4 text-center text-sm"></i> Reviews/Testimonials
             </button>
-            <button onclick="switchContext('media_library')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="media_library">
+            <button onclick="switchContext('media_library')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="media_library">
                 <i class="fa-solid fa-photo-film w-4 text-center text-sm"></i> Gallery
             </button>
 
-            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase font-mono">Communications</div>
-            <button onclick="switchContext('consultations')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="consultations">
+            <div class="pt-4 pb-2 px-6 text-[9px] font-extrabold tracking-widest text-gray-600 uppercase font-mono">Communications</div>
+            <button onclick="switchContext('consultations')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="consultations">
                 <i class="fa-solid fa-calendar-check w-4 text-center text-sm"></i> Consultations
             </button>
-            <button onclick="switchContext('support_tickets')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="support_tickets">
+            <button onclick="switchContext('support_tickets')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="support_tickets">
                 <i class="fa-solid fa-headset w-4 text-center text-sm"></i> Support Tickets
             </button>
-            <button onclick="switchContext('messages')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="messages">
-                <i class="fa-solid fa-envelope-open-text w-4 text-center text-sm"></i> Public Inquiries to Admin
+            <button onclick="switchContext('messages')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="messages">
+                <i class="fa-solid fa-envelope-open-text w-4 text-center text-sm"></i> Public Inquiries
             </button>
-            <button onclick="switchContext('client_communications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="client_communications">
+            <button onclick="switchContext('client_communications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="client_communications">
                 <i class="fa-solid fa-shield-halved w-4 text-center text-sm"></i>Subscribers Chat
             </button>
-            <button onclick="switchContext('notifications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="notifications">
+            <button onclick="switchContext('notifications')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="notifications">
                 <i class="fa-solid fa-bell w-4 text-center text-sm"></i> Alerts Hub
             </button>
-            <button onclick="switchContext('email_campaigns')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-gray-600 text-xs font-semibold tracking-wide" data-tab="email_campaigns">
+            <button onclick="switchContext('email_campaigns')" class="sidebar-link w-full flex items-center gap-3 px-6 py-2.5 text-xs font-semibold tracking-wide" data-tab="email_campaigns">
                 <i class="fa-solid fa-bullhorn w-4 text-center text-sm"></i> Bulk Mailings
             </button>
         </nav>
-        
-        <div class="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between shrink-0">
+        <div class="p-4 border-t border-gray-800 bg-[#0b0f19] flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3 overflow-hidden">
-                <div class="h-8 w-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#0044ff] shadow-sm"><i class="fa-solid fa-user-shield text-xs"></i></div>
+                <div class="h-8 w-8 rounded-full bg-gray-900 border border-gray-700 flex items-center justify-center text-[#0044ff] shadow-sm shrink-0"><i class="fa-solid fa-user-shield text-xs"></i></div>
                 <div class="truncate">
-                    <p class="text-xs font-bold text-gray-900 truncate" id="adminUserIdentityName">Loading...</p>
+                    <p class="text-xs font-bold text-white truncate" id="adminUserIdentityName">Loading...</p>
                     <p class="text-[10px] text-gray-500 font-mono truncate" id="adminUserIdentityEmail">Authenticating matrix...</p>
                 </div>
             </div>
-            <button onclick="invalidateSession()" class="text-gray-400 hover:text-[#ff2a2a] p-1.5 rounded-md hover:bg-red-50 transition-colors duration-150" title="Secure Logout">
+            <button onclick="invalidateSession()" class="text-gray-500 hover:text-[#ff2a2a] p-1.5 rounded-md hover:bg-gray-800 transition-colors duration-150 shrink-0" title="Secure Logout">
                 <i class="fa-solid fa-power-off text-sm"></i>
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden bg-bg-light relative">
-        <header class="h-16 border-b border-gray-200 bg-white/90 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-10 shadow-sm">
-            <div class="flex items-center gap-4">
-                <h2 class="text-lg font-extrabold text-gray-900 tracking-tight" id="workspaceActiveHeader">Dashboard Engine</h2>
-                <div class="px-2.5 py-0.5 rounded flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200">
-                    <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live
+    <main class="flex-1 flex flex-col overflow-hidden bg-bg-light relative w-full">
+        <header class="h-16 border-b border-gray-200 bg-white/90 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shrink-0 z-10 shadow-sm w-full">
+            <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
+                <button onclick="toggleMobileSidebar()" class="md:hidden p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors focus:outline-none shrink-0">
+                    <i class="fa-solid fa-bars-staggered text-lg"></i>
+                </button>
+                <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 truncate">
+                    <h2 class="text-base md:text-lg font-extrabold text-gray-900 tracking-tight truncate" id="workspaceActiveHeader">Dashboard Engine</h2>
+                    <div class="hidden sm:flex px-2.5 py-0.5 rounded items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0 w-max">
+                        <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span> Live
+                    </div>
                 </div>
             </div>
             
-            <div class="flex items-center gap-5">
-                <div class="text-right hidden md:block">
+            <div class="flex items-center gap-3 md:gap-5 shrink-0">
+                <div class="text-right hidden sm:block">
                     <p class="text-xs text-gray-900 font-mono font-bold tracking-tight" id="matrixLiveClock">00:00:00</p>
                     <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">EAT</p>
                 </div>
-                <div class="h-8 w-[1px] bg-gray-200 hidden md:block"></div>
-                <button onclick="triggerSystemBackup()" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-xs font-bold hover:bg-gray-50 text-gray-700 shadow-sm transition-all flex items-center gap-2 group">
-                    <i class="fa-solid fa-database text-[#0044ff] group-hover:scale-110 transition-transform"></i> Auto Messages Backup
+                <div class="h-8 w-[1px] bg-gray-200 hidden sm:block"></div>
+                <button onclick="triggerSystemBackup()" class="px-3 md:px-4 py-2 rounded-lg border border-gray-200 bg-white text-xs font-bold hover:bg-gray-50 text-gray-700 shadow-sm transition-all flex items-center gap-2 group whitespace-nowrap">
+                    <i class="fa-solid fa-database text-[#0044ff] group-hover:scale-110 transition-transform"></i> <span class="hidden md:inline">Auto Messages Backup</span><span class="md:hidden">Backup</span>
                 </button>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 md:p-8" id="workspaceScrollBody">
-            <section id="ctx-dashboard" class="space-y-8 animate-fadeIn">
-                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 w-full" id="workspaceScrollBody">
+            <section id="ctx-dashboard" class="space-y-6 md:space-y-8 animate-fadeIn w-full max-w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
                         <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Total KSH Count</p>
-                        <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-earnings">Ksh 0</p>
+                        <p class="text-lg md:text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-earnings">Ksh 0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-vault"></i></div>
                     </div>
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
                         <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Active Orders</p>
-                        <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-orders">0</p>
+                        <p class="text-lg md:text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-orders">0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-truck-ramp-box"></i></div>
                     </div>
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
-                        <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Pending Queue (Posts/Projects)</p>
-                        <p class="text-xl font-extrabold text-[#ffd700] mt-1 font-mono tracking-tight" id="stat-pending-orders">0</p>
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Pending Queue</p>
+                        <p class="text-lg md:text-xl font-extrabold text-[#ffd700] mt-1 font-mono tracking-tight" id="stat-pending-orders">0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#ffd700]"><i class="fa-solid fa-clock-rotate-left"></i></div>
                     </div>
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
                         <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">User Profiles</p>
-                        <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-users">0</p>
+                        <p class="text-lg md:text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-users">0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#0044ff]"><i class="fa-solid fa-users"></i></div>
                     </div>
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
                         <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Open Tickets</p>
-                        <p class="text-xl font-extrabold text-[#ff2a2a] mt-1 font-mono tracking-tight" id="stat-tickets">0</p>
+                        <p class="text-lg md:text-xl font-extrabold text-[#ff2a2a] mt-1 font-mono tracking-tight" id="stat-tickets">0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-[#ff2a2a]"><i class="fa-solid fa-circle-exclamation"></i></div>
                     </div>
-                    <div class="p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="p-4 md:p-5 rounded-xl bg-white border border-gray-100 shadow-sm relative overflow-hidden group">
                         <p class="text-[10px] font-extrabold text-gray-400 tracking-wider uppercase font-mono">Consultations</p>
-                        <p class="text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-consultations">0</p>
+                        <p class="text-lg md:text-xl font-extrabold text-gray-900 mt-1 font-mono tracking-tight" id="stat-consultations">0</p>
                         <div class="absolute -bottom-2 -right-2 opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl text-gray-400"><i class="fa-solid fa-calendar-check"></i></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+                    <div class="p-4 md:p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
                         <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                            <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fa-solid fa-fire text-[#ff2a2a] mr-1.5"></i> Critical Task Queue</h3>
+                            <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center"><i class="fa-solid fa-fire text-[#ff2a2a] mr-1.5"></i> Critical Task Queue</h3>
                             <button onclick="switchContext('orders')" class="text-[10px] font-bold text-[#0044ff] hover:underline uppercase tracking-wide font-mono">Jump to Registry</button>
                         </div>
-                        <div class="flex-1 overflow-y-auto space-y-3 pr-2" id="dashboardPendingOrdersList">
+                        <div class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar" id="dashboardPendingOrdersList">
                             <div class="flex flex-col items-center justify-center h-full text-gray-400">
                                 <i class="fa-solid fa-check-double text-2xl mb-2 text-gray-200"></i>
                                 <p class="text-xs font-medium">Clear All.</p>
@@ -269,85 +288,85 @@
                         </div>
                     </div>
                     
-                    <div class="p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
+                    <div class="p-4 md:p-6 rounded-xl bg-white border border-gray-100 shadow-sm flex flex-col h-[400px]">
                         <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                            <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider"><i class="fa-solid fa-server text-[#0044ff] mr-1.5"></i>DATABASE SYNC</h3>
+                            <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center"><i class="fa-solid fa-server text-[#0044ff] mr-1.5"></i>DATABASE SYNC</h3>
                             <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-50 border border-emerald-100">
                                 <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                                 <span class="text-[9px] font-bold text-emerald-600 font-mono">HEALTHY</span>
                             </div>
                         </div>
-                        <div class="bg-gray-900 p-5 rounded-lg font-mono text-[11px] text-green-400 flex-1 space-y-3 overflow-y-auto shadow-inner border border-gray-800">
-                            <div><span class="text-blue-400">DATABASE</span>PostgreSQL (Neon)</div>
+                        <div class="bg-gray-900 p-4 md:p-5 rounded-lg font-mono text-[10px] md:text-[11px] text-green-400 flex-1 space-y-3 overflow-y-auto shadow-inner border border-gray-800 custom-scrollbar">
+                            <div><span class="text-blue-400">DATABASE: </span>PostgreSQL (Neon)</div>
                             <div class="text-gray-300">► STATUS: <span class="text-emerald-400 font-bold">ONLINE</span></div>
                             <div class="text-gray-300">► TARGET: <span class="text-yellow-400">MESSAGES TABLE</span></div>
                             <div class="text-gray-300">► SCHEDULED AT: <span class="text-blue-300">AUTO (02:00 EAT)</span></div>
-                            <div class="text-gray-300">► LAST DASHBOARD REFRESH: <span id="backup-timestamp" class="text-gray-100">Synchronizing...</span></div>
+                            <div class="text-gray-300">► LAST DASHBOARD REFRESH: <br class="md:hidden"><span id="backup-timestamp" class="text-gray-100">Synchronizing...</span></div>
                             <div class="pt-4 mt-4 border-t border-gray-800 flex gap-2">
-                                <button onclick="triggerSystemBackup()" class="px-4 py-1.5 bg-[#0044ff] text-white font-sans font-bold text-[10px] rounded hover:bg-blue-600 transition-colors shadow-sm tracking-wide">MAUALLY UPDATE</button>
+                                <button onclick="triggerSystemBackup()" class="px-4 py-1.5 bg-[#0044ff] text-white font-sans font-bold text-[10px] rounded hover:bg-blue-600 transition-colors shadow-sm tracking-wide">MANUALLY UPDATE</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section id="ctx-registry" class="hidden space-y-6 animate-fadeIn">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <div class="relative max-w-sm w-full">
+            <section id="ctx-registry" class="hidden space-y-4 md:space-y-6 animate-fadeIn w-full max-w-full">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm w-full">
+                    <div class="relative w-full md:max-w-sm">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-sm">
-                            <i class="fa-solid fa-magnifying-glass">Search for records</i>
+                            <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
                         <input type="text" id="registryGlobalSearch" oninput="executeRegistrySearch()" placeholder="Scan database vectors..." class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] text-gray-900 transition-all font-mono">
                     </div>
                     
-                    <div class="flex items-center gap-3 self-end sm:self-auto">
-                        <button id="btnBulkDelete" onclick="executeBulkActionSoftDelete()" class="hidden px-4 py-2 bg-red-50 border border-red-200 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="bulkDeleteCount">0</span>)
+                    <div class="flex flex-wrap items-center gap-2 md:gap-3 justify-end">
+                        <button id="btnBulkDelete" onclick="executeBulkActionSoftDelete()" class="hidden px-3 py-2 bg-red-50 border border-red-200 text-[#ff2a2a] rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-2 shadow-sm whitespace-nowrap">
+                            <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Delete Selected</span> (<span id="bulkDeleteCount">0</span>)
                         </button>
-                        <button id="btnRegistryAddRecord" onclick="openCreateRecordModal()" class="px-4 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm">
+                        <button id="btnRegistryAddRecord" onclick="openCreateRecordModal()" class="px-4 py-2 bg-[#0044ff] text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm whitespace-nowrap">
                             <i class="fa-solid fa-plus"></i> New Record
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto w-full">
-                        <table class="w-full text-left border-collapse" id="primaryOpsGrid">
+                <div class="bg-white border border-gray-100 rounded-xl shadow-sm w-full overflow-hidden flex flex-col">
+                    <div class="overflow-x-auto w-full custom-scrollbar">
+                        <table class="w-full min-w-max text-left border-collapse" id="primaryOpsGrid">
                             <thead class="bg-gray-50 border-b border-gray-100 text-[10px] font-extrabold text-gray-500 tracking-wider uppercase font-mono whitespace-nowrap">
                                 <tr id="gridHeaderRow"></tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-xs text-gray-700 whitespace-nowrap" id="gridBodyRows"></tbody>
                         </table>
                     </div>
-                    <div id="gridEmptyFallback" class="hidden p-16 text-center text-gray-400 flex flex-col items-center justify-center">
+                    <div id="gridEmptyFallback" class="hidden p-10 md:p-16 text-center text-gray-400 flex flex-col items-center justify-center">
                         <div class="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 border border-gray-100">
                             <i class="fa-solid fa-database text-2xl text-gray-300 block"></i>
                         </div>
-                        <p class="text-sm font-bold text-gray-600">No results found matching</p>
-                        <p class="text-xs mt-1 font-mono">Database returned zero matching records.</p>
+                        <p class="text-sm font-bold text-gray-600">No results found</p>
+                        <p class="text-[10px] md:text-xs mt-1 font-mono text-center px-4">Database returned zero matching records.</p>
                     </div>
                 </div>
             </section>
         </div>
     </main>
 
-    <div id="crudSystemModal" class="fixed inset-0 z-[55] hidden flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl flex flex-col my-auto animate-zoomIn border border-gray-100">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between shrink-0">
-                <div>
-                    <h4 class="text-sm font-extrabold text-gray-900 tracking-tight" id="modalActionTitle">Pause Component</h4>
-                    <p class="text-[10px] text-gray-500 font-mono mt-0.5 uppercase tracking-wider" id="modalActionSubtitle">Database Recordings</p>
+    <div id="crudSystemModal" class="fixed inset-0 z-[80] hidden flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-xl sm:rounded-2xl shadow-2xl flex flex-col my-auto animate-zoomIn border border-gray-100 max-h-[95dvh]">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between shrink-0 rounded-t-xl sm:rounded-t-2xl">
+                <div class="truncate pr-4">
+                    <h4 class="text-sm font-extrabold text-gray-900 tracking-tight truncate" id="modalActionTitle">Pause Component</h4>
+                    <p class="text-[10px] text-gray-500 font-mono mt-0.5 uppercase tracking-wider truncate" id="modalActionSubtitle">Database Recordings</p>
                 </div>
-                <button onclick="closeCrudSystemModal()" class="text-gray-400 hover:text-gray-900 text-lg transition-colors p-1 bg-white rounded shadow-sm border border-gray-100"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeCrudSystemModal()" class="text-gray-400 hover:text-gray-900 text-lg transition-colors p-1 bg-white rounded shadow-sm border border-gray-100 shrink-0"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <form id="dynamicInputSchemaForm" onsubmit="commitFormPayload(event)" class="flex flex-col max-h-[80vh]">
-                <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
-                    <div id="dynamicFormFieldsAnchor" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm"></div>
+            <form id="dynamicInputSchemaForm" onsubmit="commitFormPayload(event)" class="flex flex-col overflow-hidden">
+                <div class="p-4 sm:p-6 overflow-y-auto flex-1 custom-scrollbar">
+                    <div id="dynamicFormFieldsAnchor" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-sm"></div>
                 </div>
-                <div class="p-5 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3 shrink-0">
-                    <button type="button" onclick="closeCrudSystemModal()" class="px-5 py-2.5 rounded-lg text-xs font-bold text-gray-600 bg-white hover:bg-gray-100 border border-gray-200 transition-all shadow-sm">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 bg-[#0044ff] text-white font-bold rounded-lg text-xs hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all flex items-center gap-2">
+                <div class="p-4 sm:p-5 border-t border-gray-100 bg-gray-50 flex flex-wrap items-center justify-end gap-3 shrink-0 rounded-b-xl sm:rounded-b-2xl">
+                    <button type="button" onclick="closeCrudSystemModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs font-bold text-gray-600 bg-white hover:bg-gray-100 border border-gray-200 transition-all shadow-sm">Cancel</button>
+                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-[#0044ff] text-white font-bold rounded-lg text-xs hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-cloud-arrow-up"></i> SUBMIT 
                     </button>
                 </div>
@@ -367,6 +386,20 @@
         let selectedRowVectorIds = [];
         let contextRowMutationTargetId = null;
         const relationalDataCache = {}; 
+
+        // MOBILE SIDEBAR TOGGLE FUNCTION
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+            // Prevent body scroll when mobile sidebar is open
+            if (!overlay.classList.contains('hidden')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
 
         // UNIVERSAL FULL-SCHEMA DICTIONARY MAPPING
         // Keys strictly match PostgreSQL database mapping
@@ -390,7 +423,7 @@
                 columns: ['id', 'name', 'icon', 'description', 'created_at']
             },
             sub_services: {
-                fields: {
+                fields: {f
                     service_id: { label: 'Main Service', type: 'relation', relation: { table: 'services', label: 'name' }, required: true },
                     name: { label: 'Package Name', type: 'text', required: true },
                     price: { label: 'Cost(Ksh)', type: 'number', required: false },
@@ -622,14 +655,22 @@
                 timeZone: 'Africa/Nairobi', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' 
             });
             document.getElementById('backup-timestamp').innerText = formatter.format(new Date());
-        }
+                    }
 
-        // NAVIGATION ARCHITECTURE ENGINE
+       // NAVIGATION ARCHITECTURE ENGINE
         async function switchContext(targetContext) {
             currentContext = targetContext;
             selectedRowVectorIds = [];
             updateBulkActionControlsUI();
             
+            // Auto close mobile sidebar on navigation click
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('mainSidebar');
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    toggleMobileSidebar();
+                }
+            }
+
             document.querySelectorAll('#sidebarNav .sidebar-link').forEach(el => el.classList.remove('active'));
             const activeTabButton = document.querySelector(`#sidebarNav [data-tab="${targetContext}"]`);
             if (activeTabButton) activeTabButton.classList.add('active');
@@ -645,7 +686,7 @@
                 await syncDashboardKPIAnalytics();
             } else {
                 const formattedTitle = targetContext.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                workspaceTitleHeader.innerText = `Registry Stream: ${formattedTitle}`;
+                workspaceTitleHeader.innerText = `Registry: ${formattedTitle}`;
                 dashboardLayoutSegment.classList.add('hidden');
                 dataGridLayoutSegment.classList.remove('hidden');
                 
@@ -696,11 +737,11 @@
                         pendings.forEach(ord => {
                             container.innerHTML += `
                                 <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-between text-xs transition-all hover:border-[#0044ff]/20">
-                                    <div>
-                                        <p class="font-extrabold text-gray-900">${ord.customer_name}</p>
-                                        <p class="text-[10px] text-gray-500 mt-0.5">${ord.service} — <span class="font-mono text-[#0044ff] font-bold">Ksh ${ord.price || 0}</span></p>
+                                    <div class="truncate max-w-[60%]">
+                                        <p class="font-extrabold text-gray-900 truncate">${ord.customer_name}</p>
+                                        <p class="text-[10px] text-gray-500 mt-0.5 truncate">${ord.service} — <span class="font-mono text-[#0044ff] font-bold">Ksh ${ord.price || 0}</span></p>
                                     </div>
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide bg-amber-50 text-amber-600 border border-amber-200">Pending Block</span>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide bg-amber-50 text-amber-600 border border-amber-200 shrink-0">Pending</span>
                                 </div>`;
                         });
                     }
@@ -718,11 +759,11 @@
             const fallbackAnchor = document.getElementById('gridEmptyFallback');
 
             // Render Header Definitions
-            headerRowAnchor.innerHTML = `<th class="p-4 w-4"><input type="checkbox" onchange="toggleSelectAllRowsMatrix(this)" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></th>`;
+            headerRowAnchor.innerHTML = `<th class="p-3 md:p-4 w-4"><input type="checkbox" onchange="toggleSelectAllRowsMatrix(this)" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></th>`;
             schemaDef.columns.forEach(col => {
-                headerRowAnchor.innerHTML += `<th class="p-4 tracking-wider text-[10px] font-extrabold uppercase">${col.replace(/_/g, ' ')}</th>`;
+                headerRowAnchor.innerHTML += `<th class="p-3 md:p-4 tracking-wider text-[10px] font-extrabold uppercase">${col.replace(/_/g, ' ')}</th>`;
             });
-            headerRowAnchor.innerHTML += `<th class="p-4 text-right">Node Executions</th>`;
+            headerRowAnchor.innerHTML += `<th class="p-3 md:p-4 text-right">Node Executions</th>`;
 
             try {
                 const targetEndpoint = `${SYSTEM_API_BASE_URL}/admin/${currentContext}?search=${encodeURIComponent(registrySearchQuery)}&limit=250`;
@@ -742,7 +783,7 @@
                 records.forEach(row => {
                     const isChecked = selectedRowVectorIds.includes(row.id);
                     let rowHtmlStr = `<tr class="hover:bg-blue-50/50 transition-colors border-b border-gray-100 ${isChecked ? 'bg-blue-50/50' : ''}">`;
-                    rowHtmlStr += `<td class="p-4"><input type="checkbox" data-row-id="${row.id}" ${isChecked ? 'checked' : ''} onchange="toggleSingleRowMatrix(this, ${row.id})" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></td>`;
+                    rowHtmlStr += `<td class="p-3 md:p-4"><input type="checkbox" data-row-id="${row.id}" ${isChecked ? 'checked' : ''} onchange="toggleSingleRowMatrix(this, ${row.id})" class="rounded border-gray-300 text-[#0044ff] focus:ring-[#0044ff]"></td>`;
                     
                     schemaDef.columns.forEach(col => {
                         let dynamicValue = row[col];
@@ -783,35 +824,34 @@
                             }
                         }
                         
-                        rowHtmlStr += `<td class="p-4 truncate max-w-[200px] font-medium text-gray-700">${dynamicValue}</td>`;
+                        rowHtmlStr += `<td class="p-3 md:p-4 truncate max-w-[150px] md:max-w-[200px] font-medium text-gray-700">${dynamicValue}</td>`;
                     });
 
                     // Action Extension Pipes
                     let extActions = '';
                     if (currentContext === 'invoices' && row.status !== '—') {
-                        extActions = `<button onclick="dispatchInvoiceDownload(${row.id})" class="p-1.5 text-gray-400 hover:text-[#0044ff] transition-colors" title="Export Stream Document"><i class="fa-solid fa-file-pdf"></i></button>`;
+                        extActions = `<button onclick="dispatchInvoiceDownload(${row.id})" class="p-1.5 md:p-2 text-gray-400 hover:text-[#0044ff] transition-colors" title="Export Stream Document"><i class="fa-solid fa-file-pdf"></i></button>`;
                     }
                     if (currentContext === 'orders' && row.phone) {
                         const encryptedText = encodeURIComponent(`Hello ${row.customer_name}, this is system notification from DAN74TECH MEDIA regarding structural details of your deployment.`);
-                        extActions = `<a href="https://wa.me/${row.phone}?text=${encryptedText}" target="_blank" class="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors" title="Launch Whatsapp Link Pipe"><i class="fa-brands fa-whatsapp text-sm"></i></a>`;
+                        extActions = `<a href="https://wa.me/${row.phone}?text=${encryptedText}" target="_blank" class="p-1.5 md:p-2 text-gray-400 hover:text-emerald-500 transition-colors" title="Launch Whatsapp Link Pipe"><i class="fa-brands fa-whatsapp text-sm md:text-base"></i></a>`;
                     }
 
                     const allowsEdit = Object.keys(schemaDef.fields).length > 0;
 
                     rowHtmlStr += `
-                        <td class="p-4 text-right space-x-1 whitespace-nowrap">
+                        <td class="p-3 md:p-4 text-right space-x-1 whitespace-nowrap">
                             ${extActions}
-                            ${allowsEdit ? `<button onclick="openUpdateRecordModal(${row.id})" class="p-1.5 text-gray-400 hover:text-[#0044ff] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-blue-200" title="Mutate Sequence"><i class="fa-solid fa-pen"></i></button>` : ''}
-                            <button onclick="executeSingleRowSoftDelete(${row.id})" class="p-1.5 text-gray-400 hover:text-[#ff2a2a] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-red-200" title="Destruct Record Target"><i class="fa-solid fa-trash"></i></button>
+                            ${allowsEdit ? `<button onclick="openUpdateRecordModal(${row.id})" class="p-1.5 md:p-2 text-gray-400 hover:text-[#0044ff] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-blue-200" title="Mutate Sequence"><i class="fa-solid fa-pen"></i></button>` : ''}
+                            <button onclick="executeSingleRowSoftDelete(${row.id})" class="p-1.5 md:p-2 text-gray-400 hover:text-[#ff2a2a] transition-colors bg-white rounded shadow-sm border border-gray-100 hover:border-red-200" title="Destruct Record Target"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     `;
                     rowHtmlStr += `</tr>`;
                     gridBodyRowsAnchor.innerHTML += rowHtmlStr;
                 });
             } catch (err) { console.error("Grid Render Mapping Trace Failure:", err); }
-        }
-
-        // DEBOUNCE SEARCH FIELD TRACKER
+                    }
+           // DEBOUNCE SEARCH FIELD TRACKER
         let searchDebounceMatrixTimer = null;
         function executeRegistrySearch() {
             clearTimeout(searchDebounceMatrixTimer);
@@ -929,7 +969,7 @@
                 const initialValue = initialRowDataset ? (initialRowDataset[fieldName] !== null ? initialRowDataset[fieldName] : '') : '';
 
                 const fieldWrapperNode = document.createElement('div');
-                fieldWrapperNode.className = "flex flex-col gap-1.5 animate-fadeIn animate-duration-200";
+                fieldWrapperNode.className = "flex flex-col gap-1.5 animate-fadeIn animate-duration-200 w-full";
                 fieldWrapperNode.setAttribute('data-field-name', fieldName);
 
                 const labelElement = document.createElement('label');
@@ -937,21 +977,20 @@
                 labelElement.innerHTML = `${config.label} ${config.required ? '<span class="text-[#ff2a2a] text-xs">*</span>' : ''}`;
                 fieldWrapperNode.appendChild(labelElement);
 
-                const baseStyles = "w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:bg-white transition-all duration-200 
-                    disabled:opacity-40 disabled:bg-gray-200/60 disabled:cursor-not-allowed disabled:border-gray-300";
+                const baseStyles = "w-full text-xs font-medium px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:bg-white transition-all duration-200 disabled:opacity-40 disabled:bg-gray-200/60 disabled:cursor-not-allowed disabled:border-gray-300";
 
                 let inputMarkup = '';
 
                 if (config.type === 'relation' && config.relation) {
                     const dataPool = relationalDataCache[config.relation.table] || [];
-                    let optsStr = `<option value="">Selectx</option>`;
+                    let optsStr = `<option value="">Select Option</option>`;
                     dataPool.forEach(node => {
                         const isSel = String(node.id) === String(initialValue);
                         optsStr += `<option value="${node.id}" ${isSel ? 'selected' : ''}>${node[config.relation.label]}</option>`;
                     });
                     inputMarkup = `<select name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles}">${optsStr}</select>`;
                 } else if (config.type === 'textarea') {
-                    inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none">${initialValue}</textarea>`;
+                    inputMarkup = `<textarea name="${fieldName}" rows="3" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="${baseStyles} resize-none w-full">${initialValue}</textarea>`;
                 } else if (config.type === 'select') {
                     let optsStr = '';
                     config.options.forEach(opt => {
@@ -970,9 +1009,9 @@
                     `;
                 } else if (config.type === 'file') {
                     inputMarkup = `
-                        <div class="flex flex-col gap-2">
+                        <div class="flex flex-col gap-2 w-full">
                             <input type="file" name="${fieldName}" ${config.required && !contextRowMutationTargetId ? 'required' : ''} class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:font-bold file:bg-blue-50 file:text-[#0044ff] hover:file:bg-blue-100/80 file:cursor-pointer transition-all ${baseStyles}">
-                            ${initialValue ? `<input type="hidden" name="${fieldName}_existing" value="${initialValue}"><p class="text-[10px] font-mono font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 max-w-max truncate flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Present: ${initialValue.split('/').pop()}</p>` : ''}
+                            ${initialValue ? `<input type="hidden" name="${fieldName}_existing" value="${initialValue}"><p class="text-[10px] font-mono font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded px-2 py-1 max-w-full truncate flex items-center gap-1"><i class="fa-solid fa-circle-check shrink-0"></i> Present: ${initialValue.split('/').pop()}</p>` : ''}
                         </div>
                     `;
                 } else {
@@ -1032,102 +1071,101 @@
             }
         }
 
+        // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
+        async function commitFormPayload(event) {
+            event.preventDefault();
+            
+            // [FIX 1]: We must actually define formElement from the event target so the script doesn't crash!
+            const formElement = event.target; 
+            
+            const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
+            const payload = {};
+            const overlay = document.getElementById('uploadLoaderOverlay');
 
-       // EXECUTION COMMITS FORM PIPELINE WITH FILE OVERRIDE SYSTEM
-async function commitFormPayload(event) {
-    event.preventDefault();
-    
-    // [FIX 1]: We must actually define formElement from the event target so the script doesn't crash!
-    const formElement = event.target; 
-    
-    const schemaDef = TABLE_METADATA_REGISTRY[currentContext];
-    const payload = {};
-    const overlay = document.getElementById('uploadLoaderOverlay');
+            // 1. Scan and dispatch upload file stream binaries
+            let fileUploadFaults = 0;
+            for (const [key, config] of Object.entries(schemaDef.fields)) {
+                if (config.type === 'file') {
+                    const fileInputNode = formElement.elements[key];
+                    if (fileInputNode && fileInputNode.files && fileInputNode.files.length > 0 && !fileInputNode.disabled) {
+                        overlay.classList.remove('hidden');
+                        overlay.classList.add('flex');
+                        
+                        const binaryFormContext = new FormData();
+                        binaryFormContext.append('file', fileInputNode.files[0]);
 
-    // 1. Scan and dispatch upload file stream binaries
-    let fileUploadFaults = 0;
-    for (const [key, config] of Object.entries(schemaDef.fields)) {
-        if (config.type === 'file') {
-            const fileInputNode = formElement.elements[key];
-            if (fileInputNode && fileInputNode.files && fileInputNode.files.length > 0 && !fileInputNode.disabled) {
-                overlay.classList.remove('hidden');
-                overlay.classList.add('flex');
-                
-                const binaryFormContext = new FormData();
-                binaryFormContext.append('file', fileInputNode.files[0]);
-
-                try {
-                    const uploadResponse = await fetch(`${SYSTEM_API_BASE_URL}/media/upload`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                        body: binaryFormContext
-                    });
-                    const extractUploadData = await uploadResponse.json();
-                    if(!uploadResponse.ok) throw new Error(extractUploadData.error || "Failed to upload");
-                    
-                    payload[key] = extractUploadData.data.file_url || extractUploadData.data.url;
-                } catch (uploaderErr) {
-                    fileUploadFaults++;
-                    alert(`File upload Fault on ${key}: ${uploaderErr.message}`);
+                        try {
+                            const uploadResponse = await fetch(`${SYSTEM_API_BASE_URL}/media/upload`, {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                                body: binaryFormContext
+                            });
+                            const extractUploadData = await uploadResponse.json();
+                            if(!uploadResponse.ok) throw new Error(extractUploadData.error || "Failed to upload");
+                            
+                            payload[key] = extractUploadData.data.file_url || extractUploadData.data.url;
+                        } catch (uploaderErr) {
+                            fileUploadFaults++;
+                            alert(`File upload Fault on ${key}: ${uploaderErr.message}`);
+                        }
+                    } else {
+                        const hiddenNode = formElement.elements[`${key}_existing`];
+                        if (hiddenNode) payload[key] = hiddenNode.value || null;
+                    }
                 }
-            } else {
-                const hiddenNode = formElement.elements[`${key}_existing`];
-                if (hiddenNode) payload[key] = hiddenNode.value || null;
+            }
+
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            if (fileUploadFaults > 0) return; // Halt commit payload sequence if file nodes compromised.
+
+            // 2. Transpile Remaining Text Elements Sequence
+            for (const [key, config] of Object.entries(schemaDef.fields)) {
+                if (config.type === 'file') continue; 
+
+                const domNode = formElement.elements[key];
+                if (!domNode) continue;
+                
+                // [FIX 2]: Boolean checkboxes must be evaluated via .checked, not .value
+                if (config.type === 'boolean') {
+                    payload[key] = domNode.checked;
+                } else if (config.type === 'number' || config.type === 'relation') {
+                    payload[key] = domNode.value !== '' ? Number(domNode.value) : null;
+                } else {
+                    if (domNode.value.trim() !== '' || config.type === 'password') {
+                        payload[key] = domNode.value;
+                    }
+                }
+        }
+
+        let backendApiEndpoint = `${SYSTEM_API_BASE_URL}/admin/${currentContext}`;
+            let httpMethodDispatch = 'POST';
+
+            // If an ID exists in state, map this as an UPDATE rather than a CREATE
+            if (contextRowMutationTargetId) {
+                backendApiEndpoint += `/${contextRowMutationTargetId}`;
+                httpMethodDispatch = 'PUT';
+            }
+
+            try {
+                const execResponse = await fetch(backendApiEndpoint, {
+                    method: httpMethodDispatch,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const returnedPayloadAck = await execResponse.json();
+                if (!execResponse.ok) throw new Error(returnedPayloadAck.error || "System faled to load.");
+                
+                closeCrudSystemModal();
+                await syncRegistryGridArchitecture();
+            } catch (err) { 
+                alert(`Transmission Dispatch Aborted: ${err.message}`); 
             }
         }
-    }
-
-    overlay.classList.add('hidden');
-    overlay.classList.remove('flex');
-    if (fileUploadFaults > 0) return; // Halt commit payload sequence if file nodes compromised.
-
-    // 2. Transpile Remaining Text Elements Sequence
-    for (const [key, config] of Object.entries(schemaDef.fields)) {
-        if (config.type === 'file') continue; 
-
-        const domNode = formElement.elements[key];
-        if (!domNode) continue;
-        
-        // [FIX 2]: Boolean checkboxes must be evaluated via .checked, not .value
-        if (config.type === 'boolean') {
-            payload[key] = domNode.checked;
-        } else if (config.type === 'number' || config.type === 'relation') {
-            payload[key] = domNode.value !== '' ? Number(domNode.value) : null;
-        } else {
-            if (domNode.value.trim() !== '' || config.type === 'password') {
-                payload[key] = domNode.value;
-            }
-        }
-    }
-
-    let backendApiEndpoint = `${SYSTEM_API_BASE_URL}/admin/${currentContext}`;
-    let httpMethodDispatch = 'POST';
-
-    // If an ID exists in state, map this as an UPDATE rather than a CREATE
-    if (contextRowMutationTargetId) {
-        backendApiEndpoint += `/${contextRowMutationTargetId}`;
-        httpMethodDispatch = 'PUT';
-    }
-
-    try {
-        const execResponse = await fetch(backendApiEndpoint, {
-            method: httpMethodDispatch,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const returnedPayloadAck = await execResponse.json();
-        if (!execResponse.ok) throw new Error(returnedPayloadAck.error || "System faled to load.");
-        
-        closeCrudSystemModal();
-        await syncRegistryGridArchitecture();
-    } catch (err) { 
-        alert(`Transmission Dispatch Aborted: ${err.message}`); 
-    }
-}
 
         // DATABASE RECORD OVERRIDE ARCHITECTURE (DELETIONS)
         async function executeSingleRowSoftDelete(rowId) {
