@@ -105,7 +105,7 @@
                     </div>
                     <div class="flex flex-col">
                         <span class="text-base font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Master Console</span>
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Master Control Panel</span>
                     </div>
                 </a>
             </div>
@@ -113,10 +113,10 @@
             <div class="flex items-center gap-4">
                 <div class="hidden sm:flex flex-col items-end border-r border-gray-200 pr-4 mr-1">
                     <span class="text-xs font-bold text-gray-900 leading-none" id="adminNameDisplay">Admin</span>
-                    <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5 leading-none">Level 5 Clearance</span>
+                    <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5 leading-none">DAN74TECH CONTROL CENTER</span>
                 </div>
                 <button onclick="logout()" class="px-3 py-1.5 rounded-md bg-red-50 text-[#ff2a2a] hover:bg-red-100 transition-all shadow-sm text-xs font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-power-off"></i> <span class="hidden sm:inline">Terminate</span>
+                    <i class="fa-solid fa-power-off"></i> <span class="hidden sm:inline">EXIT </span>
                 </button>
             </div>
         </div>
@@ -136,9 +136,9 @@
                     <div class="space-y-1 text-center md:text-left">
                         <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-sm text-[10px] font-bold text-gray-700 tracking-wide">
                             <span class="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span class="text-gray-400 font-mono">SYSTEM</span> <span id="clockNode">00:00:00</span>
+                            <span class="text-gray-400 font-mono">CURRENT TIME</span> <span id="clockNode">00:00:00</span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight" id="pageTitle">Dashboard Analytics</h1>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight" id="pageTitle">Dashboard Briefs</h1>
                     </div>
                 </div>
 
@@ -154,10 +154,10 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                             <button id="btnBulkDelete" onclick="bulkDelete()" class="hidden flex-1 md:flex-none px-4 py-2.5 bg-red-50 text-[#ff2a2a] rounded-xl text-xs font-bold hover:bg-red-100 transition-all items-center justify-center gap-2 whitespace-nowrap">
-                                <i class="fa-solid fa-trash-can"></i> Purge (<span id="bulkCount">0</span>)
+                                <i class="fa-solid fa-trash-can"></i> Delete(<span id="bulkCount">0</span>)
                             </button>
                             <button id="btnAddRecord" onclick="openModal()" class="flex-1 md:flex-none px-5 py-2.5 bg-[#0044ff] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
-                                <i class="fa-solid fa-plus"></i> Append Record
+                                <i class="fa-solid fa-plus"></i>Add Record
                             </button>
                         </div>
                     </div>
@@ -189,7 +189,7 @@
                             <img src="images/logo.png" alt="DAN74TECH Logo" class="w-6 h-6 object-cover rounded bg-white p-0.5" onerror="this.src='https://placehold.co/100?text=D'">
                             <span class="text-sm font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
                         </div>
-                        <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Production-grade tech systems deployment matrices. Administrative operations strictly audited.</p>
+                        <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Production-grade tech systems deployment Data. Administrative operations strictly audited.</p>
                         <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-900 rounded border border-gray-800 text-[10px] font-mono">
                             <i class="fa-solid fa-shield-halved text-[#0044ff]"></i>
                             <span class="text-gray-300 font-bold">Admin Clearance Verified</span> 
@@ -204,7 +204,7 @@
                     </div>
                     <div class="md:col-span-4 space-y-3">
                         <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">Mass Communications</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">Deploy mass notification strings across registered client matrices.</p>
+                        <p class="text-xs text-gray-400 leading-relaxed">Deploy mass notification messages across registered client matrices.</p>
                         <button onclick="switchView('email_campaigns')" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition-colors font-mono uppercase shadow-sm flex items-center gap-2"><i class="fa-solid fa-satellite-dish"></i> Initialize Broadcast</button>
                     </div>
                 </div>
@@ -232,7 +232,7 @@
                 <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3 shrink-0">
                     <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 bg-white hover:bg-gray-100 border border-gray-200 transition-all font-mono uppercase">Cancel</button>
                     <button type="submit" id="saveBtn" class="px-6 py-2.5 bg-[#0044ff] text-white font-bold rounded-xl text-xs hover:bg-blue-700 shadow-md transition-all flex items-center gap-2 font-mono uppercase">
-                        <i class="fa-solid fa-hard-drive"></i> Commit Update
+                        <i class="fa-solid fa-hard-drive"></i>Verify Update
                     </button>
                 </div>
             </form>
@@ -246,11 +246,11 @@
         const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:10000/api' : '/api';
         
         const navStructure = [
-            { section: 'Core Analytics', items: [{ id: 'dashboard', label: 'Dashboard Hub', icon: 'fa-chart-pie' }] },
+            { section: 'Core Analytics', items: [{ id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-pie' }] },
             { section: 'Identities', items: [{ id: 'users', label: 'Global Users', icon: 'fa-user-shield' }, { id: 'subscribers', label: 'Subscribers List', icon: 'fa-users-viewfinder' }] },
             { section: 'Commerce Ledgers', items: [{ id: 'orders', label: 'Client Orders', icon: 'fa-folder-tree' }, { id: 'invoices', label: 'Billing Invoices', icon: 'fa-file-invoice-dollar' }, { id: 'mpesa_transactions', label: 'M-Pesa Ledger', icon: 'fa-money-bill-transfer' }] },
             { section: 'Infrastructure', items: [{ id: 'services', label: 'Main Services', icon: 'fa-cubes' }, { id: 'sub_services', label: 'Service Packages', icon: 'fa-tags' }, { id: 'file_deliveries', label: 'Digital Deliveries', icon: 'fa-cloud-arrow-up' }] },
-            { section: 'Media & CMS', items: [{ id: 'portfolio', label: 'Portfolios', icon: 'fa-briefcase' }, { id: 'blog_posts', label: 'Editorial Blogs', icon: 'fa-newspaper' }, { id: 'case_studies', label: 'Case Studies', icon: 'fa-graduation-cap' }, { id: 'testimonials', label: 'Testimonials', icon: 'fa-comment-dots' }, { id: 'media_library', label: 'Media Assets', icon: 'fa-photo-film' }] },
+            { section: 'Media & CMS', items: [{ id: 'portfolio', label: 'Portfolios', icon: 'fa-briefcase' }, { id: 'blog_posts', label: 'Blog Posts', icon: 'fa-newspaper' }, { id: 'case_studies', label: 'Case Studies', icon: 'fa-graduation-cap' }, { id: 'testimonials', label: 'Testimonials', icon: 'fa-comment-dots' }, { id: 'media_library', label: 'Media Assets', icon: 'fa-photo-film' }] },
             { section: 'Communications', items: [{ id: 'consultations', label: 'Consultations', icon: 'fa-calendar-check' }, { id: 'support_tickets', label: 'Support Tickets', icon: 'fa-headset' }, { id: 'messages', label: 'Public Inquiries', icon: 'fa-envelope-open-text' }, { id: 'client_communications', label: 'Encrypted Chat', icon: 'fa-shield-halved' }, { id: 'email_campaigns', label: 'Broadcast Array', icon: 'fa-bullhorn' }] }
         ];
 
