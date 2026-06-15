@@ -425,6 +425,33 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             ? 'http://localhost:10000/api' 
             : '/api';
 
+
+  //-----VIDEO PLAYBACK--------
+          //-----------------//
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('dan74-video');
+        
+        // Function to unmute the video
+        const unmuteVideo = () => {
+            if (video) {
+                video.muted = false;
+                // Rewind slightly or ensure it plays smoothly with audio
+                video.play().catch(error => console.log("Playback interaction error:", error));
+            }
+            // Remove listeners so it only triggers once
+            document.removeEventListener('click', unmuteVideo);
+            document.removeEventListener('touchstart', unmuteVideo);
+        };
+
+        // Listen for user interaction anywhere on the document to unmute
+        document.addEventListener('click', unmuteVideo);
+        document.addEventListener('touchstart', unmuteVideo);
+    });
+
+
+
+        
         // GLOBAL APPLICATION NOTIFICATION ALERTS CONTROLLER
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
@@ -463,31 +490,6 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
                 }
             }, 1000);
         }
-
-
-          //-----VIDEO PLAYBACK--------
-          //-----------------//
-
-        document.addEventListener('DOMContentLoaded', () => {
-        const video = document.getElementById('dan74-video');
-        
-        // Function to unmute the video
-        const unmuteVideo = () => {
-            if (video) {
-                video.muted = false;
-                // Rewind slightly or ensure it plays smoothly with audio
-                video.play().catch(error => console.log("Playback interaction error:", error));
-            }
-            // Remove listeners so it only triggers once
-            document.removeEventListener('click', unmuteVideo);
-            document.removeEventListener('touchstart', unmuteVideo);
-        };
-
-        // Listen for user interaction anywhere on the document to unmute
-        document.addEventListener('click', unmuteVideo);
-        document.addEventListener('touchstart', unmuteVideo);
-    });
-
 
         
         // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
