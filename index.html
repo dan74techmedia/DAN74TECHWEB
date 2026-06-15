@@ -184,23 +184,24 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 flex justify-center relative">
-                <div class="lg:col-span-5 flex justify-center relative">
+               <div class="lg:col-span-5 flex justify-center relative">
     <div class="absolute inset-0 bg-gradient-to-tr from-[#0044ff]/5 to-[#ff2a2a]/5 rounded-full blur-3xl opacity-60 max-w-xs mx-auto"></div>
+    
     <div class="relative w-full max-w-xs rounded-2xl overflow-hidden subtle-pulse-glow border-2 border-white bg-white shadow-md">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10 pointer-events-none"></div>
         
         <video 
+            id="dan74-video"
             src="images/dan74.mp4" 
-            class="w-full h-60 object-contain bg-slate-50 p-4" 
             autoplay 
             loop 
+            muted 
             playsinline
-            muted>
-            Your browser does not support the video tag.
+            class="w-full h-60 object-contain bg-slate-50 p-4 relative z-0">
+            <img src="https://placehold.co/500x500/0044ff/ffffff?text=DAN74TECH+MEDIA" alt="DAN74TECH Core Matrix fallback">
         </video>
 
-        <div class="absolute bottom-4 left-4 right-4 z-20 text-white">
+        <div class="absolute bottom-4 left-4 right-4 z-20 text-white pointer-events-none">
             <span class="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.5 bg-[#ff2a2a] rounded font-mono">LIVE</span>
             <h3 class="text-sm font-bold mt-1 font-mono">DAN74TECH_HUB</h3>
             <p class="text-[11px] text-gray-200 font-light mt-0.5">Your visit means alot to us</p>
@@ -463,6 +464,32 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             }, 1000);
         }
 
+
+          //-----VIDEO PLAYBACK--------
+          //-----------------//
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('dan74-video');
+        
+        // Function to unmute the video
+        const unmuteVideo = () => {
+            if (video) {
+                video.muted = false;
+                // Rewind slightly or ensure it plays smoothly with audio
+                video.play().catch(error => console.log("Playback interaction error:", error));
+            }
+            // Remove listeners so it only triggers once
+            document.removeEventListener('click', unmuteVideo);
+            document.removeEventListener('touchstart', unmuteVideo);
+        };
+
+        // Listen for user interaction anywhere on the document to unmute
+        document.addEventListener('click', unmuteVideo);
+        document.addEventListener('touchstart', unmuteVideo);
+    });
+
+
+        
         // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
