@@ -636,7 +636,7 @@
                             title: p.title || 'Untitled Portfolio Node',
                             content: p.description || 'Verified engineering deployment.',
                             media_url: (p.link && p.link.trim() !== '') ? p.link : null,
-                            author_name: p.publisher_name || '',
+                            author_name: p.publisher_name || 'DAN74TECH ADMIN',
                             likes_count: p.likes_count || 0,
                             created_at: p.created_at || new Date()
                         });
@@ -683,8 +683,9 @@
                 'portfolio': { color: 'bg-purple-50 text-purple-600 border-purple-100', label: 'Portfolio Asset' }
             };
             const theme = badgeMap[post.type] || badgeMap['blog'];
-            const authorName = post.author_name || '';
-            const avChar = authorName.charAt(0).toUpperCase();
+         // This checks for author_name, falls back to publisher_name, and defaults to 'Anonymous Creator' if null
+          const authorName = post.author_name || post.publisher_name || 'Anonymous Creator';
+          const avChar = authorName.charAt(0).toUpperCase();
             
             const d = new Date(post.created_at);
             const timeStr = `${d.toLocaleString('default', { month: 'short' })} ${d.getDate()} at ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
