@@ -1008,15 +1008,34 @@ app.post('/api/payments/mpesa-callback', async (req, res) => {
 // =========================================================================
 app.get('/api/feed/global', async (req, res) => {
     try {
-        const blogs = await pool.query("SELECT * FROM blog_posts WHERE is_approved = TRUE");
-        const studies = await pool.query("SELECT * FROM case_studies WHERE is_approved = TRUE");
-        // Ensure portfolio is fetched and included here
-        const portfolio = await pool.query("SELECT * FROM portfolio WHERE is_approved = TRUE ORDER BY created_at DESC");
+        // We use LEFT JOIN to match the author_id/publisher_id with the users table to extract their name
+        const blogs = await pool.query(`
+            SELECT b.*, u.name AS author_name 
+            FROM blog_posts b 
+            LEFT JOIN users u ON b.author_id = u.id 
+            WHERE b.is_approved = TRUE
+        `);
+        
+        const studies = await pool.query(`
+            SELECT c.*, u.name AS author_name 
+            FROM case_studies c 
+            LEFT JOIN users u ON c.author_id = u.id 
+            WHERE c.is_approved = TRUE
+        `);
+        
+        // Portfolio uses publisher_id, and also has a fallback publisher_name in your schema
+        const portfolio = await pool.query(`
+            SELECT p.*, COALESCE(u.name, p.publisher_name) AS author_name 
+            FROM portfolio p 
+            LEFT JOIN users u ON p.publisher_id = u.id 
+            WHERE p.is_approved = TRUE 
+            ORDER BY p.created_at DESC
+        `);
         
         res.json({
             blogs: blogs.rows,
             case_studies: studies.rows,
-            portfolio: portfolio.rows // Add this
+            portfolio: portfolio.rows 
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
