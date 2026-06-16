@@ -859,29 +859,35 @@
                 `;
             });
 
-            const allPostsRes = await apiCall('/feed/global');
-            let myPosts = [];
-            if(allPostsRes && Array.isArray(allPostsRes)) {
-                myPosts = allPostsRes.filter(p => p.publisher_name === state.user.name);
-            }
-            document.getElementById('dashPostCount').innerText = myPosts.length;
-            
-            const pDiv = document.getElementById('dashContent-my-posts');
-            pDiv.innerHTML = '';
-            if(myPosts.length === 0) pDiv.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">You have not posted anything yet.</div>';
-            
-            myPosts.forEach(p => {
-                pDiv.innerHTML += `
-                    <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
-                        <div class="font-extrabold text-sm text-gray-900 mb-2">${p.title}</div>
-                        <div class="flex justify-between items-center text-xs text-gray-500">
-                            <span class="font-mono bg-gray-100 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider">${p.type}</span>
-                            <span class="text-brandRed cursor-pointer hover:underline font-bold text-[10px]">Request Teardown</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+          const allPostsRes = await apiCall('/feed/global');
+let myPosts = [];
+if(allPostsRes && Array.isArray(allPostsRes)) {
+    myPosts = allPostsRes.filter(p => 
+        (p.author_id && String(p.author_id) === String(state.user.id)) ||
+        (p.publisher_id && String(p.publisher_id) === String(state.user.id)) ||
+        (p.publisher_name === state.user.name) ||
+        (p.author_name === state.user.name)
+    );
+}
+document.getElementById('dashPostCount').innerText = myPosts.length;
+
+const pDiv = document.getElementById('dashContent-my-posts');
+pDiv.innerHTML = '';
+if(myPosts.length === 0) {
+    pDiv.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">You have not posted anything yet.</div>';
+} else {
+    myPosts.forEach(p => {
+        pDiv.innerHTML += `
+            <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div class="font-extrabold text-sm text-gray-900 mb-2">${p.title || 'Untitled Post'}</div>
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span class="font-mono bg-gray-100 px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider">${p.category || p.type || 'POST'}</span>
+                    <span class="text-brandRed cursor-pointer hover:underline font-bold text-[10px]">Request Teardown</span>
+                </div>
+            </div>
+        `;
+    });
+}
 
         function switchDashboardTab(tab) {
             document.getElementById('dashContent-my-orders').classList.add('hidden');
