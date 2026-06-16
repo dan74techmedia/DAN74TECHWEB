@@ -354,18 +354,23 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             </div>
         </div>
     </section>
- <section class="py-7 bg-blue">
-    <div class="relative w-max mx-auto mt-14 p-[2px] rounded-1xl bg-gradient-to-r from-[#ffd700] via-[#ff8c00] to-[#ff2a2a] shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95 cursor-pointer group">
-        <a href="client.html" class="flex flex-col items-center justify-center min-w-[260px] px-8 pt-10 pb-6 bg-white rounded-[13px] active:bg-[#0044ff]/10 transition-colors duration-200">
-            <div class="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)] group-hover:-translate-y-2 transition-transform duration-300 z-10">
-                <i class="fa-solid fa-comments text-5xl text-[#ff2a2a] group-hover:text-[#ffd700] transition-colors duration-300"></i>
+
+    <!-- Substantially minimized Subscribers Chat block optimized for visual balance -->
+    <section class="py-8 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 flex justify-center">
+            <div class="p-[1.5px] rounded-full bg-gradient-to-r from-[#ffd700] via-[#ff8c00] to-[#ff2a2a] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 cursor-pointer group">
+                <a href="client.html" class="flex items-center gap-2.5 px-6 py-2.5 bg-white rounded-full active:bg-gray-50 transition-colors duration-200">
+                    <div class="flex items-center justify-center w-7 h-7 bg-red-50 rounded-full group-hover:bg-red-100 transition-colors">
+                        <i class="fa-solid fa-comments text-sm text-[#ff2a2a] group-hover:text-[#ffd700] transition-colors"></i>
+                    </div>
+                    <span class="text-sm font-extrabold text-[#0f172a] tracking-wide">
+                        Subscribers Chat
+                    </span>
+                </a>
             </div>
-            <span class="text-xl sm:text-1xl font-extrabold text-[#0044ff] text-center tracking-wide">
-                Subscribers Chat
-            </span>
-        </a>
-    </div>
-  </section>
+        </div>
+    </section>
+
     <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
         <i class="fa-brands fa-whatsapp text-xl"></i>
         <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 text-[10px] font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
@@ -425,33 +430,22 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             ? 'http://localhost:10000/api' 
             : '/api';
 
-
-  //-----VIDEO PLAYBACK--------
-          //-----------------//
-
+        //-----VIDEO PLAYBACK--------
         document.addEventListener('DOMContentLoaded', () => {
-        const video = document.getElementById('dan74-video');
-        
-        // Function to unmute the video
-        const unmuteVideo = () => {
-            if (video) {
-                video.muted = false;
-                // Rewind slightly or ensure it plays smoothly with audio
-                video.play().catch(error => console.log("Playback interaction error:", error));
-            }
-            // Remove listeners so it only triggers once
-            document.removeEventListener('click', unmuteVideo);
-            document.removeEventListener('touchstart', unmuteVideo);
-        };
+            const video = document.getElementById('dan74-video');
+            const unmuteVideo = () => {
+                if (video) {
+                    video.muted = false;
+                    video.play().catch(error => console.log("Playback interaction error:", error));
+                }
+                document.removeEventListener('click', unmuteVideo);
+                document.removeEventListener('touchstart', unmuteVideo);
+            };
 
-        // Listen for user interaction anywhere on the document to unmute
-        document.addEventListener('click', unmuteVideo);
-        document.addEventListener('touchstart', unmuteVideo);
-    });
+            document.addEventListener('click', unmuteVideo);
+            document.addEventListener('touchstart', unmuteVideo);
+        });
 
-
-
-        
         // GLOBAL APPLICATION NOTIFICATION ALERTS CONTROLLER
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
@@ -491,7 +485,6 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             }, 1000);
         }
 
-        
         // FETCH REAL-TIME STATISTICS DATABASE TELEMETRY VIA CORE SERVER MATRIX
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
@@ -519,7 +512,6 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
         }
         
         // DYNAMIC FEATURED PORTFOLIO INJECTION METHOD (GET /api/portfolio)
-         // HELPER LOGIC TO EXTRACT YOUTUBE VIDEO ID FOR THUMBNAIL DEPLOYMENTS
         function parseYouTubeVideoId(url) {
             if (!url) return null;
             const separationRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -527,33 +519,11 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             return (identityMatch && identityMatch[2].length === 11) ? identityMatch[2] : null;
         }
 
-        function processAndRenderPortfolioMatrix() {
-            const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
-            if (!targetContainer) return;
-
-            const computationalFilteredArray = backendPortfolioSourceDataArray.filter(projectItem => {
-                let checkCategoryMatch = true;
-                if (activeFilteringCategoryKey !== 'all') {
-                    const mappedItemCategory = (projectItem.category || '').toLowerCase();
-                    const chosenCategoryFilter = activeFilteringCategoryKey.toLowerCase();
-                    checkCategoryMatch = mappedItemCategory.includes(chosenCategoryFilter) || chosenCategoryFilter.includes(mappedItemCategory);
-                }
-
-                let checkSearchMatch = true;
-                if (activeFilteringSearchQueryString.trim() !== '') {
-                    const structuralSearchQuery = activeFilteringSearchQueryString.toLowerCase();
-                    const parsedTitle = (projectItem.title || '').toLowerCase();
-                    const parsedDesc = (projectItem.description || '').toLowerCase();
-                    const parsedCat = (projectItem.category || '').toLowerCase();
-                    checkSearchMatch = parsedTitle.includes(structuralSearchQuery) || parsedDesc.includes(structuralSearchQuery) || parsedCat.includes(structuralSearchQuery);
-                }
-
-                return checkCategoryMatch && checkSearchMatch;
-            });
-
+        // Fully contained renderer mapped directly to specific HTML container and strictly provided DB Payload
+        function processAndRenderPortfolioMatrix(portfolioArray, targetContainer) {
             targetContainer.innerHTML = '';
 
-            if (computationalFilteredArray.length === 0) {
+            if (!portfolioArray || portfolioArray.length === 0) {
                 targetContainer.innerHTML = `
                     <div class="col-span-full p-12 bg-white border border-gray-100 rounded-xl text-center text-xs font-mono text-gray-400 shadow-sm">
                         <i class="fa-solid fa-folder-open block text-2xl mb-2 text-gray-300"></i>
@@ -562,28 +532,32 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
                 return;
             }
 
-            computationalFilteredArray.forEach(projectItem => {
+            portfolioArray.forEach(projectItem => {
                 const projectProgressPercent = projectItem.progress || 100;
                 const projectStatusValue = projectItem.status || 'Completed';
+                
+                // Core matrix uses the link column since 'image_url' doesn't exist explicitly in your portfolio schema.
                 const targetProjectLink = projectItem.link || '#';
 
-                // Setup default fallback template
                 let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
                 
                 // MULTI-STREAM INTELLIGENT ASSET DETECTION TUNNEL
                 const youTubeId = parseYouTubeVideoId(targetProjectLink);
 
-                if (projectItem.image_url && projectItem.image_url.trim() !== '') {
-                    // Priority 1: Explicit image url from dashboard uploads
-                    calculatedThumbnailAssetUrl = projectItem.image_url;
-                } else if (youTubeId) {
-                    // Priority 2: Admin provided direct YouTube video URL link
+                if (youTubeId) {
+                    // Priority 1: Admin provided direct YouTube video URL link
                     calculatedThumbnailAssetUrl = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
-                } else if (targetProjectLink && (targetProjectLink.includes('/uploads/') || targetProjectLink.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
-                    // Priority 3: Target link itself is a standard uploaded image file
+                } else if (targetProjectLink && targetProjectLink.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i)) {
+                    // Priority 2: Standard Image Link
                     calculatedThumbnailAssetUrl = targetProjectLink;
+                } else if (targetProjectLink && targetProjectLink.match(/\.pdf(\?.*)?$/i)) {
+                    // Priority 3: Standard PDF Document Upload
+                    calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/ff2a2a/ffffff?text=PDF+Document';
+                } else if (targetProjectLink && targetProjectLink.includes('/uploads/')) {
+                    // Priority 4: Standard Any Attachment Download Link 
+                    calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=File+Attachment';
                 } else if (targetProjectLink && targetProjectLink.startsWith('http') && !targetProjectLink.includes('localhost')) {
-                    // Priority 4: Admin entered standard production live website link
+                    // Priority 5: Standard Webpage URL fallback capture via thum.io
                     calculatedThumbnailAssetUrl = `https://image.thum.io/get/width/600/crop/800/maxAge/12/${targetProjectLink}`;
                 }
 
@@ -626,8 +600,9 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             });
         }
 
-        async function fetchFeaturedPortfolio() {
-            const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
+        async function fetchFeaturedPortfolioPreview() {
+            // Note: Correctly maps to the DOM container class
+            const targetContainer = document.getElementById('dynamicFeaturedPortfolioContainer');
             if (!targetContainer) return;
 
             try {
@@ -636,17 +611,20 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
 
                 const rawData = await response.json();
                 
+                let sourceDataArray = [];
                 if (Array.isArray(rawData)) {
-                    backendPortfolioSourceDataArray = rawData;
+                    sourceDataArray = rawData;
                 } else if (rawData && Array.isArray(rawData.rows)) {
-                    backendPortfolioSourceDataArray = rawData.rows;
+                    sourceDataArray = rawData.rows;
                 } else if (rawData && Array.isArray(rawData.data)) {
-                    backendPortfolioSourceDataArray = rawData.data;
+                    sourceDataArray = rawData.data;
                 }
                 
-                const latestFeaturedProjects = projectsArray.slice(0, 3);
+                // Limits the extracted node arrays precisely down to 3 payload matrices
+                const latestFeaturedProjects = sourceDataArray.slice(0, 3);
 
-                processAndRenderPortfolioMatrix();
+                // Run visual rendering pipeline exactly onto the home matrix frame
+                processAndRenderPortfolioMatrix(latestFeaturedProjects, targetContainer);
             } catch (errorContextException) {
                 console.error("Portfolio Rendering Fault Matrix:", errorContextException);
                 targetContainer.innerHTML = `
@@ -657,7 +635,6 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
             }
         }
 
-        
         // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
         document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
             formSubmissionEvent.preventDefault();
