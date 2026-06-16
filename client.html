@@ -84,41 +84,52 @@
     <div id="toastCenter" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
     <section id="authView" class="fixed inset-0 z-50 bg-bgLight flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 overflow-hidden relative">
-            <div class="absolute inset-0 bg-gradient-to-tr from-brandBlue/5 to-brandRed/5 pointer-events-none"></div>
-            
-            <div class="p-8 text-center border-b border-gray-100 relative z-10">
-                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
-                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    </div>
-                <h2 class="text-2xl font-extrabold tracking-tight text-textMain font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h2>
-                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Secure Client Login</p>
-            </div>
-            
-            <div id="loginFormContainer" class="p-8 space-y-5 relative z-10">
-                <form id="loginForm" class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email*</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="client@domain.com" required>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Password*</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="••••••••" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full py-3 mt-2 bg-brandBlue hover:bg-blue-700 text-white font-bold rounded-lg shadow-md shadow-brandBlue/20 transition-all text-sm tracking-wide flex items-center justify-center gap-2">
-                        LOGIN<i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    </button>
-                </form>
-                <div class="text-center pt-5 border-t border-gray-100">
-                    <button onclick="toggleAuth('register')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">CREATE NEW ACCOUNT</button>
+        
+     <div class="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 overflow-hidden relative">
+    <div class="absolute inset-0 bg-gradient-to-tr from-brandBlue/5 to-brandRed/5 pointer-events-none"></div>
+    
+    <!-- Card Header -->
+    <div class="p-8 text-center border-b border-gray-100 relative z-10">
+        <!-- Centered & Aspect-Ratio Corrected Logo Container -->
+        <div class="h-12 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+            <img src="images/logo.png" alt="DAN74TECH Logo" class="h-full w-auto object-contain" onerror="this.src='https://placehold.co/150x50?text=DAN74TECH'">
+        </div>
+        <h2 class="text-2xl font-extrabold tracking-tight text-textMain font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h2>
+        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Secure Client Login</p>
+    </div>
+    
+    <!-- Form Content Container -->
+    <div id="loginFormContainer" class="p-8 space-y-5 relative z-10">
+        <form id="loginForm" class="space-y-4">
+            <!-- Email Input Group -->
+            <div>
+                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email*</label>
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="client@domain.com" required>
                 </div>
             </div>
+            
+            <!-- Password Input Group -->
+            <div>
+                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Password*</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="••••••••" required>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="w-full py-3 mt-2 bg-brandBlue hover:opacity-90 text-white font-bold rounded-lg shadow-md shadow-brandBlue/20 transition-all text-sm tracking-wide flex items-center justify-center gap-2">
+                LOGIN <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </button>
+        </form>
+        
+        <!-- Toggle to Register View -->
+        <div class="text-center pt-5 border-t border-gray-100">
+            <button onclick="toggleAuth('register')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">CREATE NEW ACCOUNT</button>
+        </div>
+    </div>
 
             <div id="registerFormContainer" class="p-8 space-y-5 relative z-10 hidden">
                 <form id="registerForm" class="space-y-4">
@@ -153,52 +164,54 @@
 
     <div id="appWrapper" class="hidden flex flex-col h-screen overflow-hidden relative">
         
-        <header class="glass-panel border-b border-gray-100 h-16 fixed top-0 w-full z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-all duration-300">
-            <div class="flex items-center gap-2.5 w-1/4">
-                 <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
-                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    </div>
-                <div class="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 w-full max-w-[260px] focus-within:ring-2 focus-within:ring-brandBlue/20 focus-within:border-brandBlue transition-all">
-                    <i class="fa-solid fa-search text-gray-400 text-sm"></i>
-                    <input type="text" placeholder="Search matrices..." class="bg-transparent border-none outline-none ml-2 text-sm w-full text-gray-700 placeholder-gray-400">
+   <div id="appWrapper" class="hidden flex flex-col h-screen overflow-hidden relative">
+        
+    <header class="glass-panel border-b border-gray-100 h-16 fixed top-0 w-full z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-all duration-300">
+        <div class="flex items-center gap-4 flex-1 min-w-0">
+            <div class="h-9 flex-shrink-0 overflow-hidden rounded-[7px] bg-white flex items-center justify-center">
+                <img src="images/logo.png" alt="DAN74TECH Logo" class="h-full w-auto object-contain" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+            </div>
+            <div class="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 w-full max-w-[240px] focus-within:ring-2 focus-within:ring-brandBlue/20 focus-within:border-brandBlue transition-all">
+                <i class="fa-solid fa-search text-gray-400 text-sm"></i>
+                <input type="text" placeholder="Search matrices..." class="bg-transparent border-none outline-none ml-2 text-sm w-full text-gray-700 placeholder-gray-400">
+            </div>
+        </div>
+
+        <nav class="hidden md:flex h-full items-center justify-center gap-1 flex-1">
+            <button onclick="switchView('feed')" class="view-tab active relative px-5 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="feed">
+                <div class="flex items-center gap-2 font-bold text-sm tracking-wide">
+                    <i class="fa-solid fa-satellite-dish text-base group-hover:scale-110 transition-transform"></i>
+                    <span class="hidden lg:inline">HOME</span>
                 </div>
-            </div>
+                <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
+            </button>
+            <button onclick="switchView('orders')" class="view-tab relative px-5 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="orders">
+                <div class="flex items-center gap-2 font-bold text-sm tracking-wide">
+                    <i class="fa-solid fa-layer-group text-base group-hover:scale-110 transition-transform"></i>
+                    <span class="hidden lg:inline">ORDER</span>
+                </div>
+                <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
+            </button>
+            <button onclick="switchView('dashboard')" class="view-tab relative px-5 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="dashboard">
+                <div class="flex items-center gap-2 font-bold text-sm tracking-wide">
+                    <i class="fa-solid fa-chart-pie text-base group-hover:scale-110 transition-transform"></i>
+                    <span class="hidden lg:inline">PROFILE</span>
+                </div>
+                <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
+            </button>
+        </nav>
 
-            <nav class="hidden md:flex h-full items-center justify-center gap-2 w-2/4">
-                <button onclick="switchView('feed')" class="view-tab active relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="feed">
-                    <div class="flex items-center gap-2 font-bold text-sm">
-                        <i class="fa-solid fa-satellite-dish text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">HOME</span>
-                    </div>
-                    <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
-                </button>
-                <button onclick="switchView('orders')" class="view-tab relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="orders">
-                    <div class="flex items-center gap-2 font-bold text-sm">
-                        <i class="fa-solid fa-layer-group text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">ORDER</span>
-                    </div>
-                    <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
-                </button>
-                <button onclick="switchView('dashboard')" class="view-tab relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="dashboard">
-                    <div class="flex items-center gap-2 font-bold text-sm">
-                        <i class="fa-solid fa-chart-pie text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">PROFILE</span>
-                    </div>
-                    <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
-                </button>
-            </nav>
-
-            <div class="flex items-center justify-end gap-3 w-1/4">
-                <button class="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 hover:bg-gray-100 flex items-center justify-center transition-colors">
-                    <i class="fa-regular fa-bell text-gray-600"></i>
-                </button>
-                <button onclick="logout()" class="hidden sm:flex items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm cursor-pointer group">
-                    <div class="w-7 h-7 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold font-mono text-[10px]" id="headerAvatar">U</div>
-                    <span class="text-xs font-bold text-gray-700 max-w-[100px] truncate" id="headerName">User</span>
-                    <i class="fa-solid fa-arrow-right-from-bracket text-gray-400 text-xs ml-1 group-hover:text-brandRed transition-colors"></i>
-                </button>
-            </div>
-        </header>
+        <div class="flex items-center justify-end gap-3 flex-1">
+            <button class="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 hover:bg-gray-100 flex items-center justify-center transition-colors flex-shrink-0">
+                <i class="fa-regular fa-bell text-gray-600"></i>
+            </button>
+            <button onclick="logout()" class="hidden sm:flex items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm cursor-pointer group flex-shrink-0">
+                <div class="w-7 h-7 rounded-full bg-brandBlue text-white flex items-center justify-center font-bold font-mono text-[10px]" id="headerAvatar">U</div>
+                <span class="text-xs font-bold text-gray-700 max-w-[100px] truncate" id="headerName">User</span>
+                <i class="fa-solid fa-arrow-right-from-bracket text-gray-400 text-xs ml-1 group-hover:text-brandRed transition-colors"></i>
+            </button>
+        </div>
+    </header>
 
         <div class="flex-1 mt-16 flex justify-center max-w-7xl mx-auto w-full relative z-10">
             
