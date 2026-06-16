@@ -636,7 +636,7 @@
                             title: p.title || 'Untitled Portfolio Node',
                             content: p.description || 'Verified engineering deployment.',
                             media_url: (p.link && p.link.trim() !== '') ? p.link : null,
-                            author_name: p.publisher_name || 'System Operator',
+                            author_name: p.publisher_name || '',
                             likes_count: p.likes_count || 0,
                             created_at: p.created_at || new Date()
                         });
@@ -683,7 +683,7 @@
                 'portfolio': { color: 'bg-purple-50 text-purple-600 border-purple-100', label: 'Portfolio Asset' }
             };
             const theme = badgeMap[post.type] || badgeMap['blog'];
-            const authorName = post.author_name || 'System Operator';
+            const authorName = post.author_name || '';
             const avChar = authorName.charAt(0).toUpperCase();
             
             const d = new Date(post.created_at);
