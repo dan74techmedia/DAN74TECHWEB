@@ -519,108 +519,145 @@ Video Editing: Premium video production, dynamic transitions, and cinematic edit
         }
         
         // DYNAMIC FEATURED PORTFOLIO INJECTION METHOD (GET /api/portfolio)
-       async function fetchFeaturedPortfolioPreview() {
-            const targetPortfolioViewContainer = document.getElementById('dynamicFeaturedPortfolioContainer');
-            if (!targetPortfolioViewContainer) return;
+         // HELPER LOGIC TO EXTRACT YOUTUBE VIDEO ID FOR THUMBNAIL DEPLOYMENTS
+        function parseYouTubeVideoId(url) {
+            if (!url) return null;
+            const separationRegex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const identityMatch = url.match(separationRegex);
+            return (identityMatch && identityMatch[2].length === 11) ? identityMatch[2] : null;
+        }
 
-            try {
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/portfolio`);
-                if (!response.ok) throw new Error("Portfolio dynamic query failed.");
+        function processAndRenderPortfolioMatrix() {
+            const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
+            if (!targetContainer) return;
 
-                const rawData = await response.json();
+            const computationalFilteredArray = backendPortfolioSourceDataArray.filter(projectItem => {
+                let checkCategoryMatch = true;
+                if (activeFilteringCategoryKey !== 'all') {
+                    const mappedItemCategory = (projectItem.category || '').toLowerCase();
+                    const chosenCategoryFilter = activeFilteringCategoryKey.toLowerCase();
+                    checkCategoryMatch = mappedItemCategory.includes(chosenCategoryFilter) || chosenCategoryFilter.includes(mappedItemCategory);
+                }
+
+                let checkSearchMatch = true;
+                if (activeFilteringSearchQueryString.trim() !== '') {
+                    const structuralSearchQuery = activeFilteringSearchQueryString.toLowerCase();
+                    const parsedTitle = (projectItem.title || '').toLowerCase();
+                    const parsedDesc = (projectItem.description || '').toLowerCase();
+                    const parsedCat = (projectItem.category || '').toLowerCase();
+                    checkSearchMatch = parsedTitle.includes(structuralSearchQuery) || parsedDesc.includes(structuralSearchQuery) || parsedCat.includes(structuralSearchQuery);
+                }
+
+                return checkCategoryMatch && checkSearchMatch;
+            });
+
+            targetContainer.innerHTML = '';
+
+            if (computationalFilteredArray.length === 0) {
+                targetContainer.innerHTML = `
+                    <div class="col-span-full p-12 bg-white border border-gray-100 rounded-xl text-center text-xs font-mono text-gray-400 shadow-sm">
+                        <i class="fa-solid fa-folder-open block text-2xl mb-2 text-gray-300"></i>
+                        No operational matches found matching the typed configuration parameters inside the database.
+                    </div>`;
+                return;
+            }
+
+            computationalFilteredArray.forEach(projectItem => {
+                const projectProgressPercent = projectItem.progress || 100;
+                const projectStatusValue = projectItem.status || 'Completed';
+                const targetProjectLink = projectItem.link || '#';
+
+                // Setup default fallback template
+                let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
                 
-                // Defensive extraction to verify if response is wrapped inside an envelope (.rows or .data)
-                let projectsArray = [];
-                if (Array.isArray(rawData)) {
-                    projectsArray = rawData;
-                } else if (rawData && Array.isArray(rawData.rows)) {
-                    projectsArray = rawData.rows;
-                } else if (rawData && Array.isArray(rawData.data)) {
-                    projectsArray = rawData.data;
+                // MULTI-STREAM INTELLIGENT ASSET DETECTION TUNNEL
+                const youTubeId = parseYouTubeVideoId(targetProjectLink);
+
+                if (projectItem.image_url && projectItem.image_url.trim() !== '') {
+                    // Priority 1: Explicit image url from dashboard uploads
+                    calculatedThumbnailAssetUrl = projectItem.image_url;
+                } else if (youTubeId) {
+                    // Priority 2: Admin provided direct YouTube video URL link
+                    calculatedThumbnailAssetUrl = `https://img.youtube.com/vi/${youTubeId}/hqdefault.jpg`;
+                } else if (targetProjectLink && (targetProjectLink.includes('/uploads/') || targetProjectLink.match(/\.(jpeg|jpg|gif|png|webp|svg)/i))) {
+                    // Priority 3: Target link itself is a standard uploaded image file
+                    calculatedThumbnailAssetUrl = targetProjectLink;
+                } else if (targetProjectLink && targetProjectLink.startsWith('http') && !targetProjectLink.includes('localhost')) {
+                    // Priority 4: Admin entered standard production live website link
+                    calculatedThumbnailAssetUrl = `https://image.thum.io/get/width/600/crop/800/maxAge/12/${targetProjectLink}`;
                 }
 
-                targetPortfolioViewContainer.innerHTML = '';
-
-                if (projectsArray.length === 0) {
-                    targetPortfolioViewContainer.innerHTML = `
-                        <div class="col-span-full p-6 bg-white border border-gray-100 rounded-xl text-center text-xs font-mono text-gray-400">
-                            <i class="fa-solid fa-folder-open block text-xl mb-2 text-gray-300"></i>
-                            No items found inside the live database portfolio index schema.
-                        </div>`;
-                    return;
-                }
-
-                const latestFeaturedProjects = projectsArray.slice(0, 3);
-
-                latestFeaturedProjects.forEach(projectItem => {
-                    const projectProgressPercent = projectItem.progress || 100;
-                    const projectStatusValue = projectItem.status || 'In Progress';
-                    const targetProjectLink = projectItem.link || 'portfolio.html';
-
-                 // 1. Set the default placeholder in case there is no image at all
-                 let calculatedThumbnailAssetUrl = 'https://placehold.co/600x350/0044ff/ffffff?text=' + encodeURIComponent(projectItem.title || 'Project Preview');
-
-                  // 2. Trust the database: If a URL exists in either field, use it.
-                    if (projectItem.image_url && projectItem.image_url.trim() !== '') {
-                calculatedThumbnailAssetUrl = projectItem.image_url;
-             } else if (projectItem.link && projectItem.link.trim() !== '') {
-                calculatedThumbnailAssetUrl = projectItem.link;
-             }
-
-              // 3. (Optional but recommended) Handle potential broken images gracefully
-          // This ensures that if the link is invalid, the UI doesn't look broken
-                  const thumbnailElement = document.createElement('img, link');
-               thumbnailElement.src = calculatedThumbnailAssetUrl;
-                     thumbnailElement.onerror = function() {
-                    this.src = 'https://placehold.co/600x350/cccccc/ffffff?text=Image+Unavailable';
-              };
-
-                    const projectCardStructure = `
-                        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-                            <div class="relative w-full h-36 bg-gray-50 overflow-hidden border-b border-gray-100">
-                                <img src="${calculatedThumbnailAssetUrl}" alt="${projectItem.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/600x350/0044ff/ffffff?text=DAN74TECH+MEDIA'">
-                                <div class="absolute top-2 right-2">
-                                    <span class="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm border border-gray-100 text-[9px] font-mono font-bold text-gray-800 shadow-sm">${projectStatusValue}</span>
-                                </div>
+                const cardHTMLStructure = `
+                    <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                        <div class="relative w-full h-44 bg-gray-50 overflow-hidden border-b border-gray-100">
+                            <img src="${calculatedThumbnailAssetUrl}" alt="${projectItem.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/600x350/0044ff/ffffff?text=DAN74TECH+MEDIA'">
+                            <div class="absolute top-2 right-2 flex gap-1">
+                                ${youTubeId ? '<span class="px-2 py-0.5 rounded-md bg-rose-600 border border-rose-700 text-[9px] font-mono font-bold text-white shadow-sm"><i class="fa-brands fa-youtube"></i> VIDEO</span>' : ''}
+                                <span class="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm border border-gray-100 text-[9px] font-mono font-bold text-gray-800 shadow-sm">${projectStatusValue}</span>
                             </div>
-                            <div class="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                                <div class="space-y-1.5">
-                                    <div class="text-[9px] font-mono font-bold uppercase text-[#0044ff] tracking-wider">${projectItem.category || 'Development'}</div>
-                                    <h3 class="text-sm font-extrabold text-gray-900 line-clamp-1">${projectItem.title}</h3>
-                                    <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed font-medium">${projectItem.description || 'No descriptive technical matrix logs recorded for this parameter.'}</p>
+                        </div>
+                        <div class="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                            <div class="space-y-1.5">
+                                <div class="text-[9px] font-mono font-bold uppercase text-[#0044ff] tracking-wider">${projectItem.category || 'Development'}</div>
+                                <h3 class="text-sm font-extrabold text-gray-900 line-clamp-1">${projectItem.title}</h3>
+                                <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed font-medium">${projectItem.description || 'No descriptive technical matrix logs recorded for this parameter.'}</p>
+                            </div>
+                            
+                            <div class="pt-3 mt-3 border-t border-gray-50 space-y-2">
+                                <div class="space-y-1">
+                                    <div class="flex justify-between text-[9px] font-mono text-gray-400">
+                                        <span>Progress Track</span>
+                                        <span>${projectProgressPercent}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
+                                        <div class="bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] h-full" style="width: ${projectProgressPercent}%"></div>
+                                    </div>
                                 </div>
-                                
-                                <div class="pt-3 mt-3 border-t border-gray-50 space-y-2">
-                                    <div class="space-y-1">
-                                        <div class="flex justify-between text-[9px] font-mono text-gray-400">
-                                            <span>Progress Track</span>
-                                            <span>${projectProgressPercent}%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-100 h-1 rounded-full overflow-hidden">
-                                            <div class="bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] h-full" style="width: ${projectProgressPercent}%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-between pt-0.5">
-                                        <a href="${targetProjectLink}" class="text-[11px] font-bold text-[#0044ff] hover:underline flex items-center gap-0.5">
-                                            VIEW DETAILS <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
-                                        </a>
-                                    </div>
+                                <div class="flex items-center justify-between pt-0.5">
+                                    <a href="${targetProjectLink}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-[#0044ff] hover:underline flex items-center gap-0.5">
+                                        LAUNCH PLATFORM <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    `;
-                    targetPortfolioViewContainer.insertAdjacentHTML('beforeend', projectCardStructure);
-                });
+                    </div>
+                `;
+                targetContainer.insertAdjacentHTML('beforeend', cardHTMLStructure);
+            });
+        }
 
+        async function fetchFeaturedPortfolio() {
+            const targetContainer = document.getElementById('dynamicCompletePortfolioGridContainer');
+            if (!targetContainer) return;
+
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/portfolio`);
+                if (!response.ok) throw new Error("Portfolio full database schema lookup failed.");
+
+                const rawData = await response.json();
+                
+                if (Array.isArray(rawData)) {
+                    backendPortfolioSourceDataArray = rawData;
+                } else if (rawData && Array.isArray(rawData.rows)) {
+                    backendPortfolioSourceDataArray = rawData.rows;
+                } else if (rawData && Array.isArray(rawData.data)) {
+                    backendPortfolioSourceDataArray = rawData.data;
+                }
+                
+                const latestFeaturedProjects = projectsArray.slice(0, 3);
+
+                processAndRenderPortfolioMatrix();
             } catch (errorContextException) {
-                console.error("Dynamic Portfolio Rendering Fault:", errorContextException);
-                targetPortfolioViewContainer.innerHTML = `
+                console.error("Portfolio Rendering Fault Matrix:", errorContextException);
+                targetContainer.innerHTML = `
                     <div class="col-span-full p-6 bg-white border border-rose-100 rounded-xl text-center text-xs font-mono text-rose-500 bg-rose-50/10">
                         <i class="fa-solid fa-triangle-exclamation block text-xl mb-1 text-rose-400"></i>
-                        Failed to fetch dynamic portfolio preview arrays from database matrix.
+                        Failed to load active project matrices from database endpoint ecosystem.
                     </div>`;
             }
         }
+
+        
         // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
         document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
             formSubmissionEvent.preventDefault();
