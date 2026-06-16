@@ -862,7 +862,7 @@
             const allPostsRes = await apiCall('/feed/global');
             let myPosts = [];
             if(allPostsRes && Array.isArray(allPostsRes)) {
-                myPosts = allPostsRes.filter(p => p.author_name === state.user.name);
+                myPosts = allPostsRes.filter(p => p.publisher_name === state.user.name);
             }
             document.getElementById('dashPostCount').innerText = myPosts.length;
             
