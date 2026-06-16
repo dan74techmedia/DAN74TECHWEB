@@ -89,50 +89,51 @@
             
             <div class="p-8 text-center border-b border-gray-100 relative z-10">
                 <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-brandBlue to-brandRed p-[2px] shadow-md mx-auto mb-4 transition-transform duration-300 hover:scale-105">
-                    <div class="w-full h-full bg-white rounded-md flex items-center justify-center font-extrabold font-mono text-xl text-brandBlue">D74</div>
-                </div>
+                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
                 <h2 class="text-2xl font-extrabold tracking-tight text-textMain font-mono">DAN74TECH<span class="text-brandBlue">.</span><span class="text-brandRed">MEDIA</span></h2>
-                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Secure Client Matrix Gateway</p>
+                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-bold">Secure Client Login</p>
             </div>
             
             <div id="loginFormContainer" class="p-8 space-y-5 relative z-10">
                 <form id="loginForm" class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email Endpoint</label>
+                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email*</label>
                         <div class="relative">
                             <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                             <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="client@domain.com" required>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Cryptographic Key</label>
+                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Password*</label>
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                             <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm font-medium transition-all" placeholder="••••••••" required>
                         </div>
                     </div>
                     <button type="submit" class="w-full py-3 mt-2 bg-brandBlue hover:bg-blue-700 text-white font-bold rounded-lg shadow-md shadow-brandBlue/20 transition-all text-sm tracking-wide flex items-center justify-center gap-2">
-                        Initialize Session <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        LOGIN<i class="fa-solid fa-arrow-right-to-bracket"></i>
                     </button>
                 </form>
                 <div class="text-center pt-5 border-t border-gray-100">
-                    <button onclick="toggleAuth('register')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">Establish a new account node</button>
+                    <button onclick="toggleAuth('register')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">CREATE NEW ACCOUNT</button>
                 </div>
             </div>
 
             <div id="registerFormContainer" class="p-8 space-y-5 relative z-10 hidden">
                 <form id="registerForm" class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Full Identity</label>
+                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Full Name</label>
                         <input type="text" id="regName" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm transition-all" placeholder="John Doe" required>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email Endpoint</label>
+                        <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Email</label>
                         <input type="email" id="regEmail" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm transition-all" placeholder="john@domain.com" required>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Telecom Line</label>
+                            <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Phone/Contact</label>
                             <input type="text" id="regPhone" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue outline-none text-sm transition-all" placeholder="+254..." required>
                         </div>
                         <div>
@@ -141,11 +142,11 @@
                         </div>
                     </div>
                     <button type="submit" class="w-full py-3 mt-2 bg-gradient-to-r from-brandBlue to-brandRed hover:opacity-90 text-white font-bold rounded-lg shadow-md transition-all text-sm tracking-wide">
-                        Deploy Matrix Registration
+                        REGISTER
                     </button>
                 </form>
                 <div class="text-center pt-5 border-t border-gray-100">
-                    <button onclick="toggleAuth('login')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">Return to Login Terminal</button>
+                    <button onclick="toggleAuth('login')" class="text-xs font-bold text-gray-500 hover:text-brandBlue transition-colors">Back to LOGIN</button>
                 </div>
             </div>
         </div>
@@ -156,8 +157,9 @@
         <header class="glass-panel border-b border-gray-100 h-16 fixed top-0 w-full z-40 flex items-center justify-between px-4 sm:px-6 lg:px-8 transition-all duration-300">
             <div class="flex items-center gap-2.5 w-1/4">
                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brandBlue to-brandRed p-[2px] shadow-sm flex-shrink-0 cursor-pointer">
-                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-center font-extrabold font-mono text-sm text-brandBlue">D74</div>
-                </div>
+                   <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
+                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    </div>
                 <div class="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 w-full max-w-[260px] focus-within:ring-2 focus-within:ring-brandBlue/20 focus-within:border-brandBlue transition-all">
                     <i class="fa-solid fa-search text-gray-400 text-sm"></i>
                     <input type="text" placeholder="Search matrices..." class="bg-transparent border-none outline-none ml-2 text-sm w-full text-gray-700 placeholder-gray-400">
@@ -168,21 +170,21 @@
                 <button onclick="switchView('feed')" class="view-tab active relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="feed">
                     <div class="flex items-center gap-2 font-bold text-sm">
                         <i class="fa-solid fa-satellite-dish text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">Live Stream</span>
+                        <span class="hidden lg:inline">HOME</span>
                     </div>
                     <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
                 </button>
                 <button onclick="switchView('orders')" class="view-tab relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="orders">
                     <div class="flex items-center gap-2 font-bold text-sm">
                         <i class="fa-solid fa-layer-group text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">Architecture</span>
+                        <span class="hidden lg:inline">ORDER</span>
                     </div>
                     <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
                 </button>
                 <button onclick="switchView('dashboard')" class="view-tab relative px-6 h-full flex items-center justify-center text-gray-500 hover:text-brandBlue transition-colors group" data-target="dashboard">
                     <div class="flex items-center gap-2 font-bold text-sm">
                         <i class="fa-solid fa-chart-pie text-lg group-hover:scale-110 transition-transform"></i>
-                        <span class="hidden lg:inline">Telemetry</span>
+                        <span class="hidden lg:inline">PROFILE</span>
                     </div>
                     <div class="active-indicator absolute bottom-0 w-full h-0.5 bg-brandBlue hidden"></div>
                 </button>
@@ -208,7 +210,7 @@
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brandBlue to-blue-400 text-white flex items-center justify-center font-bold font-mono text-sm shadow-sm" id="sideAvatar">U</div>
                         <div class="flex flex-col">
                             <span class="text-sm font-extrabold text-gray-900" id="sideName">User Name</span>
-                            <span class="text-[10px] font-mono text-emerald-500 font-bold uppercase">Online Node</span>
+                            <span class="text-[10px] font-mono text-emerald-500 font-bold uppercase">Online</span>
                         </div>
                     </div>
                     
@@ -218,23 +220,23 @@
                     
                     <button onclick="switchView('feed')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 cursor-pointer transition-all text-gray-600 group">
                         <div class="w-8 h-8 rounded-lg bg-blue-50 text-brandBlue flex items-center justify-center group-hover:scale-105 transition-transform"><i class="fa-solid fa-users text-sm"></i></div>
-                        <span class="text-xs font-bold tracking-wide">Community Feed</span>
+                        <span class="text-xs font-bold tracking-wide">Home</span>
                     </button>
                     <button onclick="switchView('orders')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 cursor-pointer transition-all text-gray-600 group">
                         <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:scale-105 transition-transform"><i class="fa-solid fa-server text-sm"></i></div>
-                        <span class="text-xs font-bold tracking-wide">Deploy Services</span>
+                        <span class="text-xs font-bold tracking-wide">Order Services</span>
                     </button>
                     <button onclick="switchView('dashboard')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 cursor-pointer transition-all text-gray-600 group">
                         <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center group-hover:scale-105 transition-transform"><i class="fa-solid fa-folder-tree text-sm"></i></div>
-                        <span class="text-xs font-bold tracking-wide">Corporate Logs</span>
+                        <span class="text-xs font-bold tracking-wide">Profile</span>
                     </button>
                     
                     <div class="pt-4 pb-2">
-                        <h3 class="px-3 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase font-mono">Profile Matrix</h3>
+                        <h3 class="px-3 text-[10px] font-extrabold text-gray-400 tracking-widest uppercase font-mono">Profile Settings</h3>
                     </div>
                     <button onclick="toggleProfileEdit()" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100 cursor-pointer transition-all text-gray-600 group">
                         <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center group-hover:scale-105 transition-transform"><i class="fa-solid fa-sliders text-sm"></i></div>
-                        <span class="text-xs font-bold tracking-wide">Configuration</span>
+                        <span class="text-xs font-bold tracking-wide">Settings</span>
                     </button>
                 </div>
             </aside>
@@ -247,7 +249,7 @@
                         <div class="flex gap-3 border-b border-gray-100 pb-4">
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brandBlue to-blue-400 text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0" id="postAvatar">U</div>
                             <button onclick="openPostModal()" class="flex-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-left px-4 text-sm font-medium text-gray-500 transition-colors">
-                                Compile a new operational matrix, <span class="firstName">User</span>?
+                               <span class="firstName">User</span>,create a new post (blog/case) today.
                             </button>
                         </div>
                         <div class="flex justify-around pt-3">
@@ -263,7 +265,7 @@
                     <div id="feedStream" class="space-y-5 pb-8">
                         <div class="text-center py-10 text-gray-400 font-mono text-xs flex flex-col items-center" id="feedLoader">
                             <div class="loader-spinner mb-3"></div>
-                            Synchronizing global pipeline databases...
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -271,32 +273,32 @@
                 <div id="view-orders" class="w-full max-w-2xl pt-6 space-y-5 hidden">
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8">
                         <div class="mb-6 border-b border-gray-100 pb-4">
-                            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Architecture Deployment</h2>
-                            <p class="text-xs text-gray-500 mt-1">Submit a new production request to the DAN74TECH backend operations matrix.</p>
+                            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Order service</h2>
+                            <p class="text-xs text-gray-500 mt-1">Submit a new order to DAN74TECH ADMIN</p>
                         </div>
                         
                         <form id="orderForm" class="space-y-5">
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Core Service Node</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Select a main service</label>
                                 <select id="orderMainService" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue transition-all appearance-none" onchange="loadSubServices()" required>
-                                    <option value="">Fetching system catalogs...</option>
+                                    <option value="">Fetching ...</option>
                                 </select>
                             </div>
                             <div id="subServiceWrapper" class="hidden">
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Sub-Package Branch</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Select sub-service</label>
                                 <select id="orderSubService" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium outline-none focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue transition-all appearance-none">
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Technical Blueprint Requirements</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Tell us mmore about your order</label>
                                 <textarea id="orderRequirements" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue transition-all min-h-[120px] resize-y placeholder-gray-400" placeholder="Outline architectural parameters, frameworks, or deployment constraints..." required></textarea>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Attach Reference Assets (Optional)</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Upload support files (Optional)</label>
                                 <input type="file" id="orderFile" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-brandBlue file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
                             </div>
                             <button type="submit" id="btnSubmitOrder" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-lg shadow-md hover:shadow-lg hover:opacity-90 transition-all text-sm tracking-wide mt-2">
-                                Deploy Execution Pipeline <i class="fa-solid fa-rocket ml-1"></i>
+                                Order Now <i class="fa-solid fa-rocket ml-1"></i>
                             </button>
                         </form>
                     </div>
@@ -306,24 +308,24 @@
                     
                     <div id="profileEditCard" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hidden">
                         <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
-                            <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Edit Telemetry Profile</h2>
+                            <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Edit Profile</h2>
                             <button onclick="toggleProfileEdit()" class="text-gray-400 hover:text-brandRed transition-colors"><i class="fa-solid fa-times text-lg"></i></button>
                         </div>
                         <form id="profileForm" class="space-y-4">
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Full Identity</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Name</label>
                                 <input type="text" id="profName" class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-sm focus:ring-2 focus:ring-brandBlue/20 outline-none" required>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Telecom Line</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">Phone/Contact</label>
                                 <input type="text" id="profPhone" class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-sm focus:ring-2 focus:ring-brandBlue/20 outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">New Password Key (Optional)</label>
+                                <label class="block text-[10px] font-extrabold text-gray-500 mb-1.5 uppercase tracking-wider font-mono">New Password (Optional)</label>
                                 <input type="password" id="profPassword" class="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-sm focus:ring-2 focus:ring-brandBlue/20 outline-none" placeholder="Leave blank to maintain current matrix">
                             </div>
                             <button type="submit" id="btnUpdateProfile" class="w-full py-3 bg-brandBlue text-white rounded-lg font-bold text-sm shadow-sm hover:bg-blue-700 transition-colors">
-                                Update Configuration <i class="fa-solid fa-check ml-1"></i>
+                                Update Profile <i class="fa-solid fa-check ml-1"></i>
                             </button>
                         </form>
                     </div>
@@ -338,14 +340,14 @@
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 text-center relative overflow-hidden group">
                             <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                             <i class="fa-solid fa-server text-2xl text-emerald-500 mb-2 relative z-10"></i>
-                            <h3 class="text-[10px] text-gray-500 uppercase font-extrabold tracking-widest font-mono relative z-10">Published Logs</h3>
+                            <h3 class="text-[10px] text-gray-500 uppercase font-extrabold tracking-widest font-mono relative z-10">Your Posts</h3>
                             <p class="text-3xl font-extrabold font-mono text-gray-900 mt-1 relative z-10" id="dashPostCount">0</p>
                         </div>
                     </div>
 
                     <div class="flex bg-gray-50 border border-gray-200 rounded-xl p-1">
-                        <button onclick="switchDashboardTab('my-orders')" id="dashBtn-my-orders" class="flex-1 py-2.5 text-xs font-bold bg-white rounded-lg text-brandBlue shadow-sm transition-all border border-gray-100">My Architecture Orders</button>
-                        <button onclick="switchDashboardTab('my-posts')" id="dashBtn-my-posts" class="flex-1 py-2.5 text-xs font-bold text-gray-500 hover:text-gray-700 rounded-lg transition-all border border-transparent">My Operational Logs</button>
+                        <button onclick="switchDashboardTab('my-orders')" id="dashBtn-my-orders" class="flex-1 py-2.5 text-xs font-bold bg-white rounded-lg text-brandBlue shadow-sm transition-all border border-gray-100">My Orders</button>
+                        <button onclick="switchDashboardTab('my-posts')" id="dashBtn-my-posts" class="flex-1 py-2.5 text-xs font-bold text-gray-500 hover:text-gray-700 rounded-lg transition-all border border-transparent">My Posts</button>
                     </div>
 
                     <div id="dashContent-my-orders" class="space-y-3"></div>
@@ -356,14 +358,14 @@
 
             <aside class="hidden md:block w-[280px] p-6 h-[calc(100vh-64px)] overflow-y-auto border-l border-gray-100 bg-white/50">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
-                    <h3 class="text-[10px] font-extrabold text-gray-400 tracking-widest uppercase font-mono">Secure Network Nodes</h3>
+                    <h3 class="text-[10px] font-extrabold text-gray-400 tracking-widest uppercase font-mono">Subscribers</h3>
                     <div class="flex gap-1">
                         <button class="w-7 h-7 rounded bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"><i class="fa-solid fa-magnifying-glass text-xs"></i></button>
                     </div>
                 </div>
                 <div id="activeUsersList" class="space-y-1">
                     <div class="text-center py-6 text-xs font-mono text-gray-400 flex flex-col items-center gap-2">
-                        <i class="fa-solid fa-circle-notch fa-spin text-brandBlue"></i> Polling Sockets...
+                        <i class="fa-solid fa-circle-notch fa-spin text-brandBlue"></i> Loading Chats...
                     </div>
                 </div>
             </aside>
@@ -373,16 +375,16 @@
     <nav class="md:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 flex justify-around items-center h-16 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-safe">
         <button onclick="switchView('feed')" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-brandBlue transition-colors group" data-target="feed">
             <i class="fa-solid fa-satellite-dish text-xl mb-1 group-hover:scale-110 transition-transform"></i>
-            <span class="text-[9px] font-bold">Stream</span>
+            <span class="text-[9px] font-bold">HOME</span>
         </button>
         <button onclick="switchView('orders')" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-brandBlue transition-colors group" data-target="orders">
             <i class="fa-solid fa-layer-group text-xl mb-1 group-hover:scale-110 transition-transform"></i>
-            <span class="text-[9px] font-bold">Deploy</span>
+            <span class="text-[9px] font-bold">ORDERS</span>
         </button>
         <button onclick="toggleMobileContacts()" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-brandBlue transition-colors relative group">
             <i class="fa-solid fa-comments text-xl mb-1 group-hover:scale-110 transition-transform"></i>
             <span class="absolute top-2 right-6 w-2 h-2 bg-brandRed rounded-full border border-white"></span>
-            <span class="text-[9px] font-bold">Nodes</span>
+            <span class="text-[9px] font-bold">CHATS</span>
         </button>
         <button onclick="switchView('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-brandBlue transition-colors group" data-target="dashboard">
             <i class="fa-solid fa-chart-pie text-xl mb-1 group-hover:scale-110 transition-transform"></i>
@@ -392,7 +394,7 @@
 
     <div id="mobileContactsOverlay" class="fixed inset-0 z-[60] bg-white hidden flex-col">
         <div class="glass-panel border-b border-gray-100 p-4 flex items-center justify-between h-16">
-            <h2 class="text-base font-extrabold text-gray-900 font-mono tracking-tight">Encrypted Matrix Nodes</h2>
+            <h2 class="text-base font-extrabold text-gray-900 font-mono tracking-tight">Subscribers</h2>
             <button onclick="toggleMobileContacts()" class="w-8 h-8 bg-gray-50 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><i class="fa-solid fa-times text-gray-600"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 bg-bgLight" id="mobileActiveUsersList"></div>
@@ -401,7 +403,7 @@
     <div id="postModal" class="fixed inset-0 z-[70] bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-gray-100 flex flex-col modal-enter overflow-hidden">
             <div class="border-b border-gray-100 p-4 flex justify-between items-center bg-gray-50/50">
-                <h2 class="text-sm font-extrabold font-mono tracking-tight text-gray-900" id="postModalTitle">Compile Matrix Log</h2>
+                <h2 class="text-sm font-extrabold font-mono tracking-tight text-gray-900" id="postModalTitle">Post Now</h2>
                 <button onclick="closePostModal()" class="w-8 h-8 bg-white border border-gray-200 rounded-full text-gray-500 hover:text-brandRed hover:border-red-200 flex justify-center items-center transition-colors"><i class="fa-solid fa-times"></i></button>
             </div>
             <form id="postForm" class="p-5 space-y-4">
@@ -413,7 +415,7 @@
                     <textarea id="postContent" class="w-full min-h-[140px] text-sm border-none outline-none resize-none placeholder-gray-400 px-0 leading-relaxed" placeholder="Inject markdown body variables or project metrics here..." required></textarea>
                 </div>
                 <div class="border border-gray-200 rounded-xl p-3 flex items-center justify-between bg-gray-50/50">
-                    <span class="text-xs font-bold text-gray-600 font-mono tracking-tight">Attach Reference Payload</span>
+                    <span class="text-xs font-bold text-gray-600 font-mono tracking-tight">Attach File </span>
                     <div class="flex gap-2">
                         <label class="w-10 h-10 rounded-lg bg-white border border-gray-200 hover:border-emerald-300 flex items-center justify-center cursor-pointer text-emerald-500 transition-colors shadow-sm">
                             <i class="fa-solid fa-image text-lg"></i>
@@ -422,7 +424,7 @@
                     </div>
                 </div>
                 <button type="submit" id="btnSubmitPost" class="w-full py-3 bg-brandBlue text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition-colors text-sm tracking-wide mt-2">
-                    Inject into Central Stream <i class="fa-solid fa-paper-plane ml-1"></i>
+                    Post Now<i class="fa-solid fa-paper-plane ml-1"></i>
                 </button>
             </form>
         </div>
@@ -502,7 +504,7 @@
             try {
                 const res = await fetch(`${API_BASE}${endpoint}`, options);
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || data.message || 'Server rejected vector configuration.');
+                if (!res.ok) throw new Error(data.error || data.message || 'Wrong password.');
                 return data;
             } catch (err) {
                 showToast(err.message, 'error');
@@ -552,7 +554,7 @@
             localStorage.setItem('dan74tech_token', data.token);
             localStorage.setItem('dan74tech_user', JSON.stringify(data.user));
             state.token = data.token; state.user = data.user;
-            showToast("Cryptographic tunnel established.", "success");
+            showToast("Login successful. Entering Chat", "success");
             initApplication();
         }
 
@@ -650,7 +652,7 @@
             loader.style.display = 'none';
 
             if(integratedFeedTimeline.length === 0 && isInitial) {
-                container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-500 font-mono text-xs shadow-sm">No corporate logs injected in central matrix yet.</div>`;
+                container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-gray-200 text-center text-gray-500 font-mono text-xs shadow-sm">No posts available now.</div>`;
                 state.feedLoading = false;
                 return;
             }
@@ -715,15 +717,15 @@
                 <div class="px-4 py-2.5 flex justify-between items-center text-gray-500 text-xs border-b border-gray-100 bg-gray-50/50">
                     <span class="flex items-center gap-1.5 font-bold font-mono text-[10px]">
                         <div class="w-5 h-5 bg-brandBlue text-white rounded-full flex items-center justify-center text-[10px] shadow-sm"><i class="fa-solid fa-thumbs-up"></i></div> 
-                        <span id="likes-${post.id}">${post.likes_count || 0}</span> Validations
+                        <span id="likes-${post.id}">${post.likes_count || 0}</span> Likes
                     </span>
                 </div>
                 <div class="grid grid-cols-2 p-1.5 gap-1 bg-white">
                     <button onclick="likePost('${post.type}', ${post.id})" class="flex items-center justify-center gap-2 py-2 hover:bg-gray-50 rounded-lg text-gray-600 font-bold text-xs transition-colors">
-                        <i class="fa-regular fa-thumbs-up"></i> Validate
+                        <i class="fa-regular fa-thumbs-up"></i> Like
                     </button>
                     <button class="flex items-center justify-center gap-2 py-2 hover:bg-gray-50 rounded-lg text-gray-600 font-bold text-xs transition-colors">
-                        <i class="fa-regular fa-comment"></i> Log Query
+                        <i class="fa-regular fa-comment"></i> Comment
                     </button>
                 </div>
             `;
@@ -739,7 +741,7 @@
         // --- 6. POSTING SYSTEM ---
         function openPostModal(type = 'blog_posts') {
             document.getElementById('postType').value = type;
-            document.getElementById('postModalTitle').innerText = type === 'blog_posts' ? 'Compose Tech Blog' : 'Log Case Study';
+            document.getElementById('postModalTitle').innerText = type === 'blog_posts' ? 'Compose Tech Blog' : 'Create Case Study';
             document.getElementById('postModal').classList.remove('hidden');
             document.getElementById('postModal').classList.add('flex');
         }
@@ -753,7 +755,7 @@
             e.preventDefault();
             const btn = document.getElementById('btnSubmitPost');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Injecting Matrix...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Posting...';
             btn.disabled = true;
 
             const type = document.getElementById('postType').value;
@@ -769,7 +771,7 @@
                 if (uploadRes && uploadRes.data) {
                     imageUrl = uploadRes.data.url;
                 } else {
-                    showToast("Warning: Media Node restricted.", "error");
+                    showToast("Warning: Files restricted.", "error");
                 }
             }
 
@@ -796,7 +798,7 @@
             btn.disabled = false;
 
             if (res && res.success) {
-                showToast("Matrix successfully injected into pending queue.", "success");
+                showToast("Posted. Waiting Admin Approval.", "success");
                 closePostModal();
             }
         };
@@ -807,7 +809,7 @@
             if(res && Array.isArray(res)) {
                 state.catalog = res;
                 const select = document.getElementById('orderMainService');
-                select.innerHTML = '<option value="">-- Choose Module Segment --</option>';
+                select.innerHTML = '<option value="">-Choose Service-</option>';
                 res.forEach(s => {
                     select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
                 });
@@ -822,9 +824,9 @@
             const service = state.catalog.find(s => s.name === mainName);
             if(service && service.packages && service.packages.length > 0) {
                 wrapper.classList.remove('hidden');
-                subSelect.innerHTML = '<option value="">-- Required Package Branch --</option>';
+                subSelect.innerHTML = '<option value="">-Sub-Service-</option>';
                 service.packages.forEach(p => {
-                    subSelect.innerHTML += `<option value="${p.id}">${p.name} - ${p.price > 0 ? 'Ksh ' + p.price : 'Custom Quote'}</option>`;
+                    subSelect.innerHTML += `<option value="${p.id}">${p.name} - ${p.price > 0 ? 'Ksh ' + p.price : 'Quote'}</option>`;
                 });
                 subSelect.required = true;
             } else {
@@ -876,7 +878,7 @@
 
             const div = document.getElementById('dashContent-my-orders');
             div.innerHTML = '';
-            if(orders.length === 0) div.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">No operational requests tracked in active schema.</div>';
+            if(orders.length === 0) div.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">You have not placed any order yet.</div>';
             
             orders.forEach(o => {
                 const statusColor = o.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-brandBlue/10 text-brandBlue';
@@ -900,7 +902,7 @@
             
             const pDiv = document.getElementById('dashContent-my-posts');
             pDiv.innerHTML = '';
-            if(myPosts.length === 0) pDiv.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">No published logs tracked in active schema.</div>';
+            if(myPosts.length === 0) pDiv.innerHTML = '<div class="p-5 text-center text-xs font-mono text-gray-400 border border-gray-200 rounded-xl bg-gray-50 shadow-sm">You have not posted anything yet.</div>';
             
             myPosts.forEach(p => {
                 pDiv.innerHTML += `
@@ -944,14 +946,14 @@
 
             const res = await apiCall(`/users/${state.user.id}`, 'PUT', payload);
             
-            btn.innerHTML = 'Update Configuration <i class="fa-solid fa-check ml-1"></i>';
+            btn.innerHTML = 'Update Profile <i class="fa-solid fa-check ml-1"></i>';
 
             state.user.name = payload.name;
             state.user.phone = payload.phone;
             localStorage.setItem('dan74tech_user', JSON.stringify(state.user));
             document.getElementById('headerName').innerText = state.user.name;
             document.getElementById('profPassword').value = '';
-            showToast("Telemetry configuration preserved.", "success");
+            showToast("Profile updated.", "success");
             toggleProfileEdit();
         };
 
@@ -998,7 +1000,7 @@
             let html = '';
             
             if(state.usersDirectory.length === 0) {
-                html = '<div class="text-center text-xs font-mono text-gray-400 p-4">No peripheral nodes online.</div>';
+                html = '<div class="text-center text-xs font-mono text-gray-400 p-4">No one is online.</div>';
             } else {
                 state.usersDirectory.forEach(u => {
                     const statusColor = u.is_online ? 'bg-emerald-500' : 'bg-gray-300';
@@ -1011,7 +1013,7 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-xs font-extrabold text-gray-900 truncate">${u.name}</h4>
-                                <p class="text-[9px] text-gray-400 font-mono tracking-wide">Click to initialize socket</p>
+                                <p class="text-[9px] text-gray-400 font-mono tracking-wide">Select to Chat</p>
                             </div>
                         </div>
                     `;
@@ -1061,11 +1063,11 @@
                     </div>
                 </div>
                 <div id="chatHistory-${userId}" class="flex-1 overflow-y-auto p-4 space-y-3 bg-bgLight text-sm flex flex-col scroll-smooth">
-                    <div class="text-center text-[9px] text-gray-400 font-mono my-2 uppercase tracking-widest bg-gray-100 rounded-full px-2 py-1 mx-auto border border-gray-200 shadow-sm"><i class="fa-solid fa-lock text-brandBlue mr-1"></i> E2EE Channel Active</div>
+                    <div class="text-center text-[9px] text-gray-400 font-mono my-2 uppercase tracking-widest bg-gray-100 rounded-full px-2 py-1 mx-auto border border-gray-200 shadow-sm"><i class="fa-solid fa-lock text-brandBlue mr-1"></i>End to End encrypted</div>
                 </div>
                 <div class="p-3 border-t border-gray-200 bg-white">
                     <form onsubmit="handleSend(event, ${userId})" class="flex gap-2 relative">
-                        <input type="text" id="chatInput-${userId}" class="flex-1 bg-gray-50 border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue transition-all" placeholder="Transmit packet..." autocomplete="off">
+                        <input type="text" id="chatInput-${userId}" class="flex-1 bg-gray-50 border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-xs font-medium outline-none focus:ring-2 focus:ring-brandBlue/20 focus:border-brandBlue transition-all" placeholder="Send message..." autocomplete="off">
                         <button type="submit" class="absolute right-1 top-1 w-8 h-8 flex-shrink-0 bg-brandBlue text-white hover:bg-blue-700 rounded-full transition-colors flex items-center justify-center shadow-sm"><i class="fa-solid fa-paper-plane text-[10px]"></i></button>
                     </form>
                 </div>
@@ -1112,7 +1114,7 @@
             let text = msgObj.message_body || '';
             if(msgObj.ciphertext) {
                 try { text = CryptoEngine.decrypt(msgObj.ciphertext); } 
-                catch(e) { text = '[Cipher Extraction Error]'; }
+                catch(e) { text = 'Failed to load'; }
             }
 
             const div = document.createElement('div');
