@@ -4,710 +4,470 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Development Services | DAN74TECH MEDIA</title>
+    
     <link rel="icon" type="image/png" href="/images/favicon.png?v=1">
-    <meta name="description" content="High-fidelity, responsive, and secure websites built to scale and optimize your online presence. Production-grade web development engineered by DAN74TECH MEDIA.">
-    <meta name="keywords" content="DAN74TECH, Web Development, SEO, E-Commerce, Portfolios, Websites, Node.js, Meru, Kenya, Daniel Ngumi, Tech Hub">
+    
+    <meta name="description" content="Production-grade web architecture, enterprise API management systems, and high-performance user interfaces engineered by DAN74TECH MEDIA.">
+    <meta name="keywords" content="DAN74TECH, Web Development, Node.js, Express, Postgres, React, Tailwind CSS, Meru, Kenya">
     <meta name="author" content="DAN74TECH MEDIA">
     <meta name="robots" content="index, follow">
 
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dan74techweb.onrender.com/web.html">
+    <meta property="og:title" content="Web Development Solutions | DAN74TECH MEDIA">
+    <meta property="og:description" content="Empowering scaling systems with bulletproof backend pipelines and clean, responsive UI frameworks.">
+    <meta property="og:image" content="images/logo.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandBlue: '#0044ff',
+                        brandDeep: '#0022aa',
+                        brandAccent: '#ff9900',
+                        sysDark: '#0f172a',
+                        sysCard: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --brand-blue: #0044ff;
-            --brand-red: #ff2a2a;
-            --brand-yellow: #ffd700;
-            --bg-light: #f8fafc;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --border-light: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
-
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Abstract Premium Geometric Background Elements */
-        .hero-mesh {
-            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%),
-                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.04), transparent 45%);
-        }
-
-        /* Toast Slide Animation Matrix */
         .toast-notification {
-            animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes slideInLeft {
-            from { transform: translateX(120%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Custom scrollbar to match clean aesthetic */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: var(--brand-blue);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
     </style>
 </head>
-<body class="antialiased selection:bg-[#0044ff] selection:text-white">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brandBlue selection:text-white">
 
-    <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+    <div id="systemToastContainerNode" class="fixed top-4 right-4 z-50 space-y-2 pointer-events-none max-w-sm w-full"></div>
 
-    <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
-            <a href="index.html" class="flex items-center gap-2.5 group focus:outline-none">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm transition-transform duration-300 group-hover:scale-105">
-                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
-                        <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    </div>
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="w-7 h-7 bg-gradient-to-br from-brandBlue to-brandDeep rounded-lg flex items-center justify-center text-white font-black text-xs shadow-md shadow-brandBlue/20 group-hover:scale-105 transition-transform">
+                    D74
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-base font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Tech & Creative Solutions</span>
+                    <span class="text-sm font-bold tracking-tight text-white group-hover:text-brandBlue transition-colors">DAN74TECH MEDIA</span>
+                    <span class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">System Operations</span>
                 </div>
             </a>
 
-            <nav class="hidden lg:flex items-center gap-6 text-xs font-bold tracking-wide text-gray-600">
-                <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
-                <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
-                <a href="services.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-0.5 font-bold">Services</a>
-                <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
-                <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
-                <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
-                <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
-                <a href="#order-form-node" class="px-3 py-1.5 rounded-md bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Order Web</a>
+            <div class="hidden md:flex items-center gap-4 font-mono text-[11px] text-slate-400">
+                <div class="flex items-center gap-1.5 bg-slate-950 px-2 py-1 rounded border border-slate-800">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>SYS CORE: <span class="text-emerald-400 font-semibold">ONLINE</span></span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-950 px-2 py-1 rounded border border-slate-800">
+                    <span>PULSE:</span>
+                    <span id="telemetryClockNode" class="text-slate-200 font-bold">00:00:00 AM</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-5 text-xs font-medium text-slate-300">
+                <a href="index.html" class="hover:text-brandBlue transition-colors">Dashboard</a>
+                <a href="web.html" class="text-brandBlue border-b border-brandBlue pb-0.5 transition-colors">Web Dev</a>
+                <a href="client.html" class="hover:text-brandBlue transition-colors">Portal</a>
             </nav>
 
-            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-1.5 rounded-md text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
-                <i class="fa-solid fa-bars-staggered text-lg"></i>
+            <button id="mobileNavigationToggleTrigger" class="md:hidden p-1 text-slate-400 hover:text-white transition-colors" aria-label="Toggle Navigation">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
             </button>
         </div>
 
-        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-4 flex flex-col gap-2 text-sm font-semibold">
-            <a href="index.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Home </a>
-            <a href="about.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">About Us</a>
-            <a href="services.html" class="text-[#0044ff] bg-blue-50/50 p-2 rounded-md">Services </a>
-            <a href="portfolio.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
-            <a href="case-studies.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Case Studies</a>
-            <a href="blog.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Blog Platform</a>
-            <a href="testimonials.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Client Testimonials</a>
-            <a href="#order-form-node" class="mt-1 w-full text-center py-2.5 rounded-lg bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-sm">Order Development</a>
-        </div>
-    </header>
-
-    <header class="relative hero-mesh py-12 lg:py-16 border-b border-gray-100 overflow-hidden">
-        <div class="max-w-3xl mx-auto text-center px-4 relative z-10">
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-sm text-[10px] font-bold text-gray-700 tracking-wide mb-4">
-                <span class="flex h-1.5 w-1.5 rounded-full bg-[#0044ff] animate-ping"></span>
-                <span class="text-gray-400 font-mono font-normal"><i class="fa-solid fa-laptop-code text-[9px]"></i></span> WEB DEV HUB
+        <div id="navbarLinksList" class="hidden md:hidden bg-slate-900 border-b border-slate-800 px-4 py-3 space-y-2">
+            <nav class="flex flex-col gap-2 text-xs">
+                <a href="index.html" class="block py-1.5 text-slate-300 hover:text-brandBlue transition-colors">Dashboard</a>
+                <a href="web.html" class="block py-1.5 text-brandBlue font-semibold transition-colors">Web Dev</a>
+                <a href="client.html" class="block py-1.5 text-slate-300 hover:text-brandBlue transition-colors">Portal</a>
+            </nav>
+            <div class="pt-2 border-t border-slate-800 flex flex-col gap-1.5 font-mono text-[10px] text-slate-400">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>SYSTEM MATRIX STATUS: ACTIVE</span>
+                </div>
             </div>
-            
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight mb-4" id="serviceNameDisplay">
-                Loading Architecture...
-            </h1>
-            
-            <p class="text-sm sm:text-base text-gray-600 max-w-xl mx-auto leading-relaxed font-normal" id="serviceDescDisplay">
-                Synchronizing available development matrices from the database pool. Please stand by.
-            </p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div>
-            <div class="text-center mb-8">
-                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mb-2">Choose Your Development Stack</h2>
-                <p class="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">Select an architectural bundle built to accommodate your online scale.</p>
-            </div>
-
-            <div id="packagesLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
-                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
-                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
-            </div>
-
-            <div id="dynamicPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch hidden">
-            </div>
-        </div>
-
-        <section id="order-form-node" class="mt-16 max-w-2xl mx-auto">
-            <div class="rounded-2xl border border-gray-100 bg-white p-5 sm:p-8 shadow-lg relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-8xl">
-                    <i class="fa-solid fa-code"></i>
-                </div>
+        <section class="lg:col-span-5 space-y-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-brandBlue bg-brandBlue/10 px-2 py-0.5 rounded">Core Architecture</span>
+                <h1 class="text-xl font-extrabold text-white mt-2 tracking-tight">Enterprise Web Engineering</h1>
+                <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                    Deploying reliable, database-synchronized web properties engineered for operational stability, scalability, and instant execution.
+                </p>
                 
-                <div class="mb-6 relative z-10">
-                    <span class="text-[10px] font-extrabold tracking-widest text-[#0044ff] uppercase font-mono">DEPLOYMENT FORM</span>
-                    <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mt-1 mb-1.5">Initialize Web Project</h2>
-                    <p class="text-gray-500 text-xs leading-relaxed">Submit your deployment order, which seamlessly logs to our central database and routes to WhatsApp support.</p>
+                <div class="mt-4 space-y-2.5 border-t border-slate-800 pt-4">
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-brandAccent">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-semibold text-slate-200">Full-Stack Pipelines</h3>
+                            <p class="text-[11px] text-slate-400">Secure Node.js / Express execution layers backed by enterprise relational architectures.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-brandAccent">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-semibold text-slate-200">Tailwind Interface Layers</h3>
+                            <p class="text-[11px] text-slate-400">Optimized client view environments configured for responsive compliance across form factors.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center shrink-0 mt-0.5 text-brandAccent">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-semibold text-slate-200">Asynchronous Integrations</h3>
+                            <p class="text-[11px] text-slate-400">Real-time dynamic parsing engines communicating cleanly via JSON API endpoint payloads.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-[11px]">
+                <div class="text-slate-400 font-bold border-b border-slate-800 pb-1.5 mb-2 flex items-center justify-between">
+                    <span>DATABASE METRIC DESCRIPTORS</span>
+                    <span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded">ONLINE</span>
+                </div>
+                <div class="space-y-1 text-slate-300">
+                    <div class="flex justify-between"><span class="text-slate-500">Service Module:</span> <span>Sub-Services/Web</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Target Currency:</span> <span>KES / KSH</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Pipeline Target:</span> <span>WhatsApp Engine API</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Sync Status:</span> <span id="syncStatusIndicator" class="text-emerald-400">SYNCHRONIZED</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lg:col-span-7">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl space-y-4">
+                <div class="border-b border-slate-800 pb-2.5">
+                    <h2 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-brandBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Project Blueprint Request Configurator
+                    </h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Initialize your design matrix. Parameters map dynamically to core operations.</p>
                 </div>
 
-                <form id="unifiedOrderForm" class="space-y-4 relative z-10">
+                <form id="webProjectDeploymentForm" class="space-y-3" onsubmit="executeOrderPayloadDispatch(event)">
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="userName" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Client Name *</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <i class="fa-regular fa-user text-xs"></i>
-                                </span>
-                                <input 
-                                    type="text" 
-                                    id="userName" 
-                                    required
-                                    placeholder="e.g. John Doe"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
-                                >
-                            </div>
-                        </div>
+                    <div>
+                        <label for="userName" class="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">Lead Architect / Client Name</label>
+                        <input type="text" id="userName" required
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brandBlue transition-colors placeholder:text-slate-600"
+                            placeholder="e.g. John Doe">
+                    </div>
 
-                        <div>
-                            <label for="userPhone" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Phone (M-Pesa) *</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <i class="fa-solid fa-phone text-xs"></i>
-                                </span>
-                                <input 
-                                    type="tel" 
-                                    id="userPhone" 
-                                    required
-                                    placeholder="e.g. 07/01********"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
-                                >
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="projectDomain" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Domain Target</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <i class="fa-solid fa-globe text-xs"></i>
-                                </span>
-                                <input 
-                                    type="text" 
-                                    id="projectDomain" 
-                                    placeholder="e.g. www.mybusiness.com (Optional)"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
-                                >
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="serviceTypeSelector" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Configuration Stack</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <i class="fa-solid fa-layer-group text-xs"></i>
-                                </span>
-                                <select 
-                                    id="serviceTypeSelector" 
-                                    required
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 appearance-none focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white cursor-pointer font-medium"
-                                >
-                                    <option value="" disabled selected>-- Loading Packages --</option>
-                                </select>
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                                </span>
+                    <div>
+                        <label for="serviceType" class="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">Architecture Package Track</label>
+                        <div class="relative">
+                            <select id="serviceType" onchange="synchronizePricingMatrixDisplay()"
+                                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brandBlue transition-colors appearance-none cursor-pointer">
+                                <option value="" disabled selected>Querying server parameters...</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label for="projectDetails" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">System Scope & Instructions</label>
-                        <div class="relative">
-                            <textarea 
-                                id="projectDetails" 
-                                rows="3" 
-                                placeholder="Describe necessary features, API integrations, pages needed, brand colors, and primary functionality..."
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white custom-scrollbar font-medium"
-                            ></textarea>
-                        </div>
+                        <label for="domain" class="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">Proposed Domain Address Vector</label>
+                        <input type="text" id="domain"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brandBlue transition-colors placeholder:text-slate-600"
+                            placeholder="e.g. enterprise-firm.com (Optional)">
                     </div>
 
-                    <div class="p-4 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="h-8 w-8 rounded-md bg-blue-100 border border-blue-200 flex items-center justify-center text-[#0044ff]">
-                                <i class="fa-solid fa-coins text-sm"></i>
-                            </div>
-                            <div>
-                                <span class="block text-[9px] uppercase font-bold tracking-widest text-gray-400 font-mono">Total Price Estimate</span>
-                                <span class="block font-bold text-xs text-gray-900 mt-0.5" id="selectedPackageSummaryName">No Stack Selected</span>
-                            </div>
+                    <div>
+                        <label for="desc" class="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">System Scope & Capability Requirements</label>
+                        <textarea id="desc" rows="3" required
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brandBlue transition-colors placeholder:text-slate-600 resize-none"
+                            placeholder="Detail functional constraints, UI parameters, data tables, endpoints required..."></textarea>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                            <span class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider">Calculated Package Cost Metrics</span>
+                            <span class="text-xs text-slate-400 font-mono mt-0.5 block">Estimated Financial Allocation:</span>
                         </div>
                         <div class="text-right">
-                            <span id="displayPrice" class="font-extrabold text-xl text-[#0044ff] font-mono tracking-tight">KSH 0</span>
+                            <span id="displayPrice" class="text-sm font-black font-mono text-brandAccent tracking-tight bg-brandAccent/10 px-2.5 py-1 rounded border border-brandAccent/20">
+                                KSH 0.00
+                            </span>
                         </div>
                     </div>
 
-                    <div class="pt-2 flex flex-col sm:flex-row gap-3 items-center">
-                        <button 
-                            type="submit"
-                            id="submitOrderBtn"
-                            class="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-md shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
-                        >
-                            <span class="flex items-center gap-1.5 tracking-wide">
-                                <i class="fa-solid fa-server transition-transform group-hover:-translate-y-0.5 text-[10px]"></i>
-                                Save to Database & Open WhatsApp
-                            </span>
-                        </button>
-                    </div>
-
+                    <button type="submit"
+                        class="w-full bg-brandBlue hover:bg-brandDeep text-white text-xs font-bold py-2 px-4 rounded-lg shadow-md shadow-brandBlue/20 transition-all duration-200 transform active:scale-[0.99] flex items-center justify-center gap-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                        Dispatch Matrix Order parameters via WhatsApp Network Pipeline
+                    </button>
                 </form>
             </div>
         </section>
-
     </main>
 
-    <section class="py-8 bg-[#f8fafc] border-t border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatUsers">--</span>
-                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Verified Profiles</span>
-                </div>
-                <div>
-                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatOrders">--</span>
-                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Executed Pipelines</span>
-                </div>
-                <div>
-                    <span class="block text-2xl font-extrabold text-[#0044ff] font-mono tracking-tight" id="telemetryStatEarnings">--</span>
-                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Processed Values</span>
-                </div>
-                <div>
-                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatConsultations">--</span>
-                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Pending Projects</span>
-                </div>
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto text-slate-500 font-mono text-[10px]">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-col items-center sm:items-start">
+                <span class="text-slate-400 font-bold tracking-wider">DAN74TECH MEDIA CO.</span>
+                <span class="text-[9px] text-slate-600 mt-0.5">High Performance Web Framework Deployment Modules</span>
             </div>
-        </div>
-    </section>
-
-    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
-        <i class="fa-brands fa-whatsapp text-xl"></i>
-        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 text-[10px] font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
-    </a>
-
-    <footer class="bg-[#0b0f19] text-gray-400 pt-12 pb-6 border-t border-gray-900 font-sans">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-gray-800/60">
             
-            <div class="md:col-span-5 space-y-3">
-                <div class="flex items-center gap-2">
-                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-7 h-7 object-cover rounded bg-white p-0.5">
-                    <span class="text-sm font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+            <div class="flex items-center gap-6 text-center sm:text-right">
+                <div>
+                    <span class="text-slate-400">LOCATION DEPLOYMENT GENRE</span>
+                    <p class="text-slate-600 text-[9px]">Meru County, Kenya Hub</p>
                 </div>
-                <p class="text-xs text-gray-400 leading-relaxed max-w-xs">
-                    Production-grade tech systems deployment matrices. Fully reliable database monitoring networks and custom business execution channels based in Kenya.
-                </p>
-                <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-900 rounded border border-gray-800 text-[10px] font-mono">
-                    <i class="fa-solid fa-users text-[#ffd700]"></i>
-                    <span class="text-gray-300 font-bold" id="footerSubscriberCounter">140+</span> 
-                    <span class="text-gray-500 text-[9px]">Verified Clients Pool</span>
+                <div>
+                    <span class="text-slate-400">OPERATIONAL MATRIX CLOCK</span>
+                    <p class="text-slate-600 text-[9px]">Mon - Sat | 08:00 - 18:00 EAT</p>
                 </div>
             </div>
-
-            <div class="md:col-span-3 space-y-3">
-                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">System Nodes</h4>
-                <ul class="space-y-1.5 text-xs font-medium">
-                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1">唐 Service Parameters</a></li>
-                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1">刀 Project Repository</a></li>
-                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1">嶋 Performance Records</a></li>
-                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1">淘 Technical Logs</a></li>
-                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1">町 Audit Appraisals</a></li>
-                </ul>
-            </div>
-
-            <div class="md:col-span-4 space-y-3">
-                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
-                <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
-                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
-                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
-                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <p class="text-[10px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
-            <div class="flex items-center gap-3 text-[10px] font-mono text-gray-500">
-                <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
-                <span id="telemetryPulseTimestamp">--:--:--</span>
+            
+            <div class="text-center sm:text-right">
+                <span class="block text-slate-400">&copy; 2026 DAN74TECH MEDIA</span>
+                <span class="text-[9px] text-slate-600">All Enterprise Security Protocols Applied.</span>
             </div>
         </div>
     </footer>
 
     <script>
-        // 1. SYSTEM CONFIGURATION ROUTING
-        const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
-            ? 'http://localhost:10000/api' 
-            : '/api';
+        // Memory-allocated list arrays for active parsed services from endpoint
+        let globalServicesCollection = [];
 
-        // Internal Application State Context
-        const state = {
-            serviceInfo: null,
-            packages: [],
-            selectedPackage: null,
-            isSubmitting: false
-        };
+        /**
+         * Global operational notification toast pipeline
+         * @param {string} notificationMessage Text content payload to display
+         * @param {'success'|'error'|'info'} messageType Visual rendering category 
+         */
+        function pushSystemOperationalToast(notificationMessage, messageType = "info") {
+            const toastContainer = document.getElementById('systemToastContainerNode');
+            if (!toastContainer) return;
 
-        // 2. GLOBAL UI NOTIFICATION DISPATCHER (Inherited)
-        function pushSystemOperationalToast(messageContext, messageType = 'info') {
-            const toastCenter = document.getElementById('applicationToastCenter');
-            if (!toastCenter) return;
+            const elementId = 'toast_' + Math.random().toString(36).substr(2, 9);
+            const basicToastNode = document.createElement('div');
+            basicToastNode.id = elementId;
+            basicToastNode.className = "toast-notification flex items-center gap-2 p-2.5 rounded-lg text-xs font-medium shadow-xl border translate-y-2 opacity-0 bg-slate-900 border-slate-800 pointer-events-auto text-slate-200";
 
-            const individualToastNode = document.createElement('div');
-            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
-            
-            if (messageType === 'success' || messageType === 'success-variant') {
-                individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-base"></i><div>${messageContext}</div>`;
+            // Map contextual configuration values
+            let classificationIcon = `<svg class="w-3.5 h-3.5 text-brandBlue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+            if (messageType === 'success') {
+                classificationIcon = `<svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
             } else if (messageType === 'error') {
-                individualToastNode.className += ' border-red-100 text-red-800 shadow-red-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500 text-base"></i><div>${messageContext}</div>`;
-            } else {
-                individualToastNode.className += ' border-blue-100 text-blue-800 shadow-blue-500/5';
-                individualToastNode.innerHTML = `<i class="fa-solid fa-circle-info text-[#0044ff] text-base"></i><div>${messageContext}</div>`;
+                classificationIcon = `<svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
             }
 
-            toastCenter.appendChild(individualToastNode);
+            basicToastNode.innerHTML = `
+                ${classificationIcon}
+                <div class="flex-grow">${notificationMessage}</div>
+                <button onclick="dismissSystemToastNode('${elementId}')" class="text-slate-500 hover:text-slate-300 transition-colors ml-1">&times;</button>
+            `;
 
+            toastContainer.appendChild(basicToastNode);
+
+            // Animate inclusion layout frame
             setTimeout(() => {
-                individualToastNode.style.opacity = '0';
-                individualToastNode.style.transform = 'translateY(10px)';
-                setTimeout(() => individualToastNode.remove(), 300);
-            }, 4000);
+                basicToastNode.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Establish standard lifecycle eviction callback
+            setTimeout(() => {
+                dismissSystemToastNode(elementId);
+            }, 4500);
         }
 
-        // 3. NUMBER FORMATTING UTILITIES
-        function formatPrice(priceVal) {
-            return parseFloat(priceVal || 0).toLocaleString();
+        /**
+         * Evict an active target toast element gracefully from DOM layout tree
+         * @param {string} targetedElementId Element target to remove
+         */
+        function dismissSystemToastNode(targetedElementId) {
+            const matchNode = document.getElementById(targetedElementId);
+            if (matchNode) {
+                matchNode.classList.add('opacity-0', 'translate-y-1');
+                setTimeout(() => {
+                    matchNode.remove();
+                }, 400);
+            }
         }
 
+        /**
+         * Initialize internal telemetry data-clock engine cycle loop
+         */
         function triggerTelemetryClockPulse() {
+            const telemetryNode = document.getElementById('telemetryClockNode');
+            if (!telemetryNode) return;
+            
             setInterval(() => {
-                const clockNode = document.getElementById('telemetryPulseTimestamp');
-                if (clockNode) {
-                    const currentSystemTime = new Date();
-                    clockNode.textContent = currentSystemTime.toTimeString().split(' ')[0];
-                }
+                const clockInstance = new Date();
+                telemetryNode.innerText = clockInstance.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                });
             }, 1000);
         }
 
-        // 4. STATS SYNC PROCESS (Hits /api/admin/dashboard-stats perfectly matched with server.js)
-        async function runSystemTelemetryDatabaseSynchronization() {
-            try {
-                // Corrected API endpoint based on server.js available routes, using dashboard-stats. If stats not public, fallback to counter.
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/admin/dashboard-stats`, {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } // Assuming admin token might be needed, if not public we handle gracefully
-                });
-                
-                if (!response.ok) {
-                    throw new Error("Telemetry matrix payload sync rejected or requires admin clearance.");
-                }
-                
-                const data = await response.json();
-                
-                const usersCount = parseInt(data.users) || 0;
-                const ordersCount = parseInt(data.orders) || 0;
-
-                document.getElementById('telemetryStatUsers').textContent = `${usersCount}+`;
-                document.getElementById('telemetryStatOrders').textContent = `${ordersCount}+`;
-                document.getElementById('telemetryStatEarnings').textContent = `KSH ${formatPrice(data.total_earnings || 0)}`;
-                document.getElementById('telemetryStatConsultations').textContent = data.pending_consultations || 0;
-                
-                const footerCounter = document.getElementById('footerSubscriberCounter');
-                if (footerCounter) footerCounter.textContent = `${usersCount + ordersCount}+ Pool`;
-
-            } catch (error) {
-                console.warn("Telemetry sync error (may require auth):", error.message);
-                // Graceful fallback for public viewing
-                document.getElementById('telemetryStatUsers').textContent = '40+';
-                document.getElementById('telemetryStatOrders').textContent = '95+';
-                document.getElementById('telemetryStatEarnings').textContent = 'KSH --';
-                document.getElementById('telemetryStatConsultations').textContent = '--';
-            }
-        }
-
-        // 5. DATABASE DISCOVERY (WEB DEVELOPMENT SPECIFIC)
-        async function initializeServiceMatrix() {
-            try {
-                const servicesRes = await fetch(`${SYSTEM_API_BASE_URL}/services`);
-                if (!servicesRes.ok) throw new Error("Failed to map service architecture.");
-                const servicesList = await servicesRes.json();
-
-                state.serviceInfo = servicesList.find(s => 
-                    s.name.toLowerCase().includes('web') || 
-                    s.name.toLowerCase().includes('development')
-                );
-
-                if (!state.serviceInfo) {
-                    throw new Error("Target service node 'Web Development' not located in active database schema.");
-                }
-
-                document.getElementById('serviceNameDisplay').textContent = state.serviceInfo.name;
-                if (state.serviceInfo.description) {
-                    document.getElementById('serviceDescDisplay').textContent = state.serviceInfo.description;
-                }
-
-                const subRes = await fetch(`${SYSTEM_API_BASE_URL}/sub-services`);
-                if (!subRes.ok) throw new Error("Failed to pull sub-service pricing tiers.");
-                const subServicesList = await subRes.json();
-
-                state.packages = subServicesList.filter(pkg => pkg.service_id === state.serviceInfo.id);
-
-                if (state.packages.length === 0) {
-                    state.packages = subServicesList.filter(pkg => 
-                        pkg.category_name && pkg.category_name.toLowerCase().includes('web')
-                    );
-                }
-
-                document.getElementById('packagesLoaderSkeleton').classList.add('hidden');
-                document.getElementById('dynamicPackagesGrid').classList.remove('hidden');
-
-                if (state.packages.length > 0) {
-                    renderPackageCards();
-                    populatePackageSelector();
-                    setTargetPackage(state.packages[0].id);
-                } else {
-                    document.getElementById('dynamicPackagesGrid').innerHTML = `
-                        <div class="col-span-full p-6 bg-white border border-rose-100 rounded-xl text-center text-xs font-mono text-rose-500 bg-rose-50/20">
-                            <i class="fa-solid fa-triangle-exclamation block text-xl mb-2 text-rose-400"></i>
-                            No package configurations currently available in the database for Web Development.
-                        </div>`;
-                }
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('serviceNameDisplay').textContent = "Service Architecture Offline";
-                document.getElementById('serviceDescDisplay').textContent = "Failed to establish synchronization with the central database.";
-                pushSystemOperationalToast(err.message, 'error');
-            }
-        }
-
-        // 6. UI RENDER ENGINES (Scaled down for compact visual consistency)
-        function renderPackageCards() {
-            const container = document.getElementById('dynamicPackagesGrid');
-            container.innerHTML = '';
-
-            state.packages.forEach(pkg => {
-                let featuresHtml = '';
-                if (pkg.description) {
-                    const featureList = pkg.description.split(',').map(f => f.trim()).filter(Boolean);
-                    featuresHtml = featureList.map(feature => `
-                        <li class="flex items-start gap-2 text-gray-600">
-                            <i class="fa-solid fa-circle-check text-[#0044ff] text-[9px] mt-1 flex-shrink-0"></i>
-                            <span>${feature}</span>
-                        </li>
-                    `).join('');
-                } else {
-                    featuresHtml = `<li class="text-gray-500 italic text-[11px]">Standard operational features included.</li>`;
-                }
-
-                const cardHtml = `
-                    <div 
-                        id="pkg-card-${pkg.id}"
-                        onclick="setTargetPackage(${pkg.id})"
-                        class="group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node"
-                    >
-                        <div id="pkg-check-${pkg.id}" class="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent">
-                            <i class="fa-solid fa-check text-[10px]"></i>
-                        </div>
-
-                        <div class="mb-4">
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#0044ff] transition-colors font-mono tracking-tight">${pkg.name}</h3>
-                        </div>
-
-                        <div class="mb-4 pb-4 border-b border-gray-100">
-                            <div class="flex items-baseline text-gray-900">
-                                <span class="text-[10px] font-bold tracking-widest text-gray-400 uppercase font-mono">KSH</span>
-                                <span class="text-2xl sm:text-3xl font-extrabold font-mono ml-1.5 tracking-tight">${formatPrice(pkg.price)}</span>
-                            </div>
-                        </div>
-
-                        <ul class="space-y-2 mb-6 flex-grow text-xs font-medium">
-                            ${featuresHtml}
-                        </ul>
-
-                        <button 
-                            type="button"
-                            id="pkg-btn-${pkg.id}"
-                            class="w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100"
-                        >
-                            Select Stack
-                        </button>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-        }
-
-        function populatePackageSelector() {
-            const selector = document.getElementById('serviceTypeSelector');
-            selector.innerHTML = '<option value="" disabled>-- Select Database Entry --</option>';
+        /**
+         * Request and asynchronously ingest service pricing arrays from backend service layer API
+         */
+         async function loadWebServicesPricingMatrix() {
+            const dropdownSelectorElement = document.getElementById('serviceType');
+            const statusIndicator = document.getElementById('syncStatusIndicator');
             
-            state.packages.forEach(pkg => {
-                const opt = document.createElement('option');
-                opt.value = pkg.id;
-                opt.textContent = `${pkg.name} - KSH ${formatPrice(pkg.price)}`;
-                selector.appendChild(opt);
-            });
+            try {
+                // Pointing directly to the designated database synchronized endpoint in server.js
+                const requestResponse = await fetch('/api/sub-services/web');
+                if (!requestResponse.ok) throw new Error(`HTTP Matrix error status code context: ${requestResponse.status}`);
+                
+                globalServicesCollection = await requestResponse.json();
+                
+                if (!dropdownSelectorElement) return;
+                dropdownSelectorElement.innerHTML = '';
 
-            selector.addEventListener('change', (e) => {
-                setTargetPackage(parseInt(e.target.value));
-            });
-        }
+                if (globalServicesCollection.length === 0) {
+                    dropdownSelectorElement.innerHTML = `<option value="" disabled selected>No active architecture configurations found</option>`;
+                    return;
+                }
 
-        function setTargetPackage(pkgId) {
-            const targetPkg = state.packages.find(p => p.id === pkgId);
-            if (!targetPkg) return;
-            state.selectedPackage = targetPkg;
+                globalServicesCollection.forEach((individualService, index) => {
+                    const trackingOptionNode = document.createElement('option');
+                    trackingOptionNode.value = individualService.title;
+                    trackingOptionNode.setAttribute('data-price', individualService.price);
+                    trackingOptionNode.innerText = `${individualService.title} - KSH ${Number(individualService.price).toLocaleString()}`;
+                    
+                    if (index === 0) trackingOptionNode.selected = true;
+                    dropdownSelectorElement.appendChild(trackingOptionNode);
+                });
 
-            document.querySelectorAll('.package-card-node').forEach(card => {
-                card.className = "group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node";
-            });
-            document.querySelectorAll('[id^="pkg-check-"]').forEach(check => {
-                check.className = "absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent";
-            });
-            document.querySelectorAll('[id^="pkg-btn-"]').forEach(btn => {
-                btn.className = "w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100";
-                btn.textContent = "Select Stack";
-            });
+                if (statusIndicator) {
+                    statusIndicator.innerText = "SYNCHRONIZED";
+                    statusIndicator.className = "text-emerald-400";
+                }
 
-            const activeCard = document.getElementById(`pkg-card-${pkgId}`);
-            const activeCheck = document.getElementById(`pkg-check-${pkgId}`);
-            const activeBtn = document.getElementById(`pkg-btn-${pkgId}`);
+                // Fire initial updates calculation
+                synchronizePricingMatrixDisplay();
+                pushSystemOperationalToast("Web service matrix configuration nodes loaded completely.", "success");
 
-            if (activeCard) activeCard.className = "group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer package-card-node border-2 border-[#0044ff] shadow-md shadow-blue-500/10 translate-y-[-2px]";
-            if (activeCheck) activeCheck.className = "absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-[#0044ff] bg-[#0044ff] text-white";
-            if (activeBtn) {
-                activeBtn.className = "w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-[#0044ff] text-white shadow-sm shadow-blue-600/20";
-                activeBtn.textContent = "Selected";
+            } catch (networkFetchError) {
+                console.error("Critical failure during Web services payload acquisition routing map:", networkFetchError);
+                if (statusIndicator) {
+                    statusIndicator.innerText = "DESYNCHRONIZED (OFFLINE)";
+                    statusIndicator.className = "text-rose-500";
+                }
+                
+                if (dropdownSelectorElement) {
+                    dropdownSelectorElement.innerHTML = `<option value="" disabled selected>System failed connection to host API matrix. Using fallback presets.</option>`;
+                    // Set secure offline fallback definitions matches
+                    globalServicesCollection = [
+                        { title: "Standard Landing Architecture", price: 15000 },
+                        { title: "E-Commerce Enterprise Matrix", price: 45000 },
+                        { title: "Custom Portal Infrastructure", price: 6000 }
+                    ];
+                    dropdownSelectorElement.innerHTML = '';
+                    globalServicesCollection.forEach((srv, idx) => {
+                        const opt = document.createElement('option');
+                        opt.value = srv.title;
+                        opt.setAttribute('data-price', srv.price);
+                        opt.innerText = `${srv.title} - KSH ${srv.price.toLocaleString()} (LOCAL MUTED)`;
+                        if (idx === 0) opt.selected = true;
+                        dropdownSelectorElement.appendChild(opt);
+                    });
+                    synchronizePricingMatrixDisplay();
+                }
+                pushSystemOperationalToast("Pipeline retrieval bypassed. Operating on local offline cache fallbacks.", "error");
             }
-
-            const selector = document.getElementById('serviceTypeSelector');
-            if (selector.value != pkgId) selector.value = pkgId;
-
-            document.getElementById('selectedPackageSummaryName').textContent = targetPkg.name;
-            document.getElementById('displayPrice').textContent = `KSH ${formatPrice(targetPkg.price)}`;
         }
 
-        // 7. SECURE WORKFLOW: DB PERSISTENCE -> WHATSAPP REDIRECT (Matches exact schema map)
-        document.getElementById('unifiedOrderForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        /**
+         * Real-time extraction of DOM input states to render localized cost display markers
+         */
+        function synchronizePricingMatrixDisplay() {
+            const matrixSelectorElement = document.getElementById('serviceType');
+            const targetPriceDisplayNode = document.getElementById('displayPrice');
+            if (!matrixSelectorElement || !targetPriceDisplayNode) return;
 
-            if (!state.selectedPackage || !state.serviceInfo) {
-                pushSystemOperationalToast("System error: Target service node not selected.", "error");
+            const chosenOptionIndex = matrixSelectorElement.selectedIndex;
+            if (chosenOptionIndex === -1) return;
+
+            const designatedCostValue = matrixSelectorElement.options[chosenOptionIndex]?.dataset.price || 0;
+            targetPriceDisplayNode.innerText = `KSH ${Number(designatedCostValue).toLocaleString()}`;
+        }
+
+        /**
+         * Capture form structural vectors, compile transaction payloads and redirect to pipeline interface
+         * @param {Event} submissionFormEvent Form standard event wrapper
+         */
+        function executeOrderPayloadDispatch(submissionFormEvent) {
+            submissionFormEvent.preventDefault();
+
+            const parsedClientIdentity = document.getElementById('userName').value.trim();
+            const selectedPackageSystem = document.getElementById('serviceType').value;
+            const intendedDomainTarget = document.getElementById('domain').value.trim() || "TBD (To Be Determined)";
+            const textScopeSpecifications = document.getElementById('desc').value.trim();
+            const evaluatedPriceDisplayString = document.getElementById('displayPrice').innerText;
+
+            if (!parsedClientIdentity) {
+                pushSystemOperationalToast("Validation Matrix Exception: Lead Client Identifier Name is required.", "error");
+                return;
+            }
+            if (!textScopeSpecifications) {
+                pushSystemOperationalToast("Validation Matrix Exception: Capabilities scope block cannot remain empty.", "error");
                 return;
             }
 
-            const btn = document.getElementById('submitOrderBtn');
-            const originalBtnContent = btn.innerHTML;
-            
-            try {
-                state.isSubmitting = true;
-                btn.disabled = true;
-                btn.innerHTML = `<span class="flex items-center gap-1.5"><i class="fa-solid fa-spinner animate-spin text-[10px]"></i> Committing DB Matrix...</span>`;
+            // Construct and explicitly encode data matrix according to network message parameters
+            const structuralMessagePayload = 
+                `*NEW WEB DEVELOPMENT MATRIX ORDER*\n` +
+                `----------------------------------------\n` +
+                `*Customer/Lead:* ${parsedClientIdentity}\n` +
+                `*Service Track:* ${selectedPackageSystem}\n` +
+                `*Target Domain:* ${intendedDomainTarget}\n` +
+                `*Calculated Cost:* ${evaluatedPriceDisplayString}\n` +
+                `----------------------------------------\n` +
+                `*Project Scope Specifications:*\n${textScopeSpecifications}\n\n` +
+                `_Message generated via DAN74TECH MEDIA Hub integration pipeline module._`;
 
-                const payload = {
-                    user_id: null,
-                    customer_name: document.getElementById('userName').value.trim(),
-                    phone: document.getElementById('userPhone').value.trim(),
-                    service: state.serviceInfo.name,
-                    sub_service: state.selectedPackage.name,
-                    domain: document.getElementById('projectDomain').value.trim() || 'N/A', 
-                    device_model: 'Web Client',
-                    project_details: document.getElementById('projectDetails').value.trim() || 'No explicit technical parameters defined.',
-                    price: parseFloat(state.selectedPackage.price || 0)
-                };
+            pushSystemOperationalToast("Compiling architecture blueprints. Opening communication array...", "success");
 
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/orders`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+            // Dispatch via structural link routing to target secure communication node WhatsApp endpoint
+            setTimeout(() => {
+                const endpointVectorUrl = `https://wa.me/254790435584?text=${encodeURIComponent(structuralMessagePayload)}`;
+                window.open(endpointVectorUrl, '_blank');
+            }, 600);
+        }
 
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error || "Execution rejected by backend database schema.");
-                }
-
-                const savedOrderResponse = await response.json();
-                const dbOrderData = savedOrderResponse.data;
-
-                pushSystemOperationalToast("Database mapping confirmed. Launching WhatsApp...", "success");
-                runSystemTelemetryDatabaseSynchronization();
-
-                const waText = `*WEB DEVELOPMENT DISPATCH*\n\n` +
-                               `*Order Ref:* #${dbOrderData.id || 'SYS-NEW'}\n` +
-                               `*Client Name:* ${dbOrderData.customer_name}\n` +
-                               `*Architecture:* ${dbOrderData.service} - ${dbOrderData.sub_service}\n` +
-                               `*Domain Asset:* ${dbOrderData.domain}\n` +
-                               `*Total Build Price:* KSH ${formatPrice(dbOrderData.price)}\n` +
-                               `*Phone Verification:* ${dbOrderData.phone}\n\n` +
-                               `*Development Parameters:*\n${dbOrderData.project_details}`;
-                
-                const fallbackPhone = '254790435584'; 
-                const waUrl = `https://wa.me/${fallbackPhone}?text=${encodeURIComponent(waText)}`;
-                
-                document.getElementById('projectDetails').value = '';
-
-                setTimeout(() => {
-                    window.open(waUrl, '_blank');
-                }, 800);
-
-            } catch (err) {
-                console.error("Pipeline failure routing error:", err);
-                pushSystemOperationalToast(err.message, "error");
-            } finally {
-                state.isSubmitting = false;
-                btn.disabled = false;
-                btn.innerHTML = originalBtnContent;
+        // NAVBAR RESPONSIVE TOGGLE LOGIC MATRIX LINK PACKET
+        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
+            const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
+            if (dropdownLinksTargetMenu) {
+                dropdownLinksTargetMenu.classList.toggle('hidden');
             }
         });
 
-        // 8. GLOBAL NEWSLETTER SUBSCRIPTION (Inherited exactly from index.html redirection logic)
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
-            formSubmissionEvent.preventDefault();
-            const emailPayload = document.getElementById('subscriberInputEmailNode').value;
-            window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
-        });
-
-        // 9. RESPONSIVE MENU DROPDOWN LOGIC
-        document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
-            const menu = document.getElementById('navbarLinksList');
-            if (menu) menu.classList.toggle('hidden');
-        });
-
-        // 10. SYSTEM LAUNCHPAD & DOM RENDER
+        // GLOBAL INTERFACE INITIALIZATION MATRIX BLOCK
         document.addEventListener('DOMContentLoaded', () => {
             triggerTelemetryClockPulse();
-            runSystemTelemetryDatabaseSynchronization();
-            initializeServiceMatrix();
-            
-            setTimeout(() => {
-                pushSystemOperationalToast("Web Development Matrix successfully synchronized.", "success");
-            }, 800);
+            loadWebServicesPricingMatrix();
         });
     </script>
 </body>
