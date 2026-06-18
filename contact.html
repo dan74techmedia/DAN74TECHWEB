@@ -246,8 +246,8 @@
                     <div id="tab-message" class="tab-content block animate-fadeIn">
                         <form id="contactMessageForm" class="space-y-4">
                             <div class="mb-5 border-b border-gray-100 pb-3">
-                                <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Direct System Inquiry</h2>
-                                <p class="text-xs text-gray-500 mt-1">Submit your requirements and our architecture team will respond promptly.</p>
+                                <h2 class="text-lg font-extrabold text-gray-900 tracking-tight">Talk to Us Directly</h2>
+                                <p class="text-xs text-gray-500 mt-1">Send your message and our team will respond instantly.</p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -572,47 +572,84 @@
             });
         });
 
-        // ==========================================
-        // 1. MESSAGES FORM MAPPING (/api/messages)
-        // ==========================================
-        document.getElementById('contactMessageForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitContactBtn');
-            const originalBtnText = submitBtn.innerHTML;
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+   // =========================================================================
+// ================= MODULE: CONTACT FORM MESSAGES ROUTING ENGINE ============
+// =========================================================================
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
 
-            const payload = {
-                name: document.getElementById('contactName').value.trim(),
-                email: document.getElementById('contactEmail').value.trim(),
-                subject: document.getElementById('contactSubject').value.trim(),
-                message: document.getElementById('contactMessageBody').value.trim()
-            };
+        // Validation checkpoint for incoming payload parameters
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({ error: "Required contact form fields are missing." });
+        }
 
-            try {
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/messages`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+        // 1. Log the message in the database and explicitly map it to Admin (User ID: 1)
+        // Accommodates adaptive schemas with a graceful fallback pattern
+        let messageLog;
+        try {
+            const insertWithUser = await pool.query(
+                `INSERT INTO messages (name, email, subject, message, user_id, status) 
+                 VALUES ($1, $2, $3, $4, 1, 'unread') 
+                 RETURNING *`,
+                [name, email, subject, message]
+            );
+            messageLog = insertWithUser.rows[0];
+        } catch (schemaError) {
+            // Flexible fallback query if 'user_id' or 'status' columns differ in your messages table
+            const standardInsert = await pool.query(
+                `INSERT INTO messages (name, email, subject, message) 
+                 VALUES ($1, $2, $3, $4) 
+                 RETURNING *`,
+                [name, email, subject, message]
+            );
+            messageLog = standardInsert.rows[0];
+        }
 
-                if (response.ok) {
-                    pushSystemOperationalToast("Message successfully relayed to administrative matrix.", "success");
-                    e.target.reset();
-                } else {
-                    const parsedError = await response.json();
-                    throw new Error(parsedError.error || "Message delivery sequence failure.");
-                }
-            } catch (error) {
-                // Graceful fallback display mapping routing anomaly to standard user expectation
-                pushSystemOperationalToast("Routing anomaly detected. Attempting offline dispatch protocol.", "error");
-                setTimeout(() => pushSystemOperationalToast("Message spooled for secondary delivery node.", "info"), 2000);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-            }
+        // 2. Direct an explicit unread system notification to User #1 (Admin Dashboard Ledger)
+        await pool.query(
+            `INSERT INTO notifications (user_id, title, message, channel, status) 
+             VALUES (1, $1, $2, 'dashboard', 'unread')`,
+            [`New Contact Message: ${subject}`, `Message from ${name} (${email}): ${message.substring(0, 100)}...`]
+        ).catch(err => console.error("⚠️ Dashboard notification routing bypassed:", err.message));
+
+        // 3. Dispatch an instant transactional email directly to your email address
+        const emailSubject = `📬 New Web Contact Message: ${subject}`;
+        const emailText = `You have received a new corporate message from your website contact form.\n\n` +
+                          `Sender Name: ${name}\n` +
+                          `Sender Email: ${email}\n` +
+                          `Subject: ${subject}\n\n` +
+                          `Message Body:\n${message}`;
+                          
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; padding: 25px; border: 1px solid #e0e0e0; max-width: 600px; border-radius: 8px;">
+                <h2 style="color: #0044FF; border-bottom: 2px solid #0044FF; padding-bottom: 10px; margin-top: 0;">New Contact Form Submission</h2>
+                <p style="margin: 10px 0;"><strong>From:</strong> ${name} (<a href="mailto:${email}" style="color: #0044FF;">${email}</a>)</p>
+                <p style="margin: 10px 0;"><strong>Subject:</strong> ${subject}</p>
+                <div style="background: #fcfcfc; padding: 18px; border-left: 4px solid #0044FF; border-radius: 4px; margin-top: 15px; white-space: pre-wrap; font-size: 14px; color: #333; line-height: 1.5;">
+                    <strong>Message:</strong><br/>${message}
+                </div>
+                <p style="font-size: 11px; color: #888; margin-top: 25px; border-top: 1px solid #eeeeee; padding-top: 12px; text-align: center;">
+                    Automated Secure Dispatch Protocol • DAN74TECH MEDIA Network
+                </p>
+            </div>
+        `;
+
+        // Executes using your backend's global transaction email engine
+        await sendSystemNotificationEmail('dan74techmedia@gmail.com', emailSubject, emailText, emailHtml);
+
+        // Send a clean affirmative resolution to satisfy front-end operational expectations
+        res.status(200).json({ 
+            success: true, 
+            message: "Message successfully processed and routed to administration.",
+            data: messageLog 
         });
+
+    } catch (err) {
+        console.error("❌ Critical anomaly in messages engine:", err.message);
+        res.status(500).json({ error: "Message processing sequence failure." });
+    }
+});
 
         // ==========================================
         // 2. CONSULTATIONS FORM MAPPING (/api/consultations)
