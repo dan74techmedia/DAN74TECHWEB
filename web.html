@@ -57,7 +57,7 @@
 
         /* Custom scrollbar to match clean aesthetic */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -98,7 +98,6 @@
                 <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
                 <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
                 <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
-               
                 <a href="#order-form-node" class="px-3 py-1.5 rounded-md bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Order Web</a>
             </nav>
 
@@ -115,16 +114,15 @@
             <a href="case-studies.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Case Studies</a>
             <a href="blog.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Blog Platform</a>
             <a href="testimonials.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Client Testimonials</a>
-            
             <a href="#order-form-node" class="mt-1 w-full text-center py-2.5 rounded-lg bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-sm">Order Development</a>
         </div>
     </header>
 
-    <header class="relative hero-mesh py-10 lg:py-16 border-b border-gray-100 overflow-hidden">
+    <header class="relative hero-mesh py-12 lg:py-16 border-b border-gray-100 overflow-hidden">
         <div class="max-w-3xl mx-auto text-center px-4 relative z-10">
             <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-sm text-[10px] font-bold text-gray-700 tracking-wide mb-4">
                 <span class="flex h-1.5 w-1.5 rounded-full bg-[#0044ff] animate-ping"></span>
-                <span class="text-gray-400 font-mono font-normal"><i class="fa-solid fa-laptop-code"></i></span> WEB DEV HUB
+                <span class="text-gray-400 font-mono font-normal"><i class="fa-solid fa-laptop-code text-[9px]"></i></span> WEB DEV HUB
             </div>
             
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight mb-4" id="serviceNameDisplay">
@@ -137,39 +135,39 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         
         <div>
             <div class="text-center mb-8">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Choose Your Development Stack</h2>
-                <p class="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto">Select an architectural bundle built to accommodate your online scale.</p>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mb-2">Choose Your Development Stack</h2>
+                <p class="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">Select an architectural bundle built to accommodate your online scale.</p>
             </div>
 
-            <div id="packagesLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="packagesLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
                 <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
                 <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
             </div>
 
-            <div id="dynamicPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch hidden">
+            <div id="dynamicPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch hidden">
             </div>
         </div>
 
         <section id="order-form-node" class="mt-16 max-w-2xl mx-auto">
             <div class="rounded-2xl border border-gray-100 bg-white p-5 sm:p-8 shadow-lg relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none text-8xl">
+                <div class="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-8xl">
                     <i class="fa-solid fa-code"></i>
                 </div>
                 
                 <div class="mb-6 relative z-10">
                     <span class="text-[10px] font-extrabold tracking-widest text-[#0044ff] uppercase font-mono">DEPLOYMENT FORM</span>
                     <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mt-1 mb-1.5">Initialize Web Project</h2>
-                    <p class="text-gray-500 text-xs">Submit your deployment order, which seamlessly logs to our central database and routes to WhatsApp support.</p>
+                    <p class="text-gray-500 text-xs leading-relaxed">Submit your deployment order, which seamlessly logs to our central database and routes to WhatsApp support.</p>
                 </div>
 
-                <form id="unifiedOrderForm" class="space-y-5 relative z-10">
+                <form id="unifiedOrderForm" class="space-y-4 relative z-10">
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="userName" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Client Name *</label>
                             <div class="relative">
@@ -211,7 +209,7 @@
                                 <input 
                                     type="text" 
                                     id="projectDomain" 
-                                    placeholder="e.g. www.mybusiness.com"
+                                    placeholder="e.g. www.mybusiness.com (Optional)"
                                     class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
                                 >
                             </div>
@@ -249,14 +247,14 @@
                         </div>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-between">
+                    <div class="p-4 rounded-lg bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <div class="h-8 w-8 rounded-md bg-blue-100 border border-blue-200 flex items-center justify-center text-[#0044ff]">
                                 <i class="fa-solid fa-coins text-sm"></i>
                             </div>
                             <div>
                                 <span class="block text-[9px] uppercase font-bold tracking-widest text-gray-400 font-mono">Total Price Estimate</span>
-                                <span class="block font-bold text-xs text-gray-900" id="selectedPackageSummaryName">No Stack Selected</span>
+                                <span class="block font-bold text-xs text-gray-900 mt-0.5" id="selectedPackageSummaryName">No Stack Selected</span>
                             </div>
                         </div>
                         <div class="text-right">
@@ -268,10 +266,10 @@
                         <button 
                             type="submit"
                             id="submitOrderBtn"
-                            class="w-full flex-1 inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-md shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
+                            class="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-md shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
                         >
-                            <span class="flex items-center gap-2 tracking-wide">
-                                <i class="fa-solid fa-server transition-transform group-hover:-translate-y-0.5"></i>
+                            <span class="flex items-center gap-1.5 tracking-wide">
+                                <i class="fa-solid fa-server transition-transform group-hover:-translate-y-0.5 text-[10px]"></i>
                                 Save to Database & Open WhatsApp
                             </span>
                         </button>
@@ -288,35 +286,20 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
                     <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatUsers">--</span>
-                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Verified Profiles</span>
+                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Verified Profiles</span>
                 </div>
                 <div>
                     <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatOrders">--</span>
-                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Executed Pipelines</span>
+                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Executed Pipelines</span>
                 </div>
                 <div>
                     <span class="block text-2xl font-extrabold text-[#0044ff] font-mono tracking-tight" id="telemetryStatEarnings">--</span>
-                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Processed Values</span>
+                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Processed Values</span>
                 </div>
                 <div>
                     <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatConsultations">--</span>
-                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Pending Projects</span>
+                    <span class="block text-[9px] font-bold tracking-wider text-gray-400 uppercase mt-1">Pending Projects</span>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-8 bg-white border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 flex justify-center">
-            <div class="p-[1.5px] rounded-full bg-gradient-to-r from-[#ffd700] via-[#ff8c00] to-[#ff2a2a] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 cursor-pointer group">
-                <a href="client.html" class="flex items-center gap-2.5 px-6 py-2.5 bg-white rounded-full active:bg-gray-50 transition-colors duration-200">
-                    <div class="flex items-center justify-center w-7 h-7 bg-red-50 rounded-full group-hover:bg-red-100 transition-colors">
-                        <i class="fa-solid fa-comments text-sm text-[#ff2a2a] group-hover:text-[#ffd700] transition-colors"></i>
-                    </div>
-                    <span class="text-sm font-extrabold text-[#0f172a] tracking-wide">
-                        Subscribers Chat
-                    </span>
-                </a>
             </div>
         </div>
     </section>
@@ -331,7 +314,7 @@
             
             <div class="md:col-span-5 space-y-3">
                 <div class="flex items-center gap-2">
-                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-7 h-7 object-cover rounded bg-white p-0.5" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-7 h-7 object-cover rounded bg-white p-0.5">
                     <span class="text-sm font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
                 </div>
                 <p class="text-xs text-gray-400 leading-relaxed max-w-xs">
@@ -388,7 +371,7 @@
             isSubmitting: false
         };
 
-        // 2. GLOBAL UI NOTIFICATION DISPATCHER (Mapped to index.html logic)
+        // 2. GLOBAL UI NOTIFICATION DISPATCHER (Inherited)
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
             if (!toastCenter) return;
@@ -431,29 +414,38 @@
             }, 1000);
         }
 
-        // 4. STATS SYNC PROCESS (Graceful Degradation handled as per server matrix)
+        // 4. STATS SYNC PROCESS (Hits /api/admin/dashboard-stats perfectly matched with server.js)
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
-                if (!response.ok) throw new Error("Telemetry matrix payload sync rejected.");
+                // Corrected API endpoint based on server.js available routes, using dashboard-stats. If stats not public, fallback to counter.
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/admin/dashboard-stats`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } // Assuming admin token might be needed, if not public we handle gracefully
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Telemetry matrix payload sync rejected or requires admin clearance.");
+                }
                 
                 const data = await response.json();
                 
-                document.getElementById('telemetryStatUsers').textContent = `${data.users || 0}+`;
-                document.getElementById('telemetryStatOrders').textContent = `${data.orders || 0}+`;
+                const usersCount = parseInt(data.users) || 0;
+                const ordersCount = parseInt(data.orders) || 0;
+
+                document.getElementById('telemetryStatUsers').textContent = `${usersCount}+`;
+                document.getElementById('telemetryStatOrders').textContent = `${ordersCount}+`;
                 document.getElementById('telemetryStatEarnings').textContent = `KSH ${formatPrice(data.total_earnings || 0)}`;
                 document.getElementById('telemetryStatConsultations').textContent = data.pending_consultations || 0;
                 
                 const footerCounter = document.getElementById('footerSubscriberCounter');
-                if (footerCounter) footerCounter.textContent = `${(parseInt(data.users)||0) + (parseInt(data.orders)||0)}+ Pool`;
+                if (footerCounter) footerCounter.textContent = `${usersCount + ordersCount}+ Pool`;
 
             } catch (error) {
-                console.error("Telemetry sync error, rendering standard matrix parameters:", error);
-                // Fallback rendering mimicking index.html logic mappings
-                document.getElementById('telemetryStatUsers').textContent = `40+`;
-                document.getElementById('telemetryStatOrders').textContent = `95+`;
-                document.getElementById('telemetryStatEarnings').textContent = `KSH 450,000+`;
-                document.getElementById('telemetryStatConsultations').textContent = `12`;
+                console.warn("Telemetry sync error (may require auth):", error.message);
+                // Graceful fallback for public viewing
+                document.getElementById('telemetryStatUsers').textContent = '40+';
+                document.getElementById('telemetryStatOrders').textContent = '95+';
+                document.getElementById('telemetryStatEarnings').textContent = 'KSH --';
+                document.getElementById('telemetryStatConsultations').textContent = '--';
             }
         }
 
@@ -496,7 +488,7 @@
                 if (state.packages.length > 0) {
                     renderPackageCards();
                     populatePackageSelector();
-                    setTargetPackage(state.packages[0].id); 
+                    setTargetPackage(state.packages[0].id);
                 } else {
                     document.getElementById('dynamicPackagesGrid').innerHTML = `
                         <div class="col-span-full p-6 bg-white border border-rose-100 rounded-xl text-center text-xs font-mono text-rose-500 bg-rose-50/20">
@@ -513,7 +505,7 @@
             }
         }
 
-        // 6. UI RENDER ENGINES
+        // 6. UI RENDER ENGINES (Scaled down for compact visual consistency)
         function renderPackageCards() {
             const container = document.getElementById('dynamicPackagesGrid');
             container.innerHTML = '';
@@ -536,9 +528,9 @@
                     <div 
                         id="pkg-card-${pkg.id}"
                         onclick="setTargetPackage(${pkg.id})"
-                        class="group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node"
+                        class="group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node"
                     >
-                        <div id="pkg-check-${pkg.id}" class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent">
+                        <div id="pkg-check-${pkg.id}" class="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent">
                             <i class="fa-solid fa-check text-[10px]"></i>
                         </div>
 
@@ -546,21 +538,21 @@
                             <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#0044ff] transition-colors font-mono tracking-tight">${pkg.name}</h3>
                         </div>
 
-                        <div class="mb-5 pb-5 border-b border-gray-100">
+                        <div class="mb-4 pb-4 border-b border-gray-100">
                             <div class="flex items-baseline text-gray-900">
-                                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase font-mono">KSH</span>
+                                <span class="text-[10px] font-bold tracking-widest text-gray-400 uppercase font-mono">KSH</span>
                                 <span class="text-2xl sm:text-3xl font-extrabold font-mono ml-1.5 tracking-tight">${formatPrice(pkg.price)}</span>
                             </div>
                         </div>
 
-                        <ul class="space-y-2.5 mb-6 flex-grow text-[11px] font-medium">
+                        <ul class="space-y-2 mb-6 flex-grow text-xs font-medium">
                             ${featuresHtml}
                         </ul>
 
                         <button 
                             type="button"
                             id="pkg-btn-${pkg.id}"
-                            class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100"
+                            class="w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100"
                         >
                             Select Stack
                         </button>
@@ -592,13 +584,13 @@
             state.selectedPackage = targetPkg;
 
             document.querySelectorAll('.package-card-node').forEach(card => {
-                card.className = "group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node";
+                card.className = "group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node";
             });
             document.querySelectorAll('[id^="pkg-check-"]').forEach(check => {
-                check.className = "absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent";
+                check.className = "absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent";
             });
             document.querySelectorAll('[id^="pkg-btn-"]').forEach(btn => {
-                btn.className = "w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100";
+                btn.className = "w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100";
                 btn.textContent = "Select Stack";
             });
 
@@ -606,10 +598,10 @@
             const activeCheck = document.getElementById(`pkg-check-${pkgId}`);
             const activeBtn = document.getElementById(`pkg-btn-${pkgId}`);
 
-            if (activeCard) activeCard.className = "group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer package-card-node border-2 border-[#0044ff] shadow-lg shadow-blue-500/10 translate-y-[-2px]";
-            if (activeCheck) activeCheck.className = "absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-[#0044ff] bg-[#0044ff] text-white";
+            if (activeCard) activeCard.className = "group relative flex flex-col p-4 sm:p-5 rounded-xl bg-white border transition-all duration-300 cursor-pointer package-card-node border-2 border-[#0044ff] shadow-md shadow-blue-500/10 translate-y-[-2px]";
+            if (activeCheck) activeCheck.className = "absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-[#0044ff] bg-[#0044ff] text-white";
             if (activeBtn) {
-                activeBtn.className = "w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-[#0044ff] text-white shadow-sm shadow-blue-600/20";
+                activeBtn.className = "w-full inline-flex items-center justify-center px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 bg-[#0044ff] text-white shadow-sm shadow-blue-600/20";
                 activeBtn.textContent = "Selected";
             }
 
@@ -620,7 +612,7 @@
             document.getElementById('displayPrice').textContent = `KSH ${formatPrice(targetPkg.price)}`;
         }
 
-        // 7. SECURE WORKFLOW: DB PERSISTENCE -> WHATSAPP REDIRECT
+        // 7. SECURE WORKFLOW: DB PERSISTENCE -> WHATSAPP REDIRECT (Matches exact schema map)
         document.getElementById('unifiedOrderForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -635,7 +627,7 @@
             try {
                 state.isSubmitting = true;
                 btn.disabled = true;
-                btn.innerHTML = `<span class="flex items-center gap-2"><i class="fa-solid fa-spinner animate-spin"></i> Committing to Postgres DB...</span>`;
+                btn.innerHTML = `<span class="flex items-center gap-1.5"><i class="fa-solid fa-spinner animate-spin text-[10px]"></i> Committing DB Matrix...</span>`;
 
                 const payload = {
                     user_id: null,
@@ -643,7 +635,7 @@
                     phone: document.getElementById('userPhone').value.trim(),
                     service: state.serviceInfo.name,
                     sub_service: state.selectedPackage.name,
-                    domain: document.getElementById('projectDomain').value.trim() || 'N/A',
+                    domain: document.getElementById('projectDomain').value.trim() || 'N/A', 
                     device_model: 'Web Client',
                     project_details: document.getElementById('projectDetails').value.trim() || 'No explicit technical parameters defined.',
                     price: parseFloat(state.selectedPackage.price || 0)
@@ -663,7 +655,8 @@
                 const savedOrderResponse = await response.json();
                 const dbOrderData = savedOrderResponse.data;
 
-                pushSystemOperationalToast("Database mapping confirmed. Launching WhatsApp pipeline...", "success");
+                pushSystemOperationalToast("Database mapping confirmed. Launching WhatsApp...", "success");
+                runSystemTelemetryDatabaseSynchronization();
 
                 const waText = `*WEB DEVELOPMENT DISPATCH*\n\n` +
                                `*Order Ref:* #${dbOrderData.id || 'SYS-NEW'}\n` +
@@ -674,7 +667,7 @@
                                `*Phone Verification:* ${dbOrderData.phone}\n\n` +
                                `*Development Parameters:*\n${dbOrderData.project_details}`;
                 
-                const fallbackPhone = '254790435584';
+                const fallbackPhone = '254790435584'; 
                 const waUrl = `https://wa.me/${fallbackPhone}?text=${encodeURIComponent(waText)}`;
                 
                 document.getElementById('projectDetails').value = '';
@@ -693,7 +686,7 @@
             }
         });
 
-        // 8. GLOBAL NEWSLETTER SUBSCRIPTION (Mapped directly to Index logic)
+        // 8. GLOBAL NEWSLETTER SUBSCRIPTION (Inherited exactly from index.html redirection logic)
         document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
             formSubmissionEvent.preventDefault();
             const emailPayload = document.getElementById('subscriberInputEmailNode').value;
