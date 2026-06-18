@@ -639,11 +639,15 @@
         }
 
         // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
-            formSubmissionEvent.preventDefault();
-            window.location.href = 'client.html';
-        });
-
+document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+    formSubmissionEvent.preventDefault();
+    
+    // Capture the value from the email node
+    const emailPayload = document.getElementById('subscriberInputEmailNode').value;
+    
+    // Redirect to client.html with the email safely attached as a URL parameter
+    window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
+});
         // NAVBAR RESPONSIVE TOGGLE LOGIC MATRIX LINK PACKET
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
             const dropdownLinksTargetMenu = document.getElementById('navbarLinksList');
