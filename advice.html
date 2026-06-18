@@ -341,9 +341,9 @@
             <div class="md:col-span-4 space-y-4">
                 <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
                 <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
-                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
-                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
-                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-4 py-3 rounded-xl transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
+                 <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
                 </form>
             </div>
         </div>
@@ -700,35 +700,16 @@
             }
         });
 
-        // 8. SUBSCRIBER NEWSLETTER INTEGRATION (Reused globally from graphic-design.html)
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('subscriberInputEmailNode');
-            if (!emailInput) return;
-
-            try {
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/subscribers`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: emailInput.value.trim() })
-                });
-
-                if (response.ok) {
-                    pushSystemOperationalToast("Corporate pipeline synchronization complete.", "success-variant");
-                    emailInput.value = '';
-                    const counter = document.getElementById('footerSubscriberCounter');
-                    if (counter) {
-                        const base = parseInt(counter.textContent) || 140;
-                        counter.textContent = `${base + 1}+ Pool`;
-                    }
-                } else {
-                    const err = await response.json();
-                    throw new Error(err.error || "Subscription registration error failure.");
-                }
-            } catch (err) {
-                pushSystemOperationalToast(err.message, "error");
-            }
-        });
+      // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+    formSubmissionEvent.preventDefault();
+    
+    // Capture the value from the email node
+    const emailPayload = document.getElementById('subscriberInputEmailNode').value;
+    
+    // Redirect to client.html with the email safely attached as a URL parameter
+    window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
+});
 
         // 9. MOBILE NAVIGATION DROPDOWN
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
