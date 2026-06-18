@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Development Services | DAN74TECH MEDIA</title>
-<link rel="icon" type="image/png" href="/images/favicon.png?v=1">
+    <link rel="icon" type="image/png" href="/images/favicon.png?v=1">
     <meta name="description" content="High-fidelity, responsive, and secure websites built to scale and optimize your online presence. Production-grade web development engineered by DAN74TECH MEDIA.">
     <meta name="keywords" content="DAN74TECH, Web Development, SEO, E-Commerce, Portfolios, Websites, Node.js, Meru, Kenya, Daniel Ngumi, Tech Hub">
     <meta name="author" content="DAN74TECH MEDIA">
@@ -41,8 +41,8 @@
 
         /* Abstract Premium Geometric Background Elements */
         .hero-mesh {
-            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.08), transparent 50%),
-                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.05), transparent 45%);
+            background: radial-gradient(circle at 80% 20%, rgba(0, 68, 255, 0.05), transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(255, 42, 42, 0.04), transparent 45%);
         }
 
         /* Toast Slide Animation Matrix */
@@ -57,7 +57,7 @@
 
         /* Custom scrollbar to match clean aesthetic */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -76,197 +76,199 @@
     <div id="applicationToastCenter" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
 
     <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             
-            <a href="index.html" class="flex items-center gap-3 group focus:outline-none">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[2px] shadow-sm transition-transform duration-300 group-hover:scale-105">
-                    <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-between overflow-hidden">
+            <a href="index.html" class="flex items-center gap-2.5 group focus:outline-none">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0044ff] to-[#ff2a2a] p-[1.5px] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                    <div class="w-full h-full bg-white rounded-[7px] flex items-center justify-between overflow-hidden">
                         <img src="images/logo.png" alt="DAN74TECH Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-lg font-extrabold tracking-tight text-[#0f172a] font-mono">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Professional Tech Solutions</span>
+                    <span class="text-base font-extrabold tracking-tight text-[#0f172a] font-mono leading-none">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5 leading-none">Tech & Creative Solutions</span>
                 </div>
             </a>
 
-            <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold tracking-wide text-gray-600">
+            <nav class="hidden lg:flex items-center gap-6 text-xs font-bold tracking-wide text-gray-600">
                 <a href="index.html" class="hover:text-[#0044ff] transition-colors">Home</a>
                 <a href="about.html" class="hover:text-[#0044ff] transition-colors">About Us</a>
-                <a href="services.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-1 font-bold">Services</a>
+                <a href="services.html" class="text-[#0044ff] border-b-2 border-[#0044ff] pb-0.5 font-bold">Services</a>
                 <a href="portfolio.html" class="hover:text-[#0044ff] transition-colors">Portfolio</a>
                 <a href="case-studies.html" class="hover:text-[#0044ff] transition-colors">Case Studies</a>
                 <a href="blog.html" class="hover:text-[#0044ff] transition-colors">Blog Insights</a>
                 <a href="testimonials.html" class="hover:text-[#0044ff] transition-colors">Testimonials</a>
-                <a href="#order-form-node" class="px-4 py-2 rounded-lg bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Order Web</a>
+               
+                <a href="#order-form-node" class="px-3 py-1.5 rounded-md bg-[#0044ff] text-white hover:bg-blue-700 transition-all shadow-sm">Order Web</a>
             </nav>
 
-            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
-                <i class="fa-solid fa-bars-staggered text-xl"></i>
+            <button id="mobileNavigationToggleTrigger" class="lg:hidden p-1.5 rounded-md text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars-staggered text-lg"></i>
             </button>
         </div>
 
-        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-6 flex flex-col gap-4 text-base font-semibold">
-            <a href="index.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Home </a>
-            <a href="about.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">About Us</a>
-            <a href="services.html" class="text-[#0044ff] bg-blue-50/50 p-2.5 rounded-lg">Services </a>
-            <a href="portfolio.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
-            <a href="case-studies.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Case Studies</a>
-            <a href="blog.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Blog Platform</a>
-            <a href="testimonials.html" class="p-2.5 rounded-lg text-gray-600 hover:bg-gray-50">Client Testimonials</a>
-            <a href="#order-form-node" class="mt-2 w-full text-center py-3 rounded-xl bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-md">Order Development</a>
+        <div id="navbarLinksList" class="hidden lg:hidden border-t border-gray-100 bg-white shadow-xl absolute left-0 w-full p-4 flex flex-col gap-2 text-sm font-semibold">
+            <a href="index.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Home </a>
+            <a href="about.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">About Us</a>
+            <a href="services.html" class="text-[#0044ff] bg-blue-50/50 p-2 rounded-md">Services </a>
+            <a href="portfolio.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Portfolio Showcase</a>
+            <a href="case-studies.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Case Studies</a>
+            <a href="blog.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Blog Platform</a>
+            <a href="testimonials.html" class="p-2 rounded-md text-gray-600 hover:bg-gray-50">Client Testimonials</a>
+            
+            <a href="#order-form-node" class="mt-1 w-full text-center py-2.5 rounded-lg bg-gradient-to-r from-[#0044ff] to-[#ff2a2a] text-white font-bold shadow-sm">Order Development</a>
         </div>
     </header>
 
-    <header class="relative hero-mesh py-20 lg:py-28 border-b border-gray-100 overflow-hidden">
-        <div class="max-w-4xl mx-auto text-center px-4 relative z-10">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-bold text-gray-700 tracking-wide mb-6">
-                <span class="flex h-2 w-2 rounded-full bg-[#0044ff] animate-ping"></span>
+    <header class="relative hero-mesh py-10 lg:py-16 border-b border-gray-100 overflow-hidden">
+        <div class="max-w-3xl mx-auto text-center px-4 relative z-10">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-sm text-[10px] font-bold text-gray-700 tracking-wide mb-4">
+                <span class="flex h-1.5 w-1.5 rounded-full bg-[#0044ff] animate-ping"></span>
                 <span class="text-gray-400 font-mono font-normal"><i class="fa-solid fa-laptop-code"></i></span> WEB DEV HUB
             </div>
             
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight mb-6" id="serviceNameDisplay">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight mb-4" id="serviceNameDisplay">
                 Loading Architecture...
             </h1>
             
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed font-normal" id="serviceDescDisplay">
+            <p class="text-sm sm:text-base text-gray-600 max-w-xl mx-auto leading-relaxed font-normal" id="serviceDescDisplay">
                 Synchronizing available development matrices from the database pool. Please stand by.
             </p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         
         <div>
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Choose Your Development Stack</h2>
-                <p class="text-sm sm:text-base text-gray-500 max-w-md mx-auto">Select an architectural bundle built to accommodate your online scale.</p>
+            <div class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Choose Your Development Stack</h2>
+                <p class="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto">Select an architectural bundle built to accommodate your online scale.</p>
             </div>
 
-            <div id="packagesLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="h-80 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse"></div>
-                <div class="h-80 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse"></div>
-                <div class="h-80 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse"></div>
+            <div id="packagesLoaderSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
+                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
+                <div class="h-64 bg-white rounded-xl border border-gray-100 shadow-sm animate-pulse"></div>
             </div>
 
-            <div id="dynamicPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch hidden">
-                </div>
+            <div id="dynamicPackagesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch hidden">
+            </div>
         </div>
 
-        <section id="order-form-node" class="mt-24 max-w-3xl mx-auto">
-            <div class="rounded-3xl border border-gray-100 bg-white p-6 sm:p-10 shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none text-9xl">
+        <section id="order-form-node" class="mt-16 max-w-2xl mx-auto">
+            <div class="rounded-2xl border border-gray-100 bg-white p-5 sm:p-8 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none text-8xl">
                     <i class="fa-solid fa-code"></i>
                 </div>
                 
-                <div class="mb-8 relative z-10">
-                    <span class="text-xs font-extrabold tracking-widest text-[#0044ff] uppercase font-mono">DEPLOYMENT FORM</span>
-                    <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mt-1 mb-2">Initialize Web Project</h2>
-                    <p class="text-gray-500 text-sm">Submit your deployment order, which seamlessly logs to our central database and routes to WhatsApp support.</p>
+                <div class="mb-6 relative z-10">
+                    <span class="text-[10px] font-extrabold tracking-widest text-[#0044ff] uppercase font-mono">DEPLOYMENT FORM</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight mt-1 mb-1.5">Initialize Web Project</h2>
+                    <p class="text-gray-500 text-xs">Submit your deployment order, which seamlessly logs to our central database and routes to WhatsApp support.</p>
                 </div>
 
-                <form id="unifiedOrderForm" class="space-y-6 relative z-10">
+                <form id="unifiedOrderForm" class="space-y-5 relative z-10">
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <label for="userName" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Client Name *</label>
+                            <label for="userName" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Client Name *</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                                    <i class="fa-regular fa-user text-sm"></i>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <i class="fa-regular fa-user text-xs"></i>
                                 </span>
                                 <input 
                                     type="text" 
                                     id="userName" 
                                     required
                                     placeholder="e.g. John Doe"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
                                 >
                             </div>
                         </div>
 
                         <div>
-                            <label for="userPhone" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Phone (M-Pesa) *</label>
+                            <label for="userPhone" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Phone (M-Pesa) *</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                                    <i class="fa-solid fa-phone text-sm"></i>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <i class="fa-solid fa-phone text-xs"></i>
                                 </span>
                                 <input 
                                     type="tel" 
                                     id="userPhone" 
                                     required
                                     placeholder="e.g. 07/01********"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
                                 >
                             </div>
                         </div>
 
                         <div>
-                            <label for="projectDomain" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Domain Target</label>
+                            <label for="projectDomain" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Domain Target</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                                    <i class="fa-solid fa-globe text-sm"></i>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <i class="fa-solid fa-globe text-xs"></i>
                                 </span>
                                 <input 
                                     type="text" 
                                     id="projectDomain" 
-                                    placeholder="e.g. www.mybusiness.com (Optional)"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
+                                    placeholder="e.g. www.mybusiness.com"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white font-medium"
                                 >
                             </div>
                         </div>
 
                         <div>
-                            <label for="serviceTypeSelector" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">Configuration Stack</label>
+                            <label for="serviceTypeSelector" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">Configuration Stack</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                                    <i class="fa-solid fa-layer-group text-sm"></i>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <i class="fa-solid fa-layer-group text-xs"></i>
                                 </span>
                                 <select 
                                     id="serviceTypeSelector" 
                                     required
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 text-sm text-gray-900 appearance-none focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white cursor-pointer font-medium"
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-xs text-gray-900 appearance-none focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white cursor-pointer font-medium"
                                 >
                                     <option value="" disabled selected>-- Loading Packages --</option>
                                 </select>
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
                                 </span>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label for="projectDetails" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 font-mono">System Scope & Instructions</label>
+                        <label for="projectDetails" class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5 font-mono">System Scope & Instructions</label>
                         <div class="relative">
                             <textarea 
                                 id="projectDetails" 
-                                rows="4" 
+                                rows="3" 
                                 placeholder="Describe necessary features, API integrations, pages needed, brand colors, and primary functionality..."
-                                class="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white custom-scrollbar font-medium"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0044ff] focus:ring-1 focus:ring-[#0044ff] transition-all focus:bg-white custom-scrollbar font-medium"
                             ></textarea>
                         </div>
                     </div>
 
-                    <div class="p-5 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-[#0044ff]">
-                                <i class="fa-solid fa-coins text-lg"></i>
+                    <div class="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="h-8 w-8 rounded-md bg-blue-100 border border-blue-200 flex items-center justify-center text-[#0044ff]">
+                                <i class="fa-solid fa-coins text-sm"></i>
                             </div>
                             <div>
-                                <span class="block text-[10px] uppercase font-bold tracking-widest text-gray-400 font-mono">Total Price Estimate</span>
-                                <span class="block font-bold text-sm text-gray-900" id="selectedPackageSummaryName">No Stack Selected</span>
+                                <span class="block text-[9px] uppercase font-bold tracking-widest text-gray-400 font-mono">Total Price Estimate</span>
+                                <span class="block font-bold text-xs text-gray-900" id="selectedPackageSummaryName">No Stack Selected</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span id="displayPrice" class="font-extrabold text-2xl text-[#0044ff] font-mono tracking-tight">KSH 0</span>
+                            <span id="displayPrice" class="font-extrabold text-xl text-[#0044ff] font-mono tracking-tight">KSH 0</span>
                         </div>
                     </div>
 
-                    <div class="pt-4 flex flex-col sm:flex-row gap-4 items-center">
+                    <div class="pt-2 flex flex-col sm:flex-row gap-3 items-center">
                         <button 
                             type="submit"
                             id="submitOrderBtn"
-                            class="w-full sm:w-auto flex-1 inline-flex items-center justify-center px-8 py-4 rounded-xl text-sm font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
+                            class="w-full flex-1 inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs font-bold text-white bg-[#0044ff] hover:bg-blue-700 transition-all duration-200 shadow-md shadow-blue-600/20 disabled:opacity-60 disabled:cursor-not-allowed group"
                         >
                             <span class="flex items-center gap-2 tracking-wide">
                                 <i class="fa-solid fa-server transition-transform group-hover:-translate-y-0.5"></i>
@@ -281,76 +283,91 @@
 
     </main>
 
-    <section class="py-12 bg-[#f8fafc] border-t border-b border-gray-100">
+    <section class="py-8 bg-[#f8fafc] border-t border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
-                    <span class="block text-3xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatUsers">--</span>
-                    <span class="block text-xs font-bold tracking-wider text-gray-400 uppercase mt-1">Verified Profiles</span>
+                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatUsers">--</span>
+                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Verified Profiles</span>
                 </div>
                 <div>
-                    <span class="block text-3xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatOrders">--</span>
-                    <span class="block text-xs font-bold tracking-wider text-gray-400 uppercase mt-1">Executed Pipelines</span>
+                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatOrders">--</span>
+                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Executed Pipelines</span>
                 </div>
                 <div>
-                    <span class="block text-3xl font-extrabold text-[#0044ff] font-mono tracking-tight" id="telemetryStatEarnings">--</span>
-                    <span class="block text-xs font-bold tracking-wider text-gray-400 uppercase mt-1">Processed Values</span>
+                    <span class="block text-2xl font-extrabold text-[#0044ff] font-mono tracking-tight" id="telemetryStatEarnings">--</span>
+                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Processed Values</span>
                 </div>
                 <div>
-                    <span class="block text-3xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatConsultations">--</span>
-                    <span class="block text-xs font-bold tracking-wider text-gray-400 uppercase mt-1">Pending Projects</span>
+                    <span class="block text-2xl font-extrabold text-gray-900 font-mono tracking-tight" id="telemetryStatConsultations">--</span>
+                    <span class="block text-[10px] font-bold tracking-wider text-gray-400 uppercase mt-1">Pending Projects</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
-        <i class="fa-brands fa-whatsapp text-2xl"></i>
-        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 text-xs font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
+    <section class="py-8 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 flex justify-center">
+            <div class="p-[1.5px] rounded-full bg-gradient-to-r from-[#ffd700] via-[#ff8c00] to-[#ff2a2a] shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 cursor-pointer group">
+                <a href="client.html" class="flex items-center gap-2.5 px-6 py-2.5 bg-white rounded-full active:bg-gray-50 transition-colors duration-200">
+                    <div class="flex items-center justify-center w-7 h-7 bg-red-50 rounded-full group-hover:bg-red-100 transition-colors">
+                        <i class="fa-solid fa-comments text-sm text-[#ff2a2a] group-hover:text-[#ffd700] transition-colors"></i>
+                    </div>
+                    <span class="text-sm font-extrabold text-[#0f172a] tracking-wide">
+                        Subscribers Chat
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <a href="https://wa.me/254790435584" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 left-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center group" aria-label="WhatsApp Technical Support Node">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 text-[10px] font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
     </a>
 
-    <footer class="bg-[#0b0f19] text-gray-400 pt-16 pb-8 border-t border-gray-900 font-sans">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-gray-800/60">
+    <footer class="bg-[#0b0f19] text-gray-400 pt-12 pb-6 border-t border-gray-900 font-sans">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-gray-800/60">
             
-            <div class="md:col-span-5 space-y-5">
-                <div class="flex items-center gap-3">
-                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-9 h-9 object-cover rounded-lg bg-white p-0.5" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
-                    <span class="text-md font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
+            <div class="md:col-span-5 space-y-3">
+                <div class="flex items-center gap-2">
+                    <img src="images/logo.png" alt="DAN74TECH Logo" class="w-7 h-7 object-cover rounded bg-white p-0.5" onerror="this.src='https://placehold.co/100?text=DAN74TECH'">
+                    <span class="text-sm font-bold font-mono text-white tracking-wider">DAN74TECH<span class="text-[#0044ff]">.</span><span class="text-[#ff2a2a]">MEDIA</span></span>
                 </div>
-                <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
+                <p class="text-xs text-gray-400 leading-relaxed max-w-xs">
                     Production-grade tech systems deployment matrices. Fully reliable database monitoring networks and custom business execution channels based in Kenya.
                 </p>
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-900 rounded-lg border border-gray-800 text-xs font-mono">
+                <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-900 rounded border border-gray-800 text-[10px] font-mono">
                     <i class="fa-solid fa-users text-[#ffd700]"></i>
                     <span class="text-gray-300 font-bold" id="footerSubscriberCounter">140+</span> 
-                    <span class="text-gray-500 text-[10px]">Verified Clients Pool</span>
+                    <span class="text-gray-500 text-[9px]">Verified Clients Pool</span>
                 </div>
             </div>
 
-            <div class="md:col-span-3 space-y-4">
-                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">System Services</h4>
-                <ul class="space-y-2 text-xs font-medium">
-                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1.5">📂 Service Parameters</a></li>
-                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1.5">📁 Project Repository</a></li>
-                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1.5">📈 Performance Records</a></li>
-                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1.5">📑 Technical Logs</a></li>
-                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1.5">💬 Audit Appraisals</a></li>
+            <div class="md:col-span-3 space-y-3">
+                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">System Nodes</h4>
+                <ul class="space-y-1.5 text-xs font-medium">
+                    <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1">唐 Service Parameters</a></li>
+                    <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1">刀 Project Repository</a></li>
+                    <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1">嶋 Performance Records</a></li>
+                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1">淘 Technical Logs</a></li>
+                    <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1">町 Audit Appraisals</a></li>
                 </ul>
             </div>
 
-            <div class="md:col-span-4 space-y-4">
-                <h4 class="text-xs uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
+            <div class="md:col-span-4 space-y-3">
+                <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
                 <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
                 <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
-                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
-                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-4 py-3 rounded-xl transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
                 </form>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p class="text-[11px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
-            <div class="flex items-center gap-4 text-xs font-mono text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p class="text-[10px] font-mono text-gray-500">&copy; 2026 DAN74TECH MEDIA. All operational parameters retained under standard engineering protocols.</p>
+            <div class="flex items-center gap-3 text-[10px] font-mono text-gray-500">
                 <span>Status: <span class="text-emerald-500 font-bold">Operational</span></span>
                 <span id="telemetryPulseTimestamp">--:--:--</span>
             </div>
@@ -371,13 +388,13 @@
             isSubmitting: false
         };
 
-        // 2. GLOBAL UI NOTIFICATION DISPATCHER (From index.html)
+        // 2. GLOBAL UI NOTIFICATION DISPATCHER (Mapped to index.html logic)
         function pushSystemOperationalToast(messageContext, messageType = 'info') {
             const toastCenter = document.getElementById('applicationToastCenter');
             if (!toastCenter) return;
 
             const individualToastNode = document.createElement('div');
-            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-xl bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
+            individualToastNode.className = `toast-notification pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg bg-white text-xs font-semibold transition-all duration-300 transform max-w-sm w-full`;
             
             if (messageType === 'success' || messageType === 'success-variant') {
                 individualToastNode.className += ' border-emerald-100 text-emerald-800 shadow-emerald-500/5';
@@ -414,7 +431,7 @@
             }, 1000);
         }
 
-        // 4. STATS SYNC PROCESS (Hits /api/stats)
+        // 4. STATS SYNC PROCESS (Graceful Degradation handled as per server matrix)
         async function runSystemTelemetryDatabaseSynchronization() {
             try {
                 const response = await fetch(`${SYSTEM_API_BASE_URL}/stats`);
@@ -431,19 +448,22 @@
                 if (footerCounter) footerCounter.textContent = `${(parseInt(data.users)||0) + (parseInt(data.orders)||0)}+ Pool`;
 
             } catch (error) {
-                console.error("Telemetry sync error:", error);
+                console.error("Telemetry sync error, rendering standard matrix parameters:", error);
+                // Fallback rendering mimicking index.html logic mappings
+                document.getElementById('telemetryStatUsers').textContent = `40+`;
+                document.getElementById('telemetryStatOrders').textContent = `95+`;
+                document.getElementById('telemetryStatEarnings').textContent = `KSH 450,000+`;
+                document.getElementById('telemetryStatConsultations').textContent = `12`;
             }
         }
 
         // 5. DATABASE DISCOVERY (WEB DEVELOPMENT SPECIFIC)
         async function initializeServiceMatrix() {
             try {
-                // Interrogate master services table to discover "Web Development" parameters
                 const servicesRes = await fetch(`${SYSTEM_API_BASE_URL}/services`);
                 if (!servicesRes.ok) throw new Error("Failed to map service architecture.");
                 const servicesList = await servicesRes.json();
 
-                // Locate the exact service record matching web domains
                 state.serviceInfo = servicesList.find(s => 
                     s.name.toLowerCase().includes('web') || 
                     s.name.toLowerCase().includes('development')
@@ -453,18 +473,15 @@
                     throw new Error("Target service node 'Web Development' not located in active database schema.");
                 }
 
-                // Hydrate frontend hero with database truth
                 document.getElementById('serviceNameDisplay').textContent = state.serviceInfo.name;
                 if (state.serviceInfo.description) {
                     document.getElementById('serviceDescDisplay').textContent = state.serviceInfo.description;
                 }
 
-                // Query associated sub-services/pricing matrices
                 const subRes = await fetch(`${SYSTEM_API_BASE_URL}/sub-services`);
                 if (!subRes.ok) throw new Error("Failed to pull sub-service pricing tiers.");
                 const subServicesList = await subRes.json();
 
-                // Filter down to packages that belong strictly to the target service node
                 state.packages = subServicesList.filter(pkg => pkg.service_id === state.serviceInfo.id);
 
                 if (state.packages.length === 0) {
@@ -473,18 +490,17 @@
                     );
                 }
 
-                // Toggle loading skeletons off, render logic on
                 document.getElementById('packagesLoaderSkeleton').classList.add('hidden');
                 document.getElementById('dynamicPackagesGrid').classList.remove('hidden');
 
                 if (state.packages.length > 0) {
                     renderPackageCards();
                     populatePackageSelector();
-                    setTargetPackage(state.packages[0].id); // Auto-select tier 1
+                    setTargetPackage(state.packages[0].id); 
                 } else {
                     document.getElementById('dynamicPackagesGrid').innerHTML = `
-                        <div class="col-span-full p-8 bg-white border border-rose-100 rounded-2xl text-center text-sm font-mono text-rose-500 bg-rose-50/20">
-                            <i class="fa-solid fa-triangle-exclamation block text-2xl mb-2 text-rose-400"></i>
+                        <div class="col-span-full p-6 bg-white border border-rose-100 rounded-xl text-center text-xs font-mono text-rose-500 bg-rose-50/20">
+                            <i class="fa-solid fa-triangle-exclamation block text-xl mb-2 text-rose-400"></i>
                             No package configurations currently available in the database for Web Development.
                         </div>`;
                 }
@@ -503,49 +519,48 @@
             container.innerHTML = '';
 
             state.packages.forEach(pkg => {
-                // Gracefully parse database comma-separated strings into bulleted arrays
                 let featuresHtml = '';
                 if (pkg.description) {
                     const featureList = pkg.description.split(',').map(f => f.trim()).filter(Boolean);
                     featuresHtml = featureList.map(feature => `
-                        <li class="flex items-start gap-2.5 text-gray-600">
-                            <i class="fa-solid fa-circle-check text-[#0044ff] text-[10px] mt-1.5 flex-shrink-0"></i>
+                        <li class="flex items-start gap-2 text-gray-600">
+                            <i class="fa-solid fa-circle-check text-[#0044ff] text-[9px] mt-1 flex-shrink-0"></i>
                             <span>${feature}</span>
                         </li>
                     `).join('');
                 } else {
-                    featuresHtml = `<li class="text-gray-500 italic text-xs">Standard operational features included.</li>`;
+                    featuresHtml = `<li class="text-gray-500 italic text-[11px]">Standard operational features included.</li>`;
                 }
 
                 const cardHtml = `
                     <div 
                         id="pkg-card-${pkg.id}"
                         onclick="setTargetPackage(${pkg.id})"
-                        class="group relative flex flex-col p-6 sm:p-8 rounded-2xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node"
+                        class="group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node"
                     >
-                        <div id="pkg-check-${pkg.id}" class="absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent">
-                            <i class="fa-solid fa-check text-xs"></i>
+                        <div id="pkg-check-${pkg.id}" class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent">
+                            <i class="fa-solid fa-check text-[10px]"></i>
                         </div>
 
-                        <div class="mb-5">
-                            <h3 class="font-bold text-xl text-gray-900 group-hover:text-[#0044ff] transition-colors font-mono tracking-tight">${pkg.name}</h3>
+                        <div class="mb-4">
+                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-[#0044ff] transition-colors font-mono tracking-tight">${pkg.name}</h3>
                         </div>
 
-                        <div class="mb-6 pb-6 border-b border-gray-100">
+                        <div class="mb-5 pb-5 border-b border-gray-100">
                             <div class="flex items-baseline text-gray-900">
-                                <span class="text-sm font-bold tracking-widest text-gray-400 uppercase font-mono">KSH</span>
-                                <span class="text-3xl sm:text-4xl font-extrabold font-mono ml-2 tracking-tight">${formatPrice(pkg.price)}</span>
+                                <span class="text-xs font-bold tracking-widest text-gray-400 uppercase font-mono">KSH</span>
+                                <span class="text-2xl sm:text-3xl font-extrabold font-mono ml-1.5 tracking-tight">${formatPrice(pkg.price)}</span>
                             </div>
                         </div>
 
-                        <ul class="space-y-3 mb-8 flex-grow text-sm font-medium">
+                        <ul class="space-y-2.5 mb-6 flex-grow text-[11px] font-medium">
                             ${featuresHtml}
                         </ul>
 
                         <button 
                             type="button"
                             id="pkg-btn-${pkg.id}"
-                            class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100"
+                            class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100"
                         >
                             Select Stack
                         </button>
@@ -566,7 +581,6 @@
                 selector.appendChild(opt);
             });
 
-            // Re-sync UI manually on selector change
             selector.addEventListener('change', (e) => {
                 setTargetPackage(parseInt(e.target.value));
             });
@@ -577,35 +591,31 @@
             if (!targetPkg) return;
             state.selectedPackage = targetPkg;
 
-            // Purge active states dynamically
             document.querySelectorAll('.package-card-node').forEach(card => {
-                card.className = "group relative flex flex-col p-6 sm:p-8 rounded-2xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node";
+                card.className = "group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md border-gray-100 package-card-node";
             });
             document.querySelectorAll('[id^="pkg-check-"]').forEach(check => {
-                check.className = "absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent";
+                check.className = "absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-gray-200 bg-gray-50 text-transparent";
             });
             document.querySelectorAll('[id^="pkg-btn-"]').forEach(btn => {
-                btn.className = "w-full inline-flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100";
+                btn.className = "w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-gray-50 text-gray-600 border border-gray-200 group-hover:bg-gray-100";
                 btn.textContent = "Select Stack";
             });
 
-            // Activate Target Selection Colors
             const activeCard = document.getElementById(`pkg-card-${pkgId}`);
             const activeCheck = document.getElementById(`pkg-check-${pkgId}`);
             const activeBtn = document.getElementById(`pkg-btn-${pkgId}`);
 
-            if (activeCard) activeCard.className = "group relative flex flex-col p-6 sm:p-8 rounded-2xl bg-white border transition-all duration-300 cursor-pointer package-card-node border-2 border-[#0044ff] shadow-lg shadow-blue-500/10 translate-y-[-4px]";
-            if (activeCheck) activeCheck.className = "absolute top-4 right-4 flex h-6 w-6 items-center justify-center rounded-full border transition-colors border-[#0044ff] bg-[#0044ff] text-white";
+            if (activeCard) activeCard.className = "group relative flex flex-col p-5 sm:p-6 rounded-xl bg-white border transition-all duration-300 cursor-pointer package-card-node border-2 border-[#0044ff] shadow-lg shadow-blue-500/10 translate-y-[-2px]";
+            if (activeCheck) activeCheck.className = "absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border transition-colors border-[#0044ff] bg-[#0044ff] text-white";
             if (activeBtn) {
-                activeBtn.className = "w-full inline-flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 bg-[#0044ff] text-white shadow-md shadow-blue-600/20";
+                activeBtn.className = "w-full inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-[#0044ff] text-white shadow-sm shadow-blue-600/20";
                 activeBtn.textContent = "Selected";
             }
 
-            // Sync hidden state form
             const selector = document.getElementById('serviceTypeSelector');
             if (selector.value != pkgId) selector.value = pkgId;
 
-            // Reflect live price
             document.getElementById('selectedPackageSummaryName').textContent = targetPkg.name;
             document.getElementById('displayPrice').textContent = `KSH ${formatPrice(targetPkg.price)}`;
         }
@@ -627,20 +637,18 @@
                 btn.disabled = true;
                 btn.innerHTML = `<span class="flex items-center gap-2"><i class="fa-solid fa-spinner animate-spin"></i> Committing to Postgres DB...</span>`;
 
-                // Build mapping corresponding to schema expectations mapped in server.js (/api/orders)
                 const payload = {
                     user_id: null,
                     customer_name: document.getElementById('userName').value.trim(),
                     phone: document.getElementById('userPhone').value.trim(),
                     service: state.serviceInfo.name,
                     sub_service: state.selectedPackage.name,
-                    domain: document.getElementById('projectDomain').value.trim() || 'N/A', // Web Development exclusive parameter injection
+                    domain: document.getElementById('projectDomain').value.trim() || 'N/A',
                     device_model: 'Web Client',
                     project_details: document.getElementById('projectDetails').value.trim() || 'No explicit technical parameters defined.',
                     price: parseFloat(state.selectedPackage.price || 0)
                 };
 
-                // PHASE A: Database Transaction Execution
                 const response = await fetch(`${SYSTEM_API_BASE_URL}/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -656,9 +664,7 @@
                 const dbOrderData = savedOrderResponse.data;
 
                 pushSystemOperationalToast("Database mapping confirmed. Launching WhatsApp pipeline...", "success");
-                runSystemTelemetryDatabaseSynchronization();
 
-                // PHASE B: WhatsApp Redirection Trigger (Utilizing securely returned DB sequences)
                 const waText = `*WEB DEVELOPMENT DISPATCH*\n\n` +
                                `*Order Ref:* #${dbOrderData.id || 'SYS-NEW'}\n` +
                                `*Client Name:* ${dbOrderData.customer_name}\n` +
@@ -668,13 +674,11 @@
                                `*Phone Verification:* ${dbOrderData.phone}\n\n` +
                                `*Development Parameters:*\n${dbOrderData.project_details}`;
                 
-                const fallbackPhone = '254790435584'; // Central administration receiver
+                const fallbackPhone = '254790435584';
                 const waUrl = `https://wa.me/${fallbackPhone}?text=${encodeURIComponent(waText)}`;
                 
-                // Reset descriptive buffers
                 document.getElementById('projectDetails').value = '';
 
-                // Buffer transition explicitly mapping to UX expectations
                 setTimeout(() => {
                     window.open(waUrl, '_blank');
                 }, 800);
@@ -689,34 +693,11 @@
             }
         });
 
-        // 8. GLOBAL NEWSLETTER SUBSCRIPTION (from index.html/graphics (2).html)
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('subscriberInputEmailNode');
-            if (!emailInput) return;
-
-            try {
-                const response = await fetch(`${SYSTEM_API_BASE_URL}/subscribers`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: emailInput.value.trim() })
-                });
-
-                if (response.ok) {
-                    pushSystemOperationalToast("Corporate pipeline synchronization complete.", "success-variant");
-                    emailInput.value = '';
-                    const counter = document.getElementById('footerSubscriberCounter');
-                    if (counter) {
-                        const base = parseInt(counter.textContent) || 140;
-                        counter.textContent = `${base + 1}+ Pool`;
-                    }
-                } else {
-                    const err = await response.json();
-                    throw new Error(err.error || "Subscription registration error logic failure.");
-                }
-            } catch (err) {
-                pushSystemOperationalToast(err.message, "error");
-            }
+        // 8. GLOBAL NEWSLETTER SUBSCRIPTION (Mapped directly to Index logic)
+        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+            formSubmissionEvent.preventDefault();
+            const emailPayload = document.getElementById('subscriberInputEmailNode').value;
+            window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
         });
 
         // 9. RESPONSIVE MENU DROPDOWN LOGIC
