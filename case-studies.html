@@ -409,10 +409,16 @@
         }
 
         // 5. NEWSLETTER SYNC SUBSCRIPTION (Aligned with index.html redirect logic)
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            window.location.href = 'client.html';
-        });
+     // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+    formSubmissionEvent.preventDefault();
+    
+    // Capture the value from the email node
+    const emailPayload = document.getElementById('subscriberInputEmailNode').value;
+    
+    // Redirect to client.html with the email safely attached as a URL parameter
+    window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
+});
 
         // 6. NAVBAR RESPONSIVENESS
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
