@@ -232,7 +232,7 @@
         <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 text-[10px] font-bold font-mono tracking-wide whitespace-nowrap">WHATSAPP DIRECT</span>
     </a>
 
-    <footer class="bg-[#0b0f19] text-gray-400 pt-12 pb-6 border-t border-gray-900 font-sans">
+        <footer class="bg-[#0b0f19] text-gray-400 pt-12 pb-6 border-t border-gray-900 font-sans">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-gray-800/60">
             
             <div class="md:col-span-5 space-y-3">
@@ -256,7 +256,7 @@
                     <li><a href="services.html" class="hover:text-white transition-colors flex items-center gap-1">📂 Service Parameters</a></li>
                     <li><a href="portfolio.html" class="hover:text-white transition-colors flex items-center gap-1">📁 Project Repository</a></li>
                     <li><a href="case-studies.html" class="hover:text-white transition-colors flex items-center gap-1">📈 Performance Records</a></li>
-                    <li><a href="blog.html" class="hover:text-white transition-colors flex items-center gap-1">📑 Technical Logs</a></li>
+                    <li><a href="blog.html" class="text-white font-bold flex items-center gap-1">📑 Technical Logs</a></li>
                     <li><a href="testimonials.html" class="hover:text-white transition-colors flex items-center gap-1">💬 Audit Appraisals</a></li>
                 </ul>
             </div>
@@ -264,7 +264,7 @@
             <div class="md:col-span-4 space-y-3">
                 <h4 class="text-[10px] uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
                 <p class="text-xs text-gray-400 leading-relaxed">Subscribe to get live execution status updates and patch files.</p>
-                <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                 <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
                     <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
                     <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
                 </form>
@@ -279,7 +279,6 @@
             </div>
         </div>
     </footer>
-
     <script>
         const SYSTEM_API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
             ? 'http://localhost:10000/api' 
@@ -504,9 +503,25 @@
             });
         }
 
-        document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
-            formSubmissionEvent.preventDefault();
-            window.location.href = 'login.html';
+      document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('subscriberInputEmailNode');
+            try {
+                const response = await fetch(`${SYSTEM_API_BASE_URL}/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailInput.value.trim() })
+                });
+
+                if (response.ok) {
+                    pushSystemOperationalToast("Corporate pipeline synchronization complete.", "success-variant");
+                    emailInput.value = '';
+                    const node = document.getElementById('footerSubscriberCounter');
+                    if (node) node.textContent = `${parseInt(node.textContent) + 1}+ Pool`;
+                }
+            } catch (error) {
+                window.location.href = `client.html?email=${encodeURIComponent(emailInput.value)}`;
+            }
         });
 
         document.getElementById('mobileNavigationToggleTrigger')?.addEventListener('click', function() {
