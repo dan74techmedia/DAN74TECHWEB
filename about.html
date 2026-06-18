@@ -277,10 +277,10 @@
             <div class="md:col-span-4 space-y-3">
     <h4 class="text-[11px] uppercase font-extrabold font-mono tracking-widest text-white">Newsletter Engine Pipeline</h4>
     <p class="text-[11px] text-gray-400 leading-relaxed">Subscribe to get live execution status updates and files.</p>
-    <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
-        <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
-        <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-xl transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
-    </form>
+     <form id="newsletterPipelineSubmissionForm" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="subscriberInputEmailNode" placeholder="client_endpoint@mail.com" required class="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#0044ff] transition-colors font-mono">
+                    <button type="submit" class="bg-[#0044ff] hover:bg-blue-700 text-white font-bold text-xs tracking-wider px-3 py-2 rounded-lg transition-colors whitespace-nowrap font-mono uppercase">Subscribe</button>
+                </form>
 </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -359,53 +359,17 @@
             }
         }
 
-        // 3. Form submission pipeline mapping to database communications table
-       function initializeNewsletterPipeline() {
-    const formNode = document.getElementById('newsletterPipelineSubmissionForm');
-    const emailInputNode = document.getElementById('subscriberInputEmailNode');
-
-    if (formNode && emailInputNode) {
-        formNode.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const emailValue = emailInputNode.value.trim();
-
-            if (!emailValue) return;
-
-            try {
-                // 1. Persist row entry dynamically into the database schema via the server communications channel
-                const submissionResult = await fetch('/api/crud/communications', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: emailValue,
-                        type: 'newsletter',
-                        message: 'Newsletter Pipeline subscription request from about.html page.',
-                        status: 'active',
-                        created_at: new Date().toISOString()
-                    })
-                });
-
-                if (submissionResult.ok) {
-                    displayToastNotification("✅ Successfully subscribed to DAN74TECH MEDIA!");
-                    formNode.reset();
-                } else {
-                    displayToastNotification("❌ Email Already Registered");
-                }
-
-                // 2. Seamlessly redirect to the client console after API response processing
-                window.location.href = 'client.html';
-
-            } catch (error) {
-                console.error("Transmission error inside backend pipeline:", error);
-                displayToastNotification("❌ Connection error: Proceeding to console.");
-                
-                // Fallback redirect execution to guarantee smooth UX even if the network fails
-                window.location.href = 'client.html';
-            }
-        });
-    }
-}
-
+    
+     // NEWSLETTER DISPATCH AND PIPELINE STREAM ENGINE
+document.getElementById('newsletterPipelineSubmissionForm')?.addEventListener('submit', function(formSubmissionEvent) {
+    formSubmissionEvent.preventDefault();
+    
+    // Capture the value from the email node
+    const emailPayload = document.getElementById('subscriberInputEmailNode').value;
+    
+    // Redirect to client.html with the email safely attached as a URL parameter
+    window.location.href = `client.html?email=${encodeURIComponent(emailPayload)}`;
+});
 // Initialize the execution pipeline engine
 initializeNewsletterPipeline();
 
