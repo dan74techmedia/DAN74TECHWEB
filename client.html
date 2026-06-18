@@ -484,6 +484,28 @@
             }
         }
 
+
+        // --- URL PARAMETER EXTRACTION & PREFILL LOGIC ---
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const extractedEmail = urlParams.get('email');
+
+    if (extractedEmail) {
+        // Target the specific email inputs inside the auth containers
+        const loginEmailNode = document.querySelector('#loginForm input[type="email"]');
+        const registerEmailNode = document.querySelector('#registerForm input[type="email"]');
+        
+        // Inject the payload
+        if (loginEmailNode) loginEmailNode.value = extractedEmail;
+        if (registerEmailNode) registerEmailNode.value = extractedEmail;
+
+        // Optionally force the UI to the Registration view, as a "Subscribe" action implies a new user
+        if (typeof toggleAuth === 'function') {
+            toggleAuth('register');
+        }
+    }
+});
+
         // --- 3. AUTHENTICATION POSTGRESQL MAPPING ---
         function toggleAuth(view) {
             document.getElementById('loginFormContainer').classList.toggle('hidden', view !== 'login');
