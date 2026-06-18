@@ -376,7 +376,7 @@
                         const loweredServiceName = serviceItem.name.toLowerCase();
                         if (loweredServiceName.includes('graphic') || loweredServiceName.includes('media')) determinedRoute = 'graphics';
                         else if (loweredServiceName.includes('video')) determinedRoute = 'video';
-                        else if (loweredServiceName.includes('web')) determinedRoute = 'web';
+                        else if (loweredServiceName.includes('website') || loweredServiceName.includes('fidelity')) determinedRoute = 'web';
                         else if (loweredServiceName.includes('app')) determinedRoute = 'app';
                         else if (loweredServiceName.includes('repair') || loweredServiceName.includes('restoration') || loweredServiceName.includes('hardware')) determinedRoute = 'repairs';
                         else if (loweredServiceName.includes('advice') || loweredServiceName.includes('consult')) determinedRoute = 'advice';
