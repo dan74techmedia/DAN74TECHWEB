@@ -957,31 +957,37 @@ app.use(express.json());
 // The POST route the contact form is looking for
 app.post('/api/messages', async (req, res) => {
     try {
-        const { name, email, subject, message } = req.body;
+        // 1. Extract data mapping to the consultations schema
+        const { name, client_name, email, client_email, booking_date, booking_time, platform } = req.body;
 
-        // 1. Validate the incoming data
-        if (!name || !email || !subject || !message) {
-            return res.status(400).json({ error: "Missing required fields." });
+        // Resolve name and email to support both standard and client-specific payload structures
+        const finalName = client_name || name;
+        const finalEmail = client_email || email;
+
+        // 2. Validate the incoming data based on the consultations matrix
+        if (!finalName || !finalEmail || !booking_date) {
+            return res.status(400).json({ error: "Missing required booking fields." });
         }
 
-        // 2. Map to your PostgreSQL 'messages' table schema
-        // Defaulting status to 'unread' and is_deleted to false
+        // 3. Map to your PostgreSQL 'consultations' table schema
+        // Defaulting platform to 'Google Meet' and status to 'pending'
         const insertQuery = `
-            INSERT INTO messages (name, email, subject, message, status, is_deleted)
-            VALUES ($1, $2, $3, $4, 'unread', false)
+            INSERT INTO consultations (client_name, client_email, booking_date, booking_time, platform, status)
+            VALUES ($1, $2, $3, $4, COALESCE($5, 'Google Meet'), 'pending')
             RETURNING id;
         `;
         
-        const values = [name, email, subject, message];
+        // Use a default time if none is provided to satisfy the database requirements
+        const values = [finalName, finalEmail, booking_date, booking_time || '10:00:00', platform];
 
-        // 3. Execute the query (assuming 'pool' is your pg database connection)
+        // 4. Execute the query (assuming 'pool' is your pg database connection)
         const result = await pool.query(insertQuery, values);
 
-        // 4. Send success response back to the frontend to trigger the green toast
+        // 5. Send success response back to the frontend to trigger the green toast
         res.status(201).json({ 
             success: true, 
             messageId: result.rows[0].id,
-            message: "Message successfully Sent." 
+            message: "Consultation successfully Sent." 
         });
 
     } catch (error) {
