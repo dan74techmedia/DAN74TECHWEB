@@ -981,13 +981,13 @@ app.post('/api/messages', async (req, res) => {
         res.status(201).json({ 
             success: true, 
             messageId: result.rows[0].id,
-            message: "Message successfully logged to database." 
+            message: "Message successfully Sent." 
         });
 
     } catch (error) {
         console.error("Matrix Database Error:", error);
         // This triggers the frontend error toast you just saw
-        res.status(500).json({ error: "Server database connection failure." }); 
+        res.status(500).json({ error: "Connection failed." }); 
     }
 });
 
