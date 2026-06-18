@@ -951,52 +951,6 @@ app.post('/api/communications/send', verifySystemToken, async (req, res) => {
     }
 });
 
-// Ensure you have body-parser or express.json() enabled to read the incoming data
-app.use(express.json()); 
-
-// The POST route the contact form is looking for
-app.post('/api/messages', async (req, res) => {
-    try {
-        // 1. Extract data mapping to the consultations schema
-        const { name, client_name, email, client_email, booking_date, booking_time, platform } = req.body;
-
-        // Resolve name and email to support both standard and client-specific payload structures
-        const finalName = client_name || name;
-        const finalEmail = client_email || email;
-
-        // 2. Validate the incoming data based on the consultations matrix
-        if (!finalName || !finalEmail || !booking_date) {
-            return res.status(400).json({ error: "Missing required booking fields." });
-        }
-
-        // 3. Map to your PostgreSQL 'consultations' table schema
-        // Defaulting platform to 'Google Meet' and status to 'pending'
-        const insertQuery = `
-            INSERT INTO consultations (client_name, client_email, booking_date, booking_time, platform, status)
-            VALUES ($1, $2, $3, $4, COALESCE($5, 'Google Meet'), 'pending')
-            RETURNING id;
-        `;
-        
-        // Use a default time if none is provided to satisfy the database requirements
-        const values = [finalName, finalEmail, booking_date, booking_time || '10:00:00', platform];
-
-        // 4. Execute the query (assuming 'pool' is your pg database connection)
-        const result = await pool.query(insertQuery, values);
-
-        // 5. Send success response back to the frontend to trigger the green toast
-        res.status(201).json({ 
-            success: true, 
-            messageId: result.rows[0].id,
-            message: "Consultation successfully Sent." 
-        });
-
-    } catch (error) {
-        console.error("Matrix Database Error:", error);
-        // This triggers the frontend error toast you just saw
-        res.status(500).json({ error: "Connection failed." }); 
-    }
-});
-
 // =========================================================================
 // ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
 // =========================================================================
