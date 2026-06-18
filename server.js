@@ -951,6 +951,46 @@ app.post('/api/communications/send', verifySystemToken, async (req, res) => {
     }
 });
 
+// Ensure you have body-parser or express.json() enabled to read the incoming data
+app.use(express.json()); 
+
+// The POST route the contact form is looking for
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+
+        // 1. Validate the incoming data
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({ error: "Missing required fields." });
+        }
+
+        // 2. Map to your PostgreSQL 'messages' table schema
+        // Defaulting status to 'unread' and is_deleted to false
+        const insertQuery = `
+            INSERT INTO messages (name, email, subject, message, status, is_deleted)
+            VALUES ($1, $2, $3, $4, 'unread', false)
+            RETURNING id;
+        `;
+        
+        const values = [name, email, subject, message];
+
+        // 3. Execute the query (assuming 'pool' is your pg database connection)
+        const result = await pool.query(insertQuery, values);
+
+        // 4. Send success response back to the frontend to trigger the green toast
+        res.status(201).json({ 
+            success: true, 
+            messageId: result.rows[0].id,
+            message: "Message successfully logged to database." 
+        });
+
+    } catch (error) {
+        console.error("Matrix Database Error:", error);
+        // This triggers the frontend error toast you just saw
+        res.status(500).json({ error: "Server database connection failure." }); 
+    }
+});
+
 // =========================================================================
 // ================= MODULE 19: SAFARICOM M-PESA STK INTEGRATION ===========
 // =========================================================================
