@@ -662,8 +662,17 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
 
         await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
         
-        // ... (rest of the existing database insertion code remains unchanged)
-        
+        // Ensure campaign is logged to the database and a success response is returned
+        const campaign = await pool.query(
+            `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by, sent_at) VALUES ($1, $2, 'broadcast', $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
+            [subject, html || message, emailsArray.length, req.user.id]
+        );
+
+        res.json({ success: true, sent: emailsArray.length, failed: 0, campaign_id: campaign.rows[0].id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // =========================================================================
 // ================= MODULE 14: TESTIMONIALS ENGINE ========================
