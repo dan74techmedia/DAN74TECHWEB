@@ -638,15 +638,15 @@ app.get('/api/invoices/:id/download', async (req, res) => {
 app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
     try {
         const { subject, message, html } = req.body;
-        const subsResult = await pool.query("SELECT email FROM subscribers WHERE is_deleted = FALSE AND status = 'active'");
-        const userResult = await pool.query("SELECT email FROM users WHERE is_deleted = FALSE");
         
-        const emailsSet = new Set([...subsResult.rows.map(r => r.email), ...userResult.rows.map(r => r.email)]);
+        // Query exclusively from the users table as requested
+        const userResult = await pool.query("SELECT email FROM users WHERE is_deleted = FALSE AND email IS NOT NULL");
+        
+        const emailsSet = new Set(userResult.rows.map(r => r.email));
         const emailsArray = Array.from(emailsSet).map(email => ({ email }));
         
         if (emailsArray.length === 0) return res.status(400).json({ error: "No target clearance vectors found." });
         
-        // 👉 FIX 1: Validate both the API Key and the Email User
         if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
             throw new Error("Brevo SMTP engine offline or missing sender credentials.");
         }
@@ -656,13 +656,11 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
         sendSmtpEmail.htmlContent = html || `<p>${message}</p>`;
         sendSmtpEmail.sender = { name: "DAN74TECH MEDIA", email: process.env.EMAIL_USER };
         
-        // 👉 FIX 2: Provide a mandatory 'to' field alongside the BCC array
         sendSmtpEmail.to = [{ email: process.env.EMAIL_USER }]; 
         sendSmtpEmail.bcc = emailsArray; 
 
         await brevoEmailInstance.sendTransacEmail(sendSmtpEmail);
         
-        // Ensure campaign is logged to the database and a success response is returned
         const campaign = await pool.query(
             `INSERT INTO email_campaigns (subject, content, campaign_type, recipients_count, sent_by, sent_at) VALUES ($1, $2, 'broadcast', $3, $4, CURRENT_TIMESTAMP) RETURNING id`,
             [subject, html || message, emailsArray.length, req.user.id]
@@ -673,6 +671,7 @@ app.post('/api/subscribers/broadcast', verifyAdminAccess, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+    
 
 // =========================================================================
 // ================= MODULE 14: TESTIMONIALS ENGINE ========================
